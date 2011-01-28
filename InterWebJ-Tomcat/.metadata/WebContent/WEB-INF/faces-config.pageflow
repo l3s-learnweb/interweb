@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pageflow:Pageflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf12959843525480" configfile="/InterWebJ-Tomcat/WebContent/WEB-INF/faces-config.xml">
+  <nodes xsi:type="pageflow:PFPage" name="index.xhtml" x="408" y="96" id="pf12959851817991" referenceLink="//@navigationRule.3/@navigationCase.0/@toViewId|" inlinks="pf12960344990721 pf12960444200033" path="/index.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="login.xhtml" x="411" y="264" id="pf12959851817993" referenceLink="//@navigationRule.1/@navigationCase.0/@toViewId|" outlinks="pf12960344990721 pf12960344990722" inlinks="pf12960344990722" path="/login.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="register.xhtml" x="744" y="96" id="pf12960444200044" referenceLink="//@navigationRule.3/@fromViewId|" outlinks="pf12960444200045 pf12960444200033" inlinks="pf12960444200045" path="/register.xhtml"/>
+  <links id="pf12960344990721" target="pf12959851817991" source="pf12959851817993" outcome="success" redirect="true" fromaction="#{loginBean.login}"/>
+  <links id="pf12960344990722" target="pf12959851817993" source="pf12959851817993" outcome="failed" fromaction="#{loginBean.login}">
+    <bendPoints d1Height="-36" d2Height="-36"/>
+    <bendPoints d1Width="-64" d1Height="-36" d2Width="-64" d2Height="-36"/>
+    <bendPoints d1Width="-64" d2Width="-64"/>
+  </links>
+  <links id="pf12960444200045" target="pf12960444200044" source="pf12960444200044" outcome="failed" fromaction="#{userDataBean.register}">
+    <bendPoints d1Height="-36" d2Height="-36"/>
+    <bendPoints d1Width="-64" d1Height="-36" d2Width="-64" d2Height="-36"/>
+    <bendPoints d1Width="-64" d2Width="-64"/>
+  </links>
+  <links id="pf12960444200033" target="pf12959851817991" source="pf12960444200044" outcome="success" redirect="true" fromaction="#{userDataBean.register}"/>
+</pageflow:Pageflow>

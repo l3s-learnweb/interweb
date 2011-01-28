@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsf/core">
+<head>
+<title>InterWebJ</title>
+<link rel="stylesheet" type="text/css" media="screen"
+	href="/#{interwebj.context}/css/main.css" />
+</head>
+<body>
+<div id="topnav"><h:form>
+	<ul>
+		<li><h:outputLink value="/#{interwebj.context}/faces/login.xhtml"
+			rendered="#{!principalBean.loggedIn}">
+			<h:outputText value="Login" />
+		</h:outputLink></li>
+		<li><h:outputLink
+			value="/#{interwebj.context}/faces/register.xhtml"
+			rendered="#{!principalBean.loggedIn}">
+			<h:outputText value="Register" />
+		</h:outputLink></li>
+		<li><h:commandLink action="#{principalBean.logout}"
+			value="Logout" rendered="#{principalBean.loggedIn}" /></li>
+		<li><h:outputLink
+			value="/#{interwebj.context}/faces/profile.xhtml"
+			rendered="#{principalBean.loggedIn}">
+			<h:outputText value="Profile: #{principalBean.principal.name}" />
+		</h:outputLink></li>
+		<li id="skip"><h:outputLink
+			value="/#{interwebj.context}/faces/index.xhtml">
+			<h:outputText value="Home" />
+		</h:outputLink></li>
+	</ul>
+</h:form></div>
+<div id="header"><span>InterWebJ</span> <ui:fragment
+	rendered="#{principalBean.loggedIn}">
+	<div id="menu">
+	<ul>
+		<h:form>
+			<li><h:outputLink
+				value="/#{interwebj.context}/faces/services.xhtml">
+				<h:outputText value="Services" />
+			</h:outputLink></li>
+			<li><h:outputLink
+				value="/#{interwebj.context}/faces/search.xhtml">
+				<h:outputText value="Search" />
+			</h:outputLink></li>
+			<li><h:outputLink
+				value="/#{interwebj.context}/faces/search.xhtml">
+				<h:outputText value="Upload" />
+			</h:outputLink></li>
+			<li><h:outputLink
+				value="/#{interwebj.context}/faces/preferences.xhtml">
+				<h:outputText value="Preferences" />
+			</h:outputLink></li>
+		</h:form>
+	</ul>
+	</div>
+</ui:fragment></div>
+<div id="content"><ui:insert name="content">
+</ui:insert></div>
+<div id="footer">
+<p><a href="#">About</a> | <a href="#">Terms of Service</a> | <a
+	href="#">Privacy Statement</a></p>
+</div>
+</body>
+</html>
