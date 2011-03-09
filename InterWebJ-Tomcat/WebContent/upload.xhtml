@@ -4,10 +4,28 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core">
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.prime.com.tr/ui">
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
+		<h:form enctype="multipart/form-data" prependId="false">
+			<p><p:growl id="messages" showSummary="true" showDetail="true" /></p>
+			<h:panelGrid columns="2">
+				<h:column>
+					<p:fileUpload fileUploadListener="#{uploadBean.fileUpload}"
+						update="messages" sizeLimit="1073741824" multiple="true"
+						label="choose" allowTypes="*.jpg;*.png;*.gif;"
+						description="Images" />
+				</h:column>
+				<h:column style="margin-left: 50px;">
+					<div><h:selectManyCheckbox id="content_types"
+						value="#{uploadBean.selectedConnectors}" layout="pageDirection">
+						<f:selectItems value="#{uploadBean.allConnectors}" />
+					</h:selectManyCheckbox></div>
+				</h:column>
+			</h:panelGrid>
+		</h:form>
 	</ui:define>
 </ui:composition>
 </html>

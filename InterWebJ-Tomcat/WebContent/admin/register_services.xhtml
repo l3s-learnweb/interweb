@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+	<ui:define name="content">
+		<h:outputLabel value="Services with OAuth support:" />
+		<h:form>
+			<h:dataTable var="connector"
+				value="#{interwebj.environment.engine.connectors}"
+				cellpadding="10"
+				rowClasses="#{registerServicesBean.rowClasses}">
+				<h:column>
+					<img src="#{connector.baseUrl}/favicon.ico"
+						style="vertical-align: middle; margin: 3px;" />
+				</h:column>
+				<h:column>
+					<h:outputLink value="#{connector.baseUrl}"
+						style="margin-right: 10px;">
+						<h:outputLabel value="#{connector.name}" />
+					</h:outputLink>
+				</h:column>
+				<h:column>
+					<h:panelGrid columns="2" cellpadding="0" cellspacing="0"
+						style="font-size: 0.8em; color:#0E774A;">
+						<h:outputLabel value="Key:" style="margin-right:5px" />
+						<h:outputLabel
+							value="#{connector.consumerAuthData.key}"
+							rendered="#{registerServicesBean.isRegistered(connector)}" />
+						<h:inputText id="key" label="key" required="true"
+							value="#{registerServicesBean.key}"
+							rendered="#{!registerServicesBean.isRegistered(connector)}" style="margin-bottom:5px" />
+						<h:outputLabel value="Secret:" style="margin-right:5px" />
+						<h:outputLabel
+							value="#{connector.consumerAuthData.secret}"
+							rendered="#{registerServicesBean.isRegistered(connector)}" />
+						<h:inputText id="secret" label="secret" required="true"
+							value="#{registerServicesBean.secret}"
+							rendered="#{!registerServicesBean.isRegistered(connector)}" />
+					</h:panelGrid>
+				</h:column>
+				<h:column>
+					<h:commandButton action="#{registerServicesBean.unregister(connector)}"
+						value="Unregister" rendered="#{registerServicesBean.isRegistered(connector)}"
+						style="margin-left:10px" />
+					<h:commandButton action="#{registerServicesBean.register(connector)}"
+						value="Register" rendered="#{!registerServicesBean.isRegistered(connector)}"
+						style="margin-left:10px" />
+				</h:column>
+			</h:dataTable>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

@@ -23,7 +23,7 @@
 					value="#{loginBean.password}" />
 				<h:message showSummary="true" showDetail="false" styleClass="error"
 					for="password" />
-				<h:commandButton action="#{loginBean.login}" value="Login" id="login_button" />
+				<h:commandButton action="#{principalBean.login(loginBean.username, loginBean.password)}" value="Login" id="login_button" />
 			</h:panelGrid>
 		</h:form>
 	</ui:define>

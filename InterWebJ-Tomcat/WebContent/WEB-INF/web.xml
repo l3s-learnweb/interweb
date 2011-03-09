@@ -1,21 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="InterWebJ" version="2.5">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+  id="InterWebJ" version="2.5"
+>
   <display-name>InterWebJ</display-name>
   <session-config>
     <session-timeout>30</session-timeout>
   </session-config>
   <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>index.xhtml</welcome-file>
   </welcome-file-list>
   <servlet>
-    <description></description>
-    <display-name>logout</display-name>
-    <servlet-name>logout</servlet-name>
-    <servlet-class>de.l3s.interwebj.servlet.Logout</servlet-class>
+    <servlet-name>InterWebJ Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-    <servlet-name>logout</servlet-name>
-    <url-pattern>/logout</url-pattern>
+    <servlet-name>InterWebJ Faces Servlet</servlet-name>
+    <url-pattern>/view/*</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <filter-name>PrimeFaces FileUpload Filter</filter-name>
+    <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
+    <init-param>
+      <param-name>thresholdSize</param-name>
+      <param-value>512000</param-value>
+    </init-param>
+    <init-param>
+      <param-name>uploadDirectory</param-name>
+      <param-value>/tmp/fileUpload</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>PrimeFaces FileUpload Filter</filter-name>
+    <servlet-name>InterWebJ Faces Servlet</servlet-name>
+  </filter-mapping>
+  <filter>
+    <display-name>DisableUrlSessionFilter</display-name>
+    <filter-name>DisableUrlSessionFilter</filter-name>
+    <filter-class>de.l3s.interwebj.servlet.filter.DisableUrlSessionFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>DisableUrlSessionFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter>
+    <display-name>SecurityFilter</display-name>
+    <filter-name>SecurityFilter</filter-name>
+    <filter-class>de.l3s.interwebj.servlet.filter.SecurityFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>SecurityFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <servlet>
+    <description></description>
+    <display-name>callback</display-name>
+    <servlet-name>callback</servlet-name>
+    <servlet-class>de.l3s.interwebj.servlet.CallbackServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>callback</servlet-name>
+    <url-pattern>/callback</url-pattern>
   </servlet-mapping>
   <servlet>
     <description></description>
@@ -31,8 +78,7 @@
     <web-resource-collection>
       <web-resource-name>Public resource</web-resource-name>
       <url-pattern>/</url-pattern>
-      <url-pattern>/index.jsp</url-pattern>
-      <url-pattern>/logout</url-pattern>
+      <url-pattern>/index.xhtml</url-pattern>
       <url-pattern>/css/*</url-pattern>
       <url-pattern>/img/*</url-pattern>
     </web-resource-collection>
@@ -46,36 +92,29 @@
       <url-pattern>/*</url-pattern>
     </web-resource-collection>
     <user-data-constraint>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+      <transport-guarantee>NONE</transport-guarantee>
     </user-data-constraint>
   </security-constraint>
-  <filter>
-    <filter-name>Security Filter</filter-name>
-    <filter-class>de.l3s.interwebj.tomcat.IWSecurityFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>Security Filter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
   <context-param>
     <description>State saving method: 'client' or 'server' (=default). See JSF Specification 2.5.2</description>
     <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-    <param-value>client</param-value>
+    <param-value>server</param-value>
   </context-param>
   <context-param>
     <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
     <param-value>resources.application</param-value>
   </context-param>
-  <listener>
-    <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
-  </listener>
+  <context-param>
+    <param-name>primefaces.skin</param-name>
+    <param-value>none</param-value>
+  </context-param>
   <servlet>
-    <servlet-name>Faces Servlet</servlet-name>
-    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
+    <servlet-name>Resource Servlet</servlet-name>
+    <servlet-class>org.primefaces.resource.ResourceServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>Faces Servlet</servlet-name>
-    <url-pattern>/faces/*</url-pattern>
+    <servlet-name>Resource Servlet</servlet-name>
+    <url-pattern>/primefaces_resource/*</url-pattern>
   </servlet-mapping>
+
 </web-app>

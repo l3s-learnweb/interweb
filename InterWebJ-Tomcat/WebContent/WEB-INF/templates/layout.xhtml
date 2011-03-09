@@ -4,61 +4,71 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:c="http://java.sun.com/jsf/core">
-<head>
-<title>InterWebJ</title>
-<link rel="stylesheet" type="text/css" media="screen"
-	href="/#{interwebj.context}/css/main.css" />
-</head>
+<h:head>
+	<title>InterWebJ</title>
+	<link rel="stylesheet" type="text/css" media="screen"
+		href="/#{interwebj.context}/css/main.css" />
+</h:head>
 <body>
 <div id="topnav"><h:form>
 	<ul>
-		<li><h:outputLink value="/#{interwebj.context}/faces/login.xhtml"
+		<li><h:outputLink value="/#{interwebj.context}/view/login.xhtml"
 			rendered="#{!principalBean.loggedIn}">
 			<h:outputText value="Login" />
 		</h:outputLink></li>
 		<li><h:outputLink
-			value="/#{interwebj.context}/faces/register.xhtml"
+			value="/#{interwebj.context}/view/register.xhtml"
 			rendered="#{!principalBean.loggedIn}">
 			<h:outputText value="Register" />
 		</h:outputLink></li>
-		<li><h:commandLink action="#{principalBean.logout}"
+		<li><h:commandLink action="#{principalBean.logout()}"
 			value="Logout" rendered="#{principalBean.loggedIn}" /></li>
-		<li><h:outputLink
-			value="/#{interwebj.context}/faces/profile.xhtml"
+		<!--li><h:outputLink
+			value="/#{interwebj.context}/view/profile.xhtml"
 			rendered="#{principalBean.loggedIn}">
 			<h:outputText value="Profile: #{principalBean.principal.name}" />
-		</h:outputLink></li>
+		</h:outputLink></li-->
 		<li id="skip"><h:outputLink
-			value="/#{interwebj.context}/faces/index.xhtml">
+			value="/#{interwebj.context}/view/index.xhtml">
 			<h:outputText value="Home" />
 		</h:outputLink></li>
 	</ul>
 </h:form></div>
-<div id="header"><span>InterWebJ</span> <ui:fragment
-	rendered="#{principalBean.loggedIn}">
-	<div id="menu">
-	<ul>
-		<h:form>
+<div id="header"><span>InterWebJ</span>
+<div id="menu">
+<ul>
+	<h:form>
+		<ui:fragment rendered="#{principalBean.loggedIn}">
 			<li><h:outputLink
-				value="/#{interwebj.context}/faces/services.xhtml">
+				value="/#{interwebj.context}/view/services.xhtml">
 				<h:outputText value="Services" />
 			</h:outputLink></li>
 			<li><h:outputLink
-				value="/#{interwebj.context}/faces/search.xhtml">
+				value="/#{interwebj.context}/view/search.xhtml">
 				<h:outputText value="Search" />
 			</h:outputLink></li>
 			<li><h:outputLink
-				value="/#{interwebj.context}/faces/search.xhtml">
+				value="/#{interwebj.context}/view/upload.xhtml">
 				<h:outputText value="Upload" />
 			</h:outputLink></li>
 			<li><h:outputLink
-				value="/#{interwebj.context}/faces/preferences.xhtml">
-				<h:outputText value="Preferences" />
+				value="/#{interwebj.context}/view/consumers.xhtml">
+				<h:outputText value="Apps" />
 			</h:outputLink></li>
-		</h:form>
-	</ul>
-	</div>
-</ui:fragment></div>
+		</ui:fragment>
+		<li><h:outputLink value="/#{interwebj.context}/view/api.xhtml">
+			<h:outputText value="API Docs" />
+		</h:outputLink></li>
+		<ui:fragment rendered="#{principalBean.hasRole('manager')}">
+			<li id="admin_menu_item"><h:outputLink
+				value="/#{interwebj.context}/view/admin/register_services.xhtml">
+				<h:outputText value="WS Registration" />
+			</h:outputLink></li>
+		</ui:fragment>
+	</h:form>
+</ul>
+</div>
+</div>
 <div id="content"><ui:insert name="content">
 </ui:insert></div>
 <div id="footer">

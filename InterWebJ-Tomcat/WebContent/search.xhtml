@@ -4,10 +4,57 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core">
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.prime.com.tr/ui">
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
+		<h:form>
+			<h:panelGrid columns="2">
+				<h:column>
+					<div><h:outputLabel for="query" value="Search query: " /> <h:inputText
+						id="query" label="query" required="true"
+						value="#{searchBean.query}" size="30" /> <h:commandButton
+						action="#{searchBean.search()}" value="Search" id="search_button"
+						style="margin-left:5px" /></div>
+				</h:column>
+				<h:column style="margin-left: 50px;">
+					<div><h:selectManyCheckbox id="content_types"
+						value="#{searchBean.selectedContentTypes}" layout="pageDirection">
+						<f:selectItems value="#{searchBean.allContentTypes}" />
+					</h:selectManyCheckbox></div>
+				</h:column>
+			</h:panelGrid>
+		</h:form>
+		<h:form>
+			<h:outputLabel
+				value="Total #{searchBean.queryResult.resultItems.size()} result(s) found:"
+				rendered="#{searchBean.hasResults()}" />
+			<p:dataList value="#{searchBean.queryResult.resultItems}"
+				var="resultItem" rows="10" paginator="true"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,25" rendered="#{searchBean.hasResults()}">
+				<h:panelGrid columns="3" columnClasses="alignTop, alignTop">
+					<h:column>
+						<span style="text-align: left; vertical-align: top;">#{searchBean.getResultIndex(resultItem)+1}</span>
+					</h:column>
+					<h:column>
+						<img
+							src="#{searchBean.getConnectorBaseUrl(resultItem.connectorName)}/favicon.ico"
+							style="vertical-align: middle; margin: 3px;" />
+					</h:column>
+					<h:column>
+						<div>
+						<h6><h:outputLink value="#{resultItem.url}" target="_blank">#{resultItem.title}</h:outputLink></h6>
+						<div><h:outputText value="#{resultItem.asHtml()}"
+							escape="false" /><br />
+						<span>#{resultItem.description}</span></div>
+						</div>
+						<span style="text-align: left; vertical-align: top;"></span>
+					</h:column>
+				</h:panelGrid>
+			</p:dataList>
+		</h:form>
 	</ui:define>
 </ui:composition>
 </html>
