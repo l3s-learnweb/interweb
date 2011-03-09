@@ -1,8 +1,6 @@
 package de.l3s.interwebj.bean;
 
 
-import java.net.*;
-
 import javax.faces.application.*;
 import javax.faces.bean.*;
 
@@ -47,24 +45,18 @@ public class UserDataBean
 	
 
 	public String register()
+	    throws InterWebException
 	{
-		try
+		Environment environment = Utils.getEnvironment();
+		Database database = environment.getDatabase();
+		if (validate(database))
 		{
-			IWEnvironment environment = Utils.getEnvironment();
-			IWDatabase database = environment.getDatabase();
-			if (validate(database))
-			{
-				IWPrincipal principal = new IWPrincipal(username, email);
-				principal.addRole("user");
-				database.addPrincipal(principal, password);
-				PrincipalBean principalBean = Utils.getPrincipalBean();
-				principalBean.setPrincipal(principal);
-				return "success";
-			}
-		}
-		catch (MalformedURLException e)
-		{
-			return "failed";
+			IWPrincipal principal = new IWPrincipal(username, email);
+			principal.addRole("user");
+			database.savePrincipal(principal, password);
+			PrincipalBean principalBean = Utils.getPrincipalBean();
+			principalBean.setPrincipal(principal);
+			return "success";
 		}
 		return "failed";
 	}
@@ -94,7 +86,7 @@ public class UserDataBean
 	}
 	
 
-	private boolean validate(IWDatabase database)
+	private boolean validate(Database database)
 	{
 		if (database.hasUser(username))
 		{

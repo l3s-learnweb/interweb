@@ -84,7 +84,7 @@ public class RegistrationBean
 	}
 	
 
-	public boolean validate(IWDatabase iwDatabase)
+	public boolean validate(Database iwDatabase)
 	{
 		boolean valid = validateUserName(iwDatabase);
 		valid = validatePassword() && valid;
@@ -154,7 +154,7 @@ public class RegistrationBean
 	}
 	
 
-	private boolean validateUserName(IWDatabase iwDatabase)
+	private boolean validateUserName(Database iwDatabase)
 	{
 		if (username == null || username.equals(""))
 		{

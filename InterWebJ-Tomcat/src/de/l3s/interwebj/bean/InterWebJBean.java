@@ -27,11 +27,23 @@ public class InterWebJBean
 	}
 	
 
-	public IWEnvironment getEnvironment()
-	    throws MalformedURLException
+	public Environment getEnvironment()
+	    throws InterWebException
 	{
-		URL configUrl = FacesContext.getCurrentInstance().getExternalContext().getResource("/WEB-INF/config.xml");
-		return IWEnvironment.getInstance(configUrl);
+		try
+		{
+			URL configUrl = FacesContext.getCurrentInstance().getExternalContext().getResource("/WEB-INF/config.xml");
+			return Environment.getInstance(configUrl);
+		}
+		catch (MalformedURLException e)
+		{
+			throw new InterWebException(e);
+		}
 	}
 	
+
+	public String getServiceName()
+	{
+		return Environment.INTERWEBJ_SERVICE_NAME;
+	}
 }
