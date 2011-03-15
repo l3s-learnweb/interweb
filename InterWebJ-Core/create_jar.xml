@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="InterWebJ.createjar" default="createjar" basedir=".">
+	<delete file="../InterWebJ-Tomcat/WebContent/WEB-INF/lib/interwebj-core.jar" />
+	<target name="createjar">
+		<jar destfile="../InterWebJ-Tomcat/WebContent/WEB-INF/lib/interwebj-core.jar" includes="**/*.class" basedir="bin">
+			<!--include name="config/*"/-->
+		</jar>
+	</target>
+</project>

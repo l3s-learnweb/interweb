@@ -2,6 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jersey 1.5"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jersey OAuth"/>
 	<classpathentry kind="lib" path="lib/commons-configuration-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
@@ -9,6 +11,11 @@
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections.jar"/>
 	<classpathentry kind="lib" path="src/log4j.properties"/>
-	<classpathentry kind="lib" path="config/log4j.properties"/>
+	<classpathentry kind="lib" path="lib/flickrapi-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-youtube-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-client-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-core-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-media-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

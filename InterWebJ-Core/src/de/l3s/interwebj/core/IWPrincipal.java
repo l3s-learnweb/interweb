@@ -66,7 +66,23 @@ public class IWPrincipal
 
 	public boolean hasRole(String role)
 	{
+		Environment.logger.debug("user roles: " + roles);
 		return roles.contains(role.toLowerCase());
+	}
+	
+
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append("IWPrincipal [");
+		if (name != null)
+		{
+			builder.append("name=");
+			builder.append(name);
+		}
+		builder.append("]");
+		return builder.toString();
 	}
 	
 }

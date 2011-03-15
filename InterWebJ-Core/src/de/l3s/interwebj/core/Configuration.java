@@ -6,13 +6,13 @@ import java.net.*;
 import org.apache.commons.configuration.*;
 
 
-public class IWConfiguration
+public class Configuration
 {
 	
 	private XMLConfiguration configuration;
 	
 
-	public IWConfiguration(URL configUrl)
+	public Configuration(URL configUrl)
 	{
 		try
 		{
