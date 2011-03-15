@@ -53,7 +53,7 @@ public class RegisterServicesBean
 	public boolean isRegistered(Object connector)
 	    throws InterWebException
 	{
-		return Utils.getEngine().isConnectorRegistered((ServiceConnector) connector);
+		return ((ServiceConnector) connector).isRegistered();
 	}
 	
 

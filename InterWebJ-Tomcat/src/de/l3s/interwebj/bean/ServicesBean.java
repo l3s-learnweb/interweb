@@ -39,27 +39,25 @@ public class ServicesBean
 		PermissionLevel permissionLevel = PermissionLevel.getPermissionLevel(permission);
 		Environment.logger.debug("requested permission level fetched: "
 		                         + permissionLevel.getName());
-		URL requestTokenUrl = ((ServiceConnector) connector).authenticate(permissionLevel);
-		Environment.logger.debug(requestTokenUrl.toExternalForm());
-		SessionBean sessionBean = (SessionBean) Utils.getManagedBean("sessionBean");
-		sessionBean.addAwaitingAuthenticationConnectors((ServiceConnector) connector);
-		try
+		String callbackUrl = Utils.getInterWebJBean().getBaseUrl() + "callback";
+		URL requestTokenUrl = ((ServiceConnector) connector).authenticate(permissionLevel,
+		                                                                  callbackUrl).getRequestUrl();
+		if (requestTokenUrl != null)
 		{
-			Utils.getExternalContext().redirect(requestTokenUrl.toExternalForm());
-		}
-		catch (IOException e)
-		{
-			Environment.logger.error(e);
-			throw new InterWebException(e);
+			Environment.logger.debug(requestTokenUrl.toExternalForm());
+			SessionBean sessionBean = (SessionBean) Utils.getManagedBean("sessionBean");
+			sessionBean.addAwaitingAuthenticationConnectors((ServiceConnector) connector);
+			try
+			{
+				Utils.getExternalContext().redirect(requestTokenUrl.toExternalForm());
+			}
+			catch (IOException e)
+			{
+				Environment.logger.error(e);
+				throw new InterWebException(e);
+			}
 		}
 		return null;
-	}
-	
-
-	public List<ServiceConnector> getConnectors()
-	    throws InterWebException
-	{
-		return Utils.getEngine().getConnectors();
 	}
 	
 
@@ -75,11 +73,21 @@ public class ServicesBean
 	}
 	
 
-	public boolean isConnectorRegistered(Object connector)
+	public List<ServiceConnector> getRegisteredConnectors()
 	    throws InterWebException
 	{
-		Engine engine = Utils.getEngine();
-		return engine.isConnectorRegistered((ServiceConnector) connector);
+		List<ServiceConnector> registeredConnectors = new LinkedList<ServiceConnector>();
+		for (ServiceConnector connector : Utils.getEngine().getConnectors())
+		{
+			if (connector.isRegistered())
+			{
+				registeredConnectors.add(connector);
+			}
+		}
+		Environment.logger.debug("registered connectors: "
+		                         + registeredConnectors + ", size: "
+		                         + registeredConnectors.size());
+		return registeredConnectors;
 	}
 	
 

@@ -5,6 +5,7 @@ import java.net.*;
 
 import javax.faces.bean.*;
 import javax.faces.context.*;
+import javax.servlet.http.*;
 
 import de.l3s.interwebj.core.*;
 
@@ -14,6 +15,16 @@ import de.l3s.interwebj.core.*;
 public class InterWebJBean
 {
 	
+	public String getBaseUrl()
+	{
+		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		URI currentUri = URI.create(HttpUtils.getRequestURL(req).toString());
+		URI baseUri = currentUri.resolve("/" + getContextName() + "/");
+		Environment.logger.debug("baseUri: " + baseUri);
+		return baseUri.toASCIIString();
+	}
+	
+
 	public URL getConfigUrl()
 	    throws MalformedURLException
 	{
@@ -21,7 +32,7 @@ public class InterWebJBean
 	}
 	
 
-	public String getContext()
+	public String getContextName()
 	{
 		return FacesContext.getCurrentInstance().getExternalContext().getContextName();
 	}

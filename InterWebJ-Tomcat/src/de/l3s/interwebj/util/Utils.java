@@ -2,7 +2,7 @@ package de.l3s.interwebj.util;
 
 
 import javax.el.*;
-import javax.faces.FactoryFinder;
+import javax.faces.*;
 import javax.faces.application.*;
 import javax.faces.component.*;
 import javax.faces.context.*;
@@ -16,7 +16,6 @@ import de.l3s.interwebj.core.*;
 public class Utils
 {
 	
-	// Wrap the protected FacesContext.setCurrentInstance() in a inner class.
 	private static abstract class FacesContextWrapper
 	    extends FacesContext
 	{
@@ -129,5 +128,4 @@ public class Utils
 	{
 		return (PrincipalBean) getManagedBean(fc, "principalBean");
 	}
-	
 }

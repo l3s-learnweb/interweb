@@ -31,9 +31,10 @@ public class SessionBean
 		Engine engine = Utils.getEngine();
 		IWPrincipal principal = Utils.getPrincipalBean().getPrincipal();
 		selectedContentTypes = new ArrayList<String>(engine.getContentTypes());
+		selectedConnectors = new ArrayList<String>();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
-			if (engine.isConnectorRegistered(connector) && principal != null
+			if (connector.isRegistered() && principal != null
 			    && engine.isUserAuthenticated(connector, principal))
 			{
 				selectedConnectors.add(connector.getName());

@@ -49,7 +49,7 @@ public class SearchBean
 	{
 		Engine engine = Utils.getEngine();
 		ServiceConnector connector = engine.getConnector(connectorName);
-		return connector.getBaseUrl().toExternalForm();
+		return connector.getBaseUrl();
 	}
 	
 

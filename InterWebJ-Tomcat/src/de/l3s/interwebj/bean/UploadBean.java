@@ -72,7 +72,7 @@ public class UploadBean
 		IWPrincipal principal = Utils.getPrincipalBean().getPrincipal();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
-			if (engine.isConnectorRegistered(connector)
+			if (connector.isRegistered()
 			    && engine.isUserAuthenticated(connector, principal))
 			{
 				SelectItem selectItem = new SelectItem(connector.getName());
