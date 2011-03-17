@@ -8,44 +8,40 @@
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
-		<ui:repeat var="connector" value="#{servicesBean.connectors}">
-			<ui:fragment
-				rendered="#{servicesBean.isConnectorRegistered(connector)}">
-				<h:form>
-					<h:panelGrid cellspacing="10" columns="4">
-						<h:column>
-							<img src="#{connector.baseUrl}/favicon.ico"
-								style="vertical-align: middle; margin: 3px;" />
-							<h:outputLink value="#{connector.baseUrl}"
-								style="margin-left: 10px; margin-right: 10px; margin-top: 3px; margin-bottom: 3px;">
+		<h:form>
+			<h:dataTable var="connector" value="#{servicesBean.registeredConnectors}"
+				cellpadding="10">
+				<h:column>
+					<img src="#{connector.baseUrl}/favicon.ico"
+						style="vertical-align: middle; margin: 3px;" />
+					<h:outputLink value="#{connector.baseUrl}"
+						style="margin-left: 10px; margin-right: 10px; margin-top: 3px; margin-bottom: 3px;">
 								#{connector.name}
 							</h:outputLink>
-						</h:column>
-						<h:column>
-							<h:selectOneMenu id="permission"
-								value="#{servicesBean.permission}"
-								rendered="#{!servicesBean.isUserAuthenticated(connector)}">
-								<f:selectItems value="#{servicesBean.permissions}" />
-							</h:selectOneMenu>
-						</h:column>
-						<h:column>
-							<h:commandButton value="Authenticate"
-								action="#{servicesBean.authenticate(connector)}"
-								rendered="#{!servicesBean.isUserAuthenticated(connector)}" />
-							<h:commandButton value="Revoke"
-								action="#{servicesBean.revoke(connector)}"
-								rendered="#{servicesBean.isUserAuthenticated(connector)}" />
-						</h:column>
-						<h:column>
-							<h:outputLink value="#"
-								rendered="#{servicesBean.isUserAuthenticated(connector)}">
+				</h:column>
+				<h:column>
+					<h:selectOneMenu id="permission" value="#{servicesBean.permission}"
+						rendered="#{!servicesBean.isUserAuthenticated(connector)}">
+						<f:selectItems value="#{servicesBean.permissions}" />
+					</h:selectOneMenu>
+				</h:column>
+				<h:column>
+					<h:commandButton value="Authenticate"
+						action="#{servicesBean.authenticate(connector)}"
+						rendered="#{!servicesBean.isUserAuthenticated(connector)}" />
+					<h:commandButton value="Revoke"
+						action="#{servicesBean.revoke(connector)}"
+						rendered="#{servicesBean.isUserAuthenticated(connector)}" />
+				</h:column>
+				<h:column>
+					<h:outputLink value="#"
+						rendered="#{servicesBean.isUserAuthenticated(connector)}">
 								Preferences
-							</h:outputLink>
-						</h:column>
-					</h:panelGrid>
-				</h:form>
-			</ui:fragment>
-		</ui:repeat>
+					</h:outputLink>
+				</h:column>
+			</h:dataTable>
+		</h:form>
+		
 	</ui:define>
 </ui:composition>
 </html>

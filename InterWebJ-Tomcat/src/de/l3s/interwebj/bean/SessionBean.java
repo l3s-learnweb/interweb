@@ -73,13 +73,15 @@ public class SessionBean
 	{
 		for (ServiceConnector connector : awaitingAuthenticationConnectors)
 		{
-			AuthData authData = connector.completeAuthentication(params);
-			if (authData != null)
+			AuthCredentials authCredentials = connector.completeAuthentication(params);
+			if (authCredentials != null)
 			{
 				Environment.logger.debug(connector.getName() + " authenticated");
 				Engine engine = Utils.getEngine();
 				IWPrincipal principal = Utils.getPrincipalBean().getPrincipal();
-				engine.setUserAuthData(connector, principal, authData);
+				engine.setUserAuthCredentials(connector,
+				                              principal,
+				                              authCredentials);
 				Environment.logger.debug("authentication data saved");
 				return;
 			}

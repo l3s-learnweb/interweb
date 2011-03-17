@@ -2,7 +2,6 @@ package de.l3s.interwebj.bean;
 
 
 import java.io.*;
-import java.net.*;
 import java.util.*;
 
 import javax.faces.bean.*;
@@ -40,16 +39,16 @@ public class ServicesBean
 		Environment.logger.debug("requested permission level fetched: "
 		                         + permissionLevel.getName());
 		String callbackUrl = Utils.getInterWebJBean().getBaseUrl() + "callback";
-		URL requestTokenUrl = ((ServiceConnector) connector).authenticate(permissionLevel,
-		                                                                  callbackUrl).getRequestUrl();
+		String requestTokenUrl = ((ServiceConnector) connector).authenticate(permissionLevel,
+		                                                                     callbackUrl).getRequestUrl();
 		if (requestTokenUrl != null)
 		{
-			Environment.logger.debug(requestTokenUrl.toExternalForm());
+			Environment.logger.debug(requestTokenUrl);
 			SessionBean sessionBean = (SessionBean) Utils.getManagedBean("sessionBean");
 			sessionBean.addAwaitingAuthenticationConnectors((ServiceConnector) connector);
 			try
 			{
-				Utils.getExternalContext().redirect(requestTokenUrl.toExternalForm());
+				Utils.getExternalContext().redirect(requestTokenUrl);
 			}
 			catch (IOException e)
 			{
@@ -113,7 +112,9 @@ public class ServicesBean
 		Engine engine = Utils.getEngine();
 		IWPrincipal principal = Utils.getPrincipalBean().getPrincipal();
 		Environment.logger.debug("current user: " + principal.getName());
-		engine.setUserAuthData((ServiceConnector) connector, principal, null);
+		engine.setUserAuthCredentials((ServiceConnector) connector,
+		                              principal,
+		                              null);
 		return null;
 	}
 	

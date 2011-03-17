@@ -37,7 +37,7 @@ public class RegisterServicesBean
 		StringBuilder sb = new StringBuilder();
 		for (ServiceConnector connector : connectors)
 		{
-			sb.append(connector.supportOAuth()
+			sb.append(connector.requestRegistrationData()
 			    ? "show," : "hide,");
 		}
 		return sb.toString();
@@ -62,9 +62,9 @@ public class RegisterServicesBean
 		try
 		{
 			Engine engine = Utils.getEngine();
-			AuthData authData = new AuthData(key, secret);
-			Environment.logger.debug("registering " + authData);
-			engine.setConsumerAuthData(connector, authData);
+			AuthCredentials authCredentials = new AuthCredentials(key, secret);
+			Environment.logger.debug("registering " + authCredentials);
+			engine.setConsumerAuthCredentials(connector, authCredentials);
 		}
 		catch (Exception e)
 		{
@@ -92,7 +92,7 @@ public class RegisterServicesBean
 		{
 			Environment.logger.debug("unregistering");
 			Engine engine = Utils.getEngine();
-			engine.setConsumerAuthData(connector, null);
+			engine.setConsumerAuthCredentials(connector, null);
 		}
 		catch (Exception e)
 		{

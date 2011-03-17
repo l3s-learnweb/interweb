@@ -29,14 +29,14 @@
 						style="font-size: 0.8em; color:#0E774A;">
 						<h:outputLabel value="Key:" style="margin-right:5px" />
 						<h:outputLabel
-							value="#{connector.consumerAuthData.key}"
+							value="#{connector.consumerAuthCredentials.key}"
 							rendered="#{registerServicesBean.isRegistered(connector)}" />
 						<h:inputText id="key" label="key" required="true"
 							value="#{registerServicesBean.key}"
 							rendered="#{!registerServicesBean.isRegistered(connector)}" style="margin-bottom:5px" />
 						<h:outputLabel value="Secret:" style="margin-right:5px" />
 						<h:outputLabel
-							value="#{connector.consumerAuthData.secret}"
+							value="#{connector.consumerAuthCredentials.secret}"
 							rendered="#{registerServicesBean.isRegistered(connector)}" />
 						<h:inputText id="secret" label="secret" required="true"
 							value="#{registerServicesBean.secret}"
