@@ -39,6 +39,10 @@ a:hover,a:active {
 	border-bottom: 1px dotted #993333;
 }
 
+a#search_result {
+	border-bottom: 0px !important;
+}
+
 /* Html Elements */
 h1,h2,h3,h4,h5,h6 {
 	font-weight: normal;

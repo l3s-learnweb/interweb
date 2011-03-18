@@ -5,12 +5,15 @@
   id="InterWebJ" version="2.5"
 >
   <display-name>InterWebJ</display-name>
+  
   <session-config>
     <session-timeout>30</session-timeout>
   </session-config>
+  
   <welcome-file-list>
     <welcome-file>index.xhtml</welcome-file>
   </welcome-file-list>
+  
   <servlet>
     <servlet-name>InterWebJ Faces Servlet</servlet-name>
     <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -20,6 +23,7 @@
     <servlet-name>InterWebJ Faces Servlet</servlet-name>
     <url-pattern>/view/*</url-pattern>
   </servlet-mapping>
+  
   <filter>
     <filter-name>PrimeFaces FileUpload Filter</filter-name>
     <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
@@ -36,6 +40,17 @@
     <filter-name>PrimeFaces FileUpload Filter</filter-name>
     <servlet-name>InterWebJ Faces Servlet</servlet-name>
   </filter-mapping>
+  
+  <filter>
+    <display-name>EncodingFilter</display-name>
+    <filter-name>EncodingFilter</filter-name>
+    <filter-class>de.l3s.interwebj.servlet.filter.EncodingFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>EncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
   <filter>
     <display-name>DisableUrlSessionFilter</display-name>
     <filter-name>DisableUrlSessionFilter</filter-name>
@@ -45,6 +60,7 @@
     <filter-name>DisableUrlSessionFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  
   <filter>
     <display-name>SecurityFilter</display-name>
     <filter-name>SecurityFilter</filter-name>
@@ -54,6 +70,7 @@
     <filter-name>SecurityFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  
   <servlet>
     <description></description>
     <display-name>callback</display-name>
@@ -64,6 +81,7 @@
     <servlet-name>callback</servlet-name>
     <url-pattern>/callback</url-pattern>
   </servlet-mapping>
+  
   <servlet>
     <description></description>
     <display-name>register</display-name>
@@ -74,6 +92,7 @@
     <servlet-name>register</servlet-name>
     <url-pattern>/register</url-pattern>
   </servlet-mapping>
+  
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>Public resource</web-resource-name>
@@ -86,6 +105,7 @@
       <transport-guarantee>NONE</transport-guarantee>
     </user-data-constraint>
   </security-constraint>
+  
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>Secured resource</web-resource-name>
@@ -95,19 +115,23 @@
       <transport-guarantee>NONE</transport-guarantee>
     </user-data-constraint>
   </security-constraint>
+  
   <context-param>
     <description>State saving method: 'client' or 'server' (=default). See JSF Specification 2.5.2</description>
     <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
     <param-value>server</param-value>
   </context-param>
+  
   <context-param>
     <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
     <param-value>resources.application</param-value>
   </context-param>
+  
   <context-param>
     <param-name>primefaces.skin</param-name>
     <param-value>none</param-value>
   </context-param>
+  
   <servlet>
     <servlet-name>Resource Servlet</servlet-name>
     <servlet-class>org.primefaces.resource.ResourceServlet</servlet-class>

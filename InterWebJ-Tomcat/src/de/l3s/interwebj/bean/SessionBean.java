@@ -21,7 +21,7 @@ public class SessionBean
 	@NotNull
 	private List<String> selectedContentTypes;
 	private List<String> selectedConnectors;
-	private Set<ServiceConnector> awaitingAuthenticationConnectors;
+	private Map<ServiceConnector, Parameters> pendingAuthorizationConnectors;
 	private String savedRequestUrl;
 	
 
@@ -40,13 +40,14 @@ public class SessionBean
 				selectedConnectors.add(connector.getName());
 			}
 		}
-		awaitingAuthenticationConnectors = new HashSet<ServiceConnector>();
+		pendingAuthorizationConnectors = new HashMap<ServiceConnector, Parameters>();
 	}
 	
 
-	public void addAwaitingAuthenticationConnectors(ServiceConnector connector)
+	public void addPendingAuthorizationConnector(ServiceConnector connector,
+	                                             Parameters params)
 	{
-		awaitingAuthenticationConnectors.add(connector);
+		pendingAuthorizationConnectors.put(connector, params);
 	}
 	
 
@@ -71,11 +72,14 @@ public class SessionBean
 	public void processAuthenticationCallback(Map<String, String[]> params)
 	    throws InterWebException
 	{
-		for (ServiceConnector connector : awaitingAuthenticationConnectors)
+		for (ServiceConnector connector : pendingAuthorizationConnectors.keySet())
 		{
-			AuthCredentials authCredentials = connector.completeAuthentication(params);
+			Parameters parameters = pendingAuthorizationConnectors.get(connector);
+			parameters.add(params);
+			AuthCredentials authCredentials = connector.completeAuthentication(parameters);
 			if (authCredentials != null)
 			{
+				pendingAuthorizationConnectors.remove(connector);
 				Environment.logger.debug(connector.getName() + " authenticated");
 				Engine engine = Utils.getEngine();
 				IWPrincipal principal = Utils.getPrincipalBean().getPrincipal();

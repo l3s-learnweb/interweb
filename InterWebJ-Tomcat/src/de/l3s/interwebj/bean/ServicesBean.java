@@ -7,6 +7,7 @@ import java.util.*;
 import javax.faces.bean.*;
 import javax.faces.model.*;
 
+import de.l3s.interwebj.*;
 import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.connector.ServiceConnector.PermissionLevel;
 import de.l3s.interwebj.core.*;
@@ -39,16 +40,18 @@ public class ServicesBean
 		Environment.logger.debug("requested permission level fetched: "
 		                         + permissionLevel.getName());
 		String callbackUrl = Utils.getInterWebJBean().getBaseUrl() + "callback";
-		String requestTokenUrl = ((ServiceConnector) connector).authenticate(permissionLevel,
-		                                                                     callbackUrl).getRequestUrl();
-		if (requestTokenUrl != null)
+		Parameters params = ((ServiceConnector) connector).authenticate(permissionLevel,
+		                                                                callbackUrl);
+		String oauthAuthorizationUrl = params.get(Parameters.OAUTH_AUTHORIZATION_URL);
+		if (oauthAuthorizationUrl != null)
 		{
-			Environment.logger.debug(requestTokenUrl);
+			Environment.logger.debug(oauthAuthorizationUrl);
 			SessionBean sessionBean = (SessionBean) Utils.getManagedBean("sessionBean");
-			sessionBean.addAwaitingAuthenticationConnectors((ServiceConnector) connector);
+			sessionBean.addPendingAuthorizationConnector((ServiceConnector) connector,
+			                                             params);
 			try
 			{
-				Utils.getExternalContext().redirect(requestTokenUrl);
+				Utils.getExternalContext().redirect(oauthAuthorizationUrl);
 			}
 			catch (IOException e)
 			{
