@@ -1,20 +1,20 @@
 package de.l3s.interwebj;
 
 
-public class AuthData
+public class AuthCredentials
 {
 	
 	private String key;
 	private String secret;
 	
 
-	public AuthData(String key)
+	public AuthCredentials(String key)
 	{
 		this(key, null);
 	}
 	
 
-	public AuthData(String key, String secret)
+	public AuthCredentials(String key, String secret)
 	{
 		if (key == null)
 		{
@@ -41,7 +41,7 @@ public class AuthData
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder();
-		builder.append("AuthData [");
+		builder.append("AuthCredentials [");
 		if (key != null)
 		{
 			builder.append("key=");

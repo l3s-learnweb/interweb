@@ -16,12 +16,6 @@ public class Query
 	private Map<String, String> params;
 	
 
-	public Query(String query)
-	{
-		this(query, null, null);
-	}
-	
-
 	public Query(String query, List<String> contentTypes)
 	{
 		// TODO: get default parameters

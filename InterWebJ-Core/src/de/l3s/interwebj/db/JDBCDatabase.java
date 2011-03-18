@@ -285,7 +285,7 @@ public class JDBCDatabase
 	}
 	
 
-	private boolean hasUserAuthData(String provider, String userName)
+	private boolean hasUserAuthCredentials(String provider, String userName)
 	    throws SQLException
 	{
 		boolean exists = false;
@@ -387,7 +387,8 @@ public class JDBCDatabase
 	
 
 	@Override
-	public AuthData readConsumerAuthData(String provider, String consumer)
+	public AuthCredentials readConsumerAuthCredentials(String provider,
+	                                                   String consumer)
 	{
 		if (provider == null)
 		{
@@ -397,7 +398,7 @@ public class JDBCDatabase
 		{
 			throw new NullPointerException("Argument [consumer] can not be null");
 		}
-		AuthData consumerAuthData = null;
+		AuthCredentials consumerAuthCredentials = null;
 		try
 		{
 			String key;
@@ -414,7 +415,7 @@ public class JDBCDatabase
 				secret = rs.getString(2);
 				if (key != null)
 				{
-					consumerAuthData = new AuthData(key, secret);
+					consumerAuthCredentials = new AuthCredentials(key, secret);
 				}
 			}
 			silentCloseResultSet(rs);
@@ -425,12 +426,13 @@ public class JDBCDatabase
 			logger.error(e.getMessage());
 			close();
 		}
-		return consumerAuthData;
+		return consumerAuthCredentials;
 	}
 	
 
 	@Override
-	public AuthData readUserAuthData(String provider, String userName)
+	public AuthCredentials readUserAuthCredentials(String provider,
+	                                               String userName)
 	{
 		if (provider == null)
 		{
@@ -440,7 +442,7 @@ public class JDBCDatabase
 		{
 			throw new NullPointerException("Argument [userName] can not be null");
 		}
-		AuthData authData = null;
+		AuthCredentials authCredentials = null;
 		try
 		{
 			String key;
@@ -457,7 +459,7 @@ public class JDBCDatabase
 				secret = rs.getString(2);
 				if (key != null)
 				{
-					authData = new AuthData(key, secret);
+					authCredentials = new AuthCredentials(key, secret);
 				}
 			}
 			silentCloseResultSet(rs);
@@ -468,12 +470,14 @@ public class JDBCDatabase
 			logger.error(e.getMessage());
 			close();
 		}
-		return authData;
+		return authCredentials;
 	}
 	
 
 	@Override
-	public void saveConsumer(String provider, String consumer, AuthData authData)
+	public void saveConsumer(String provider,
+	                         String consumer,
+	                         AuthCredentials authCredentials)
 	{
 		if (provider == null)
 		{
@@ -495,21 +499,21 @@ public class JDBCDatabase
 				           + provider + "' AND consumer='" + consumer + "'";
 				Environment.logger.debug("sql query: " + sqlQuery);
 				pstmt = dbConnection.prepareStatement(sqlQuery);
-				if (authData == null)
+				if (authCredentials == null)
 				{
 					pstmt.setNull(1, java.sql.Types.VARCHAR);
 					pstmt.setNull(2, java.sql.Types.VARCHAR);
 				}
 				else
 				{
-					pstmt.setString(1, authData.getKey());
-					if (authData.getSecret() == null)
+					pstmt.setString(1, authCredentials.getKey());
+					if (authCredentials.getSecret() == null)
 					{
 						pstmt.setNull(2, java.sql.Types.VARCHAR);
 					}
 					else
 					{
-						pstmt.setString(2, authData.getSecret());
+						pstmt.setString(2, authCredentials.getSecret());
 					}
 				}
 			}
@@ -520,22 +524,22 @@ public class JDBCDatabase
 				pstmt = dbConnection.prepareStatement(sqlQuery);
 				pstmt.setString(1, provider);
 				pstmt.setString(2, consumer);
-				if (authData.getKey() == null)
+				if (authCredentials.getKey() == null)
 				{
 					Environment.logger.info("consumer key is null");
 					pstmt.setNull(3, java.sql.Types.VARCHAR);
 				}
 				else
 				{
-					pstmt.setString(3, authData.getKey());
+					pstmt.setString(3, authCredentials.getKey());
 				}
-				if (authData.getSecret() == null)
+				if (authCredentials.getSecret() == null)
 				{
 					pstmt.setNull(4, java.sql.Types.VARCHAR);
 				}
 				else
 				{
-					pstmt.setString(4, authData.getSecret());
+					pstmt.setString(4, authCredentials.getSecret());
 				}
 			}
 			pstmt.executeUpdate();
@@ -622,9 +626,9 @@ public class JDBCDatabase
 	
 
 	@Override
-	public void saveUserAuthData(String provider,
-	                             String userName,
-	                             AuthData authData)
+	public void saveUserAuthCredentials(String provider,
+	                                    String userName,
+	                                    AuthCredentials authCredentials)
 	{
 		if (provider == null)
 		{
@@ -636,7 +640,7 @@ public class JDBCDatabase
 		}
 		try
 		{
-			boolean exists = hasUserAuthData(provider, userName);
+			boolean exists = hasUserAuthCredentials(provider, userName);
 			openConnection();
 			PreparedStatement pstmt = null;
 			String sqlQuery = null;
@@ -646,21 +650,21 @@ public class JDBCDatabase
 				           + provider + "' AND user='" + userName + "'";
 				Environment.logger.debug("sql query: " + sqlQuery);
 				pstmt = dbConnection.prepareStatement(sqlQuery);
-				if (authData == null)
+				if (authCredentials == null)
 				{
 					pstmt.setNull(1, java.sql.Types.VARCHAR);
 					pstmt.setNull(2, java.sql.Types.VARCHAR);
 				}
 				else
 				{
-					pstmt.setString(1, authData.getKey());
-					if (authData.getSecret() == null)
+					pstmt.setString(1, authCredentials.getKey());
+					if (authCredentials.getSecret() == null)
 					{
 						pstmt.setNull(2, java.sql.Types.VARCHAR);
 					}
 					else
 					{
-						pstmt.setString(2, authData.getSecret());
+						pstmt.setString(2, authCredentials.getSecret());
 					}
 				}
 			}
@@ -671,22 +675,22 @@ public class JDBCDatabase
 				pstmt = dbConnection.prepareStatement(sqlQuery);
 				pstmt.setString(1, provider);
 				pstmt.setString(2, userName);
-				if (authData.getKey() == null)
+				if (authCredentials.getKey() == null)
 				{
 					Environment.logger.info("consumer key is null");
 					pstmt.setNull(3, java.sql.Types.VARCHAR);
 				}
 				else
 				{
-					pstmt.setString(3, authData.getKey());
+					pstmt.setString(3, authCredentials.getKey());
 				}
-				if (authData.getSecret() == null)
+				if (authCredentials.getSecret() == null)
 				{
 					pstmt.setNull(4, java.sql.Types.VARCHAR);
 				}
 				else
 				{
-					pstmt.setString(4, authData.getSecret());
+					pstmt.setString(4, authCredentials.getSecret());
 				}
 			}
 			pstmt.executeUpdate();

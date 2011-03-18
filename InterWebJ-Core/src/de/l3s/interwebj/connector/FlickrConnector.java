@@ -18,7 +18,6 @@ import com.aetrion.flickr.uploader.*;
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.db.*;
-import de.l3s.interwebj.oauth.*;
 import de.l3s.interwebj.query.*;
 
 
@@ -31,18 +30,18 @@ public class FlickrConnector
 	private static final String MEDIA_VIDEOS = "videos";
 	
 
-	public FlickrConnector(AuthData consumerAuthData)
+	public FlickrConnector(AuthCredentials consumerAuthCredentials)
 	    throws InterWebException
 	{
 		super("flickr", "http://www.flickr.com");
-		setConsumerAuthData(consumerAuthData);
+		setConsumerAuthCredentials(consumerAuthCredentials);
 		init();
 	}
 	
 
 	@Override
-	public OAuthParams authenticate(PermissionLevel permissionLevel,
-	                                String callbackUrl)
+	public Parameters authenticate(PermissionLevel permissionLevel,
+	                               String callbackUrl)
 	    throws InterWebException
 	{
 		if (permissionLevel == null)
@@ -53,7 +52,7 @@ public class FlickrConnector
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
-		OAuthParams oAuthParams = new OAuthParams();
+		Parameters params = new Parameters();
 		try
 		{
 			Flickr flickr = getFlickrInstance();
@@ -62,47 +61,39 @@ public class FlickrConnector
 			Permission permission = Permission.fromString(permissionLevel.getName());
 			URL requestTokenUrl = authInterface.buildAuthenticationUrl(permission,
 			                                                           authId);
-			oAuthParams.setRequestUrl(requestTokenUrl);
+			params.add("oauth_authorization_url",
+			           requestTokenUrl.toExternalForm());
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			throw new InterWebException(e);
 		}
-		return oAuthParams;
+		return params;
 	}
 	
 
 	@Override
-	public AuthData completeAuthentication(Map<String, String[]> params)
+	public AuthCredentials completeAuthentication(Parameters params)
 	    throws InterWebException
 	{
 		if (params == null)
 		{
 			throw new NullPointerException("Argument [params] can not be null");
 		}
-		AuthData authData = null;
+		AuthCredentials authCredentials = null;
 		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
 		try
 		{
-			String[] values = params.get("frob");
-			if (values == null || values.length == 0)
-			{
-				return null;
-			}
-			if (values.length > 1)
-			{
-				Environment.logger.warn("More than one parameter values for \"frob\" key found");
-			}
-			String frob = values[0];
+			String frob = params.get("frob");
 			Flickr flickr = getFlickrInstance();
 			Environment.logger.info("request token frob: " + frob);
 			AuthInterface authInterface = flickr.getAuthInterface();
 			Auth auth = authInterface.getToken(frob);
-			authData = new AuthData(auth.getToken());
+			authCredentials = new AuthCredentials(auth.getToken());
 			Environment.logger.debug("Username: "
 			                         + auth.getUser().getUsername());
 			Environment.logger.debug("Realname: "
@@ -116,12 +107,12 @@ public class FlickrConnector
 			e.printStackTrace();
 			throw new InterWebException(e);
 		}
-		return authData;
+		return authCredentials;
 	}
 	
 
 	@Override
-	public QueryResult get(Query query, AuthData authData)
+	public QueryResult get(Query query, AuthCredentials authCredentials)
 	    throws InterWebException
 	{
 		if (query == null)
@@ -211,10 +202,10 @@ public class FlickrConnector
 		}
 		try
 		{
-			AuthData consumerAuthData = getConsumerAuthData();
+			AuthCredentials consumerAuthCredentials = getConsumerAuthCredentials();
 			URL baseUrl = new URL(getBaseUrl());
-			return new Flickr(consumerAuthData.getKey(),
-			                  consumerAuthData.getSecret(),
+			return new Flickr(consumerAuthCredentials.getKey(),
+			                  consumerAuthCredentials.getSecret(),
 			                  new REST(baseUrl.getHost()));
 		}
 		catch (ParserConfigurationException e)
@@ -261,7 +252,9 @@ public class FlickrConnector
 	
 
 	@Override
-	public void put(byte[] data, Map<String, String> params, AuthData authData)
+	public void put(byte[] data,
+	                Parameters params,
+	                AuthCredentials authCredentials)
 	    throws InterWebException
 	{
 		if (data == null)
@@ -276,7 +269,7 @@ public class FlickrConnector
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
-		if (authData == null)
+		if (authCredentials == null)
 		{
 			throw new InterWebException("Upload is forbidden for non-authorized users");
 		}
@@ -285,7 +278,7 @@ public class FlickrConnector
 			RequestContext requestContext = RequestContext.getRequestContext();
 			Auth auth = new Auth();
 			requestContext.setAuth(auth);
-			auth.setToken(authData.getKey());
+			auth.setToken(authCredentials.getKey());
 			auth.setPermission(Permission.WRITE);
 			Flickr flickr = getFlickrInstance();
 			Uploader uploader = flickr.getUploader();
@@ -318,16 +311,16 @@ public class FlickrConnector
 	}
 	
 
-	private boolean supportContentTypes(List<String> contentTypes)
+	@Override
+	public boolean requestRegistrationData()
 	{
-		return contentTypes.contains("image") || contentTypes.contains("video");
+		return true;
 	}
 	
 
-	@Override
-	public boolean supportOAuth()
+	private boolean supportContentTypes(List<String> contentTypes)
 	{
-		return true;
+		return contentTypes.contains("image") || contentTypes.contains("video");
 	}
 	
 
@@ -339,10 +332,11 @@ public class FlickrConnector
 			URL configUrl = new File("./config/config.xml").toURI().toURL();
 			Environment environment = Environment.getInstance(configUrl);
 			Database database = environment.getDatabase();
-			AuthData consumerAuthData = database.readConsumerAuthData("flickr",
-			                                                          "interwebj");
-			FlickrConnector connector = new FlickrConnector(consumerAuthData);
-			AuthData userAuthData = database.readUserAuthData("flickr", "olex");
+			AuthCredentials consumerAuthCredentials = database.readConsumerAuthCredentials("flickr",
+			                                                                               "interwebj");
+			FlickrConnector connector = new FlickrConnector(consumerAuthCredentials);
+			AuthCredentials userAuthCredentials = database.readUserAuthCredentials("flickr",
+			                                                                       "olex");
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			int i;
 			byte[] buffer = new byte[1024];
@@ -355,10 +349,10 @@ public class FlickrConnector
 			byte data[] = out.toByteArray();
 			out.close();
 			is.close();
-			Map<String, String> params = new HashMap<String, String>();
-			params.put("title", "L3S Logo");
-			params.put("description", "The L3S Logo");
-			connector.put(data, params, userAuthData);
+			Parameters params = new Parameters();
+			params.add("title", "L3S Logo");
+			params.add("description", "The L3S Logo");
+			connector.put(data, params, userAuthCredentials);
 			Environment.logger.info("file sent successfully");
 		}
 		catch (Exception e)

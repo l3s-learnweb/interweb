@@ -5,7 +5,6 @@ import java.util.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.oauth.*;
 import de.l3s.interwebj.query.*;
 
 
@@ -14,20 +13,44 @@ public abstract class ServiceConnector
 	
 	public enum PermissionLevel
 	{
-		NONE("none"), READ("read"), WRITE("write"), DELETE("delete");
+		NONE("none", 0), READ("read", 1), WRITE("write", 2),
+		DELETE("delete", 3);
 		
 		private String name;
+		private int code;
 		
 
-		PermissionLevel(String name)
+		PermissionLevel(String name, int code)
 		{
 			this.name = name;
+			this.code = code;
+		}
+		
+
+		public int getCode()
+		{
+			return code;
 		}
 		
 
 		public String getName()
 		{
 			return name;
+		}
+		
+
+		public static PermissionLevel getPermissionLevel(int code)
+		{
+			switch (code)
+			{
+				case 1:
+					return READ;
+				case 2:
+					return WRITE;
+				case 3:
+					return DELETE;
+			}
+			return NONE;
 		}
 		
 
@@ -53,7 +76,7 @@ public abstract class ServiceConnector
 
 	private String name;
 	private String baseUrl;
-	private AuthData consumerAuthData;
+	private AuthCredentials consumerAuthCredentials;
 	private Set<String> contentTypes;
 	
 
@@ -65,16 +88,47 @@ public abstract class ServiceConnector
 	}
 	
 
-	public abstract OAuthParams authenticate(PermissionLevel permissionLevel,
-	                                         String callbackUrl)
+	public abstract Parameters authenticate(PermissionLevel permissionLevel,
+	                                        String callbackUrl)
 	    throws InterWebException;
 	
 
-	public abstract AuthData completeAuthentication(Map<String, String[]> params)
+	public abstract AuthCredentials completeAuthentication(Parameters params)
 	    throws InterWebException;
 	
 
-	public abstract QueryResult get(Query query, AuthData authData)
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+		if (obj == null)
+		{
+			return false;
+		}
+		if (getClass() != obj.getClass())
+		{
+			return false;
+		}
+		ServiceConnector other = (ServiceConnector) obj;
+		if (name == null)
+		{
+			if (other.name != null)
+			{
+				return false;
+			}
+		}
+		else if (!name.equals(other.name))
+		{
+			return false;
+		}
+		return true;
+	}
+	
+
+	public abstract QueryResult get(Query query, AuthCredentials authCredentials)
 	    throws InterWebException;
 	
 
@@ -84,9 +138,9 @@ public abstract class ServiceConnector
 	}
 	
 
-	public AuthData getConsumerAuthData()
+	public AuthCredentials getConsumerAuthCredentials()
 	{
-		return consumerAuthData;
+		return consumerAuthCredentials;
 	}
 	
 
@@ -102,24 +156,38 @@ public abstract class ServiceConnector
 	}
 	
 
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null)
+		    ? 0 : name.hashCode());
+		return result;
+	}
+	
+
 	protected abstract void init();
 	
 
 	public boolean isRegistered()
 	{
-		return consumerAuthData != null;
+		return consumerAuthCredentials != null;
 	}
 	
 
 	public abstract void put(byte[] data,
-	                         Map<String, String> params,
-	                         AuthData authData)
+	                         Parameters params,
+	                         AuthCredentials authCredentials)
 	    throws InterWebException;
 	
 
-	public void setConsumerAuthData(AuthData consumerAuthData)
+	public abstract boolean requestRegistrationData();
+	
+
+	public void setConsumerAuthCredentials(AuthCredentials consumerAuthCredentials)
 	{
-		this.consumerAuthData = consumerAuthData;
+		this.consumerAuthCredentials = consumerAuthCredentials;
 	}
 	
 
@@ -127,8 +195,5 @@ public abstract class ServiceConnector
 	{
 		this.contentTypes = contentTypes;
 	}
-	
-
-	public abstract boolean supportOAuth();
 	
 }

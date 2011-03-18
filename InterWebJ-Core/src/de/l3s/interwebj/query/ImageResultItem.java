@@ -17,7 +17,7 @@ public class ImageResultItem
 		StringBuilder sb = new StringBuilder();
 		sb.append("<a href=\"");
 		sb.append(getUrl());
-		sb.append("\" target=\"_blank\"><img src=\"");
+		sb.append("\" target=\"_blank\" class=\"search_result\"><img src=\"");
 		sb.append(getPreviewUrl());
 		sb.append("\" /></a>");
 		return sb.toString();

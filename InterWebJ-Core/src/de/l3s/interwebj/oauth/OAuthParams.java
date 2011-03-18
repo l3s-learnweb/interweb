@@ -1,48 +1,45 @@
 package de.l3s.interwebj.oauth;
 
 
-import java.net.*;
-
-
 public class OAuthParams
 {
 	
-	private URL requestUrl;
-	private String oauth_token;
-	private String oauth_token_secret;
+	private String requestUrl;
+	private String oauthToken;
+	private String oauthTokenSecret;
 	
 
-	public String getOauth_token()
+	public String getOauthToken()
 	{
-		return oauth_token;
+		return oauthToken;
 	}
 	
 
-	public String getOauth_token_secret()
+	public String getOauthTokenSecret()
 	{
-		return oauth_token_secret;
+		return oauthTokenSecret;
 	}
 	
 
-	public URL getRequestUrl()
+	public String getRequestUrl()
 	{
 		return requestUrl;
 	}
 	
 
-	public void setOauth_token(String oauth_token)
+	public void setOauthToken(String oauthToken)
 	{
-		this.oauth_token = oauth_token;
+		this.oauthToken = oauthToken;
 	}
 	
 
-	public void setOauth_token_secret(String oauth_token_secret)
+	public void setOauthTokenSecret(String oauthTokenSecret)
 	{
-		this.oauth_token_secret = oauth_token_secret;
+		this.oauthTokenSecret = oauthTokenSecret;
 	}
 	
 
-	public void setRequestUrl(URL requestUrl)
+	public void setRequestUrl(String requestUrl)
 	{
 		this.requestUrl = requestUrl;
 	}

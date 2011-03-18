@@ -20,13 +20,17 @@ public interface Database
 	public boolean hasUser(String username);
 	
 
-	public AuthData readConsumerAuthData(String provider, String consumer);
+	public AuthCredentials readConsumerAuthCredentials(String provider,
+	                                                   String consumer);
 	
 
-	public AuthData readUserAuthData(String provider, String userName);
+	public AuthCredentials readUserAuthCredentials(String provider,
+	                                               String userName);
 	
 
-	public void saveConsumer(String provider, String consumer, AuthData authData);
+	public void saveConsumer(String provider,
+	                         String consumer,
+	                         AuthCredentials authCredentials);
 	
 
 	public boolean savePrincipal(IWPrincipal principal, String password);
@@ -35,8 +39,8 @@ public interface Database
 	public boolean saveRole(String role);
 	
 
-	public void saveUserAuthData(String provider,
-	                             String userName,
-	                             AuthData authData);
+	public void saveUserAuthCredentials(String provider,
+	                                    String userName,
+	                                    AuthCredentials authCredentials);
 	
 }

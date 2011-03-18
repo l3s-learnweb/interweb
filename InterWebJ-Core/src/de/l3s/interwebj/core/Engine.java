@@ -27,8 +27,8 @@ public class Engine
 
 	private void addConnector(ServiceConnector connector)
 	{
-		AuthData authData = getConsumerAuthData(connector);
-		connector.setConsumerAuthData(authData);
+		AuthCredentials authCredentials = getConsumerAuthCredentials(connector);
+		connector.setConsumerAuthCredentials(authCredentials);
 		contentTypes.addAll(connector.getContentTypes());
 		connectors.put(connector.getName(), connector);
 	}
@@ -52,10 +52,10 @@ public class Engine
 	}
 	
 
-	public AuthData getConsumerAuthData(ServiceConnector connector)
+	public AuthCredentials getConsumerAuthCredentials(ServiceConnector connector)
 	{
-		return database.readConsumerAuthData(connector.getName(),
-		                                     Environment.INTERWEBJ_SERVICE_NAME);
+		return database.readConsumerAuthCredentials(connector.getName(),
+		                                            Environment.INTERWEBJ_SERVICE_NAME);
 	}
 	
 
@@ -65,11 +65,11 @@ public class Engine
 	}
 	
 
-	public AuthData getUserAuthData(ServiceConnector connector,
-	                                IWPrincipal principal)
+	public AuthCredentials getUserAuthCredentials(ServiceConnector connector,
+	                                              IWPrincipal principal)
 	{
-		return database.readUserAuthData(connector.getName(),
-		                                 principal.getName());
+		return database.readUserAuthCredentials(connector.getName(),
+		                                        principal.getName());
 	}
 	
 
@@ -85,7 +85,7 @@ public class Engine
 	public boolean isUserAuthenticated(ServiceConnector connector,
 	                                   IWPrincipal principal)
 	{
-		return getUserAuthData(connector, principal) != null;
+		return getUserAuthCredentials(connector, principal) != null;
 	}
 	
 
@@ -111,10 +111,11 @@ public class Engine
 			if (connector.isRegistered()
 			    && isUserAuthenticated(connector, principal))
 			{
-				AuthData authData = getUserAuthData(connector, principal);
+				AuthCredentials authCredentials = getUserAuthCredentials(connector,
+				                                                         principal);
 				Environment.logger.debug("Connector: " + connector.getName()
-				                         + " " + authData);
-				queryResult.addQueryResult(connector.get(query, authData));
+				                         + " " + authCredentials);
+				queryResult.addQueryResult(connector.get(query, authCredentials));
 			}
 			else
 			{
@@ -132,23 +133,23 @@ public class Engine
 	}
 	
 
-	public void setConsumerAuthData(ServiceConnector connector,
-	                                AuthData consumerAuthData)
+	public void setConsumerAuthCredentials(ServiceConnector connector,
+	                                       AuthCredentials consumerAuthCredentials)
 	{
 		database.saveConsumer(connector.getName(),
 		                      Environment.INTERWEBJ_SERVICE_NAME,
-		                      consumerAuthData);
-		connector.setConsumerAuthData(consumerAuthData);
+		                      consumerAuthCredentials);
+		connector.setConsumerAuthCredentials(consumerAuthCredentials);
 	}
 	
 
-	public void setUserAuthData(ServiceConnector connector,
-	                            IWPrincipal principal,
-	                            AuthData consumerAuthData)
+	public void setUserAuthCredentials(ServiceConnector connector,
+	                                   IWPrincipal principal,
+	                                   AuthCredentials consumerAuthCredentials)
 	{
-		database.saveUserAuthData(connector.getName(),
-		                          principal.getName(),
-		                          consumerAuthData);
+		database.saveUserAuthCredentials(connector.getName(),
+		                                 principal.getName(),
+		                                 consumerAuthCredentials);
 	}
 	
 
