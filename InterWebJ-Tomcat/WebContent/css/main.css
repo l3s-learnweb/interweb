@@ -19,6 +19,10 @@ tr.hide {
 	color: #ff0000;
 }
 
+.top {
+	vertical-align: top;
+}
+
 /* Links */
 a {
 	border-bottom: 1px dotted #0077CC;
@@ -39,8 +43,15 @@ a:hover,a:active {
 	border-bottom: 1px dotted #993333;
 }
 
-a#search_result {
-	border-bottom: 0px !important;
+a.search_result {
+	border-bottom: 0px;
+	padding: 0px;
+	margin: 0px;
+}
+
+.search_result img {
+	color: #BBBBBB;
+	border-width: 1px;
 }
 
 /* Html Elements */

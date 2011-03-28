@@ -5,25 +5,43 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:p="http://primefaces.prime.com.tr/ui">
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
 		<h:form enctype="multipart/form-data" prependId="false">
-			<p><p:growl id="messages" showSummary="true" showDetail="true" /></p>
-			<h:panelGrid columns="2">
-				<h:column>
-					<p:fileUpload fileUploadListener="#{uploadBean.fileUpload}"
-						update="messages" sizeLimit="1073741824" multiple="true"
-						label="choose" allowTypes="*.jpg;*.png;*.gif;"
-						description="Images" />
-				</h:column>
-				<h:column style="margin-left: 50px;">
-					<div><h:selectManyCheckbox id="content_types"
-						value="#{uploadBean.selectedConnectors}" layout="pageDirection">
-						<f:selectItems value="#{uploadBean.allConnectors}" />
-					</h:selectManyCheckbox></div>
-				</h:column>
+			<h:panelGrid columns="4" columnClasses="top,top,top">
+				<h:panelGroup id="file_types">
+					<rich:panel>
+						<f:facet name="header">
+							<h:outputText value="File types" />
+						</f:facet>
+						<h:selectOneRadio value="#{uploadBean.selectedContentType}"
+							layout="pageDirection">
+							<f:selectItems value="#{uploadBean.contentTypes}" />
+							<f:ajax event="change" render="connectors" />
+						</h:selectOneRadio>
+					</rich:panel>
+				</h:panelGroup>
+				<h:panelGroup id="connectors">
+					<rich:panel>
+						<f:facet name="header">
+							<h:outputText value="Supported service connectors" />
+						</f:facet>
+						<h:selectManyCheckbox value="#{uploadBean.selectedConnectors}"
+							layout="pageDirection">
+							<f:selectItems value="#{uploadBean.connectors}" />
+							<f:ajax event="change" execute="#{uploadBean.save()}" />
+						</h:selectManyCheckbox>
+					</rich:panel>
+				</h:panelGroup>
+				<h:panelGroup id="file">
+					<rich:fileUpload fileUploadListener="#{uploadBean.listener}"
+						id="upload" addLabel="Select file"
+						oncomplete="#{uploadBean.upload()}">
+					</rich:fileUpload>
+				</h:panelGroup>
 			</h:panelGrid>
 		</h:form>
 	</ui:define>

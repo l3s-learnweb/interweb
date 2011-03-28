@@ -33,26 +33,23 @@
 			<h:panelGrid>
 				<rich:dataScroller for="result_table" maxPages="10" />
 				<rich:dataTable value="#{searchBean.queryResult.resultItems}"
-					var="resultItem" id="result_table" rows="10">
+					var="resultItem" id="result_table" rows="10" style="border-width: 0px;">
 					<rich:column style="vertical-align: top;">
 						<span style="text-align: left; vertical-align: top;">#{searchBean.getResultIndex(resultItem)+1}</span>
 					</rich:column>
-					<rich:column style="vertical-align: top;">
+					<rich:column  style="vertical-align: top;">
 						<img
 							src="#{searchBean.getConnectorBaseUrl(resultItem.connectorName)}/favicon.ico"
 							style="vertical-align: middle; margin: 3px;" />
-							<h:outputText value="#{resultItem.serviceName}" />
 					</rich:column>
 					<rich:column>
 						<div>
-						<h6><img src="/#{interwebj.contextName}/img/#{searchBean.getTypeImageUrl(resultItem.type)}" style="vertical-align: middle; margin: 3px;"/><h:outputLink value="#{resultItem.url}" target="_blank">#{resultItem.title}</h:outputLink></h6>
+						<h6><h:outputLink value="#{resultItem.url}" target="_blank">#{resultItem.title}</h:outputLink></h6>
 						<div><h:outputText value="#{resultItem.asHtml()}"
-							escape="false" />
-						<div><span>#{resultItem.description}</span> <span
-							style="text-align: left; vertical-align: bottom; color: teal; font-size: 0.8em">&nbsp;&nbsp;&nbsp;#{resultItem.date}</span>
+							escape="false" /><br />
+						<span>#{resultItem.description}</span></div>
 						</div>
-						</div>
-						</div>
+						<span style="text-align: left; vertical-align: top;"></span>
 					</rich:column>
 				</rich:dataTable>
 				<rich:dataScroller for="result_table" maxPages="10" />
