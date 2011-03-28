@@ -13,42 +13,25 @@ public abstract class ServiceConnector
 	
 	public enum PermissionLevel
 	{
-		NONE("none", 0), READ("read", 1), WRITE("write", 2),
-		DELETE("delete", 3);
+		NONE, READ, WRITE, DELETE;
 		
-		private String name;
-		private int code;
-		
-
-		PermissionLevel(String name, int code)
-		{
-			this.name = name;
-			this.code = code;
-		}
-		
-
 		public int getCode()
 		{
-			return code;
+			return ordinal();
 		}
 		
 
 		public String getName()
 		{
-			return name;
+			return name().toLowerCase();
 		}
 		
 
 		public static PermissionLevel getPermissionLevel(int code)
 		{
-			switch (code)
+			if (code >= 0 && code < PermissionLevel.values().length)
 			{
-				case 1:
-					return READ;
-				case 2:
-					return WRITE;
-				case 3:
-					return DELETE;
+				return PermissionLevel.values()[code];
 			}
 			return NONE;
 		}
@@ -56,21 +39,15 @@ public abstract class ServiceConnector
 
 		public static PermissionLevel getPermissionLevel(String name)
 		{
-			if ("read".equals(name))
+			try
 			{
-				return READ;
+				return PermissionLevel.valueOf(name.toUpperCase());
 			}
-			else if ("write".equals(name))
+			catch (IllegalArgumentException e)
 			{
-				return WRITE;
+				return NONE;
 			}
-			else if ("delete".equals(name))
-			{
-				return DELETE;
-			}
-			return NONE;
 		}
-		
 	}
 	
 
@@ -91,6 +68,10 @@ public abstract class ServiceConnector
 	public abstract Parameters authenticate(PermissionLevel permissionLevel,
 	                                        String callbackUrl)
 	    throws InterWebException;
+	
+
+	@Override
+	public abstract ServiceConnector clone();
 	
 
 	public abstract AuthCredentials completeAuthentication(Parameters params)
@@ -176,13 +157,14 @@ public abstract class ServiceConnector
 	}
 	
 
+	public abstract boolean isRegistrationRequired();
+	
+
 	public abstract void put(byte[] data,
+	                         String contentType,
 	                         Parameters params,
 	                         AuthCredentials authCredentials)
 	    throws InterWebException;
-	
-
-	public abstract boolean requestRegistrationData();
 	
 
 	public void setConsumerAuthCredentials(AuthCredentials consumerAuthCredentials)
@@ -194,6 +176,12 @@ public abstract class ServiceConnector
 	public void setContentTypes(Set<String> contentTypes)
 	{
 		this.contentTypes = contentTypes;
+	}
+	
+
+	public boolean supportContentType(String contentType)
+	{
+		return (contentType != null) && contentTypes.contains(contentType);
 	}
 	
 }

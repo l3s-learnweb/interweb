@@ -17,8 +17,9 @@ import com.aetrion.flickr.uploader.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.query.Query.SearchScope;
+import de.l3s.interwebj.query.Query.SortOrder;
 
 
 public class FlickrConnector
@@ -31,11 +32,9 @@ public class FlickrConnector
 	
 
 	public FlickrConnector(AuthCredentials consumerAuthCredentials)
-	    throws InterWebException
 	{
 		super("flickr", "http://www.flickr.com");
 		setConsumerAuthCredentials(consumerAuthCredentials);
-		init();
 	}
 	
 
@@ -55,13 +54,13 @@ public class FlickrConnector
 		Parameters params = new Parameters();
 		try
 		{
-			Flickr flickr = getFlickrInstance();
+			Flickr flickr = createFlickrInstance();
 			AuthInterface authInterface = flickr.getAuthInterface();
 			String authId = authInterface.getFrob();
 			Permission permission = Permission.fromString(permissionLevel.getName());
 			URL requestTokenUrl = authInterface.buildAuthenticationUrl(permission,
 			                                                           authId);
-			params.add("oauth_authorization_url",
+			params.add(Parameters.OAUTH_AUTHORIZATION_URL,
 			           requestTokenUrl.toExternalForm());
 		}
 		catch (Exception e)
@@ -70,6 +69,13 @@ public class FlickrConnector
 			throw new InterWebException(e);
 		}
 		return params;
+	}
+	
+
+	@Override
+	public ServiceConnector clone()
+	{
+		return new FlickrConnector(getConsumerAuthCredentials());
 	}
 	
 
@@ -89,7 +95,7 @@ public class FlickrConnector
 		try
 		{
 			String frob = params.get("frob");
-			Flickr flickr = getFlickrInstance();
+			Flickr flickr = createFlickrInstance();
 			Environment.logger.info("request token frob: " + frob);
 			AuthInterface authInterface = flickr.getAuthInterface();
 			Auth auth = authInterface.getToken(frob);
@@ -111,89 +117,7 @@ public class FlickrConnector
 	}
 	
 
-	@Override
-	public QueryResult get(Query query, AuthCredentials authCredentials)
-	    throws InterWebException
-	{
-		if (query == null)
-		{
-			throw new NullPointerException("Argument [query] can not be null");
-		}
-		if (!isRegistered())
-		{
-			throw new InterWebException("Service is not yet registered");
-		}
-		QueryResult queryResult = new QueryResult(query);
-		if (supportContentTypes(query.getContentTypes()))
-		{
-			try
-			{
-				Flickr flickr = getFlickrInstance();
-				PhotosInterface pi = flickr.getPhotosInterface();
-				SearchParameters params = new SearchParameters();
-				params.setText(query.getQuery());
-				params.setMedia(getMedia(query));
-				PhotoList photoList = pi.search(params, 100, 0);
-				Environment.logger.debug("Total " + photoList.getTotal()
-				                         + " result(s) found for query ["
-				                         + query.getQuery() + "]");
-				for (Object o : photoList)
-				{
-					if (o instanceof Photo)
-					{
-						Photo photo = (Photo) o;
-						Environment.logger.debug(photo.getMedia() + " "
-						                         + photo.getMedia() + " ["
-						                         + photo.getId() + "]: "
-						                         + photo.getUrl());
-						ResultItem resultItem = new ImageResultItem(getName());
-						resultItem.setTitle(photo.getTitle());
-						resultItem.setUrl(photo.getUrl());
-						resultItem.setPreviewUrl(photo.getSmallUrl());
-						resultItem.setDescription(photo.getDescription());
-						if (photo.getDateAdded() != null)
-						{
-							Date date = photo.getDateAdded();
-							resultItem.setDate("(added)"
-							                   + DateFormat.getDateInstance(DateFormat.MEDIUM).format(date));
-						}
-						else if (photo.getDatePosted() != null)
-						{
-							Date date = photo.getDatePosted();
-							resultItem.setDate("(posted)"
-							                   + DateFormat.getDateInstance(DateFormat.MEDIUM).format(date));
-						}
-						else if (photo.getDateTaken() != null)
-						{
-							Date date = photo.getDateTaken();
-							resultItem.setDate("(taken)"
-							                   + DateFormat.getDateInstance(DateFormat.MEDIUM).format(date));
-						}
-						queryResult.addResultItem(resultItem);
-					}
-				}
-			}
-			catch (FlickrException e)
-			{
-				e.printStackTrace();
-				throw new InterWebException(e);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-				throw new InterWebException(e);
-			}
-			catch (SAXException e)
-			{
-				e.printStackTrace();
-				throw new InterWebException(e);
-			}
-		}
-		return queryResult;
-	}
-	
-
-	private Flickr getFlickrInstance()
+	private Flickr createFlickrInstance()
 	    throws InterWebException
 	{
 		if (!isRegistered())
@@ -221,22 +145,134 @@ public class FlickrConnector
 	}
 	
 
+	private String[] createTags(String query)
+	{
+		return query.split("[\\W]+");
+	}
+	
+
+	@Override
+	public QueryResult get(Query query, AuthCredentials authCredentials)
+	    throws InterWebException
+	{
+		if (query == null)
+		{
+			throw new NullPointerException("Argument [query] can not be null");
+		}
+		if (!isRegistered())
+		{
+			throw new InterWebException("Service is not yet registered");
+		}
+		QueryResult queryResult = new QueryResult(query);
+		if (supportContentTypes(query.getContentTypes()))
+		{
+			try
+			{
+				Flickr flickr = createFlickrInstance();
+				PhotosInterface pi = flickr.getPhotosInterface();
+				SearchParameters params = new SearchParameters();
+				if (query.getSearchScopes().contains(SearchScope.TEXT))
+				{
+					params.setText(query.getQuery());
+				}
+				if (query.getSearchScopes().contains(SearchScope.TAGS))
+				{
+					String[] tags = createTags(query.getQuery());
+					params.setTags(tags);
+				}
+				params.setMedia(getMedia(query));
+				params.setMinUploadDate(null);
+				params.setMaxUploadDate(null);
+				params.setSort(getSortOrder(query.getSortOrder()));
+				PhotoList photoList = pi.search(params,
+				                                query.getResultCount(),
+				                                0);
+				Environment.logger.debug("Total " + photoList.getTotal()
+				                         + " result(s) found for query ["
+				                         + query.getQuery() + "]");
+				int count = 0;
+				for (Object o : photoList)
+				{
+					if (o instanceof Photo)
+					{
+						Photo photo = (Photo) o;
+						ResultItem resultItem = new ImageResultItem(getName());
+						resultItem.setServiceName(getName());
+						resultItem.setId(photo.getId());
+						resultItem.setType(Query.CT_IMAGE);
+						resultItem.setTitle(photo.getTitle());
+						resultItem.setDescription(photo.getDescription());
+						resultItem.setUrl(photo.getUrl());
+						resultItem.setImageUrl(photo.getSmallUrl());
+						Date date = photo.getDatePosted();
+						if (date != null)
+						{
+							resultItem.setDate(DateFormat.getDateInstance(DateFormat.MEDIUM).format(date));
+						}
+						resultItem.setRank(count++);
+						resultItem.setTotalResultCount(photoList.getTotal());
+						resultItem.setCommentCount(photo.getComments());
+						queryResult.addResultItem(resultItem);
+					}
+				}
+			}
+			catch (FlickrException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+			catch (SAXException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+		}
+		return queryResult;
+	}
+	
+
 	private String getMedia(Query query)
 	{
 		if (query == null)
 		{
 			throw new NullPointerException("Argument [query] can not be null");
 		}
-		if (query.getContentTypes().contains(MEDIA_PHOTOS)
-		    && query.getContentTypes().contains(MEDIA_VIDEOS))
+		String media = null;
+		if (query.getContentTypes().contains(Query.CT_IMAGE)
+		    && query.getContentTypes().contains(Query.CT_VIDEO))
 		{
-			return MEDIA_ALL;
+			media = MEDIA_ALL;
 		}
-		if (query.getContentTypes().contains(MEDIA_PHOTOS))
+		else if (query.getContentTypes().contains(Query.CT_IMAGE))
 		{
-			return MEDIA_PHOTOS;
+			media = MEDIA_PHOTOS;
 		}
-		return MEDIA_VIDEOS;
+		else
+		{
+			media = MEDIA_VIDEOS;
+		}
+		Environment.logger.debug("media type: " + media);
+		return media;
+	}
+	
+
+	private int getSortOrder(SortOrder sortOrder)
+	{
+		switch (sortOrder)
+		{
+			case RELEVANCE:
+				return SearchParameters.RELEVANCE;
+			case DATE:
+				return SearchParameters.DATE_POSTED_DESC;
+			case INTERESTINGNESS:
+				return SearchParameters.INTERESTINGNESS_ASC;
+		}
+		return SearchParameters.RELEVANCE;
 	}
 	
 
@@ -252,7 +288,15 @@ public class FlickrConnector
 	
 
 	@Override
+	public boolean isRegistrationRequired()
+	{
+		return true;
+	}
+	
+
+	@Override
 	public void put(byte[] data,
+	                String contentType,
 	                Parameters params,
 	                AuthCredentials authCredentials)
 	    throws InterWebException
@@ -260,6 +304,10 @@ public class FlickrConnector
 		if (data == null)
 		{
 			throw new NullPointerException("Argument [data] can not be null");
+		}
+		if (contentType == null)
+		{
+			throw new NullPointerException("Argument [contentType] can not be null");
 		}
 		if (params == null)
 		{
@@ -273,91 +321,53 @@ public class FlickrConnector
 		{
 			throw new InterWebException("Upload is forbidden for non-authorized users");
 		}
-		try
+		if (contentType.equals(Query.CT_IMAGE))
 		{
-			RequestContext requestContext = RequestContext.getRequestContext();
-			Auth auth = new Auth();
-			requestContext.setAuth(auth);
-			auth.setToken(authCredentials.getKey());
-			auth.setPermission(Permission.WRITE);
-			Flickr flickr = getFlickrInstance();
-			Uploader uploader = flickr.getUploader();
-			UploadMetaData metaData = new UploadMetaData();
-			if (params.containsKey("title"))
+			try
 			{
-				metaData.setDescription(params.get("title"));
+				RequestContext requestContext = RequestContext.getRequestContext();
+				Auth auth = new Auth();
+				requestContext.setAuth(auth);
+				auth.setToken(authCredentials.getKey());
+				auth.setPermission(Permission.WRITE);
+				Flickr flickr = createFlickrInstance();
+				Uploader uploader = flickr.getUploader();
+				UploadMetaData metaData = new UploadMetaData();
+				if (params.containsKey("title"))
+				{
+					metaData.setDescription(params.get("title", "No title"));
+				}
+				if (params.containsKey("description"))
+				{
+					metaData.setDescription(params.get("description",
+					                                   "No description"));
+				}
+				uploader.upload(data, metaData);
+				Environment.logger.debug("data successfully uploaded");
 			}
-			if (params.containsKey("description"))
+			catch (FlickrException e)
 			{
-				metaData.setDescription(params.get("description"));
+				e.printStackTrace();
+				throw new InterWebException(e);
 			}
-			uploader.upload(data, metaData);
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+			catch (SAXException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+			
 		}
-		catch (FlickrException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (SAXException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-	}
-	
-
-	@Override
-	public boolean requestRegistrationData()
-	{
-		return true;
 	}
 	
 
 	private boolean supportContentTypes(List<String> contentTypes)
 	{
-		return contentTypes.contains("image") || contentTypes.contains("video");
-	}
-	
-
-	public static void main(String[] args)
-	    throws InterWebException
-	{
-		try
-		{
-			URL configUrl = new File("./config/config.xml").toURI().toURL();
-			Environment environment = Environment.getInstance(configUrl);
-			Database database = environment.getDatabase();
-			AuthCredentials consumerAuthCredentials = database.readConsumerAuthCredentials("flickr",
-			                                                                               "interwebj");
-			FlickrConnector connector = new FlickrConnector(consumerAuthCredentials);
-			AuthCredentials userAuthCredentials = database.readUserAuthCredentials("flickr",
-			                                                                       "olex");
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			int i;
-			byte[] buffer = new byte[1024];
-			InputStream is = new FileInputStream("/home/olex/temp/L3S_header_logo.png");
-			while ((i = is.read(buffer)) != -1)
-			{
-				out.write(buffer, 0, i);
-				out.flush();
-			}
-			byte data[] = out.toByteArray();
-			out.close();
-			is.close();
-			Parameters params = new Parameters();
-			params.add("title", "L3S Logo");
-			params.add("description", "The L3S Logo");
-			connector.put(data, params, userAuthCredentials);
-			Environment.logger.info("file sent successfully");
-		}
-		catch (Exception e)
-		{
-			throw new InterWebException(e);
-		}
+		return contentTypes.contains(Query.CT_IMAGE)
+		       || contentTypes.contains(Query.CT_VIDEO);
 	}
 }

@@ -1,14 +1,14 @@
 package de.l3s.interwebj.query;
 
 
-public class ImageResultItem
+public class YouTubeVideoResultItem
     extends ResultItem
 {
 	
-	private static final long serialVersionUID = -2958282961556835071L;
+	private static final long serialVersionUID = -1049898089517241548L;
 	
 
-	public ImageResultItem(String connectorName)
+	public YouTubeVideoResultItem(String connectorName)
 	{
 		super(connectorName);
 	}
@@ -25,4 +25,5 @@ public class ImageResultItem
 		sb.append("\" /></a>");
 		return sb.toString();
 	}
+	
 }

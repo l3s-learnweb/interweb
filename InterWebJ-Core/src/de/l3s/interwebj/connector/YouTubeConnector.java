@@ -3,6 +3,7 @@ package de.l3s.interwebj.connector;
 
 import java.io.*;
 import java.net.*;
+import java.text.*;
 import java.util.*;
 
 import javax.ws.rs.core.*;
@@ -10,6 +11,7 @@ import javax.ws.rs.core.*;
 import com.google.gdata.client.authn.oauth.*;
 import com.google.gdata.client.authn.oauth.OAuthParameters;
 import com.google.gdata.client.youtube.*;
+import com.google.gdata.client.youtube.YouTubeQuery.OrderBy;
 import com.google.gdata.data.*;
 import com.google.gdata.data.media.*;
 import com.google.gdata.data.media.mediarss.*;
@@ -22,6 +24,9 @@ import com.sun.jersey.oauth.signature.*;
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.query.Query.SearchScope;
+import de.l3s.interwebj.query.Query.SortOrder;
+import de.l3s.interwebj.util.*;
 
 
 public class YouTubeConnector
@@ -103,20 +108,17 @@ public class YouTubeConnector
 	}
 	
 
-	private final static String REQUEST_TOKEN_PATH = "https://www.google.com/accounts/OAuthGetRequestToken";
-	private final static String AUTHORIZATION_PATH = "https://www.google.com/accounts/OAuthAuthorizeToken";
-	private final static String ACCESS_TOKEN_PATH = "https://www.google.com/accounts/OAuthGetAccessToken";
-	private final static String CLIENT_ID = "InterWebJ";
-	
-	private final static String DEVELOPER_KEY = "***REMOVED***";
+	private static final String REQUEST_TOKEN_PATH = "https://www.google.com/accounts/OAuthGetRequestToken";
+	private static final String AUTHORIZATION_PATH = "https://www.google.com/accounts/OAuthAuthorizeToken";
+	private static final String ACCESS_TOKEN_PATH = "https://www.google.com/accounts/OAuthGetAccessToken";
+	private static final String CLIENT_ID = "InterWebJ";
+	private static final String DEVELOPER_KEY = "***REMOVED***";
 	
 
 	public YouTubeConnector(AuthCredentials consumerAuthCredentials)
-	    throws InterWebException
 	{
 		super("youtube", "http://www.youtube.com");
 		setConsumerAuthCredentials(consumerAuthCredentials);
-		init();
 	}
 	
 
@@ -146,14 +148,14 @@ public class YouTubeConnector
 		                                                 oauthParams,
 		                                                 oauthSecrets);
 		resource.addFilter(filter);
-		Environment.logger.debug("getting youtube request token: "
+		Environment.logger.debug("querying youtube request token: "
 		                         + resource.toString());
 		try
 		{
 			ClientResponse response = resource.queryParam("scope",
 			                                              "http://gdata.youtube.com").get(ClientResponse.class);
 			printClientResponse(response);
-			String content = getClientResponseContent(response);
+			String content = CoreUtils.getClientResponseContent(response);
 			Environment.logger.debug("Content: " + content);
 			params.addQueryParameters(content);
 			String authUrl = AUTHORIZATION_PATH + "?oauth_token="
@@ -172,6 +174,13 @@ public class YouTubeConnector
 			throw new InterWebException(e);
 		}
 		return params;
+	}
+	
+
+	@Override
+	public ServiceConnector clone()
+	{
+		return new YouTubeConnector(getConsumerAuthCredentials());
 	}
 	
 
@@ -220,7 +229,7 @@ public class YouTubeConnector
 			Environment.logger.debug("getting youtube access token: "
 			                         + resource.toString());
 			ClientResponse response = resource.get(ClientResponse.class);
-			String content = getClientResponseContent(response);
+			String content = CoreUtils.getClientResponseContent(response);
 			Environment.logger.debug("youtube response: " + content);
 			params.addQueryParameters(content);
 			String key = params.get(Parameters.OAUTH_TOKEN);
@@ -234,8 +243,8 @@ public class YouTubeConnector
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new InterWebException(e);
 		}
 		return authCredentials;
 	}
@@ -245,62 +254,76 @@ public class YouTubeConnector
 	public QueryResult get(Query query, AuthCredentials authCredentials)
 	    throws InterWebException
 	{
-		QueryResult queryResult = new QueryResult(query);
-		YouTubeService service = new YouTubeService(CLIENT_ID);
-		AuthCredentials consumerAuthCredentials = getConsumerAuthCredentials();
-		OAuthParameters oauthParams = getOAuthParameters(consumerAuthCredentials,
-		                                                 authCredentials);
-		try
+		if (query == null)
 		{
-			service.setOAuthCredentials(oauthParams, new OAuthHmacSha1Signer());
-			YouTubeQuery ytq = new YouTubeQuery(new URL("http://gdata.youtube.com/feeds/api/videos"));
-			// order results by the number of views (most viewed first)
-			ytq.setOrderBy(YouTubeQuery.OrderBy.VIEW_COUNT);
-			
-			// do not exclude restricted content from the search results 
-			// (by default, it is excluded) 
-			ytq.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
-			
-			ytq.setFullTextQuery(query.getQuery());
-			
-			VideoFeed videoFeed = service.query(ytq, VideoFeed.class);
-			for (VideoEntry ve : videoFeed.getEntries())
+			throw new NullPointerException("Argument [query] can not be null");
+		}
+		if (!isRegistered())
+		{
+			throw new InterWebException("Service is not yet registered");
+		}
+		QueryResult queryResult = new QueryResult(query);
+		if (query.getContentTypes().contains(Query.CT_VIDEO))
+		{
+			YouTubeService service = new YouTubeService(CLIENT_ID);
+			AuthCredentials consumerAuthCredentials = getConsumerAuthCredentials();
+			OAuthParameters oauthParams = getOAuthParameters(consumerAuthCredentials,
+			                                                 authCredentials);
+			try
 			{
-				System.out.println(ve.getTitle().getPlainText());
+				service.setOAuthCredentials(oauthParams,
+				                            new OAuthHmacSha1Signer());
+				YouTubeQuery ytq = new YouTubeQuery(new URL("http://gdata.youtube.com/feeds/api/videos"));
+				ytq.setMaxResults(Math.min(50, query.getResultCount()));
+				ytq.setOrderBy(getSortOrder(query.getSortOrder()));
+				ytq.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
+				if (query.getSearchScopes().contains(SearchScope.TEXT))
+				{
+					ytq.setFullTextQuery(query.getQuery());
+				}
+				VideoFeed vf = service.query(ytq, VideoFeed.class);
+				int count = 0;
+				for (VideoEntry ve : vf.getEntries())
+				{
+					ResultItem resultItem = new YouTubeVideoResultItem(getName());
+					resultItem.setServiceName(getName());
+					resultItem.setId(ve.getId());
+					resultItem.setType(Query.CT_VIDEO);
+					resultItem.setTitle(ve.getTitle().getPlainText());
+					MediaGroup mg = ve.getMediaGroup();
+					resultItem.setDescription(mg.getDescription().getPlainTextContent());
+					resultItem.setUrl(mg.getPlayer().getUrl());
+					resultItem.setImageUrl(mg.getThumbnails().get(0).getUrl());
+					resultItem.setDate(DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date(ve.getPublished().getValue())));
+					resultItem.setRank(count++);
+					resultItem.setTotalResultCount(vf.getTotalResults());
+					resultItem.setViewCount((int) ve.getStatistics().getViewCount());
+					resultItem.setCommentCount(ve.getComments().getFeedLink().getCountHint().intValue());
+					queryResult.addResultItem(resultItem);
+				}
+			}
+			catch (OAuthException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+			catch (MalformedURLException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+			catch (ServiceException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
 			}
 		}
-		catch (OAuthException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (MalformedURLException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (ServiceException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
 		return queryResult;
-	}
-	
-
-	private String getClientResponseContent(ClientResponse response)
-	    throws IOException
-	{
-		int size = response.getLength();
-		byte buff[] = new byte[size];
-		InputStream is = response.getEntityInputStream();
-		is.read(buff);
-		return new String(buff);
 	}
 	
 
@@ -320,6 +343,21 @@ public class YouTubeConnector
 	}
 	
 
+	private OrderBy getSortOrder(SortOrder sortOrder)
+	{
+		switch (sortOrder)
+		{
+			case RELEVANCE:
+				return YouTubeQuery.OrderBy.RELEVANCE;
+			case DATE:
+				return YouTubeQuery.OrderBy.PUBLISHED;
+			case INTERESTINGNESS:
+				return YouTubeQuery.OrderBy.VIEW_COUNT;
+		}
+		return YouTubeQuery.OrderBy.RELEVANCE;
+	}
+	
+
 	@Override
 	protected void init()
 	{
@@ -327,6 +365,13 @@ public class YouTubeConnector
 		TreeSet<String> contentTypes = new TreeSet<String>();
 		contentTypes.add("video");
 		setContentTypes(contentTypes);
+	}
+	
+
+	@Override
+	public boolean isRegistrationRequired()
+	{
+		return true;
 	}
 	
 
@@ -344,6 +389,7 @@ public class YouTubeConnector
 
 	@Override
 	public void put(byte[] data,
+	                String contentType,
 	                Parameters params,
 	                AuthCredentials authCredentials)
 	    throws InterWebException
@@ -396,42 +442,5 @@ public class YouTubeConnector
 			e.printStackTrace();
 			throw new InterWebException(e);
 		}
-	}
-	
-
-	@Override
-	public boolean requestRegistrationData()
-	{
-		return true;
-	}
-	
-
-	public static void main(String[] args)
-	    throws Exception
-	{
-		AuthCredentials consumerAuthCredentials = new AuthCredentials("***REMOVED***",
-		                                                              "***REMOVED***");
-		AuthCredentials authCredentials = new AuthCredentials("***REMOVED***",
-		                                                      "lkMLQqGkmcufaA31tPHFHwJm");
-		List<String> contentTypes = new ArrayList<String>();
-		contentTypes.add("video");
-		Query query = new Query("Japan", contentTypes);
-		YouTubeConnector connector = new YouTubeConnector(consumerAuthCredentials);
-		Parameters params = new Parameters();
-		params.add("title", "Япония");
-		params.add("description", "Япония");
-		BufferedInputStream is = new BufferedInputStream(new FileInputStream("/home/olex/downloads/Japan.flv"));
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		int c;
-		while ((c = is.read()) != -1)
-		{
-			os.write(c);
-		}
-		is.close();
-		os.close();
-		byte[] data = os.toByteArray();
-		connector.put(data, params, authCredentials);
-		//		connector.get(query, authCredentials);
-		System.out.println("done");
 	}
 }

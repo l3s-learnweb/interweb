@@ -1,10 +1,9 @@
 package de.l3s.interwebj.core;
 
 
-import java.net.*;
-
 import org.apache.log4j.*;
 
+import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.db.*;
 
 
@@ -23,11 +22,10 @@ public class Environment
 	private AccessControll accessControll;
 	
 
-	private Environment(URL configUrl)
-	    throws InterWebException
+	private Environment()
 	{
 		logger.info("Logger initialized successfully");
-		configuration = new Configuration(configUrl);
+		configuration = new Configuration();
 		database = new JDBCDatabase(configuration);
 		engine = new Engine(database);
 		accessControll = new AccessControll();
@@ -65,22 +63,10 @@ public class Environment
 	
 
 	public static Environment getInstance()
-	    throws InterWebException
 	{
 		if (singleton == null)
 		{
-			throw new InterWebException("IWEnvironment is not yet initialazied. Run first IWEnvironment.getInstance(URL configUrl).");
-		}
-		return singleton;
-	}
-	
-
-	public static Environment getInstance(URL configUrl)
-	    throws InterWebException
-	{
-		if (singleton == null)
-		{
-			singleton = new Environment(configUrl);
+			singleton = new Environment();
 		}
 		return singleton;
 	}

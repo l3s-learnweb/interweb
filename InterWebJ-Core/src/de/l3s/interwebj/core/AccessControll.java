@@ -9,7 +9,7 @@ public class AccessControll
 	
 	private static AccessControll singleton;
 	
-	private List<ResourceConstraint> resourceConstraints;
+	private List<ResourceConstraint> constraints;
 	
 
 	public AccessControll()
@@ -18,10 +18,16 @@ public class AccessControll
 	}
 	
 
+	private ResourceConstraint buildPublicConstraint(String pattern)
+	{
+		return new ResourceConstraint(pattern, Integer.MAX_VALUE);
+	}
+	
+
 	private ResourceConstraint getResourceConstraint(String resource)
 	{
 		ResourceConstraint resourceConstraint = null;
-		for (ResourceConstraint constraint : resourceConstraints)
+		for (ResourceConstraint constraint : constraints)
 		{
 			if (resourceConstraint == null && constraint.matches(resource)
 			    || resourceConstraint != null && constraint.matches(resource)
@@ -37,30 +43,25 @@ public class AccessControll
 	private void initConstraints()
 	{
 		// TODO: find easy and flexible way to store/read constraints
-		resourceConstraints = new LinkedList<ResourceConstraint>();
-		ResourceConstraint constraint;
-		constraint = new ResourceConstraint("/css/.*", 20);
-		resourceConstraints.add(constraint);
-		constraint = new ResourceConstraint("/img/.*", 20);
-		resourceConstraints.add(constraint);
-		constraint = new ResourceConstraint("(/view/)?", 20);
-		resourceConstraints.add(constraint);
-		constraint = new ResourceConstraint("/view/index\\.xhtml", 20);
-		resourceConstraints.add(constraint);
-		constraint = new ResourceConstraint("/view/register\\.xhtml", 20);
-		resourceConstraints.add(constraint);
-		constraint = new ResourceConstraint("/view/login\\.xhtml", 20);
-		resourceConstraints.add(constraint);
-		constraint = new ResourceConstraint("/view/javax\\.faces\\.resource/jsf\\.js",
-		                                    20);
-		resourceConstraints.add(constraint);
-		constraint = new ResourceConstraint("/.*", "user", 10);
-		resourceConstraints.add(constraint);
-		constraint = new ResourceConstraint("/view/admin/(.*)?", "manager", 20);
-		resourceConstraints.add(constraint);
-		// allow all
-		//		constraint = new ResourceConstraint("/.*", 100);
-		//		resourceConstraints.add(constraint);
+		// Public access resources
+		constraints = new LinkedList<ResourceConstraint>();
+		constraints.add(buildPublicConstraint("/api/.*"));
+		constraints.add(buildPublicConstraint("/css/.*"));
+		constraints.add(buildPublicConstraint("/img/.*"));
+		constraints.add(buildPublicConstraint("(/view/)?"));
+		constraints.add(buildPublicConstraint("/view/index\\.xhtml"));
+		constraints.add(buildPublicConstraint("/view/register\\.xhtml"));
+		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
+		constraints.add(buildPublicConstraint("/view/rfRes/.*"));
+		constraints.add(buildPublicConstraint("/view/javax\\.faces\\.resource/.*"));
+		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
+		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
+		// User access resources
+		constraints.add(new ResourceConstraint("/.*", "user", 10));
+		// Manager access resources
+		constraints.add(new ResourceConstraint("/view/admin/(.*)?",
+		                                       "manager",
+		                                       20));
 	}
 	
 
@@ -73,12 +74,16 @@ public class AccessControll
 		{
 			return false;
 		}
+		if (isPublicResource(resource))
+		{
+			return true;
+		}
 		if (principal == null)
 		{
-			return isPublicResource(resource);
+			return false;
 		}
 		String role = resourceConstraint.getRole();
-		return principal.hasRole(role);
+		return (role == null) || principal.hasRole(role);
 	}
 	
 
@@ -96,5 +101,13 @@ public class AccessControll
 			singleton = new AccessControll();
 		}
 		return singleton;
+	}
+	
+
+	public static void main(String[] args)
+	{
+		AccessControll accessControll = new AccessControll();
+		Environment.logger.debug(accessControll.isPublicResource("/css/main.css"));
+		;
 	}
 }
