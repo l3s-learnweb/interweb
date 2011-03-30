@@ -4,7 +4,6 @@ package de.l3s.interwebj.query;
 import java.io.*;
 import java.util.*;
 
-import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.jaxb.*;
 import de.l3s.interwebj.util.*;
 
@@ -71,9 +70,10 @@ public class Query
 	private String id;
 	private String link;
 	private String query;
-	private List<ServiceConnector> connectors;
+	private List<String> connectorNames;
 	private List<String> contentTypes;
 	private int resultCount;
+	private long updated;
 	private SortOrder sortOrder;
 	private Set<SearchScope> searchScopes;
 	private Map<String, String> params;
@@ -108,7 +108,7 @@ public class Query
 		}
 		this.id = id;
 		this.query = query;
-		connectors = new ArrayList<ServiceConnector>();
+		connectorNames = new ArrayList<String>();
 		this.contentTypes = contentTypes;
 		this.params = params;
 		resultCount = DEFAULT_RESULT_COUNT;
@@ -117,9 +117,9 @@ public class Query
 	}
 	
 
-	public void addConnector(ServiceConnector connector)
+	public void addConnectorName(String connectorName)
 	{
-		connectors.add(connector);
+		connectorNames.add(connectorName);
 	}
 	
 
@@ -153,14 +153,14 @@ public class Query
 		iwSearchQuery.setDateTill(getParam("date_till"));
 		iwSearchQuery.setRanking(sortOrder.getName());
 		iwSearchQuery.setNumberOfResults(resultCount);
-		//		iwSearchQuery.setUpdated("");
+		iwSearchQuery.setUpdated(CoreUtils.formatDate(updated));
 		return iwSearchQuery;
 	}
 	
 
-	public List<ServiceConnector> getConnectors()
+	public List<String> getConnectorNames()
 	{
-		return connectors;
+		return connectorNames;
 	}
 	
 
@@ -225,6 +225,18 @@ public class Query
 	}
 	
 
+	public long getUpdated()
+	{
+		return updated;
+	}
+	
+
+	public void setConnectorNames(List<String> connectorNames)
+	{
+		this.connectorNames = connectorNames;
+	}
+	
+
 	public void setContentTypes(List<String> contentTypes)
 	{
 		this.contentTypes = contentTypes;
@@ -252,6 +264,12 @@ public class Query
 	public void setSortOrder(SortOrder sortOrder)
 	{
 		this.sortOrder = sortOrder;
+	}
+	
+
+	public void setUpdated(long updated)
+	{
+		this.updated = updated;
 	}
 	
 

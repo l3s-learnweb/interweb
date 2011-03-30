@@ -52,8 +52,8 @@ public class JDBCDatabase
 		{
 			throw new NullPointerException("Argument [userPassword] can not be null");
 		}
-		//		Environment.logger.debug("authenticating InterWebJ user [" + userName
-		//		                         + "]");
+		Environment.logger.debug("authenticating InterWebJ user [" + userName
+		                         + "]");
 		IWPrincipal dbPrincipal = getPrincipal(userName, userPassword);
 		if (dbPrincipal != null)
 		{
@@ -62,8 +62,8 @@ public class JDBCDatabase
 			{
 				dbPrincipal.addRole(role);
 			}
-			//			Environment.logger.debug("InterWebJ user [" + userName
-			//			                         + "] authenticated");
+			Environment.logger.debug("InterWebJ user [" + userName
+			                         + "] authenticated");
 		}
 		return dbPrincipal;
 	}
@@ -90,7 +90,7 @@ public class JDBCDatabase
 		sb.append(" (user,").append(roleNameCol).append(")");
 		sb.append(" SELECT name, ? FROM ").append(userTable);
 		sb.append(" WHERE ").append(userNameCol).append("=?");
-		//		Environment.logger.debug("sql query: " + sb);
+		Environment.logger.debug("sql query: " + sb);
 		PreparedStatement pstmt = dbConnection.prepareStatement(sb.toString());
 		pstmt.setString(1, role);
 		pstmt.setString(2, name);
@@ -106,7 +106,7 @@ public class JDBCDatabase
 		sb.append(" INSERT INTO ").append(userTable);
 		sb.append(" (").append(userNameCol).append(",").append(userPasswordCol).append(",").append(userEmailCol).append(")");
 		sb.append(" VALUES (?,?,?)");
-		//		Environment.logger.debug("sql query: " + sb);
+		Environment.logger.debug("sql query: " + sb);
 		PreparedStatement pstmt = dbConnection.prepareStatement(sb.toString());
 		pstmt.setString(1, principal.getName());
 		pstmt.setString(2, password);
@@ -122,7 +122,7 @@ public class JDBCDatabase
 		sb.append(" INSERT INTO ").append(roleTable);
 		sb.append(" (").append(roleNameCol).append(")");
 		sb.append(" VALUES (?)");
-		//		Environment.logger.debug("sql query: " + sb);
+		Environment.logger.debug("sql query: " + sb);
 		PreparedStatement pstmt = dbConnection.prepareStatement(sb.toString());
 		pstmt.setString(1, role);
 		return pstmt;
@@ -149,7 +149,7 @@ public class JDBCDatabase
 				String sqlQuery = "DELETE FROM iwj_connectors";
 				sqlQuery += " WHERE provider='" + provider + "' AND consumer='"
 				            + consumer + "'";
-				//				Environment.logger.debug("sql query: " + sqlQuery);
+				Environment.logger.debug("sql query: " + sqlQuery);
 				Statement stmt = dbConnection.createStatement();
 				stmt.execute(sqlQuery);
 				silentCloseStatement(stmt);
@@ -174,7 +174,7 @@ public class JDBCDatabase
 			sb.append(" SELECT ").append(userPasswordCol).append(",").append(userEmailCol);
 			sb.append(" FROM ").append(userTable);
 			sb.append(" WHERE ").append(userNameCol).append("='").append(userName).append("'");
-			//			Environment.logger.debug("sql query: " + sb);
+			Environment.logger.debug("sql query: " + sb);
 			stmt = dbConnection.createStatement();
 			rs = stmt.executeQuery(sb.toString());
 			String dbPassword = null;
@@ -214,7 +214,7 @@ public class JDBCDatabase
 			sb.append("SELECT distinct(").append(roleNameCol).append(")");
 			sb.append(" FROM ").append(userTable).append(" NATURAL JOIN ").append(userRolesTable);
 			sb.append(" WHERE ").append(userNameCol).append("='").append(usermame).append("'");
-			//			Environment.logger.debug("sql query: " + sb);
+			Environment.logger.debug("sql query: " + sb);
 			stmt = dbConnection.createStatement();
 			rs = stmt.executeQuery(sb.toString());
 			while (rs.next())
@@ -244,7 +244,7 @@ public class JDBCDatabase
 		openConnection();
 		String sqlQuery = "SELECT count(*) FROM iwj_connectors WHERE provider='"
 		                  + provider + "' AND consumer='" + consumer + "'";
-		//		Environment.logger.debug("sql query: " + sqlQuery);
+		Environment.logger.debug("sql query: " + sqlQuery);
 		Statement stmt = dbConnection.createStatement();
 		rs = stmt.executeQuery(sqlQuery);
 		if (rs.next())
@@ -270,7 +270,7 @@ public class JDBCDatabase
 			openConnection();
 			String sqlQuery = " SELECT count(*) FROM " + userTable;
 			sqlQuery += " WHERE " + userNameCol + "='" + username + "'";
-			//			Environment.logger.debug("sql query: " + sqlQuery);
+			Environment.logger.debug("sql query: " + sqlQuery);
 			stmt = dbConnection.createStatement();
 			rs = stmt.executeQuery(sqlQuery);
 			if (rs.next())
@@ -296,7 +296,7 @@ public class JDBCDatabase
 		openConnection();
 		String sqlQuery = "SELECT count(*) FROM iwj_users_auth_data WHERE provider='"
 		                  + provider + "' AND user='" + userName + "'";
-		//		Environment.logger.debug("sql query: " + sqlQuery);
+		Environment.logger.debug("sql query: " + sqlQuery);
 		Statement stmt = dbConnection.createStatement();
 		rs = stmt.executeQuery(sqlQuery);
 		if (rs.next())
@@ -337,7 +337,7 @@ public class JDBCDatabase
 			@Override
 			public void run()
 			{
-				logger.info("Shutdown intercepted. Cleaning up resources");
+				logger.info("Shutdown intercepted. Cleaning up Database resources");
 				close();
 			}
 		});
@@ -410,7 +410,7 @@ public class JDBCDatabase
 			openConnection();
 			String sqlQuery = "SELECT consumer_key, consumer_secret FROM iwj_connectors WHERE provider='"
 			                  + provider + "' AND consumer='" + consumer + "'";
-			//			Environment.logger.debug("sql query: " + sqlQuery);
+			Environment.logger.debug("sql query: " + sqlQuery);
 			stmt = dbConnection.createStatement();
 			rs = stmt.executeQuery(sqlQuery);
 			if (rs.next())
@@ -454,7 +454,7 @@ public class JDBCDatabase
 			openConnection();
 			String sqlQuery = "SELECT user_key, user_secret FROM iwj_users_auth_data WHERE provider='"
 			                  + provider + "' AND user='" + userName + "'";
-			//			Environment.logger.debug("sql query: " + sqlQuery);
+			Environment.logger.debug("sql query: " + sqlQuery);
 			stmt = dbConnection.createStatement();
 			rs = stmt.executeQuery(sqlQuery);
 			if (rs.next())
@@ -501,7 +501,7 @@ public class JDBCDatabase
 			{
 				sqlQuery = "UPDATE iwj_connectors SET consumer_key=?, consumer_secret=? WHERE provider ='"
 				           + provider + "' AND consumer='" + consumer + "'";
-				//				Environment.logger.debug("sql query: " + sqlQuery);
+				Environment.logger.debug("sql query: " + sqlQuery);
 				pstmt = dbConnection.prepareStatement(sqlQuery);
 				if (authCredentials == null)
 				{
@@ -524,7 +524,7 @@ public class JDBCDatabase
 			else
 			{
 				sqlQuery = "INSERT INTO iwj_connectors (provider, consumer, consumer_key, consumer_secret) VALUES (?,?,?,?)";
-				//				Environment.logger.debug("sql query: " + sqlQuery);
+				Environment.logger.debug("sql query: " + sqlQuery);
 				pstmt = dbConnection.prepareStatement(sqlQuery);
 				pstmt.setString(1, provider);
 				pstmt.setString(2, consumer);
@@ -652,7 +652,7 @@ public class JDBCDatabase
 			{
 				sqlQuery = "UPDATE iwj_users_auth_data SET user_key=?, user_secret=? WHERE provider ='"
 				           + provider + "' AND user='" + userName + "'";
-				//				Environment.logger.debug("sql query: " + sqlQuery);
+				Environment.logger.debug("sql query: " + sqlQuery);
 				pstmt = dbConnection.prepareStatement(sqlQuery);
 				if (authCredentials == null)
 				{
@@ -675,7 +675,7 @@ public class JDBCDatabase
 			else
 			{
 				sqlQuery = "INSERT INTO iwj_users_auth_data (provider, user, user_key, user_secret) VALUES (?,?,?,?)";
-				//				Environment.logger.debug("sql query: " + sqlQuery);
+				Environment.logger.debug("sql query: " + sqlQuery);
 				pstmt = dbConnection.prepareStatement(sqlQuery);
 				pstmt.setString(1, provider);
 				pstmt.setString(2, userName);

@@ -17,6 +17,7 @@ public class Engine
 	private Map<String, ServiceConnector> connectors;
 	private Set<String> contentTypes;
 	private Database database;
+	private StandingQueryResultPool standingQueryResultPool;
 	
 
 	public Engine(Database database)
@@ -56,10 +57,10 @@ public class Engine
 	public List<ServiceConnector> getConnectors()
 	{
 		List<ServiceConnector> connectorList = new LinkedList<ServiceConnector>();
-		Set<String> keys = connectors.keySet();
-		for (String key : keys)
+		Set<String> connectorNames = connectors.keySet();
+		for (String connectorName : connectorNames)
 		{
-			connectorList.add(connectors.get(key).clone());
+			connectorList.add(getConnector(connectorName));
 		}
 		return connectorList;
 	}
@@ -78,6 +79,33 @@ public class Engine
 	}
 	
 
+	public QueryResultCollector getQueryResultCollector(Query query,
+	                                                    IWPrincipal principal)
+	    throws InterWebException
+	{
+		query.addParam("user", principal.getName());
+		QueryResultCollector collector = new QueryResultCollector(query);
+		for (String connectorName : query.getConnectorNames())
+		{
+			ServiceConnector connector = getConnector(connectorName);
+			if (connector.isRegistered()
+			    && isUserAuthenticated(connector, principal))
+			{
+				AuthCredentials authCredentials = getUserAuthCredentials(connector,
+				                                                         principal);
+				collector.addQueryResultRetriever(connector, authCredentials);
+			}
+		}
+		return collector;
+	}
+	
+
+	public StandingQueryResultPool getStandingQueryResultPool()
+	{
+		return standingQueryResultPool;
+	}
+	
+
 	public AuthCredentials getUserAuthCredentials(ServiceConnector connector,
 	                                              IWPrincipal principal)
 	{
@@ -92,6 +120,7 @@ public class Engine
 		connectors = new TreeMap<String, ServiceConnector>();
 		contentTypes = new TreeSet<String>();
 		loadConnectors();
+		standingQueryResultPool = new StandingQueryResultPool();
 	}
 	
 
@@ -108,43 +137,6 @@ public class Engine
 		addConnector(new FlickrConnector(null));
 		addConnector(new YouTubeConnector(null));
 		addConnector(new InterWebConnector(null));
-	}
-	
-
-	public QueryResult search(Query query, IWPrincipal principal)
-	    throws InterWebException
-	{
-		query.addParam("user", principal.getName());
-		QueryResult queryResult = new QueryResult(query);
-		long startTime = System.currentTimeMillis();
-		Environment.logger.debug(query);
-		Environment.logger.debug(principal);
-		for (ServiceConnector connector : query.getConnectors())
-		{
-			
-			if (connector.isRegistered()
-			    && isUserAuthenticated(connector, principal))
-			{
-				AuthCredentials authCredentials = getUserAuthCredentials(connector,
-				                                                         principal);
-				Environment.logger.debug("Connector: " + connector.getName()
-				                         + " " + authCredentials);
-				queryResult.addQueryResult(connector.get(query, authCredentials));
-			}
-			else
-			{
-				if (!connector.isRegistered())
-				{
-					Environment.logger.debug("connector is not registered");
-				}
-				if (!isUserAuthenticated(connector, principal))
-				{
-					Environment.logger.debug("user service is not authenticated");
-				}
-			}
-		}
-		queryResult.setElapsedTime(System.currentTimeMillis() - startTime);
-		return queryResult;
 	}
 	
 
@@ -212,17 +204,38 @@ public class Engine
 		query.addContentType(Query.CT_AUDIO);
 		query.addSearchScope(SearchScope.TEXT);
 		query.addSearchScope(SearchScope.TAGS);
-		query.setResultCount(100);
+		query.setResultCount(50);
 		query.setSortOrder(SortOrder.RELEVANCE);
-		for (ServiceConnector connector : engine.getConnectors())
+		for (String connectorName : engine.getConnectorNames())
 		{
-			query.addConnector(connector);
+			query.addConnectorName(connectorName);
 		}
-		QueryResult queryResult = engine.search(query, principal);
-		System.out.println("queryResult.getResultItems().size(): ["
-		                   + queryResult.getResultItems().size() + "]");
-		System.out.println("queryResult.getElapsedTime(): ["
-		                   + queryResult.getElapsedTime() + "]");
-		
+		QueryResultCollector collector = engine.getQueryResultCollector(query,
+		                                                                principal);
+		long[] times = run(20, collector);
+		long sum = 0;
+		for (long l : times)
+		{
+			sum += l;
+		}
+		System.out.println(sum / (times.length + 0d));
+		//		QueryResult queryResult = collector.retrieve();
+		//		System.out.println("queryResult.getResultItems().size(): ["
+		//		                   + queryResult.getResultItems().size() + "]");
+		//		System.out.println("queryResult.getElapsedTime(): ["
+		//		                   + queryResult.getElapsedTime() + "]");
+	}
+	
+
+	private static long[] run(int count, QueryResultCollector collector)
+	    throws InterWebException
+	{
+		long[] times = new long[count];
+		for (int i = 0; i < times.length; i++)
+		{
+			QueryResult queryResult = collector.retrieve();
+			times[i] = queryResult.getElapsedTime();
+		}
+		return times;
 	}
 }

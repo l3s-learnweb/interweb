@@ -177,7 +177,6 @@ public class InterWebConnector
 		}
 		QueryResult queryResult = new QueryResult(query);
 		AuthCredentials consumerAuthCredentials = getConsumerAuthCredentials();
-		
 		ClientConfig config = new DefaultClientConfig();
 		Client client = Client.create(config);
 		UriBuilder uriBuilder = UriBuilder.fromUri(getBaseUrl());
@@ -310,7 +309,7 @@ public class InterWebConnector
 
 	private String getServices()
 	{
-		// Used only unimplemented by InterWebJ services
+		// TODO: Used only unimplemented by InterWebJ services
 		return "Flickr,YouTube";
 		//		return "Delicious,Ipernity,LastFm,SlideShare,Vimeo,Blogger,Facebook,GroupMe";
 	}
@@ -418,12 +417,13 @@ public class InterWebConnector
 		query.addContentType(Query.CT_AUDIO);
 		query.addSearchScope(SearchScope.TEXT);
 		query.addSearchScope(SearchScope.TAGS);
-		query.setResultCount(5);
-		query.addParam("date_from", "2009-01-01 00:00:00");
-		query.addParam("date_till", "2009-06-01 00:00:00");
+		query.setResultCount(50);
+		//		query.addParam("date_from", "2009-01-01 00:00:00");
+		//		query.addParam("date_till", "2009-06-01 00:00:00");
 		query.setSortOrder(SortOrder.RELEVANCE);
 		QueryResult queryResult = iwc.get(query, userAuthCredentials);
 		String id = queryResult.getQuery().getId();
 		System.out.println(id);
 	}
+	
 }

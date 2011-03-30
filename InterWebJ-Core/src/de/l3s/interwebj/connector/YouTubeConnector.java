@@ -3,7 +3,6 @@ package de.l3s.interwebj.connector;
 
 import java.io.*;
 import java.net.*;
-import java.text.*;
 import java.util.*;
 
 import javax.ws.rs.core.*;
@@ -283,6 +282,8 @@ public class YouTubeConnector
 				}
 				VideoFeed vf = service.query(ytq, VideoFeed.class);
 				int count = 0;
+				Environment.logger.debug("Total " + vf.getTotalResults()
+				                         + " result(s) found");
 				for (VideoEntry ve : vf.getEntries())
 				{
 					ResultItem resultItem = new YouTubeVideoResultItem(getName());
@@ -294,11 +295,11 @@ public class YouTubeConnector
 					resultItem.setDescription(mg.getDescription().getPlainTextContent());
 					resultItem.setUrl(mg.getPlayer().getUrl());
 					resultItem.setImageUrl(mg.getThumbnails().get(0).getUrl());
-					resultItem.setDate(DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date(ve.getPublished().getValue())));
+					resultItem.setDate(CoreUtils.formatDate(ve.getPublished().getValue()));
 					resultItem.setRank(count++);
 					resultItem.setTotalResultCount(vf.getTotalResults());
 					resultItem.setViewCount((int) ve.getStatistics().getViewCount());
-					resultItem.setCommentCount(ve.getComments().getFeedLink().getCountHint().intValue());
+					resultItem.setCommentCount(getCommentCount(ve));
 					queryResult.addResultItem(resultItem);
 				}
 			}
@@ -324,6 +325,24 @@ public class YouTubeConnector
 			}
 		}
 		return queryResult;
+	}
+	
+
+	private int getCommentCount(VideoEntry ve)
+	{
+		if (ve.getComments() == null)
+		{
+			return 0;
+		}
+		if (ve.getComments().getFeedLink() == null)
+		{
+			return 0;
+		}
+		if (ve.getComments().getFeedLink().getCountHint() == null)
+		{
+			return 0;
+		}
+		return ve.getComments().getFeedLink().getCountHint().intValue();
 	}
 	
 

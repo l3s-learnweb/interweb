@@ -3,7 +3,6 @@ package de.l3s.interwebj.connector;
 
 import java.io.*;
 import java.net.*;
-import java.text.*;
 import java.util.*;
 
 import javax.xml.parsers.*;
@@ -20,6 +19,7 @@ import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.query.*;
 import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.Query.SortOrder;
+import de.l3s.interwebj.util.*;
 
 
 public class FlickrConnector
@@ -188,8 +188,7 @@ public class FlickrConnector
 				                                query.getResultCount(),
 				                                0);
 				Environment.logger.debug("Total " + photoList.getTotal()
-				                         + " result(s) found for query ["
-				                         + query.getQuery() + "]");
+				                         + " result(s) found");
 				int count = 0;
 				for (Object o : photoList)
 				{
@@ -207,7 +206,7 @@ public class FlickrConnector
 						Date date = photo.getDatePosted();
 						if (date != null)
 						{
-							resultItem.setDate(DateFormat.getDateInstance(DateFormat.MEDIUM).format(date));
+							resultItem.setDate(CoreUtils.formatDate(date.getTime()));
 						}
 						resultItem.setRank(count++);
 						resultItem.setTotalResultCount(photoList.getTotal());
@@ -256,7 +255,6 @@ public class FlickrConnector
 		{
 			media = MEDIA_VIDEOS;
 		}
-		Environment.logger.debug("media type: " + media);
 		return media;
 	}
 	

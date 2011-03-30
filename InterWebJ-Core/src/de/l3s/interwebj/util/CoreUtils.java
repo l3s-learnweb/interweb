@@ -3,6 +3,7 @@ package de.l3s.interwebj.util;
 
 import java.io.*;
 import java.security.*;
+import java.text.*;
 import java.util.*;
 
 import javax.xml.bind.*;
@@ -15,6 +16,9 @@ import com.sun.jersey.api.client.*;
 public class CoreUtils
 {
 	
+	private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+
 	public static <T> String collectionToString(Collection<T> c)
 	{
 		StringBuilder sb = new StringBuilder();
@@ -38,6 +42,18 @@ public class CoreUtils
 		JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 		return (T) unmarshaller.unmarshal(is);
+	}
+	
+
+	public static String formatDate(DateFormat df, long millis)
+	{
+		return df.format(new Date(millis));
+	}
+	
+
+	public static String formatDate(long millis)
+	{
+		return formatDate(DEFAULT_DATE_FORMAT, millis);
 	}
 	
 
@@ -73,6 +89,20 @@ public class CoreUtils
 		}
 		br.close();
 		return sb.toString();
+	}
+	
+
+	public static long parseDate(DateFormat df, String dateString)
+	    throws ParseException
+	{
+		return df.parse(dateString).getTime();
+	}
+	
+
+	public static long parseDate(String dateString)
+	    throws ParseException
+	{
+		return parseDate(DEFAULT_DATE_FORMAT, dateString);
 	}
 	
 

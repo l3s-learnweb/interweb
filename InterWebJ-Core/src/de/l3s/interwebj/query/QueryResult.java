@@ -16,6 +16,7 @@ public class QueryResult
 	private Query query;
 	private List<ResultItem> resultItems;
 	private long elapsedTime;
+	private long createdTime;
 	
 
 	public QueryResult(Query query)
@@ -53,6 +54,12 @@ public class QueryResult
 	}
 	
 
+	public long getCreatedTime()
+	{
+		return createdTime;
+	}
+	
+
 	public long getElapsedTime()
 	{
 		return elapsedTime;
@@ -68,6 +75,13 @@ public class QueryResult
 	public List<ResultItem> getResultItems()
 	{
 		return resultItems;
+	}
+	
+
+	public void setCreatedTime(long createdTime)
+	{
+		this.createdTime = createdTime;
+		query.setUpdated(createdTime);
 	}
 	
 

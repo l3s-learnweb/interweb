@@ -3,6 +3,8 @@ package de.l3s.interwebj.query;
 
 import java.io.*;
 
+import org.apache.commons.lang.*;
+
 import de.l3s.interwebj.jaxb.*;
 
 
@@ -163,6 +165,7 @@ public abstract class ResultItem
 			return;
 		}
 		description = description.trim();
+		description = unescape(description);
 		if (description.length() > MAX_DESCRIPTION_LENGTH)
 		{
 			int cutIndex = description.lastIndexOf(' ', MAX_DESCRIPTION_LENGTH);
@@ -213,6 +216,7 @@ public abstract class ResultItem
 			return;
 		}
 		title = title.trim();
+		description = unescape(description);
 		if (title.length() > MAX_TITLE_LENGTH)
 		{
 			int cutIndex = title.lastIndexOf(' ', MAX_TITLE_LENGTH);
@@ -247,6 +251,21 @@ public abstract class ResultItem
 	public void setViewCount(int viewCount)
 	{
 		this.viewCount = viewCount;
+	}
+	
+
+	private String unescape(String encoded)
+	{
+		if (encoded == null)
+		{
+			return null;
+		}
+		String decoded;
+		while (!(decoded = StringEscapeUtils.unescapeHtml(encoded)).equals(encoded))
+		{
+			encoded = decoded;
+		}
+		return decoded;
 	}
 	
 }
