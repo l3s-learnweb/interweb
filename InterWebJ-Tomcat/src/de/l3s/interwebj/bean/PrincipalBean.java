@@ -2,7 +2,6 @@ package de.l3s.interwebj.bean;
 
 
 import java.io.*;
-import java.net.*;
 
 import javax.faces.application.*;
 import javax.faces.bean.*;
@@ -47,7 +46,7 @@ public class PrincipalBean
 	
 
 	public String login(String username, String password)
-	    throws MalformedURLException, InterWebException
+	    throws InterWebException, IOException
 	{
 		Environment environment = Environment.getInstance();
 		Database database = environment.getDatabase();
@@ -58,6 +57,15 @@ public class PrincipalBean
 			                            "Incorrect login. Please check username/password.",
 			                            "login_form:login_button");
 			return "failed";
+		}
+		SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
+		String savedRequestUrl = sessionBean.getSavedRequestUrl();
+		if (savedRequestUrl != null)
+		{
+			sessionBean.setSavedRequestUrl(null);
+			Environment.logger.debug("redirecting to: " + savedRequestUrl);
+			ExternalContext externalContext = FacesUtils.getExternalContext();
+			externalContext.redirect(savedRequestUrl);
 		}
 		return "success";
 	}

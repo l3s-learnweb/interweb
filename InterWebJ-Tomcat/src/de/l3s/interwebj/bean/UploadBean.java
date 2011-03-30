@@ -88,7 +88,6 @@ public class UploadBean
 
 	public void save()
 	{
-		
 	}
 	
 
@@ -101,28 +100,6 @@ public class UploadBean
 	public void setSelectedContentType(String selectedContentType)
 	{
 		this.selectedContentType = selectedContentType;
-	}
-	
-
-	@Override
-	public String toString()
-	{
-		StringBuilder builder = new StringBuilder();
-		builder.append("UploadBean [");
-		if (selectedContentType != null)
-		{
-			builder.append("selectedContentType=");
-			builder.append(selectedContentType);
-			builder.append(", ");
-		}
-		if (selectedConnectors != null)
-		{
-			builder.append("selectedConnectors=");
-			builder.append(selectedConnectors);
-			builder.append(", ");
-		}
-		builder.append("]");
-		return builder.toString();
 	}
 	
 

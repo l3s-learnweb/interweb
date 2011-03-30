@@ -28,7 +28,9 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JSF 2.0 (Mojarra 2.0.3-FCS)">
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jersey OAuth"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jersey 1.5"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JSF 2.0 (Mojarra 2.0.4-FCS)">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 			<attribute name="owner.project.facets" value="jst.jsf"/>
@@ -40,7 +42,5 @@
 			<attribute name="owner.project.facets" value="jst.jsf"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jersey OAuth"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jersey 1.5"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

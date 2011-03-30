@@ -7,24 +7,27 @@ import java.util.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.jaxb.*;
 import de.l3s.interwebj.query.*;
 import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.Query.SortOrder;
+import de.l3s.interwebj.util.*;
 
 
 @Path("/search")
 public class Search
 {
 	
+	@Context
+	private UriInfo uriInfo;
+	
+
 	private boolean checkDate(String date)
 	{
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try
 		{
-			df.parse(date);
+			CoreUtils.parseDate(date);
 		}
 		catch (ParseException e)
 		{
@@ -161,10 +164,10 @@ public class Search
 		Engine engine = Environment.getInstance().getEngine();
 		if (services == null || services.trim().length() == 0)
 		{
-			List<ServiceConnector> connectors = engine.getConnectors();
-			for (ServiceConnector connector : connectors)
+			List<String> connectorNames = engine.getConnectorNames();
+			for (String connectorName : connectorNames)
 			{
-				query.addConnector(connector);
+				query.addConnectorName(connectorName);
 			}
 			return null;
 		}
@@ -174,7 +177,7 @@ public class Search
 		{
 			if (connectorNames.contains(service))
 			{
-				query.addConnector(engine.getConnector(service));
+				query.addConnectorName(service);
 			}
 		}
 		return null;
@@ -183,14 +186,14 @@ public class Search
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
-	public IWSearchResponse getSearchResult(@QueryParam("q") String queryString,
-	                                        @QueryParam("search_in") String searchIn,
-	                                        @QueryParam("media_types") String mediaTypes,
-	                                        @QueryParam("date_from") String dateFrom,
-	                                        @QueryParam("date_till") String dateTill,
-	                                        @QueryParam("ranking") String ranking,
-	                                        @QueryParam("number_of_results") String resultCount,
-	                                        @QueryParam("services") String services)
+	public IWSearchResponse getQueryResult(@QueryParam("q") String queryString,
+	                                       @QueryParam("search_in") String searchIn,
+	                                       @QueryParam("media_types") String mediaTypes,
+	                                       @QueryParam("date_from") String dateFrom,
+	                                       @QueryParam("date_till") String dateTill,
+	                                       @QueryParam("ranking") String ranking,
+	                                       @QueryParam("number_of_results") String resultCount,
+	                                       @QueryParam("services") String services)
 	{
 		QueryFactory queryFactory = new QueryFactory();
 		IWError iwError;
@@ -200,6 +203,7 @@ public class Search
 			return new IWSearchResponse(iwError);
 		}
 		Query query = queryFactory.createQuery(queryString.trim());
+		query.setLink(uriInfo.getAbsolutePath() + "/" + query.getId() + ".xml");
 		iwError = checkSearchIn(query, searchIn);
 		if (iwError != null)
 		{
@@ -231,11 +235,16 @@ public class Search
 			return new IWSearchResponse(iwError);
 		}
 		Environment.logger.debug(query);
-		Engine engine = Environment.getInstance().getEngine();
 		try
 		{
+			Engine engine = Environment.getInstance().getEngine();
+			// TODO: Stub. Read oauth key/secret and get principal from the database
 			IWPrincipal principal = new IWPrincipal("olex", "");
-			QueryResult queryResult = engine.search(query, principal);
+			query.addParam("user", principal.getName());
+			QueryResultCollector collector = engine.getQueryResultCollector(query,
+			                                                                principal);
+			QueryResult queryResult = collector.retrieve();
+			engine.getStandingQueryResultPool().add(queryResult);
 			IWSearchResponse iwSearchResponse = queryResult.createIWSearchResponse();
 			iwSearchResponse.getQuery().setUser(principal.getName());
 			return iwSearchResponse;
@@ -244,7 +253,25 @@ public class Search
 		{
 			e.printStackTrace();
 			Environment.logger.error(e);
-			return new IWSearchResponse(new IWError(-1, e.getMessage()));
+			return new IWSearchResponse(new IWError(999, e.getMessage()));
 		}
+	}
+	
+
+	@GET
+	@Path("/{id}.xml")
+	@Produces(MediaType.APPLICATION_XML)
+	public IWSearchResponse getStandingQueryResult(@PathParam(value = "id") String id)
+	{
+		Engine engine = Environment.getInstance().getEngine();
+		StandingQueryResultPool queryResultPool = engine.getStandingQueryResultPool();
+		QueryResult queryResult = queryResultPool.get(id);
+		if (queryResult == null)
+		{
+			return new IWSearchResponse(new IWError(206,
+			                                        "Standing query does not exist"));
+		}
+		IWSearchResponse iwSearchResponse = queryResult.createIWSearchResponse();
+		return iwSearchResponse;
 	}
 }

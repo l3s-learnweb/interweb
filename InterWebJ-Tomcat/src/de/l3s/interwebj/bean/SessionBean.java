@@ -19,8 +19,6 @@ public class SessionBean
 {
 	
 	@NotNull
-	private List<String> selectedContentTypes;
-	private List<String> selectedConnectors;
 	private Map<ServiceConnector, Parameters> pendingAuthorizationConnectors;
 	private String savedRequestUrl;
 	
@@ -28,20 +26,6 @@ public class SessionBean
 	public SessionBean()
 	    throws InterWebException
 	{
-		Engine engine = Environment.getInstance().getEngine();
-		PrincipalBean principalBean = FacesUtils.getPrincipalBean();
-		IWPrincipal principal = (principalBean == null)
-		    ? null : principalBean.getPrincipal();
-		selectedContentTypes = new ArrayList<String>(engine.getContentTypes());
-		selectedConnectors = new ArrayList<String>();
-		for (ServiceConnector connector : engine.getConnectors())
-		{
-			if (connector.isRegistered() && principal != null
-			    && engine.isUserAuthenticated(connector, principal))
-			{
-				selectedConnectors.add(connector.getName());
-			}
-		}
 		pendingAuthorizationConnectors = new HashMap<ServiceConnector, Parameters>();
 	}
 	
@@ -56,18 +40,6 @@ public class SessionBean
 	public String getSavedRequestUrl()
 	{
 		return savedRequestUrl;
-	}
-	
-
-	public List<String> getSelectedConnectors()
-	{
-		return selectedConnectors;
-	}
-	
-
-	public List<String> getSelectedContentTypes()
-	{
-		return selectedContentTypes;
 	}
 	
 
@@ -98,11 +70,5 @@ public class SessionBean
 	public void setSavedRequestUrl(String savedRequestUrl)
 	{
 		this.savedRequestUrl = savedRequestUrl;
-	}
-	
-
-	public void setSelectedContentTypes(List<String> selectedContentTypes)
-	{
-		this.selectedContentTypes = selectedContentTypes;
 	}
 }

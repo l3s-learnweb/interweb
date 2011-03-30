@@ -10,19 +10,34 @@
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
+		<h:messages showSummary="true" showDetail="false" styleClass="error" />
 		<h:form>
-			<h:panelGrid columns="2">
+			<h:panelGrid columns="4" columnClasses="top,top,top,top">
 				<h:column>
-					<div><h:outputLabel for="query" value="Search query: " /> <h:inputText
-						id="query" label="query" required="true"
-						value="#{searchBean.query}" size="30" /> <h:commandButton
-						action="#{searchBean.search()}" value="Search" id="search_button"
-						style="margin-left:5px" /></div>
+					<h:outputLabel for="query" value="Search query: " />
+					<h:inputText id="query" label="query" required="true"
+						value="#{searchBean.query}" size="30" />
+					<h:commandButton action="#{searchBean.search()}" value="Search"
+						id="search_button" style="margin-left:5px" />
+				</h:column>
+				<h:column>
+					<h:outputLabel for="result_count" value="results count: " />
+					<h:inputText id="result_count" label="result_count" required="true"
+						value="#{searchBean.resultCount}" size="3" />
+				</h:column>
+				<h:column style="margin-left: 50px;">
+					<div><h:selectManyCheckbox id="connectors"
+						value="#{searchBean.selectedConnectorNames}"
+						layout="pageDirection">
+						<f:selectItems value="#{searchBean.connectorNames}" />
+						<f:ajax event="change" render="content_types" />
+					</h:selectManyCheckbox></div>
 				</h:column>
 				<h:column style="margin-left: 50px;">
 					<div><h:selectManyCheckbox id="content_types"
 						value="#{searchBean.selectedContentTypes}" layout="pageDirection">
-						<f:selectItems value="#{searchBean.allContentTypes}" />
+						<f:selectItems value="#{searchBean.contentTypes}" />
+						<f:ajax event="change" execute="#{searchBean.save()}" />
 					</h:selectManyCheckbox></div>
 				</h:column>
 			</h:panelGrid>
@@ -41,11 +56,14 @@
 						<img
 							src="#{searchBean.getConnectorBaseUrl(resultItem.connectorName)}/favicon.ico"
 							style="vertical-align: middle; margin: 3px;" />
-							<h:outputText value="#{resultItem.serviceName}" />
+						<h:outputText value="#{resultItem.serviceName}" />
 					</rich:column>
 					<rich:column>
 						<div>
-						<h6><img src="/#{interwebj.contextName}/img/#{searchBean.getTypeImageUrl(resultItem.type)}" style="vertical-align: middle; margin: 3px;"/><h:outputLink value="#{resultItem.url}" target="_blank">#{resultItem.title}</h:outputLink></h6>
+						<h6><img
+							src="/#{interwebj.contextName}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
+							style="vertical-align: middle; margin: 3px;" /><h:outputLink
+							value="#{resultItem.url}" target="_blank">#{resultItem.title}</h:outputLink></h6>
 						<div><h:outputText value="#{resultItem.asHtml()}"
 							escape="false" />
 						<div><span>#{resultItem.description}</span> <span

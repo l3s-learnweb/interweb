@@ -15,6 +15,7 @@ import de.l3s.interwebj.core.*;
 public class InterWebJBean
 {
 	
+	@SuppressWarnings("deprecation")
 	public String getBaseUrl()
 	{
 		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();

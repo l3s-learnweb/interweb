@@ -14,8 +14,7 @@ public class SecurityFilter
     implements Filter
 {
 	
-	public static final String CONFIG_PATH = "/WEB-INF/config.xml";
-	public static final String LOGIN_PAGE = "/view/login.xhtml";
+	public static final String LOGIN_PAGE = "/InterWebJ/view/login.xhtml";
 	
 	private Environment environment;
 	
@@ -40,7 +39,7 @@ public class SecurityFilter
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		String requestUrl = getRequestUrl(httpRequest);
-		Environment.logger.debug("Requested URL: [" + requestUrl + "]");
+		//		Environment.logger.debug("Requested URL: [" + requestUrl + "]");
 		AccessControll accessControll = environment.getAccessControll();
 		PrincipalBean principalBean = (PrincipalBean) httpRequest.getSession().getAttribute("principalBean");
 		if (principalBean == null)
@@ -70,15 +69,6 @@ public class SecurityFilter
 				return;
 			}
 		}
-		String savedRequestUrl = sessionBean.getSavedRequestUrl();
-		if (principal != null && savedRequestUrl != null)
-		{
-			sessionBean.setSavedRequestUrl(null);
-			Environment.logger.debug("redirecting to: " + savedRequestUrl);
-			httpResponse.sendRedirect(httpRequest.getContextPath()
-			                          + savedRequestUrl);
-			return;
-		}
 		boolean authorized = accessControll.isAuthorized(principal,
 		                                                 requestUrl,
 		                                                 null);
@@ -92,8 +82,7 @@ public class SecurityFilter
 				                         + requestUrl);
 				Environment.logger.debug("saving requested URL: " + requestUrl);
 				sessionBean.setSavedRequestUrl(requestUrl);
-				httpResponse.sendRedirect(httpRequest.getContextPath()
-				                          + LOGIN_PAGE);
+				httpResponse.sendRedirect(LOGIN_PAGE);
 				return;
 			}
 		}
@@ -103,7 +92,8 @@ public class SecurityFilter
 
 	private String getRequestUrl(HttpServletRequest httpRequest)
 	{
-		String requestURL = httpRequest.getServletPath();
+		String requestURL = httpRequest.getContextPath()
+		                    + httpRequest.getServletPath();
 		if (httpRequest.getPathInfo() != null)
 		{
 			requestURL += httpRequest.getPathInfo();
@@ -122,7 +112,7 @@ public class SecurityFilter
 
 	private boolean isLoginPage(String requestUrl)
 	{
-		return "/view/login.xhtml".equals(requestUrl);
+		return "/InterWebJ/view/login.xhtml".equals(requestUrl);
 	}
 	
 }
