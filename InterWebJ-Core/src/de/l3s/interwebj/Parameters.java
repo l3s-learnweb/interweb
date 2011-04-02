@@ -1,0 +1,120 @@
+package de.l3s.interwebj;
+
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+
+public class Parameters
+{
+	
+	public static final String OAUTH_AUTHORIZATION_URL = "oauth_authorization_url";
+	public static final String OAUTH_TOKEN = "oauth_token";
+	public static final String OAUTH_TOKEN_SECRET = "oauth_token_secret";
+	public static final String OAUTH_VERIFIER = "oauth_verifier";
+	public static final String TITLE = "title";
+	public static final String DESCRIPTION = "description";
+	public static final String TAGS = "tags";
+	
+	private Map<String, String> parameters;
+	
+
+	public Parameters()
+	{
+		parameters = new TreeMap<String, String>();
+		
+	}
+	
+
+	public void add(Map<String, String> parameters)
+	{
+		this.parameters.putAll(parameters);
+	}
+	
+
+	public void add(String name, String value)
+	{
+		parameters.put(name, value);
+	}
+	
+
+	public void addDecoded(String name, String value)
+	{
+		try
+		{
+			String decodedValue = URLDecoder.decode(value, "UTF-8");
+			add(name, decodedValue);
+		}
+		catch (UnsupportedEncodingException shouldNeverOccurs)
+		{
+			shouldNeverOccurs.printStackTrace();
+		}
+	}
+	
+
+	public void addMultivaluedParams(Map<String, String[]> parameters)
+	{
+		for (String name : parameters.keySet())
+		{
+			String[] values = parameters.get(name);
+			String value = null;
+			if (values != null && values.length > 0)
+			{
+				value = values[0];
+			}
+			add(name, value);
+		}
+	}
+	
+
+	public void addQueryParameters(String query)
+	{
+		int startQueryIndex = query.indexOf("?") == -1
+		    ? 0 : query.indexOf("?") + 1;
+		query = query.substring(startQueryIndex);
+		String[] params = query.split("&");
+		for (String param : params)
+		{
+			String[] paramPair = param.split("=");
+			String name = paramPair[0];
+			String value = null;
+			if (paramPair.length > 1)
+			{
+				value = paramPair[1];
+			}
+			addDecoded(name, value);
+		}
+	}
+	
+
+	public boolean containsKey(String name)
+	{
+		return parameters.containsKey(name);
+	}
+	
+
+	public String get(String name)
+	{
+		return parameters.get(name);
+	}
+	
+
+	public String get(String name, String defaultValue)
+	{
+		return containsKey(name)
+		    ? get(name) : defaultValue;
+	}
+	
+
+	public Set<String> keySet()
+	{
+		return parameters.keySet();
+	}
+	
+
+	public String remove(String name)
+	{
+		return parameters.remove(name);
+	}
+}
