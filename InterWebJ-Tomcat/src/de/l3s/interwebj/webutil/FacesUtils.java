@@ -108,14 +108,21 @@ public class FacesUtils
 	}
 	
 
-	public static PrincipalBean getPrincipalBean()
+	public static HttpServletRequest getRequest()
 	{
-		return (PrincipalBean) getManagedBean("principalBean");
+		ExternalContext ec = getExternalContext();
+		return (HttpServletRequest) ec.getRequest();
 	}
 	
 
-	public static PrincipalBean getPrincipalBean(FacesContext fc)
+	public static SessionBean getSessionBean()
 	{
-		return (PrincipalBean) getManagedBean(fc, "principalBean");
+		return (SessionBean) getManagedBean("sessionBean");
+	}
+	
+
+	public static SessionBean getSessionBean(FacesContext fc)
+	{
+		return (SessionBean) getManagedBean(fc, "sessionBean");
 	}
 }

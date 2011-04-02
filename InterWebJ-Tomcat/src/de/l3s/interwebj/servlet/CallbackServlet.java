@@ -18,7 +18,7 @@ public class CallbackServlet
     extends HttpServlet
 {
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6534209215912582685L;
 	
 
 	/**
@@ -77,8 +77,7 @@ public class CallbackServlet
 		sessionBean.processAuthenticationCallback(params);
 		try
 		{
-			response.sendRedirect(request.getContextPath()
-			                      + "/view/services.xhtml");
+			response.sendRedirect("/InterWebJ/view/services.xhtml");
 		}
 		catch (IOException e)
 		{

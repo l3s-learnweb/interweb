@@ -41,20 +41,11 @@ public class SecurityFilter
 		String requestUrl = getRequestUrl(httpRequest);
 		//		Environment.logger.debug("Requested URL: [" + requestUrl + "]");
 		AccessControll accessControll = environment.getAccessControll();
-		PrincipalBean principalBean = (PrincipalBean) httpRequest.getSession().getAttribute("principalBean");
-		if (principalBean == null)
-		{
-			//			Environment.logger.debug("WARNING! PrincipalBean is NULL! Creating and storing new PrincipalBean instance");
-			principalBean = new PrincipalBean();
-			httpRequest.getSession().setAttribute("principalBean",
-			                                      principalBean);
-		}
-		IWPrincipal principal = principalBean.getPrincipal();
-		//		Environment.logger.debug("principal: " + principal);
 		SessionBean sessionBean = (SessionBean) httpRequest.getSession().getAttribute("sessionBean");
 		if (sessionBean == null)
 		{
-			//			Environment.logger.debug("WARNING! SessionBean is NULL! Creating and storing new SessionBean instance");
+			httpRequest.getSession(true);
+			Environment.logger.debug("WARNING! SessionBean is NULL! Creating and storing new SessionBean instance");
 			try
 			{
 				sessionBean = new SessionBean();
@@ -69,6 +60,8 @@ public class SecurityFilter
 				return;
 			}
 		}
+		IWPrincipal principal = sessionBean.getPrincipal();
+		//		Environment.logger.debug("principal: " + principal);
 		boolean authorized = accessControll.isAuthorized(principal,
 		                                                 requestUrl,
 		                                                 null);
