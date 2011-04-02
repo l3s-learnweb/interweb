@@ -12,41 +12,50 @@
 	<ui:define name="content">
 		<h:messages showSummary="true" showDetail="false" styleClass="error" />
 		<h:form>
-			<h:panelGrid columns="4" columnClasses="top,top,top,top">
-				<h:column>
+			<h:panelGrid columns="2" columnClasses="top,top">
+				<rich:panel styleClass="richpanel">
 					<h:outputLabel for="query" value="Search query: " />
 					<h:inputText id="query" label="query" required="true"
 						value="#{searchBean.query}" size="30" />
 					<h:commandButton action="#{searchBean.search()}" value="Search"
 						id="search_button" style="margin-left:5px" />
-				</h:column>
-				<h:column>
-					<h:outputLabel for="result_count" value="results count: " />
-					<h:inputText id="result_count" label="result_count" required="true"
-						value="#{searchBean.resultCount}" size="3" />
-				</h:column>
-				<h:column style="margin-left: 50px;">
-					<div><h:selectManyCheckbox id="connectors"
-						value="#{searchBean.selectedConnectorNames}"
-						layout="pageDirection">
-						<f:selectItems value="#{searchBean.connectorNames}" />
-						<f:ajax event="change" render="content_types" />
-					</h:selectManyCheckbox></div>
-				</h:column>
-				<h:column style="margin-left: 50px;">
-					<div><h:selectManyCheckbox id="content_types"
-						value="#{searchBean.selectedContentTypes}" layout="pageDirection">
-						<f:selectItems value="#{searchBean.contentTypes}" />
-						<f:ajax event="change" execute="#{searchBean.save()}" />
-					</h:selectManyCheckbox></div>
-				</h:column>
+				</rich:panel>
+				<h:panelGrid columns="3" columnClasses="top,top,top">
+					<h:panelGroup>
+						<h:outputLabel value="Results: " for="result_count" />
+						<h:inputText id="result_count" label="results count"
+							required="true" value="#{searchBean.resultCount}" size="4"
+							style="margin-right: 5px;" />
+					</h:panelGroup>
+					<rich:panel styleClass="richpanel" style="border-width: 1px;">
+						<f:facet name="header">
+							<h:outputText value="Connectors" />
+						</f:facet>
+						<h:selectManyCheckbox id="connectors"
+							value="#{searchBean.selectedConnectorNames}"
+							layout="pageDirection">
+							<f:selectItems value="#{searchBean.connectorNames}" />
+							<f:ajax event="change" render="content_types" />
+						</h:selectManyCheckbox>
+					</rich:panel>
+					<rich:panel styleClass="richpanel" style="border-width: 1px;">
+						<f:facet name="header">
+							<h:outputText value="Content types" />
+						</f:facet>
+						<h:selectManyCheckbox id="content_types"
+							value="#{searchBean.selectedContentTypes}" layout="pageDirection">
+							<f:selectItems value="#{searchBean.contentTypes}" />
+							<f:ajax event="change" execute="#{searchBean.save()}" />
+						</h:selectManyCheckbox>
+					</rich:panel>
+				</h:panelGrid>
 			</h:panelGrid>
 		</h:form>
 		<h:outputLabel
 			value="Total #{0+searchBean.queryResult.resultItems.size()} result(s) found (#{searchBean.queryResult.elapsedTime/1000} s)" />
 		<h:form>
 			<h:panelGrid>
-				<rich:dataScroller for="result_table" maxPages="10" />
+				<rich:dataScroller for="result_table" maxPages="12" />
 				<rich:dataTable value="#{searchBean.queryResult.resultItems}"
 					var="resultItem" id="result_table" rows="10">
 					<rich:column style="vertical-align: top;">
@@ -69,11 +78,14 @@
 						<div><span>#{resultItem.description}</span> <span
 							style="text-align: left; vertical-align: bottom; color: teal; font-size: 0.8em">&nbsp;&nbsp;&nbsp;#{resultItem.date}</span>
 						</div>
+						<div><span
+							style="text-align: left; vertical-align: bottom; color: red; font-size: 0.8em">#{resultItem.tags}</span>
+						</div>
 						</div>
 						</div>
 					</rich:column>
 				</rich:dataTable>
-				<rich:dataScroller for="result_table" maxPages="10" />
+				<rich:dataScroller for="result_table" maxPages="12" />
 			</h:panelGrid>
 		</h:form>
 	</ui:define>

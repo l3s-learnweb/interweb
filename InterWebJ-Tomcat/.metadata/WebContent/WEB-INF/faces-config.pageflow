@@ -1,9 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pageflow:Pageflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf12959843525480" configfile="/InterWebJ-Tomcat/WebContent/WEB-INF/faces-config.xml">
-  <nodes xsi:type="pageflow:PFPage" name="services.xhtml" x="408" y="216" id="pf12979540476439" outlinks="pf129795404764310" inlinks="pf129795404764310" path="/services.xhtml"/>
-  <links id="pf129795404764310" target="pf12979540476439" source="pf12979540476439" outcome="redirect_request_token">
-    <bendPoints d1Height="-36" d2Height="-36"/>
-    <bendPoints d1Width="-64" d1Height="-36" d2Width="-64" d2Height="-36"/>
-    <bendPoints d1Width="-64" d2Width="-64"/>
-  </links>
-</pageflow:Pageflow>
+<pageflow:Pageflow xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf12959843525480" configfile="/InterWebJ-Tomcat/WebContent/WEB-INF/faces-config.xml"/>

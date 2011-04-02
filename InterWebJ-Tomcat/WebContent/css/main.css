@@ -23,6 +23,17 @@ tr.hide {
 	vertical-align: top;
 }
 
+div.richpanel{
+	background-color: inherit;
+	margin-right: 5px;
+	border-width: 0px;
+}
+
+div.richpanel div {
+	margin: 0;
+	padding: 3px;
+}
+
 /* Links */
 a {
 	border-bottom: 1px dotted #0077CC;
@@ -116,7 +127,7 @@ del {
 
 /* Structure */
 body {
-	width: 800px;
+	width: 1000px;
 	margin: 0 auto;
 	background: #f9f9f9;
 }

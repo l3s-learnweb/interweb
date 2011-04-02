@@ -10,24 +10,25 @@
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
-		<h:form enctype="multipart/form-data" prependId="false">
+		<h:messages showSummary="true" showDetail="false" styleClass="error" />
+		<h:form>
 			<h:panelGrid columns="3" columnClasses="top,top,top">
-				<h:panelGroup id="file_types">
-					<rich:panel>
+				<h:panelGroup>
+					<rich:panel styleClass="richpanel">
 						<f:facet name="header">
-							<h:outputText value="File types" />
+							<h:outputText value="Content types" />
 						</f:facet>
 						<h:selectOneRadio value="#{uploadBean.selectedContentType}"
 							layout="pageDirection">
 							<f:selectItems value="#{uploadBean.contentTypes}" />
 							<f:ajax event="change" render="connectors" />
+							<f:ajax event="change" render="data" />
 						</h:selectOneRadio>
 					</rich:panel>
-				</h:panelGroup>
-				<h:panelGroup id="connectors">
-					<rich:panel>
+					<br />
+					<rich:panel id="connectors" styleClass="richpanel">
 						<f:facet name="header">
-							<h:outputText value="Supported service connectors" />
+							<h:outputText value="Supported connectors" />
 						</f:facet>
 						<h:selectManyCheckbox value="#{uploadBean.selectedConnectors}"
 							layout="pageDirection">
@@ -36,11 +37,45 @@
 						</h:selectManyCheckbox>
 					</rich:panel>
 				</h:panelGroup>
-				<h:panelGroup id="file">
-					<rich:fileUpload fileUploadListener="#{uploadBean.listener}"
-						id="upload" addLabel="Select file"
-						oncomplete="#{uploadBean.upload()}">
-					</rich:fileUpload>
+				<rich:panel styleClass="richpanel">
+					<f:facet name="header">
+						<h:outputText value="Upload metadata info" />
+					</f:facet>
+					<h:outputLabel for="title" value="Title: " />&nbsp;&nbsp;&nbsp;
+					<h:inputText id="title" label="title" required="true"
+						value="#{uploadBean.title}" size="37" />
+					<br />
+					<br />
+					<h:outputLabel for="description" value="Description: " />
+					<br />
+					<h:inputTextarea id="description" label="description"
+						required="true" value="#{uploadBean.description}" cols="40"
+						rows="8" />
+					<br />
+					<br />
+					<h:outputLabel for="tags" value="Tags: " />&nbsp;&nbsp;
+					<h:inputText id="tags" label="title" value="#{uploadBean.tags}"
+						size="37" />
+				</rich:panel>
+				<h:panelGroup id="data">
+					<h:panelGroup rendered="#{uploadBean.fileUpload}">
+						<rich:fileUpload fileUploadListener="#{uploadBean.listener}"
+							id="upload" addLabel="Select file"
+							oncomplete="#{uploadBean.upload()}">
+						</rich:fileUpload>
+					</h:panelGroup>
+					<rich:panel styleClass="richpanel"
+						rendered="#{!uploadBean.fileUpload}">
+						<f:facet name="header">
+							<h:outputText value="Text or URL" />
+						</f:facet>
+						<h:inputTextarea id="text" label="text data"
+							value="#{uploadBean.text}" cols="40" rows="8" />
+						<br />
+						<br />
+						<h:commandButton action="#{uploadBean.uploadText()}"
+							value="Upload" id="upload_button" />
+					</rich:panel>
 				</h:panelGroup>
 			</h:panelGrid>
 		</h:form>

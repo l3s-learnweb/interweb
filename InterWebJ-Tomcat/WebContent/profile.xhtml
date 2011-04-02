@@ -11,11 +11,11 @@
 		<h:form id="change_password_form">
 			<h:panelGrid columns="3">
 				<h:outputLabel value="username: " />
-				<h:outputLabel value="#{principalBean.principal.name}" />
+				<h:outputLabel value="#{sessionBean.principal.name}" />
 				<h:column></h:column>
 
 				<h:outputLabel value="e-mail: " />
-				<h:outputLabel value="#{principalBean.principal.email}" />
+				<h:outputLabel value="#{sessionBean.principal.email}" />
 				<h:column></h:column>
 
 				<h:outputLabel for="old_password" value="old password: "></h:outputLabel>

@@ -70,6 +70,8 @@
       <url-pattern>/index.xhtml</url-pattern>
       <url-pattern>/css/*</url-pattern>
       <url-pattern>/img/*</url-pattern>
+      <!-- temporary url-pattern -->
+      <url-pattern>/api/*</url-pattern>
     </web-resource-collection>
     <user-data-constraint>
       <transport-guarantee>NONE</transport-guarantee>
