@@ -43,24 +43,31 @@
 					</f:facet>
 					<h:outputLabel for="title" value="Title: " />&nbsp;&nbsp;&nbsp;
 					<h:inputText id="title" label="title" required="true"
-						value="#{uploadBean.title}" size="37" />
+						value="#{uploadBean.title}" size="37">
+						<f:ajax event="change" execute="#{uploadBean.save()}" />
+					</h:inputText>
 					<br />
 					<br />
 					<h:outputLabel for="description" value="Description: " />
 					<br />
 					<h:inputTextarea id="description" label="description"
 						required="true" value="#{uploadBean.description}" cols="40"
-						rows="8" />
+						rows="8">
+						<f:ajax event="change" execute="#{uploadBean.save()}" />
+					</h:inputTextarea>
 					<br />
 					<br />
 					<h:outputLabel for="tags" value="Tags: " />&nbsp;&nbsp;
-					<h:inputText id="tags" label="title" value="#{uploadBean.tags}"
-						size="37" />
+					<h:inputText id="tags" label="tags" value="#{uploadBean.tags}"
+						size="37">
+						<f:ajax event="change" execute="#{uploadBean.save()}" />
+					</h:inputText>
 				</rich:panel>
 				<h:panelGroup id="data">
 					<h:panelGroup rendered="#{uploadBean.fileUpload}">
 						<rich:fileUpload fileUploadListener="#{uploadBean.listener}"
 							id="upload" addLabel="Select file"
+							onfilesubmit="#{uploadBean.save()}"
 							oncomplete="#{uploadBean.upload()}">
 						</rich:fileUpload>
 					</h:panelGroup>

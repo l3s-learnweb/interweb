@@ -40,7 +40,7 @@
 					</rich:panel>
 					<rich:panel styleClass="richpanel" style="border-width: 1px;">
 						<f:facet name="header">
-							<h:outputText value="Content types" />
+							<h:outputText value="Supported content types" />
 						</f:facet>
 						<h:selectManyCheckbox id="content_types"
 							value="#{searchBean.selectedContentTypes}" layout="pageDirection">
@@ -75,12 +75,10 @@
 							value="#{resultItem.url}" target="_blank">#{resultItem.title}</h:outputLink></h6>
 						<div><h:outputText value="#{resultItem.asHtml()}"
 							escape="false" />
-						<div><span>#{resultItem.description}</span> <span
-							style="text-align: left; vertical-align: bottom; color: teal; font-size: 0.8em">&nbsp;&nbsp;&nbsp;#{resultItem.date}</span>
-						</div>
+						<div><span>#{resultItem.description}</span></div>
 						<div><span
-							style="text-align: left; vertical-align: bottom; color: red; font-size: 0.8em">#{resultItem.tags}</span>
-						</div>
+							style="text-align: left; vertical-align: bottom; color: teal; font-size: 0.8em">#{resultItem.date}
+						- Tags: #{searchBean.getTags(resultItem)}</span></div>
 						</div>
 						</div>
 					</rich:column>
