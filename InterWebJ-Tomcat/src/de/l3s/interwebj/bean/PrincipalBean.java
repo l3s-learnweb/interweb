@@ -18,17 +18,10 @@ import de.l3s.interwebj.webutil.*;
 public class PrincipalBean
 {
 	
-	private IWPrincipal principal;
-	
-
-	public IWPrincipal getPrincipal()
-	{
-		return principal;
-	}
-	
-
 	public boolean hasRole(String role)
 	{
+		SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
+		IWPrincipal principal = sessionBean.getPrincipal();
 		//		Environment.logger.debug("requesting role for principal "
 		//		                         + principal
 		//		                         + ": "
@@ -41,7 +34,8 @@ public class PrincipalBean
 
 	public boolean isLoggedIn()
 	{
-		return principal != null;
+		SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
+		return sessionBean.getPrincipal() != null;
 	}
 	
 
@@ -50,7 +44,7 @@ public class PrincipalBean
 	{
 		Environment environment = Environment.getInstance();
 		Database database = environment.getDatabase();
-		principal = database.authenticate(username, password);
+		IWPrincipal principal = database.authenticate(username, password);
 		if (principal == null)
 		{
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR,
@@ -59,6 +53,7 @@ public class PrincipalBean
 			return "failed";
 		}
 		SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
+		sessionBean.setPrincipal(principal);
 		String savedRequestUrl = sessionBean.getSavedRequestUrl();
 		if (savedRequestUrl != null)
 		{
@@ -74,19 +69,11 @@ public class PrincipalBean
 	public String logout()
 	    throws IOException
 	{
-		FacesContext context = FacesContext.getCurrentInstance();
-		ExternalContext ec = context.getExternalContext();
-		HttpServletRequest request = (HttpServletRequest) ec.getRequest();
+		SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
+		sessionBean.setPrincipal(null);
+		HttpServletRequest request = FacesUtils.getRequest();
 		request.getSession(false).invalidate();
-		principal = null;
-		ec.redirect("./index.xhtml");
+		FacesUtils.getExternalContext().redirect("./index.xhtml");
 		return "success";
 	}
-	
-
-	public void setPrincipal(IWPrincipal principal)
-	{
-		this.principal = principal;
-	}
-	
 }
