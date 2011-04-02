@@ -5,12 +5,9 @@ import java.util.*;
 
 import javax.faces.bean.*;
 
-import com.sun.istack.internal.*;
-
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.webutil.*;
 
 
 @ManagedBean
@@ -18,8 +15,8 @@ import de.l3s.interwebj.webutil.*;
 public class SessionBean
 {
 	
-	@NotNull
 	private Map<ServiceConnector, Parameters> pendingAuthorizationConnectors;
+	private IWPrincipal principal;
 	private String savedRequestUrl;
 	
 
@@ -37,6 +34,12 @@ public class SessionBean
 	}
 	
 
+	public IWPrincipal getPrincipal()
+	{
+		return principal;
+	}
+	
+
 	public String getSavedRequestUrl()
 	{
 		return savedRequestUrl;
@@ -49,14 +52,13 @@ public class SessionBean
 		for (ServiceConnector connector : pendingAuthorizationConnectors.keySet())
 		{
 			Parameters parameters = pendingAuthorizationConnectors.get(connector);
-			parameters.add(params);
+			parameters.addMultivaluedParams(params);
 			AuthCredentials authCredentials = connector.completeAuthentication(parameters);
 			if (authCredentials != null)
 			{
 				pendingAuthorizationConnectors.remove(connector);
 				Environment.logger.debug(connector.getName() + " authenticated");
 				Engine engine = Environment.getInstance().getEngine();
-				IWPrincipal principal = FacesUtils.getPrincipalBean().getPrincipal();
 				engine.setUserAuthCredentials(connector,
 				                              principal,
 				                              authCredentials);
@@ -64,6 +66,12 @@ public class SessionBean
 				return;
 			}
 		}
+	}
+	
+
+	public void setPrincipal(IWPrincipal principal)
+	{
+		this.principal = principal;
 	}
 	
 

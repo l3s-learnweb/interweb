@@ -54,7 +54,7 @@ public class SearchBean
 	{
 		List<SelectItem> connectorSelectItems = new ArrayList<SelectItem>();
 		Engine engine = Environment.getInstance().getEngine();
-		IWPrincipal principal = FacesUtils.getPrincipalBean().getPrincipal();
+		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
 			if (connector.isRegistered()
@@ -185,7 +185,7 @@ public class SearchBean
 		query.setResultCount(resultCount);
 		QueryResult queryResult = new QueryResult(query);
 		Engine engine = Environment.getInstance().getEngine();
-		IWPrincipal principal = FacesUtils.getPrincipalBean().getPrincipal();
+		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		try
 		{
 			QueryResultCollector collector = engine.getQueryResultCollector(query,

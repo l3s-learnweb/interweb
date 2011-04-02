@@ -54,8 +54,7 @@ public class UserDataBean
 			IWPrincipal principal = new IWPrincipal(username, email);
 			principal.addRole("user");
 			database.savePrincipal(principal, password);
-			PrincipalBean principalBean = FacesUtils.getPrincipalBean();
-			principalBean.setPrincipal(principal);
+			FacesUtils.getSessionBean().setPrincipal(principal);
 			return "success";
 		}
 		return "failed";

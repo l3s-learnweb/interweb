@@ -79,13 +79,13 @@ public class ServicesBean
 	public List<ServiceConnector> getRegisteredConnectors()
 	    throws InterWebException
 	{
-		List<ServiceConnector> registeredConnectors = new LinkedList<ServiceConnector>();
 		Engine engine = Environment.getInstance().getEngine();
-		for (ServiceConnector connector : engine.getConnectors())
+		List<ServiceConnector> registeredConnectors = engine.getConnectors();
+		for (ServiceConnector connector : registeredConnectors)
 		{
-			if (connector.isRegistered())
+			if (!connector.isRegistered())
 			{
-				registeredConnectors.add(connector);
+				registeredConnectors.remove(connector);
 			}
 		}
 		return registeredConnectors;
@@ -96,10 +96,9 @@ public class ServicesBean
 	    throws InterWebException
 	{
 		Engine engine = Environment.getInstance().getEngine();
-		IWPrincipal principal = FacesUtils.getPrincipalBean().getPrincipal();
+		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		if (principal != null)
 		{
-			//			Environment.logger.debug("current user: " + principal.getName());
 			return engine.isUserAuthenticated((ServiceConnector) connector,
 			                                  principal);
 		}
@@ -112,7 +111,7 @@ public class ServicesBean
 	{
 		Environment.logger.debug("revoking user authentication");
 		Engine engine = Environment.getInstance().getEngine();
-		IWPrincipal principal = FacesUtils.getPrincipalBean().getPrincipal();
+		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		//		Environment.logger.debug("current user: " + principal.getName());
 		engine.setUserAuthCredentials((ServiceConnector) connector,
 		                              principal,
