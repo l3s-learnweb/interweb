@@ -134,7 +134,7 @@ public class UploadBean
 		Environment.logger.debug("Content type: "
 		                         + uploadedFile.getContentType());
 		data = uploadedFile.getData();
-		Environment.logger.debug("Read data size: " + data.length);
+		Environment.logger.debug("Size: " + data.length);
 	}
 	
 
@@ -190,7 +190,10 @@ public class UploadBean
 			Parameters params = new Parameters();
 			params.add(Parameters.TITLE, title);
 			params.add(Parameters.DESCRIPTION, description);
-			params.add(Parameters.TAGS, tags);
+			if (tags != null)
+			{
+				params.add(Parameters.TAGS, tags);
+			}
 			params.add("filename", fileName);
 			engine.upload(data,
 			              principal,
@@ -213,7 +216,10 @@ public class UploadBean
 			Parameters params = new Parameters();
 			params.add(Parameters.TITLE, title);
 			params.add(Parameters.DESCRIPTION, description);
-			params.add(Parameters.TAGS, tags);
+			if (tags != null)
+			{
+				params.add(Parameters.TAGS, tags);
+			}
 			engine.upload(text.getBytes(Charset.forName("UTF-8")),
 			              principal,
 			              selectedConnectors,

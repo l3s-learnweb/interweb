@@ -14,6 +14,7 @@ import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.query.*;
 import de.l3s.interwebj.query.Query.SearchScope;
+import de.l3s.interwebj.util.*;
 import de.l3s.interwebj.webutil.*;
 
 
@@ -125,6 +126,12 @@ public class SearchBean
 	public List<String> getSelectedContentTypes()
 	{
 		return selectedContentTypes;
+	}
+	
+
+	public String getTags(Object resultItem)
+	{
+		return CoreUtils.convertToUniqueList(((ResultItem) resultItem).getTags()).toString();
 	}
 	
 
