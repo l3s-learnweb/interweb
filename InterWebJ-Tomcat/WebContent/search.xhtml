@@ -51,11 +51,16 @@
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:form>
-		<h:outputLabel
-			value="Total #{0+searchBean.queryResult.resultItems.size()} result(s) found (#{searchBean.queryResult.elapsedTime/1000} s)" />
-		<h:form>
+		<ui:fragment rendered="#{searchBean.hasResults()}">
+			<h:outputText value="No results found"
+				rendered="#{searchBean.queryResult.size()==0}" />
+			<h:outputText
+				value="Total #{searchBean.queryResult.resultItems.size()} result(s) found (#{searchBean.queryResult.elapsedTime/1000} s)"
+				rendered="#{searchBean.queryResult.size()>0}" />
+		</ui:fragment>
+		<h:form rendered="#{searchBean.hasResults()}">
 			<h:panelGrid>
-				<rich:dataScroller for="result_table" maxPages="12" />
+				<rich:dataScroller for="result_table" maxPages="11" />
 				<rich:dataTable value="#{searchBean.queryResult.resultItems}"
 					var="resultItem" id="result_table" rows="10">
 					<rich:column style="vertical-align: top;">
@@ -77,13 +82,13 @@
 							escape="false" />
 						<div><span>#{resultItem.description}</span></div>
 						<div><span
-							style="text-align: left; vertical-align: bottom; color: teal; font-size: 0.8em">#{resultItem.date}
+							style="text-align: left; vertical-align: bottom; color: #0077CC; font-size: 0.8em">#{resultItem.date}
 						- Tags: #{searchBean.getTags(resultItem)}</span></div>
 						</div>
 						</div>
 					</rich:column>
 				</rich:dataTable>
-				<rich:dataScroller for="result_table" maxPages="12" />
+				<rich:dataScroller for="result_table" maxPages="11" />
 			</h:panelGrid>
 		</h:form>
 	</ui:define>

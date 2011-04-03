@@ -38,12 +38,14 @@ public class UploadBean
 	private String tags;
 	private String text;
 	private String fileName;
+	private boolean publicAccess;
 	
 
 	public UploadBean()
 	{
 		title = "No Title";
 		description = "No Description";
+		publicAccess = true;
 	}
 	
 
@@ -125,6 +127,12 @@ public class UploadBean
 	}
 	
 
+	public boolean isPublicAccess()
+	{
+		return publicAccess;
+	}
+	
+
 	public void listener(FileUploadEvent event)
 	    throws Exception
 	{
@@ -146,6 +154,12 @@ public class UploadBean
 	public void setDescription(String description)
 	{
 		this.description = description;
+	}
+	
+
+	public void setPublicAccess(boolean publicAccess)
+	{
+		this.publicAccess = publicAccess;
 	}
 	
 
@@ -194,6 +208,9 @@ public class UploadBean
 			{
 				params.add(Parameters.TAGS, tags);
 			}
+			String privacy = isPublicAccess()
+			    ? "0" : "1";
+			params.add(Parameters.PRIVACY, privacy);
 			params.add("filename", fileName);
 			engine.upload(data,
 			              principal,
@@ -220,6 +237,9 @@ public class UploadBean
 			{
 				params.add(Parameters.TAGS, tags);
 			}
+			String privacy = isPublicAccess()
+			    ? "0" : "1";
+			params.add(Parameters.PRIVACY, privacy);
 			engine.upload(text.getBytes(Charset.forName("UTF-8")),
 			              principal,
 			              selectedConnectors,

@@ -159,7 +159,7 @@ public class SearchBean
 
 	public boolean hasResults()
 	{
-		return queryResult != null && queryResult.size() > 0;
+		return queryResult != null;
 	}
 	
 

@@ -62,6 +62,13 @@
 						size="37">
 						<f:ajax event="change" execute="#{uploadBean.save()}" />
 					</h:inputText>
+					<br />
+					<br />
+					<h:selectBooleanCheckbox label="public" id="privacy"
+						value="#{uploadBean.publicAccess}">
+						<f:ajax event="change" execute="#{uploadBean.save()}" />
+					</h:selectBooleanCheckbox>
+					<h:outputLabel for="privacy" value="Public access" />
 				</rich:panel>
 				<h:panelGroup id="data">
 					<h:panelGroup rendered="#{uploadBean.fileUpload}">
