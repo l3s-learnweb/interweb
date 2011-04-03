@@ -392,6 +392,17 @@ public class FlickrConnector
 					metaData.setDescription(params.get(Parameters.DESCRIPTION,
 					                                   "No description"));
 				}
+				if (params.containsKey(Parameters.TAGS))
+				{
+					String tags = params.get(Parameters.TAGS);
+					metaData.setTags(CoreUtils.convertToUniqueList(tags));
+				}
+				if (params.containsKey(Parameters.PRIVACY))
+				{
+					int privacy = Integer.parseInt(params.get(Parameters.PRIVACY,
+					                                          "0"));
+					metaData.setPublicFlag(privacy == 0);
+				}
 				uploader.upload(data, metaData);
 				Environment.logger.debug("data successfully uploaded");
 			}

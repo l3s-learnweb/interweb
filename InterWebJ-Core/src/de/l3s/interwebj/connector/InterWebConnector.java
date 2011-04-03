@@ -438,29 +438,45 @@ public class InterWebConnector
 		String title = params.get(Parameters.TITLE, "No Title");
 		String description = params.get(Parameters.DESCRIPTION,
 		                                "No Description");
+		String tags = params.get(Parameters.TAGS);
+		Integer privacy = Integer.valueOf(params.get(Parameters.PRIVACY, "0"));
+		MultiPart multiPart = new MultiPart();
 		Parameters iwParams = new Parameters();
 		iwParams.add("iw_consumer_key", consumerAuthCredentials.getKey());
 		iwParams.add("iw_token", authCredentials.getKey());
 		iwParams.add(Parameters.TITLE, title);
+		iwParams.add("is_private", privacy.toString());
+		multiPart = multiPart.bodyPart(new FormDataBodyPart(Parameters.TITLE,
+		                                                    title));
 		iwParams.add(Parameters.DESCRIPTION, description);
+		multiPart = multiPart.bodyPart(new FormDataBodyPart(Parameters.DESCRIPTION,
+		                                                    description));
+		if (tags != null)
+		{
+			iwParams.add(Parameters.TAGS, tags);
+			multiPart = multiPart.bodyPart(new FormDataBodyPart(Parameters.TAGS,
+			                                                    tags));
+		}
+		multiPart = multiPart.bodyPart(new FormDataBodyPart("is_private",
+		                                                    privacy.toString()));
 		String iwSignature = generateSignature(API_UPLOAD_PATH, iwParams);
 		iwParams.add("iw_signature", iwSignature);
+		iwParams.remove(Parameters.TITLE);
+		iwParams.remove(Parameters.DESCRIPTION);
+		iwParams.remove(Parameters.TAGS);
+		iwParams.remove("is_private");
 		addUriParameters(uriBuilder, iwParams);
 		WebResource resource = client.resource(uriBuilder.build());
 		Environment.logger.debug("querying interweb search: "
 		                         + resource.toString());
-		ClientResponse response = null;
 		if (isFileUpload(contentType))
 		{
 			try
 			{
 				File f = createTempFile(params.get("filename"), data);
-				MultiPart multiPart = new MultiPart();
 				FileDataBodyPart fileDataBodyPart = new FileDataBodyPart("data",
 				                                                         f);
 				multiPart.bodyPart(fileDataBodyPart);
-				response = resource.type(MediaType.MULTIPART_FORM_DATA).accept(MediaType.TEXT_XML).post(ClientResponse.class,
-				                                                                                        multiPart);
 			}
 			catch (IOException e)
 			{
@@ -471,9 +487,11 @@ public class InterWebConnector
 		else
 		{
 			String dataString = new String(data, Charset.forName("UTF-8"));
-			resource = resource.queryParam("data", dataString);
-			response = resource.type(MediaType.APPLICATION_FORM_URLENCODED).accept(MediaType.TEXT_XML).post(ClientResponse.class);
+			multiPart = multiPart.bodyPart(new FormDataBodyPart("data",
+			                                                    dataString));
 		}
+		ClientResponse response = resource.type(MediaType.MULTIPART_FORM_DATA).accept(MediaType.TEXT_XML).post(ClientResponse.class,
+		                                                                                                       multiPart);
 		if (response.getStatus() != 200)
 		{
 			throw new InterWebException(response.toString());
@@ -487,8 +505,12 @@ public class InterWebConnector
 	public static void main(String[] args)
 	    throws Exception
 	{
-		//		testGet();
-		testPut();
+		String[] words = "water people live boy air play land light house picture animal earth country school food sun city tree sea night life paper music book letter car rain friend horse girl bird family leave rock fire king travel war love person money road star street object moon island test gold game".split(" ");
+		for (String word : words)
+		{
+			testGet();
+			
+		}
 	}
 	
 
@@ -515,16 +537,4 @@ public class InterWebConnector
 		String id = queryResult.getQuery().getId();
 		System.out.println(id);
 	}
-	
-
-	public static void testPut()
-	    throws Exception
-	{
-		AuthCredentials consumerAuthCredentials = new AuthCredentials("***REMOVED***",
-		                                                              "***REMOVED***");
-		AuthCredentials userAuthCredentials = new AuthCredentials("***REMOVED***");
-		InterWebConnector iwc = new InterWebConnector(consumerAuthCredentials);
-		iwc.put(new byte[] {}, "image", new Parameters(), userAuthCredentials);
-	}
-	
 }

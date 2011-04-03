@@ -16,6 +16,7 @@ public class Parameters
 	public static final String TITLE = "title";
 	public static final String DESCRIPTION = "description";
 	public static final String TAGS = "tags";
+	public static final String PRIVACY = "privacy";
 	
 	private Map<String, String> parameters;
 	
@@ -102,8 +103,12 @@ public class Parameters
 
 	public String get(String name, String defaultValue)
 	{
-		return containsKey(name)
-		    ? get(name) : defaultValue;
+		String value = get(name);
+		if (value == null)
+		{
+			return defaultValue;
+		}
+		return value;
 	}
 	
 

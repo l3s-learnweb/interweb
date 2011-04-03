@@ -167,7 +167,7 @@ public class Engine
 	                   Parameters params)
 	    throws InterWebException
 	{
-		Environment.logger.debug("start uploading...");
+		Environment.logger.debug("start uploading ...");
 		for (String connectorName : connectorNames)
 		{
 			
@@ -185,7 +185,7 @@ public class Engine
 				Environment.logger.debug("done");
 			}
 		}
-		Environment.logger.debug("...uploading done");
+		Environment.logger.debug("... uploading done");
 	}
 	
 
@@ -195,46 +195,47 @@ public class Engine
 		Database database = Environment.getInstance().getDatabase();
 		Engine engine = new Engine(database);
 		IWPrincipal principal = database.authenticate("olex", "123456");
+		String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
+		List<String> connectorNames = new ArrayList<String>();
+		connectorNames.add("interweb");
+		//		connectorNames.add("youtube");
+		//		connectorNames.add("flickr");
+		int retryCount = 50;
+		for (int i = 0; i < retryCount; i++)
+		{
+			testSearch("people", connectorNames, engine, principal);
+		}
+		//		for (String word : words)
+		//		{
+		//			testSearch(word, connectorNames, engine, principal);
+		//		}
+		System.out.println("finished");
+	}
+	
+
+	private static void testSearch(String word,
+	                               List<String> connectorNames,
+	                               Engine engine,
+	                               IWPrincipal principal)
+	    throws InterWebException
+	{
 		QueryFactory queryFactory = new QueryFactory();
-		Query query = queryFactory.createQuery("auto");
+		Query query = queryFactory.createQuery(word);
 		query.addContentType(Query.CT_VIDEO);
 		query.addContentType(Query.CT_IMAGE);
-		query.addContentType(Query.CT_TEXT);
-		query.addContentType(Query.CT_AUDIO);
 		query.addSearchScope(SearchScope.TEXT);
 		query.addSearchScope(SearchScope.TAGS);
 		query.setResultCount(50);
 		query.setSortOrder(SortOrder.RELEVANCE);
-		for (String connectorName : engine.getConnectorNames())
+		for (String connectorName : connectorNames)
 		{
 			query.addConnectorName(connectorName);
 		}
 		QueryResultCollector collector = engine.getQueryResultCollector(query,
 		                                                                principal);
-		long[] times = run(20, collector);
-		long sum = 0;
-		for (long l : times)
-		{
-			sum += l;
-		}
-		System.out.println(sum / (times.length + 0d));
-		//		QueryResult queryResult = collector.retrieve();
-		//		System.out.println("queryResult.getResultItems().size(): ["
-		//		                   + queryResult.getResultItems().size() + "]");
-		//		System.out.println("queryResult.getElapsedTime(): ["
-		//		                   + queryResult.getElapsedTime() + "]");
-	}
-	
-
-	private static long[] run(int count, QueryResultCollector collector)
-	    throws InterWebException
-	{
-		long[] times = new long[count];
-		for (int i = 0; i < times.length; i++)
-		{
-			QueryResult queryResult = collector.retrieve();
-			times[i] = queryResult.getElapsedTime();
-		}
-		return times;
+		QueryResult queryResult = collector.retrieve();
+		System.out.println("query: [" + query + "]");
+		System.out.println("elapsed time : [" + queryResult.getElapsedTime()
+		                   + "]");
 	}
 }

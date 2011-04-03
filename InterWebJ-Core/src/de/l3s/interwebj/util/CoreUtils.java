@@ -19,6 +19,21 @@ public class CoreUtils
 	private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 
+	public static List<String> convertToUniqueList(String s)
+	{
+		Set<String> list = new HashSet<String>();
+		String[] tokens = s.split("[,\\s]");
+		for (String token : tokens)
+		{
+			if (token.length() > 0)
+			{
+				list.add(token);
+			}
+		}
+		return new ArrayList<String>(list);
+	}
+	
+
 	public static <T> String convertToString(Collection<T> c)
 	{
 		StringBuilder sb = new StringBuilder();
@@ -121,6 +136,13 @@ public class CoreUtils
 		}
 		br.close();
 		return sb.toString();
+	}
+	
+
+	public static void main(String[] args)
+	{
+		String s = "te\nst1,te,,,\t st2";
+		System.out.println(convertToUniqueList(s));
 	}
 	
 

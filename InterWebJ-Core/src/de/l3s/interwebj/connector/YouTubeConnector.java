@@ -224,7 +224,10 @@ public class YouTubeConnector
 					resultItem.setTags(tags);
 					resultItem.setRank(count++);
 					resultItem.setTotalResultCount(vf.getTotalResults());
-					resultItem.setViewCount((int) ve.getStatistics().getViewCount());
+					if (ve.getStatistics() != null)
+					{
+						resultItem.setViewCount((int) ve.getStatistics().getViewCount());
+					}
 					resultItem.setCommentCount(getCommentCount(ve));
 					queryResult.addResultItem(resultItem);
 				}
@@ -361,19 +364,22 @@ public class YouTubeConnector
 		}
 		VideoEntry ve = new VideoEntry();
 		YouTubeMediaGroup mg = ve.getOrCreateMediaGroup();
-		String title = params.get(Parameters.TITLE, "No title");
-		String description = params.get(Parameters.DESCRIPTION,
-		                                "No description");
 		String category = params.get("category", "Film");
-		String keywords = params.get("keywords", "no_keywords");
 		mg.addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME,
 		                                 category));
 		mg.setTitle(new MediaTitle());
+		String title = params.get(Parameters.TITLE, "No title");
 		mg.getTitle().setPlainTextContent(title);
 		mg.setKeywords(new MediaKeywords());
-		mg.getKeywords().addKeyword(keywords);
+		List<String> keywords = CoreUtils.convertToUniqueList(params.get(Parameters.TAGS,
+		                                                                 ""));
+		mg.getKeywords().addKeywords(keywords);
 		mg.setDescription(new MediaDescription());
+		String description = params.get(Parameters.DESCRIPTION,
+		                                "No description");
 		mg.getDescription().setPlainTextContent(description);
+		int privacy = Integer.parseInt(params.get(Parameters.PRIVACY, "0"));
+		mg.setPrivate(privacy > 0);
 		MediaSource ms = new MediaByteArraySource(data, "video/mp4");
 		ve.setMediaSource(ms);
 		try
