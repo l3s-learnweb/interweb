@@ -5,6 +5,9 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
+import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.util.*;
+
 
 @XmlRootElement(name = "query")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -44,6 +47,22 @@ public class IWSearchQuery
 	public IWSearchQuery()
 	{
 		results = new ArrayList<IWSearchResult>();
+	}
+	
+
+	public IWSearchQuery(Query query)
+	{
+		this();
+		setId(query.getId());
+		setLink(query.getLink());
+		setQueryString(query.getQuery());
+		setSearchIn(CoreUtils.convertToString(query.getSearchScopes()).toLowerCase());
+		setMediaTypes(CoreUtils.convertToString(query.getContentTypes()));
+		setDateFrom(query.getParam("date_from"));
+		setDateTill(query.getParam("date_till"));
+		setRanking(query.getSortOrder().getName());
+		setNumberOfResults(query.getResultCount());
+		setUpdated(CoreUtils.formatDate(query.getUpdated()));
 	}
 	
 

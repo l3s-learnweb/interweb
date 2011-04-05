@@ -1,4 +1,4 @@
-package de.l3s.interwebj.core;
+package de.l3s.interwebj;
 
 
 public class InterWebException

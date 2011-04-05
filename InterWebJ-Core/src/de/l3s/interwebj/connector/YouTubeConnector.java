@@ -5,8 +5,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import javax.ws.rs.core.*;
-
 import com.google.gdata.client.authn.oauth.*;
 import com.google.gdata.client.authn.oauth.OAuthParameters;
 import com.google.gdata.client.youtube.*;
@@ -75,12 +73,11 @@ public class YouTubeConnector
 		                         + resource.toString());
 		try
 		{
-			ClientResponse response = resource.queryParam("scope",
-			                                              "http://gdata.youtube.com").get(ClientResponse.class);
-			printClientResponse(response);
-			String content = CoreUtils.getClientResponseContent(response);
-			Environment.logger.debug("Content: " + content);
-			params.addQueryParameters(content);
+			resource = resource.queryParam("scope", "http://gdata.youtube.com");
+			ClientResponse response = resource.get(ClientResponse.class);
+			String responseContent = CoreUtils.getClientResponseContent(response);
+			Environment.logger.debug("Content: " + responseContent);
+			params.addQueryParameters(responseContent);
 			String authUrl = AUTHORIZATION_PATH + "?oauth_token="
 			                 + params.get(Parameters.OAUTH_TOKEN);
 			Environment.logger.debug("requesting url: " + authUrl);
@@ -211,23 +208,18 @@ public class YouTubeConnector
 				for (VideoEntry ve : vf.getEntries())
 				{
 					ResultItem resultItem = new YouTubeVideoResultItem(getName());
-					resultItem.setServiceName(getName());
 					resultItem.setId(ve.getId());
-					resultItem.setType(Query.CT_VIDEO);
 					resultItem.setTitle(ve.getTitle().getPlainText());
 					MediaGroup mg = ve.getMediaGroup();
 					resultItem.setDescription(mg.getDescription().getPlainTextContent());
 					resultItem.setUrl(mg.getPlayer().getUrl());
-					resultItem.setImageUrl(mg.getThumbnails().get(0).getUrl());
+					resultItem.setImageUrl(mg.getThumbnails().get(1).getUrl());
 					resultItem.setDate(CoreUtils.formatDate(ve.getPublished().getValue()));
 					String tags = CoreUtils.convertToString(mg.getKeywords().getKeywords());
 					resultItem.setTags(tags);
 					resultItem.setRank(count++);
 					resultItem.setTotalResultCount(vf.getTotalResults());
-					if (ve.getStatistics() != null)
-					{
-						resultItem.setViewCount((int) ve.getStatistics().getViewCount());
-					}
+					resultItem.setViewCount(getViewCount(ve));
 					resultItem.setCommentCount(getCommentCount(ve));
 					queryResult.addResultItem(resultItem);
 				}
@@ -261,15 +253,15 @@ public class YouTubeConnector
 	{
 		if (ve.getComments() == null)
 		{
-			return 0;
+			return -1;
 		}
 		if (ve.getComments().getFeedLink() == null)
 		{
-			return 0;
+			return -1;
 		}
 		if (ve.getComments().getFeedLink().getCountHint() == null)
 		{
-			return 0;
+			return -1;
 		}
 		return ve.getComments().getFeedLink().getCountHint().intValue();
 	}
@@ -306,6 +298,16 @@ public class YouTubeConnector
 	}
 	
 
+	private int getViewCount(VideoEntry ve)
+	{
+		if (ve.getStatistics() == null)
+		{
+			return -1;
+		}
+		return (int) ve.getStatistics().getViewCount();
+	}
+	
+
 	@Override
 	protected void init()
 	{
@@ -320,18 +322,6 @@ public class YouTubeConnector
 	public boolean isRegistrationRequired()
 	{
 		return true;
-	}
-	
-
-	private void printClientResponse(ClientResponse response)
-	{
-		Environment.logger.debug("Status: " + response.getStatus());
-		Environment.logger.debug("Headers: ");
-		MultivaluedMap<String, String> headers = response.getHeaders();
-		for (String header : headers.keySet())
-		{
-			Environment.logger.debug(header + ": " + headers.get(header));
-		}
 	}
 	
 
@@ -368,19 +358,19 @@ public class YouTubeConnector
 		mg.addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME,
 		                                 category));
 		mg.setTitle(new MediaTitle());
-		String title = params.get(Parameters.TITLE, "No title");
+		String title = params.get(Parameters.TITLE, "No Title");
 		mg.getTitle().setPlainTextContent(title);
 		mg.setKeywords(new MediaKeywords());
-		List<String> keywords = CoreUtils.convertToUniqueList(params.get(Parameters.TAGS,
-		                                                                 ""));
+		String tags = params.get(Parameters.TAGS, "");
+		List<String> keywords = CoreUtils.convertToUniqueList(tags);
 		mg.getKeywords().addKeywords(keywords);
 		mg.setDescription(new MediaDescription());
 		String description = params.get(Parameters.DESCRIPTION,
-		                                "No description");
+		                                "No Description");
 		mg.getDescription().setPlainTextContent(description);
 		int privacy = Integer.parseInt(params.get(Parameters.PRIVACY, "0"));
 		mg.setPrivate(privacy > 0);
-		MediaSource ms = new MediaByteArraySource(data, "video/mp4");
+		MediaSource ms = new MediaByteArraySource(data, "video/*");
 		ve.setMediaSource(ms);
 		try
 		{

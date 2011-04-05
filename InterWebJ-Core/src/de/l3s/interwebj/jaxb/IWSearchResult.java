@@ -3,6 +3,8 @@ package de.l3s.interwebj.jaxb;
 
 import javax.xml.bind.annotation.*;
 
+import de.l3s.interwebj.query.*;
+
 
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -35,6 +37,30 @@ public class IWSearchResult
 	protected int numberOfViews;
 	@XmlElement(name = "number_of_comments")
 	protected int numberOfComments;
+	
+
+	public IWSearchResult()
+	{
+	}
+	
+
+	public IWSearchResult(ResultItem resultItem)
+	{
+		this();
+		setService(resultItem.getServiceName());
+		setIdAtService(resultItem.getId());
+		setType(resultItem.getType());
+		setTitle(resultItem.getTitle());
+		setDescription(resultItem.getDescription());
+		setUrl(resultItem.getUrl());
+		setImage(resultItem.getImageUrl());
+		setDate(resultItem.getDate());
+		setTags(resultItem.getTags());
+		setRankAtService(resultItem.getRank());
+		setTotalResultsAtService(resultItem.getTotalResultCount());
+		setViews(resultItem.getViewCount());
+		setNumberOfComments(resultItem.getCommentCount());
+	}
 	
 
 	public String getDate()

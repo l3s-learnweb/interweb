@@ -1,17 +1,17 @@
 package de.l3s.interwebj.query;
 
 
-public class YouTubeVideoResultItem
+public class FriendResultItem
     extends ResultItem
 {
 	
-	private static final long serialVersionUID = -1049898089517241548L;
+	private static final long serialVersionUID = 6210217200543587461L;
 	
 
-	public YouTubeVideoResultItem(String connectorName)
+	public FriendResultItem(String connectorName)
 	{
 		super(connectorName);
-		setType(Query.CT_VIDEO);
+		setType(Query.CT_FRIEND);
 	}
 	
 
@@ -26,5 +26,4 @@ public class YouTubeVideoResultItem
 		sb.append("\" /></a>");
 		return sb.toString();
 	}
-	
 }

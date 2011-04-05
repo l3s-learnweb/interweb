@@ -11,8 +11,8 @@ import org.xml.sax.*;
 
 import com.aetrion.flickr.*;
 import com.aetrion.flickr.auth.*;
+import com.aetrion.flickr.contacts.*;
 import com.aetrion.flickr.photos.*;
-import com.aetrion.flickr.tags.*;
 import com.aetrion.flickr.uploader.*;
 
 import de.l3s.interwebj.*;
@@ -149,12 +149,11 @@ public class FlickrConnector
 	private ResultItem createPhoto(Photo photo, int rank, int totalResultCount)
 	{
 		ResultItem resultItem = new ImageResultItem(getName());
-		resultItem.setServiceName(getName());
 		resultItem.setId(photo.getId());
 		resultItem.setType(getContentType(photo.getMedia()));
 		resultItem.setTitle(photo.getTitle());
 		resultItem.setDescription(photo.getDescription());
-		resultItem.setTags(getTagString(photo.getTags()));
+		resultItem.setTags(CoreUtils.convertToString(photo.getTags()));
 		resultItem.setUrl(photo.getUrl());
 		resultItem.setImageUrl(photo.getSmallUrl());
 		Date date = photo.getDatePosted();
@@ -188,10 +187,95 @@ public class FlickrConnector
 			throw new InterWebException("Service is not yet registered");
 		}
 		QueryResult queryResult = new QueryResult(query);
+		queryResult.addQueryResult(getFriends(query, authCredentials));
+		queryResult.addQueryResult(getMedia(query, authCredentials));
+		return queryResult;
+	}
+	
+
+	private String getContentType(String media)
+	{
+		if ("photo".equals(media))
+		{
+			return Query.CT_IMAGE;
+		}
+		return media;
+	}
+	
+
+	private Set<String> getExtras()
+	{
+		Set<String> extras = new HashSet<String>();
+		extras.add("description");
+		extras.add("tags");
+		extras.add("date_upload");
+		extras.add("views");
+		extras.add("media");
+		return extras;
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	private QueryResult getFriends(Query query, AuthCredentials authCredentials)
+	    throws InterWebException
+	{
+		QueryResult queryResult = new QueryResult(query);
+		if (query.getContentTypes().contains(Query.CT_FRIEND))
+		{
+			
+			try
+			{
+				RequestContext requestContext = RequestContext.getRequestContext();
+				Auth auth = new Auth();
+				requestContext.setAuth(auth);
+				auth.setToken(authCredentials.getKey());
+				auth.setPermission(Permission.READ);
+				Flickr flickr = createFlickrInstance();
+				ContactsInterface ci = flickr.getContactsInterface();
+				Collection<Contact> contacts = ci.getList();
+				for (Contact contact : contacts)
+				{
+					ResultItem resultItem = new FriendResultItem(getName());
+					resultItem.setId(contact.getId());
+					resultItem.setTitle(contact.getUsername());
+					resultItem.setDescription(contact.getRealName());
+					resultItem.setImageUrl(contact.getBuddyIconUrl());
+					queryResult.addResultItem(resultItem);
+				}
+			}
+			catch (FlickrException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+			catch (SAXException e)
+			{
+				e.printStackTrace();
+				throw new InterWebException(e);
+			}
+		}
+		return queryResult;
+	}
+	
+
+	private QueryResult getMedia(Query query, AuthCredentials authCredentials)
+	    throws InterWebException
+	{
+		QueryResult queryResult = new QueryResult(query);
 		if (supportContentTypes(query.getContentTypes()))
 		{
 			try
 			{
+				RequestContext requestContext = RequestContext.getRequestContext();
+				Auth auth = new Auth();
+				requestContext.setAuth(auth);
+				auth.setToken(authCredentials.getKey());
+				auth.setPermission(Permission.READ);
 				Flickr flickr = createFlickrInstance();
 				PhotosInterface pi = flickr.getPhotosInterface();
 				SearchParameters params = new SearchParameters();
@@ -205,7 +289,7 @@ public class FlickrConnector
 					String[] tags = createTags(query.getQuery());
 					params.setTags(tags);
 				}
-				params.setMedia(getMedia(query));
+				params.setMedia(getMediaType(query));
 				params.setMinUploadDate(null);
 				params.setMaxUploadDate(null);
 				params.setSort(getSortOrder(query.getSortOrder()));
@@ -248,29 +332,7 @@ public class FlickrConnector
 	}
 	
 
-	private String getContentType(String media)
-	{
-		if ("photo".equals(media))
-		{
-			return Query.CT_IMAGE;
-		}
-		return media;
-	}
-	
-
-	private Set<String> getExtras()
-	{
-		Set<String> extras = new HashSet<String>();
-		extras.add("description");
-		extras.add("tags");
-		extras.add("date_upload");
-		extras.add("views");
-		extras.add("media");
-		return extras;
-	}
-	
-
-	private String getMedia(Query query)
+	private String getMediaType(Query query)
 	{
 		if (query == null)
 		{
@@ -309,30 +371,14 @@ public class FlickrConnector
 	}
 	
 
-	@SuppressWarnings("rawtypes")
-	private String getTagString(Collection tags)
-	{
-		StringBuilder sb = new StringBuilder();
-		for (Iterator i = tags.iterator(); i.hasNext();)
-		{
-			Tag tag = (Tag) i.next();
-			sb.append(tag.getValue());
-			if (i.hasNext())
-			{
-				sb.append(',');
-			}
-		}
-		return sb.toString();
-	}
-	
-
 	@Override
 	protected void init()
 	{
 		// TODO: Stub. Read from configuration file
 		TreeSet<String> contentTypes = new TreeSet<String>();
-		contentTypes.add("image");
-		contentTypes.add("video");
+		contentTypes.add(Query.CT_IMAGE);
+		contentTypes.add(Query.CT_VIDEO);
+		contentTypes.add(Query.CT_FRIEND);
 		setContentTypes(contentTypes);
 	}
 	
@@ -383,27 +429,16 @@ public class FlickrConnector
 				Flickr flickr = createFlickrInstance();
 				Uploader uploader = flickr.getUploader();
 				UploadMetaData metaData = new UploadMetaData();
-				if (params.containsKey(Parameters.TITLE))
-				{
-					metaData.setTitle(params.get(Parameters.TITLE, "No title"));
-				}
-				if (params.containsKey(Parameters.DESCRIPTION))
-				{
-					metaData.setDescription(params.get(Parameters.DESCRIPTION,
-					                                   "No description"));
-				}
-				if (params.containsKey(Parameters.TAGS))
-				{
-					String tags = params.get(Parameters.TAGS);
-					metaData.setTags(CoreUtils.convertToUniqueList(tags));
-				}
-				if (params.containsKey(Parameters.PRIVACY))
-				{
-					int privacy = Integer.parseInt(params.get(Parameters.PRIVACY,
-					                                          "0"));
-					metaData.setPublicFlag(privacy == 0);
-				}
-				uploader.upload(data, metaData);
+				metaData.setTitle(params.get(Parameters.TITLE, "No Title"));
+				metaData.setDescription(params.get(Parameters.DESCRIPTION,
+				                                   "No Description"));
+				String tags = params.get(Parameters.TAGS, "");
+				metaData.setTags(CoreUtils.convertToUniqueList(tags));
+				int privacy = Integer.parseInt(params.get(Parameters.PRIVACY,
+				                                          "0"));
+				metaData.setPublicFlag(privacy == 0);
+				String id = uploader.upload(data, metaData);
+				System.out.println(flickr.getPhotosInterface().getPhoto(id).getSmallUrl());
 				Environment.logger.debug("data successfully uploaded");
 			}
 			catch (FlickrException e)

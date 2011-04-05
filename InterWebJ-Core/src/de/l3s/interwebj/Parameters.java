@@ -15,6 +15,7 @@ public class Parameters
 	public static final String OAUTH_VERIFIER = "oauth_verifier";
 	public static final String TITLE = "title";
 	public static final String DESCRIPTION = "description";
+	public static final String FILENAME = "filename";
 	public static final String TAGS = "tags";
 	public static final String PRIVACY = "privacy";
 	

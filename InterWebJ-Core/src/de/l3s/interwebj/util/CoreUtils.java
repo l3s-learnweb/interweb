@@ -6,32 +6,20 @@ import java.security.*;
 import java.text.*;
 import java.util.*;
 
+import javax.ws.rs.core.*;
 import javax.xml.bind.*;
 
 import org.apache.commons.codec.binary.*;
 
 import com.sun.jersey.api.client.*;
 
+import de.l3s.interwebj.core.*;
+
 
 public class CoreUtils
 {
 	
 	private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
-
-	public static List<String> convertToUniqueList(String s)
-	{
-		Set<String> list = new HashSet<String>();
-		String[] tokens = s.split("[,\\s]");
-		for (String token : tokens)
-		{
-			if (token.length() > 0)
-			{
-				list.add(token);
-			}
-		}
-		return new ArrayList<String>(list);
-	}
 	
 
 	public static <T> String convertToString(Collection<T> c)
@@ -79,6 +67,21 @@ public class CoreUtils
 			}
 		}
 		return sb.toString();
+	}
+	
+
+	public static List<String> convertToUniqueList(String s)
+	{
+		Set<String> list = new HashSet<String>();
+		String[] tokens = s.split("[,\\s]");
+		for (String token : tokens)
+		{
+			if (token.length() > 0)
+			{
+				list.add(token);
+			}
+		}
+		return new ArrayList<String>(list);
 	}
 	
 
@@ -160,29 +163,14 @@ public class CoreUtils
 	}
 	
 
-	public static String printclientResponse(ClientResponse response)
+	public static void printClientResponse(ClientResponse response)
 	{
-		StringBuilder sb = new StringBuilder();
-		try
+		Environment.logger.debug("Status: " + response.getStatus());
+		Environment.logger.debug("Headers: ");
+		MultivaluedMap<String, String> headers = response.getHeaders();
+		for (String header : headers.keySet())
 		{
-			BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntityInputStream(),
-			                                                             "UTF-8"));
-			int c;
-			while ((c = br.read()) != -1)
-			{
-				sb.append((char) c);
-			}
-			br.close();
+			Environment.logger.debug(header + ": " + headers.get(header));
 		}
-		catch (UnsupportedEncodingException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		return sb.toString();
 	}
-	
 }

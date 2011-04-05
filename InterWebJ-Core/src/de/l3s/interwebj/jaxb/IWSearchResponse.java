@@ -3,6 +3,8 @@ package de.l3s.interwebj.jaxb;
 
 import javax.xml.bind.annotation.*;
 
+import de.l3s.interwebj.query.*;
+
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -30,10 +32,17 @@ public class IWSearchResponse
 	}
 	
 
-	public IWSearchResponse(IWSearchQuery query)
+	public IWSearchResponse(QueryResult queryResult)
 	{
-		stat = "ok";
-		this.query = query;
+		this();
+		IWSearchQuery iwSearchQuery = new IWSearchQuery(queryResult.getQuery());
+		iwSearchQuery.setElapsedTime(String.valueOf(queryResult.getElapsedTime()));
+		for (ResultItem resultItem : queryResult.getResultItems())
+		{
+			IWSearchResult iwSearchResult = new IWSearchResult(resultItem);
+			iwSearchQuery.addResult(iwSearchResult);
+		}
+		query = iwSearchQuery;
 	}
 	
 

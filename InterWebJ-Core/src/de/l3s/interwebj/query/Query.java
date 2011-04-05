@@ -4,9 +4,6 @@ package de.l3s.interwebj.query;
 import java.io.*;
 import java.util.*;
 
-import de.l3s.interwebj.jaxb.*;
-import de.l3s.interwebj.util.*;
-
 
 public class Query
     implements Serializable
@@ -66,6 +63,7 @@ public class Query
 	public static final String CT_VIDEO = "video";
 	public static final String CT_IMAGE = "image";
 	public static final String CT_AUDIO = "audio";
+	public static final String CT_FRIEND = "friend";
 	
 	private String id;
 	private String link;
@@ -138,23 +136,6 @@ public class Query
 	public void addSearchScope(SearchScope searchScope)
 	{
 		searchScopes.add(searchScope);
-	}
-	
-
-	public IWSearchQuery createIWSearchQuery()
-	{
-		IWSearchQuery iwSearchQuery = new IWSearchQuery();
-		iwSearchQuery.setId(id);
-		iwSearchQuery.setLink(link);
-		iwSearchQuery.setQueryString(query);
-		iwSearchQuery.setSearchIn(CoreUtils.convertToString(searchScopes).toLowerCase());
-		iwSearchQuery.setMediaTypes(CoreUtils.convertToString(contentTypes));
-		iwSearchQuery.setDateFrom(getParam("date_from"));
-		iwSearchQuery.setDateTill(getParam("date_till"));
-		iwSearchQuery.setRanking(sortOrder.getName());
-		iwSearchQuery.setNumberOfResults(resultCount);
-		iwSearchQuery.setUpdated(CoreUtils.formatDate(updated));
-		return iwSearchQuery;
 	}
 	
 

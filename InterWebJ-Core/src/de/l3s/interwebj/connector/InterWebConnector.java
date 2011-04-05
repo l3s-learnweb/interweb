@@ -73,7 +73,8 @@ public class InterWebConnector
 		WebResource resource = client.resource(uriBuilder.build());
 		Environment.logger.debug("querying interweb request token: "
 		                         + resource.toString());
-		ClientResponse response = resource.accept(MediaType.TEXT_XML).get(ClientResponse.class);
+		WebResource.Builder builder = resource.accept(MediaType.TEXT_XML);
+		ClientResponse response = builder.get(ClientResponse.class);
 		Environment.logger.debug(response);
 		if (response.getStatus() != 200)
 		{
@@ -148,7 +149,8 @@ public class InterWebConnector
 	private File createTempFile(String fileName, byte[] data)
 	    throws IOException
 	{
-		File file = new File(fileName);
+		File file = new File("./tmp/" + fileName);
+		file.getParentFile().mkdirs();
 		FileOutputStream os = new FileOutputStream(file);
 		os.write(data);
 		os.close();
@@ -211,7 +213,8 @@ public class InterWebConnector
 		WebResource resource = client.resource(uriBuilder.build());
 		Environment.logger.debug("querying interweb search: "
 		                         + resource.toString());
-		ClientResponse response = resource.accept(MediaType.TEXT_XML).get(ClientResponse.class);
+		WebResource.Builder builder = resource.accept(MediaType.TEXT_XML);
+		ClientResponse response = builder.get(ClientResponse.class);
 		if (response.getStatus() != 200)
 		{
 			throw new InterWebException(response.toString());
@@ -315,8 +318,8 @@ public class InterWebConnector
 	private String getServices()
 	{
 		// TODO: Used only unimplemented by InterWebJ services
-		return "Flickr,YouTube";
-		//		return "Delicious,Ipernity,LastFm,SlideShare,Vimeo,Blogger,Facebook,GroupMe";
+		//		return "Flickr,YouTube";
+		return "Delicious,Ipernity,LastFm,SlideShare,Vimeo,Blogger,Facebook,GroupMe";
 	}
 	
 
@@ -384,8 +387,9 @@ public class InterWebConnector
 		List<IWSearchResult> iwSearchResults = iwSearchResponse.getQuery().getResults();
 		for (IWSearchResult iwSearchResult : iwSearchResults)
 		{
-			ResultItem resultItem = new InterWebResultItem(getName());
-			resultItem.setServiceName(iwSearchResult.getService());
+			ResultItem resultItem = new ImageResultItem(getName());
+			resultItem.setServiceName(iwSearchResult.getService() + " ("
+			                          + getName() + ")");
 			resultItem.setId(iwSearchResult.getIdAtService());
 			resultItem.setType(mediaTypeToContentType(iwSearchResult.getType()));
 			resultItem.setTitle(iwSearchResult.getTitle());
@@ -435,30 +439,35 @@ public class InterWebConnector
 		Client client = Client.create(config);
 		UriBuilder uriBuilder = UriBuilder.fromUri(getBaseUrl());
 		uriBuilder.path("api").path(API_UPLOAD_PATH + ".xml");
-		String title = params.get(Parameters.TITLE, "No Title");
-		String description = params.get(Parameters.DESCRIPTION,
-		                                "No Description");
-		String tags = params.get(Parameters.TAGS);
-		Integer privacy = Integer.valueOf(params.get(Parameters.PRIVACY, "0"));
 		MultiPart multiPart = new MultiPart();
 		Parameters iwParams = new Parameters();
 		iwParams.add("iw_consumer_key", consumerAuthCredentials.getKey());
 		iwParams.add("iw_token", authCredentials.getKey());
-		iwParams.add(Parameters.TITLE, title);
-		iwParams.add("is_private", privacy.toString());
-		multiPart = multiPart.bodyPart(new FormDataBodyPart(Parameters.TITLE,
-		                                                    title));
-		iwParams.add(Parameters.DESCRIPTION, description);
-		multiPart = multiPart.bodyPart(new FormDataBodyPart(Parameters.DESCRIPTION,
-		                                                    description));
-		if (tags != null)
+		if (params.containsKey(Parameters.TITLE))
 		{
+			String title = params.get(Parameters.TITLE);
+			iwParams.add(Parameters.TITLE, title);
+			multiPart = multiPart.bodyPart(new FormDataBodyPart(Parameters.TITLE,
+			                                                    title));
+		}
+		if (params.containsKey(Parameters.DESCRIPTION))
+		{
+			String description = params.get(Parameters.DESCRIPTION);
+			iwParams.add(Parameters.DESCRIPTION, description);
+			multiPart = multiPart.bodyPart(new FormDataBodyPart(Parameters.DESCRIPTION,
+			                                                    description));
+		}
+		if (params.containsKey(Parameters.TAGS))
+		{
+			String tags = params.get(Parameters.TAGS);
 			iwParams.add(Parameters.TAGS, tags);
 			multiPart = multiPart.bodyPart(new FormDataBodyPart(Parameters.TAGS,
 			                                                    tags));
 		}
+		String privacy = params.get(Parameters.PRIVACY, "0");
+		iwParams.add("is_private", privacy);
 		multiPart = multiPart.bodyPart(new FormDataBodyPart("is_private",
-		                                                    privacy.toString()));
+		                                                    privacy));
 		String iwSignature = generateSignature(API_UPLOAD_PATH, iwParams);
 		iwParams.add("iw_signature", iwSignature);
 		iwParams.remove(Parameters.TITLE);
@@ -467,16 +476,15 @@ public class InterWebConnector
 		iwParams.remove("is_private");
 		addUriParameters(uriBuilder, iwParams);
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("querying interweb search: "
+		Environment.logger.debug("uploading to interweb: "
 		                         + resource.toString());
+		File f = null;
 		if (isFileUpload(contentType))
 		{
 			try
 			{
-				File f = createTempFile(params.get("filename"), data);
-				FileDataBodyPart fileDataBodyPart = new FileDataBodyPart("data",
-				                                                         f);
-				multiPart.bodyPart(fileDataBodyPart);
+				f = createTempFile(params.get(Parameters.FILENAME), data);
+				multiPart.bodyPart(new FileDataBodyPart("data", f));
 			}
 			catch (IOException e)
 			{
@@ -490,27 +498,33 @@ public class InterWebConnector
 			multiPart = multiPart.bodyPart(new FormDataBodyPart("data",
 			                                                    dataString));
 		}
-		ClientResponse response = resource.type(MediaType.MULTIPART_FORM_DATA).accept(MediaType.TEXT_XML).post(ClientResponse.class,
-		                                                                                                       multiPart);
+		WebResource.Builder builder = resource.type(MediaType.MULTIPART_FORM_DATA);
+		builder = builder.accept(MediaType.TEXT_XML);
+		ClientResponse response = builder.post(ClientResponse.class, multiPart);
+		if (f != null)
+		{
+			f.delete();
+		}
 		if (response.getStatus() != 200)
 		{
 			throw new InterWebException(response.toString());
 		}
-		System.out.println(response.toString());
-		System.out.println(CoreUtils.printclientResponse(response));
-		
+		// TODO: Remove.
+		try
+		{
+			CoreUtils.printClientResponse(response);
+			System.out.println(CoreUtils.getClientResponseContent(response));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 
 	public static void main(String[] args)
 	    throws Exception
 	{
-		String[] words = "water people live boy air play land light house picture animal earth country school food sun city tree sea night life paper music book letter car rain friend horse girl bird family leave rock fire king travel war love person money road star street object moon island test gold game".split(" ");
-		for (String word : words)
-		{
-			testGet();
-			
-		}
 	}
 	
 

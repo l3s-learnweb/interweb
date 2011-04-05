@@ -5,8 +5,6 @@ import java.io.*;
 
 import org.apache.commons.lang.*;
 
-import de.l3s.interwebj.jaxb.*;
-
 
 public abstract class ResultItem
     implements Serializable
@@ -36,30 +34,11 @@ public abstract class ResultItem
 	public ResultItem(String connectorName)
 	{
 		this.connectorName = connectorName;
+		serviceName = connectorName;
 	}
 	
 
 	abstract String asHtml();
-	
-
-	public IWSearchResult createIWSearchResult()
-	{
-		IWSearchResult iwSearchResult = new IWSearchResult();
-		iwSearchResult.setService(serviceName);
-		iwSearchResult.setIdAtService(id);
-		iwSearchResult.setType(type);
-		iwSearchResult.setTitle(title);
-		iwSearchResult.setDescription(description);
-		iwSearchResult.setUrl(url);
-		iwSearchResult.setImage(imageUrl);
-		iwSearchResult.setDate(date);
-		iwSearchResult.setTags(tags);
-		iwSearchResult.setRankAtService(rank);
-		iwSearchResult.setTotalResultsAtService(totalResultCount);
-		iwSearchResult.setViews(viewCount);
-		iwSearchResult.setNumberOfComments(commentCount);
-		return iwSearchResult;
-	}
 	
 
 	public int getCommentCount()

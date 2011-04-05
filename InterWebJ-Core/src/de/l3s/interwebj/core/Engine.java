@@ -1,6 +1,7 @@
 package de.l3s.interwebj.core;
 
 
+import java.security.*;
 import java.util.*;
 
 import de.l3s.interwebj.*;
@@ -107,7 +108,7 @@ public class Engine
 	
 
 	public AuthCredentials getUserAuthCredentials(ServiceConnector connector,
-	                                              IWPrincipal principal)
+	                                              Principal principal)
 	{
 		return (principal == null)
 		    ? null : database.readUserAuthCredentials(connector.getName(),
@@ -125,7 +126,7 @@ public class Engine
 	
 
 	public boolean isUserAuthenticated(ServiceConnector connector,
-	                                   IWPrincipal principal)
+	                                   Principal principal)
 	{
 		return getUserAuthCredentials(connector, principal) != null;
 	}
@@ -161,7 +162,7 @@ public class Engine
 	
 
 	public void upload(byte[] data,
-	                   IWPrincipal principal,
+	                   Principal principal,
 	                   List<String> connectorNames,
 	                   String contentType,
 	                   Parameters params)

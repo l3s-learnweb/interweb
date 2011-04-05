@@ -11,6 +11,7 @@ public class ImageResultItem
 	public ImageResultItem(String connectorName)
 	{
 		super(connectorName);
+		setType(Query.CT_IMAGE);
 	}
 	
 
