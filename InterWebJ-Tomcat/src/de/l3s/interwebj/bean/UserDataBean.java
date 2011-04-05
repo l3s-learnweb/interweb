@@ -4,6 +4,7 @@ package de.l3s.interwebj.bean;
 import javax.faces.application.*;
 import javax.faces.bean.*;
 
+import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.webutil.*;

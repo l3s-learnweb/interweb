@@ -4,9 +4,11 @@ package de.l3s.interwebj.rest;
 import java.text.*;
 import java.util.*;
 
+import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.jaxb.*;
 import de.l3s.interwebj.query.*;
@@ -19,6 +21,8 @@ import de.l3s.interwebj.util.*;
 public class Search
 {
 	
+	@Context
+	HttpServletRequest request;
 	@Context
 	private UriInfo uriInfo;
 	
@@ -238,14 +242,17 @@ public class Search
 		try
 		{
 			Engine engine = Environment.getInstance().getEngine();
-			// TODO: Stub. Read oauth key/secret and get principal from the database
+			// TODO: Stub. Implement OAuth Filter, which authenticate user against OAuth key/secret pair, 
+			//       read principal from the database and store it in RequestWrapper. 
+			//       Get Principal from the request.
+			//		 IWPrincipal principal = request.getUserPrincipal();
 			IWPrincipal principal = new IWPrincipal("olex", "");
 			query.addParam("user", principal.getName());
 			QueryResultCollector collector = engine.getQueryResultCollector(query,
 			                                                                principal);
 			QueryResult queryResult = collector.retrieve();
 			engine.getStandingQueryResultPool().add(queryResult);
-			IWSearchResponse iwSearchResponse = queryResult.createIWSearchResponse();
+			IWSearchResponse iwSearchResponse = new IWSearchResponse(queryResult);
 			iwSearchResponse.getQuery().setUser(principal.getName());
 			return iwSearchResponse;
 		}
@@ -271,7 +278,7 @@ public class Search
 			return new IWSearchResponse(new IWError(206,
 			                                        "Standing query does not exist"));
 		}
-		IWSearchResponse iwSearchResponse = queryResult.createIWSearchResponse();
+		IWSearchResponse iwSearchResponse = new IWSearchResponse(queryResult);
 		return iwSearchResponse;
 	}
 }

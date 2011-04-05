@@ -10,6 +10,7 @@ import javax.faces.model.*;
 
 import com.sun.istack.internal.*;
 
+import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.query.*;
@@ -152,6 +153,10 @@ public class SearchBean
 		if (Query.CT_VIDEO.equals(type))
 		{
 			return "film.png";
+		}
+		if (Query.CT_FRIEND.equals(type))
+		{
+			return "user.png";
 		}
 		return null;
 	}

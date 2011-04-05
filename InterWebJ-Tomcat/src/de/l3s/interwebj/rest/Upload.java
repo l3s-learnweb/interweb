@@ -7,6 +7,14 @@ import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import com.sun.jersey.api.client.*;
+import com.sun.jersey.api.client.config.*;
+import com.sun.jersey.core.header.*;
+import com.sun.jersey.multipart.*;
+import com.sun.jersey.multipart.file.*;
+
+import de.l3s.interwebj.*;
+import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.util.*;
 
 
@@ -15,35 +23,91 @@ public class Upload
 {
 	
 	@Context
-	private UriInfo uriInfo;
-	
-	@Context
-	private HttpServletRequest request;
+	HttpServletRequest request;
 	
 
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	//	public IWUploadResponse getQueryResult()
-	public String getQueryResult(InputStream is)
-	    throws IOException
+	public String getQueryResult(@FormDataParam("title") String title,
+	                             @FormDataParam("description") String description,
+	                             @FormDataParam("tags") String tags,
+	                             @FormDataParam("is_private") String privacy,
+	                             @FormDataParam("content_type") String contentType,
+	                             @FormDataParam("data") FormDataContentDisposition disposition,
+	                             @FormDataParam("data") byte[] data)
+	    throws IOException, InterWebException
 	{
-		System.out.println(request.getMethod());
-		System.out.println(request.getContentType());
-		System.out.println(request.getCharacterEncoding());
-		System.out.println(request.getContentLength());
-		System.out.println(CoreUtils.convertToString(request.getAttributeNames()));
-		System.out.println(CoreUtils.convertToString(request.getHeaderNames()));
-		System.out.println(request.getParameterMap());
-		StringBuilder sb = new StringBuilder();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is,
-		                                                             "UTF-8"));
-		int c;
-		while ((c = br.read()) != -1)
+		Engine engine = Environment.getInstance().getEngine();
+		// TODO: Stub. Implement OAuth Filter, which authenticate user against OAuth key/secret pair, 
+		//       read principal from the database and store it in RequestWrapper. 
+		//       Get Principal from the request.
+		//		 IWPrincipal principal = request.getUserPrincipal();
+		IWPrincipal principal = new IWPrincipal("olex", "");
+		Parameters params = new Parameters();
+		if (title != null)
 		{
-			sb.append((char) c);
+			params.add(Parameters.TITLE, title);
 		}
-		br.close();
-		System.out.println(sb);
+		if (description != null)
+		{
+			params.add(Parameters.DESCRIPTION, description);
+		}
+		if (tags != null)
+		{
+			params.add(Parameters.TAGS, tags);
+		}
+		if (privacy != null)
+		{
+			params.add(Parameters.PRIVACY, privacy);
+		}
+		String fileName = disposition.getFileName();
+		if (fileName != null)
+		{
+			params.add(Parameters.FILENAME, fileName);
+		}
+		engine.upload(data,
+		              principal,
+		              engine.getConnectorNames(),
+		              contentType,
+		              params);
 		return "hello";
+	}
+	
+
+	public static void main(String[] args)
+	{
+		ClientConfig config = new DefaultClientConfig();
+		Client client = Client.create(config);
+		UriBuilder uriBuilder = UriBuilder.fromUri("http://***REMOVED***:8181/InterWebJ/api/users/default/uploads");
+		MultiPart multiPart = new MultiPart();
+		String title = "the title 1";
+		String description = "the description 2";
+		multiPart = multiPart.bodyPart(new FormDataBodyPart("title", title));
+		multiPart = multiPart.bodyPart(new FormDataBodyPart("description",
+		                                                    description));
+		multiPart = multiPart.bodyPart(new FormDataBodyPart("content_type",
+		                                                    "image"));
+		File f = new File("/home/olex/temp/header.jpg");
+		multiPart = multiPart.bodyPart(new FileDataBodyPart("data",
+		                                                    f,
+		                                                    MediaType.MULTIPART_FORM_DATA_TYPE));
+		multiPart = multiPart.bodyPart(new FormDataBodyPart("data", "the data"));
+		WebResource resource = client.resource(uriBuilder.build());
+		WebResource.Builder builder = resource.type(MediaType.MULTIPART_FORM_DATA);
+		builder = builder.accept(MediaType.TEXT_PLAIN);
+		Environment.logger.debug("testing upload to interwebj: "
+		                         + resource.toString());
+		ClientResponse response = builder.post(ClientResponse.class, multiPart);
+		try
+		{
+			CoreUtils.printClientResponse(response);
+			System.out.println(CoreUtils.getClientResponseContent(response));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

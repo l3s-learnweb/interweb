@@ -7,6 +7,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.bean.*;
 import de.l3s.interwebj.core.*;
 

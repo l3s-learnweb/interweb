@@ -43,8 +43,6 @@ public class UploadBean
 
 	public UploadBean()
 	{
-		title = "No Title";
-		description = "No Description";
 		publicAccess = true;
 	}
 	
@@ -202,8 +200,14 @@ public class UploadBean
 			Engine engine = Environment.getInstance().getEngine();
 			IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 			Parameters params = new Parameters();
-			params.add(Parameters.TITLE, title);
-			params.add(Parameters.DESCRIPTION, description);
+			if (title != null)
+			{
+				params.add(Parameters.TITLE, title);
+			}
+			if (description != null)
+			{
+				params.add(Parameters.DESCRIPTION, description);
+			}
 			if (tags != null)
 			{
 				params.add(Parameters.TAGS, tags);
@@ -211,7 +215,7 @@ public class UploadBean
 			String privacy = isPublicAccess()
 			    ? "0" : "1";
 			params.add(Parameters.PRIVACY, privacy);
-			params.add("filename", fileName);
+			params.add(Parameters.FILENAME, fileName);
 			engine.upload(data,
 			              principal,
 			              selectedConnectors,
@@ -231,8 +235,14 @@ public class UploadBean
 			Engine engine = Environment.getInstance().getEngine();
 			IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 			Parameters params = new Parameters();
-			params.add(Parameters.TITLE, title);
-			params.add(Parameters.DESCRIPTION, description);
+			if (title != null)
+			{
+				params.add(Parameters.TITLE, title);
+			}
+			if (description != null)
+			{
+				params.add(Parameters.DESCRIPTION, description);
+			}
 			if (tags != null)
 			{
 				params.add(Parameters.TAGS, tags);
@@ -244,7 +254,7 @@ public class UploadBean
 			              principal,
 			              selectedConnectors,
 			              selectedContentType,
-			              new Parameters());
+			              params);
 			text = null;
 		}
 	}
