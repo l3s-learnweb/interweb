@@ -1,9 +1,11 @@
 package de.l3s.interwebj.core;
 
 
+import java.io.*;
+
 import org.apache.log4j.*;
 
-import de.l3s.interwebj.config.Configuration;
+import de.l3s.interwebj.config.*;
 import de.l3s.interwebj.db.*;
 
 
@@ -25,10 +27,21 @@ public class Environment
 	private Environment()
 	{
 		logger.info("Logger initialized successfully");
-		configuration = new Configuration();
-		database = new JDBCDatabase(configuration);
-		engine = new Engine(database);
-		accessControll = new AccessControll();
+		ClassLoader cl = this.getClass().getClassLoader();
+		InputStream is = cl.getResourceAsStream("de/l3s/interwebj/config/config.xml");
+		try
+		{
+			configuration = new Configuration(is);
+			database = new JDBCDatabase(configuration);
+			engine = new Engine(database);
+			accessControll = new AccessControll();
+		}
+		catch (org.apache.commons.configuration.ConfigurationException e)
+		{
+			System.out.println("Unable to load configuration file");
+			e.printStackTrace();
+			System.exit(-1);
+		}
 	}
 	
 

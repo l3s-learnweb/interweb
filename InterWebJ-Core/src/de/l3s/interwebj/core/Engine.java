@@ -39,7 +39,9 @@ public class Engine
 
 	public ServiceConnector getConnector(String connectorName)
 	{
-		return connectors.get(connectorName).clone();
+		ServiceConnector storedServiceConnector = connectors.get(connectorName);
+		return (storedServiceConnector == null)
+		    ? null : storedServiceConnector.clone();
 	}
 	
 
@@ -120,7 +122,6 @@ public class Engine
 	{
 		connectors = new TreeMap<String, ServiceConnector>();
 		contentTypes = new TreeSet<String>();
-		loadConnectors();
 		standingQueryResultPool = new StandingQueryResultPool();
 	}
 	
@@ -132,12 +133,18 @@ public class Engine
 	}
 	
 
-	private void loadConnectors()
+	public void loadConnectors(String pluginDirPath)
 	{
-		// TODO: stub
-		addConnector(new FlickrConnector(null));
-		addConnector(new YouTubeConnector(null));
-		addConnector(new InterWebConnector(null));
+		init();
+		ConnectorLoader connectorLoader = new ConnectorLoader();
+		List<ServiceConnector> connectors = connectorLoader.load(pluginDirPath);
+		for (ServiceConnector connector : connectors)
+		{
+			addConnector(connector);
+		}
+		//		addConnector(new FlickrConnector(null));
+		//		addConnector(new YouTubeConnector(null));
+		//		addConnector(new InterWebConnector(null));
 	}
 	
 
@@ -195,12 +202,17 @@ public class Engine
 	{
 		Database database = Environment.getInstance().getDatabase();
 		Engine engine = new Engine(database);
+		engine.loadConnectors("./connectors");
 		IWPrincipal principal = database.authenticate("olex", "123456");
 		String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
-		List<String> connectorNames = new ArrayList<String>();
-		connectorNames.add("interweb");
+		List<String> connectorNames = engine.getConnectorNames();
+		//		List<String> connectorNames = new ArrayList<String>();
+		//		connectorNames.add("interweb");
 		//		connectorNames.add("youtube");
+		//		connectorNames.add("youtube2");
 		//		connectorNames.add("flickr");
+		
+		System.out.println("Searching in connectors: " + connectorNames);
 		int retryCount = 50;
 		for (int i = 0; i < retryCount; i++)
 		{

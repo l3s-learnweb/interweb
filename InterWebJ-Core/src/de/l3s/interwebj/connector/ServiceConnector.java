@@ -4,11 +4,10 @@ package de.l3s.interwebj.connector;
 import java.util.*;
 
 import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.query.*;
 
 
-public abstract class ServiceConnector
+public interface ServiceConnector
 {
 	
 	public enum PermissionLevel
@@ -51,26 +50,11 @@ public abstract class ServiceConnector
 	}
 	
 
-	private String name;
-	private String baseUrl;
-	private AuthCredentials consumerAuthCredentials;
-	private Set<String> contentTypes;
-	
-
-	public ServiceConnector(String name, String baseUrl)
-	{
-		this.name = name;
-		this.baseUrl = baseUrl;
-		init();
-	}
-	
-
 	public abstract Parameters authenticate(PermissionLevel permissionLevel,
 	                                        String callbackUrl)
 	    throws InterWebException;
 	
 
-	@Override
 	public abstract ServiceConnector clone();
 	
 
@@ -78,83 +62,23 @@ public abstract class ServiceConnector
 	    throws InterWebException;
 	
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-		{
-			return true;
-		}
-		if (obj == null)
-		{
-			return false;
-		}
-		if (getClass() != obj.getClass())
-		{
-			return false;
-		}
-		ServiceConnector other = (ServiceConnector) obj;
-		if (name == null)
-		{
-			if (other.name != null)
-			{
-				return false;
-			}
-		}
-		else if (!name.equals(other.name))
-		{
-			return false;
-		}
-		return true;
-	}
-	
-
 	public abstract QueryResult get(Query query, AuthCredentials authCredentials)
 	    throws InterWebException;
 	
 
-	public String getBaseUrl()
-	{
-		return baseUrl;
-	}
+	public abstract String getBaseUrl();
 	
 
-	public AuthCredentials getConsumerAuthCredentials()
-	{
-		return consumerAuthCredentials;
-	}
+	public abstract AuthCredentials getConsumerAuthCredentials();
 	
 
-	public Set<String> getContentTypes()
-	{
-		return contentTypes;
-	}
+	public abstract Set<String> getContentTypes();
 	
 
-	public String getName()
-	{
-		return name;
-	}
+	public abstract String getName();
 	
 
-	@Override
-	public int hashCode()
-	{
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null)
-		    ? 0 : name.hashCode());
-		return result;
-	}
-	
-
-	protected abstract void init();
-	
-
-	public boolean isRegistered()
-	{
-		return consumerAuthCredentials != null;
-	}
+	public abstract boolean isRegistered();
 	
 
 	public abstract boolean isRegistrationRequired();
@@ -167,21 +91,8 @@ public abstract class ServiceConnector
 	    throws InterWebException;
 	
 
-	public void setConsumerAuthCredentials(AuthCredentials consumerAuthCredentials)
-	{
-		this.consumerAuthCredentials = consumerAuthCredentials;
-	}
+	public abstract void setConsumerAuthCredentials(AuthCredentials consumerAuthCredentials);
 	
 
-	public void setContentTypes(Set<String> contentTypes)
-	{
-		this.contentTypes = contentTypes;
-	}
-	
-
-	public boolean supportContentType(String contentType)
-	{
-		return (contentType != null) && contentTypes.contains(contentType);
-	}
-	
+	public abstract boolean supportContentType(String contentType);
 }
