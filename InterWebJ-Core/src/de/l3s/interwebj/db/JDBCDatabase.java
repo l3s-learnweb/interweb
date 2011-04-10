@@ -87,7 +87,7 @@ public class JDBCDatabase
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append(" INSERT INTO ").append(userRolesTable);
-		sb.append(" (user,").append(roleNameCol).append(")");
+		sb.append(" (").append(userNameCol).append(",").append(roleNameCol).append(")");
 		sb.append(" SELECT name, ? FROM ").append(userTable);
 		sb.append(" WHERE ").append(userNameCol).append("=?");
 		Environment.logger.debug("sql query: " + sb);
@@ -145,15 +145,17 @@ public class JDBCDatabase
 			boolean exists = hasConsumer(provider, consumer);
 			if (exists)
 			{
-				openConnection();
-				String sqlQuery = "DELETE FROM iwj_connectors";
-				sqlQuery += " WHERE provider='" + provider + "' AND consumer='"
-				            + consumer + "'";
-				Environment.logger.debug("sql query: " + sqlQuery);
-				Statement stmt = dbConnection.createStatement();
-				stmt.execute(sqlQuery);
-				silentCloseStatement(stmt);
-				dbConnection.commit();
+				if (openConnection())
+				{
+					String sqlQuery = "DELETE FROM iwj_connectors";
+					sqlQuery += " WHERE provider='" + provider
+					            + "' AND consumer='" + consumer + "'";
+					Environment.logger.debug("sql query: " + sqlQuery);
+					Statement stmt = dbConnection.createStatement();
+					stmt.execute(sqlQuery);
+					silentCloseStatement(stmt);
+					dbConnection.commit();
+				}
 			}
 		}
 		catch (SQLException e)
@@ -169,27 +171,29 @@ public class JDBCDatabase
 		IWPrincipal dbPrincipal = null;
 		try
 		{
-			openConnection();
-			StringBuilder sb = new StringBuilder();
-			sb.append(" SELECT ").append(userPasswordCol).append(",").append(userEmailCol);
-			sb.append(" FROM ").append(userTable);
-			sb.append(" WHERE ").append(userNameCol).append("='").append(userName).append("'");
-			Environment.logger.debug("sql query: " + sb);
-			stmt = dbConnection.createStatement();
-			rs = stmt.executeQuery(sb.toString());
-			String dbPassword = null;
-			String dbEmail = null;
-			if (rs.next())
+			if (openConnection())
 			{
-				dbPassword = rs.getString(1);
-				dbEmail = rs.getString(2);
+				StringBuilder sb = new StringBuilder();
+				sb.append(" SELECT ").append(userPasswordCol).append(",").append(userEmailCol);
+				sb.append(" FROM ").append(userTable);
+				sb.append(" WHERE ").append(userNameCol).append("='").append(userName).append("'");
+				Environment.logger.debug("sql query: " + sb);
+				stmt = dbConnection.createStatement();
+				rs = stmt.executeQuery(sb.toString());
+				String dbPassword = null;
+				String dbEmail = null;
+				if (rs.next())
+				{
+					dbPassword = rs.getString(1);
+					dbEmail = rs.getString(2);
+				}
+				if (dbPassword != null && dbPassword.equals(userPassword))
+				{
+					dbPrincipal = new IWPrincipal(userName, dbEmail);
+				}
+				silentCloseResultSet(rs);
+				silentCloseStatement(stmt);
 			}
-			if (dbPassword != null && dbPassword.equals(userPassword))
-			{
-				dbPrincipal = new IWPrincipal(userName, dbEmail);
-			}
-			silentCloseResultSet(rs);
-			silentCloseStatement(stmt);
 		}
 		catch (SQLException e)
 		{
@@ -209,24 +213,26 @@ public class JDBCDatabase
 		ArrayList<String> roles = new ArrayList<String>();
 		try
 		{
-			openConnection();
-			StringBuilder sb = new StringBuilder();
-			sb.append("SELECT distinct(").append(roleNameCol).append(")");
-			sb.append(" FROM ").append(userTable).append(" NATURAL JOIN ").append(userRolesTable);
-			sb.append(" WHERE ").append(userNameCol).append("='").append(usermame).append("'");
-			Environment.logger.debug("sql query: " + sb);
-			stmt = dbConnection.createStatement();
-			rs = stmt.executeQuery(sb.toString());
-			while (rs.next())
+			if (openConnection())
 			{
-				String role = rs.getString(1);
-				if (role != null)
+				StringBuilder sb = new StringBuilder();
+				sb.append("SELECT distinct(").append(roleNameCol).append(")");
+				sb.append(" FROM ").append(userTable).append(" NATURAL JOIN ").append(userRolesTable);
+				sb.append(" WHERE ").append(userNameCol).append("='").append(usermame).append("'");
+				Environment.logger.debug("sql query: " + sb);
+				stmt = dbConnection.createStatement();
+				rs = stmt.executeQuery(sb.toString());
+				while (rs.next())
 				{
-					roles.add(role.trim());
+					String role = rs.getString(1);
+					if (role != null)
+					{
+						roles.add(role.trim());
+					}
 				}
+				silentCloseResultSet(rs);
+				silentCloseStatement(stmt);
 			}
-			silentCloseResultSet(rs);
-			silentCloseStatement(stmt);
 		}
 		catch (SQLException e)
 		{
@@ -241,18 +247,20 @@ public class JDBCDatabase
 	    throws SQLException
 	{
 		boolean exists = false;
-		openConnection();
-		String sqlQuery = "SELECT count(*) FROM iwj_connectors WHERE provider='"
-		                  + provider + "' AND consumer='" + consumer + "'";
-		Environment.logger.debug("sql query: " + sqlQuery);
-		Statement stmt = dbConnection.createStatement();
-		rs = stmt.executeQuery(sqlQuery);
-		if (rs.next())
+		if (openConnection())
 		{
-			exists = (rs.getInt(1) == 1);
+			String sqlQuery = "SELECT count(*) FROM iwj_connectors WHERE provider='"
+			                  + provider + "' AND consumer='" + consumer + "'";
+			Environment.logger.debug("sql query: " + sqlQuery);
+			Statement stmt = dbConnection.createStatement();
+			rs = stmt.executeQuery(sqlQuery);
+			if (rs.next())
+			{
+				exists = (rs.getInt(1) == 1);
+			}
+			silentCloseResultSet(rs);
+			silentCloseStatement(stmt);
 		}
-		silentCloseResultSet(rs);
-		silentCloseStatement(stmt);
 		return exists;
 	}
 	
@@ -267,18 +275,20 @@ public class JDBCDatabase
 		boolean userExists = true;
 		try
 		{
-			openConnection();
-			String sqlQuery = " SELECT count(*) FROM " + userTable;
-			sqlQuery += " WHERE " + userNameCol + "='" + username + "'";
-			Environment.logger.debug("sql query: " + sqlQuery);
-			stmt = dbConnection.createStatement();
-			rs = stmt.executeQuery(sqlQuery);
-			if (rs.next())
+			if (openConnection())
 			{
-				userExists = (rs.getInt(1) == 1);
+				String sqlQuery = " SELECT count(*) FROM " + userTable;
+				sqlQuery += " WHERE " + userNameCol + "='" + username + "'";
+				Environment.logger.debug("sql query: " + sqlQuery);
+				stmt = dbConnection.createStatement();
+				rs = stmt.executeQuery(sqlQuery);
+				if (rs.next())
+				{
+					userExists = (rs.getInt(1) == 1);
+				}
+				silentCloseResultSet(rs);
+				silentCloseStatement(stmt);
 			}
-			silentCloseResultSet(rs);
-			silentCloseStatement(stmt);
 		}
 		catch (SQLException e)
 		{
@@ -293,18 +303,20 @@ public class JDBCDatabase
 	    throws SQLException
 	{
 		boolean exists = false;
-		openConnection();
-		String sqlQuery = "SELECT count(*) FROM iwj_users_auth_data WHERE provider='"
-		                  + provider + "' AND user='" + userName + "'";
-		Environment.logger.debug("sql query: " + sqlQuery);
-		Statement stmt = dbConnection.createStatement();
-		rs = stmt.executeQuery(sqlQuery);
-		if (rs.next())
+		if (openConnection())
 		{
-			exists = (rs.getInt(1) == 1);
+			String sqlQuery = "SELECT count(*) FROM iwj_users_auth_data WHERE provider='"
+			                  + provider + "' AND user='" + userName + "'";
+			Environment.logger.debug("sql query: " + sqlQuery);
+			Statement stmt = dbConnection.createStatement();
+			rs = stmt.executeQuery(sqlQuery);
+			if (rs.next())
+			{
+				exists = (rs.getInt(1) == 1);
+			}
+			silentCloseResultSet(rs);
+			silentCloseStatement(stmt);
 		}
-		silentCloseResultSet(rs);
-		silentCloseStatement(stmt);
 		return exists;
 	}
 	
@@ -312,17 +324,17 @@ public class JDBCDatabase
 	private void init(Configuration configuration)
 	{
 		logger = Environment.logger;
-		connectionUserName = configuration.getProperty("database.connection.user-name");
-		connectionPassword = configuration.getProperty("database.connection.user-password");
-		connectionURL = configuration.getProperty("database.connection.url");
-		driverName = configuration.getProperty("database.driver-name");
-		userTable = configuration.getProperty("database.user-table.name");
-		userNameCol = configuration.getProperty("database.user-table.user-column");
-		userPasswordCol = configuration.getProperty("database.user-table.password-column");
-		userEmailCol = configuration.getProperty("database.user-table.email-column");
-		roleTable = configuration.getProperty("database.role-table.name");
-		userRolesTable = configuration.getProperty("database.user-role-table.name");
-		roleNameCol = configuration.getProperty("database.user-role-table.role-column");
+		connectionUserName = configuration.getValue("database.connection.user-name");
+		connectionPassword = configuration.getValue("database.connection.user-password");
+		connectionURL = configuration.getValue("database.connection.url");
+		driverName = configuration.getValue("database.driver-name");
+		userTable = configuration.getValue("database.user-table.name");
+		userNameCol = configuration.getValue("database.user-table.user-column");
+		userPasswordCol = configuration.getValue("database.user-table.password-column");
+		userEmailCol = configuration.getValue("database.user-table.email-column");
+		roleTable = configuration.getValue("database.role-table.name");
+		userRolesTable = configuration.getValue("database.user-role-table.name");
+		roleNameCol = configuration.getValue("database.user-role-table.role-column");
 		try
 		{
 			openConnection();
@@ -344,50 +356,47 @@ public class JDBCDatabase
 	}
 	
 
-	private void openConnection()
+	private boolean openConnection()
 	    throws SQLException
 	{
-		int numberOfTries = 2;
-		while (numberOfTries > 0)
+		logger.error("Trying open DB connection");
+		if (dbConnection != null && !dbConnection.isValid(10))
 		{
-			try
+			close();
+		}
+		int numberOfTries = 3;
+		while (dbConnection == null && numberOfTries >= 0)
+		{
+			if (driver == null)
 			{
-				if (dbConnection == null)
+				try
 				{
-					if (driver == null)
-					{
-						try
-						{
-							driver = (Driver) Class.forName(driverName).newInstance();
-						}
-						catch (Throwable e)
-						{
-							throw new SQLException(e.getMessage());
-						}
-					}
-					Properties properties = new Properties();
-					if (connectionUserName != null)
-					{
-						properties.put("user", connectionUserName);
-					}
-					if (connectionPassword != null)
-					{
-						properties.put("password", connectionPassword);
-					}
-					properties.put("autoReconnect", "true");
-					dbConnection = driver.connect(connectionURL, properties);
-					dbConnection.setAutoCommit(false);
+					driver = (Driver) Class.forName(driverName).newInstance();
+				}
+				catch (Throwable e)
+				{
+					throw new SQLException(e.getMessage());
 				}
 			}
-			catch (SQLException e)
+			Properties properties = new Properties();
+			if (connectionUserName != null)
 			{
-				if (dbConnection != null)
-				{
-					close();
-				}
+				properties.put("user", connectionUserName);
 			}
+			if (connectionPassword != null)
+			{
+				properties.put("password", connectionPassword);
+			}
+			dbConnection = driver.connect(connectionURL, properties);
+			dbConnection.setAutoCommit(false);
 			numberOfTries--;
 		}
+		if (dbConnection == null)
+		{
+			logger.error("Unable to open connection to database "
+			             + connectionURL);
+		}
+		return (dbConnection != null);
 	}
 	
 
@@ -408,23 +417,29 @@ public class JDBCDatabase
 		{
 			String key;
 			String secret;
-			openConnection();
-			String sqlQuery = "SELECT consumer_key, consumer_secret FROM iwj_connectors WHERE provider='"
-			                  + provider + "' AND consumer='" + consumer + "'";
-			Environment.logger.debug("sql query: " + sqlQuery);
-			stmt = dbConnection.createStatement();
-			rs = stmt.executeQuery(sqlQuery);
-			if (rs.next())
+			if (openConnection())
 			{
-				key = rs.getString(1);
-				secret = rs.getString(2);
-				if (key != null)
+				String sqlQuery = "SELECT consumer_key, consumer_secret FROM iwj_connectors WHERE provider='"
+				                  + provider
+				                  + "' AND consumer='"
+				                  + consumer
+				                  + "'";
+				Environment.logger.debug("sql query: " + sqlQuery);
+				stmt = dbConnection.createStatement();
+				rs = stmt.executeQuery(sqlQuery);
+				if (rs.next())
 				{
-					consumerAuthCredentials = new AuthCredentials(key, secret);
+					key = rs.getString(1);
+					secret = rs.getString(2);
+					if (key != null)
+					{
+						consumerAuthCredentials = new AuthCredentials(key,
+						                                              secret);
+					}
 				}
+				silentCloseResultSet(rs);
+				silentCloseStatement(stmt);
 			}
-			silentCloseResultSet(rs);
-			silentCloseStatement(stmt);
 		}
 		catch (SQLException e)
 		{
@@ -452,23 +467,25 @@ public class JDBCDatabase
 		{
 			String key;
 			String secret;
-			openConnection();
-			String sqlQuery = "SELECT user_key, user_secret FROM iwj_users_auth_data WHERE provider='"
-			                  + provider + "' AND user='" + userName + "'";
-			//			Environment.logger.debug("sql query: " + sqlQuery);
-			stmt = dbConnection.createStatement();
-			rs = stmt.executeQuery(sqlQuery);
-			if (rs.next())
+			if (openConnection())
 			{
-				key = rs.getString(1);
-				secret = rs.getString(2);
-				if (key != null)
+				String sqlQuery = "SELECT user_key, user_secret FROM iwj_users_auth_data WHERE provider='"
+				                  + provider + "' AND user='" + userName + "'";
+				//			Environment.logger.debug("sql query: " + sqlQuery);
+				stmt = dbConnection.createStatement();
+				rs = stmt.executeQuery(sqlQuery);
+				if (rs.next())
 				{
-					authCredentials = new AuthCredentials(key, secret);
+					key = rs.getString(1);
+					secret = rs.getString(2);
+					if (key != null)
+					{
+						authCredentials = new AuthCredentials(key, secret);
+					}
 				}
+				silentCloseResultSet(rs);
+				silentCloseStatement(stmt);
 			}
-			silentCloseResultSet(rs);
-			silentCloseStatement(stmt);
 		}
 		catch (SQLException e)
 		{
@@ -495,61 +512,63 @@ public class JDBCDatabase
 		try
 		{
 			boolean exists = hasConsumer(provider, consumer);
-			openConnection();
-			PreparedStatement pstmt = null;
-			String sqlQuery = null;
-			if (exists)
+			if (openConnection())
 			{
-				sqlQuery = "UPDATE iwj_connectors SET consumer_key=?, consumer_secret=? WHERE provider ='"
-				           + provider + "' AND consumer='" + consumer + "'";
-				Environment.logger.debug("sql query: " + sqlQuery);
-				pstmt = dbConnection.prepareStatement(sqlQuery);
-				if (authCredentials == null)
+				PreparedStatement pstmt = null;
+				String sqlQuery = null;
+				if (exists)
 				{
-					pstmt.setNull(1, java.sql.Types.VARCHAR);
-					pstmt.setNull(2, java.sql.Types.VARCHAR);
-				}
-				else
-				{
-					pstmt.setString(1, authCredentials.getKey());
-					if (authCredentials.getSecret() == null)
+					sqlQuery = "UPDATE iwj_connectors SET consumer_key=?, consumer_secret=? WHERE provider ='"
+					           + provider + "' AND consumer='" + consumer + "'";
+					Environment.logger.debug("sql query: " + sqlQuery);
+					pstmt = dbConnection.prepareStatement(sqlQuery);
+					if (authCredentials == null)
 					{
+						pstmt.setNull(1, java.sql.Types.VARCHAR);
 						pstmt.setNull(2, java.sql.Types.VARCHAR);
 					}
 					else
 					{
-						pstmt.setString(2, authCredentials.getSecret());
+						pstmt.setString(1, authCredentials.getKey());
+						if (authCredentials.getSecret() == null)
+						{
+							pstmt.setNull(2, java.sql.Types.VARCHAR);
+						}
+						else
+						{
+							pstmt.setString(2, authCredentials.getSecret());
+						}
 					}
 				}
-			}
-			else
-			{
-				sqlQuery = "INSERT INTO iwj_connectors (provider, consumer, consumer_key, consumer_secret) VALUES (?,?,?,?)";
-				Environment.logger.debug("sql query: " + sqlQuery);
-				pstmt = dbConnection.prepareStatement(sqlQuery);
-				pstmt.setString(1, provider);
-				pstmt.setString(2, consumer);
-				if (authCredentials.getKey() == null)
-				{
-					Environment.logger.info("consumer key is null");
-					pstmt.setNull(3, java.sql.Types.VARCHAR);
-				}
 				else
 				{
-					pstmt.setString(3, authCredentials.getKey());
+					sqlQuery = "INSERT INTO iwj_connectors (provider, consumer, consumer_key, consumer_secret) VALUES (?,?,?,?)";
+					Environment.logger.debug("sql query: " + sqlQuery);
+					pstmt = dbConnection.prepareStatement(sqlQuery);
+					pstmt.setString(1, provider);
+					pstmt.setString(2, consumer);
+					if (authCredentials.getKey() == null)
+					{
+						Environment.logger.info("consumer key is null");
+						pstmt.setNull(3, java.sql.Types.VARCHAR);
+					}
+					else
+					{
+						pstmt.setString(3, authCredentials.getKey());
+					}
+					if (authCredentials.getSecret() == null)
+					{
+						pstmt.setNull(4, java.sql.Types.VARCHAR);
+					}
+					else
+					{
+						pstmt.setString(4, authCredentials.getSecret());
+					}
 				}
-				if (authCredentials.getSecret() == null)
-				{
-					pstmt.setNull(4, java.sql.Types.VARCHAR);
-				}
-				else
-				{
-					pstmt.setString(4, authCredentials.getSecret());
-				}
+				pstmt.executeUpdate();
+				silentCloseStatement(pstmt);
+				dbConnection.commit();
 			}
-			pstmt.executeUpdate();
-			silentCloseStatement(pstmt);
-			dbConnection.commit();
 		}
 		catch (SQLException e)
 		{
@@ -572,26 +591,28 @@ public class JDBCDatabase
 		}
 		try
 		{
-			openConnection();
-			PreparedStatement pstmt = createInsertPrincipalStmt(principal,
-			                                                    password);
-			if (pstmt.executeUpdate() != 1)
+			if (openConnection())
 			{
-				silentCloseStatement(pstmt);
-				return false;
-			}
-			for (String role : principal.getRoles())
-			{
-				pstmt = createInsertPrincipalRolesStmt(principal.getName(),
-				                                       role);
+				PreparedStatement pstmt = createInsertPrincipalStmt(principal,
+				                                                    password);
 				if (pstmt.executeUpdate() != 1)
 				{
 					silentCloseStatement(pstmt);
 					return false;
 				}
+				for (String role : principal.getRoles())
+				{
+					pstmt = createInsertPrincipalRolesStmt(principal.getName(),
+					                                       role);
+					if (pstmt.executeUpdate() != 1)
+					{
+						silentCloseStatement(pstmt);
+						return false;
+					}
+				}
+				silentCloseStatement(pstmt);
+				dbConnection.commit();
 			}
-			silentCloseStatement(pstmt);
-			dbConnection.commit();
 		}
 		catch (SQLException e)
 		{
@@ -611,15 +632,17 @@ public class JDBCDatabase
 		}
 		try
 		{
-			openConnection();
-			PreparedStatement pstmt = createInsertRoleStatement(role);
-			if (pstmt.executeUpdate() != 1)
+			if (openConnection())
 			{
+				PreparedStatement pstmt = createInsertRoleStatement(role);
+				if (pstmt.executeUpdate() != 1)
+				{
+					silentCloseStatement(pstmt);
+					return false;
+				}
 				silentCloseStatement(pstmt);
-				return false;
+				dbConnection.commit();
 			}
-			silentCloseStatement(pstmt);
-			dbConnection.commit();
 		}
 		catch (SQLException e)
 		{
@@ -646,61 +669,63 @@ public class JDBCDatabase
 		try
 		{
 			boolean exists = hasUserAuthCredentials(provider, userName);
-			openConnection();
-			PreparedStatement pstmt = null;
-			String sqlQuery = null;
-			if (exists)
+			if (openConnection())
 			{
-				sqlQuery = "UPDATE iwj_users_auth_data SET user_key=?, user_secret=? WHERE provider ='"
-				           + provider + "' AND user='" + userName + "'";
-				Environment.logger.debug("sql query: " + sqlQuery);
-				pstmt = dbConnection.prepareStatement(sqlQuery);
-				if (authCredentials == null)
+				PreparedStatement pstmt = null;
+				String sqlQuery = null;
+				if (exists)
 				{
-					pstmt.setNull(1, java.sql.Types.VARCHAR);
-					pstmt.setNull(2, java.sql.Types.VARCHAR);
-				}
-				else
-				{
-					pstmt.setString(1, authCredentials.getKey());
-					if (authCredentials.getSecret() == null)
+					sqlQuery = "UPDATE iwj_users_auth_data SET user_key=?, user_secret=? WHERE provider ='"
+					           + provider + "' AND user='" + userName + "'";
+					Environment.logger.debug("sql query: " + sqlQuery);
+					pstmt = dbConnection.prepareStatement(sqlQuery);
+					if (authCredentials == null)
 					{
+						pstmt.setNull(1, java.sql.Types.VARCHAR);
 						pstmt.setNull(2, java.sql.Types.VARCHAR);
 					}
 					else
 					{
-						pstmt.setString(2, authCredentials.getSecret());
+						pstmt.setString(1, authCredentials.getKey());
+						if (authCredentials.getSecret() == null)
+						{
+							pstmt.setNull(2, java.sql.Types.VARCHAR);
+						}
+						else
+						{
+							pstmt.setString(2, authCredentials.getSecret());
+						}
 					}
 				}
-			}
-			else
-			{
-				sqlQuery = "INSERT INTO iwj_users_auth_data (provider, user, user_key, user_secret) VALUES (?,?,?,?)";
-				Environment.logger.debug("sql query: " + sqlQuery);
-				pstmt = dbConnection.prepareStatement(sqlQuery);
-				pstmt.setString(1, provider);
-				pstmt.setString(2, userName);
-				if (authCredentials.getKey() == null)
-				{
-					Environment.logger.info("consumer key is null");
-					pstmt.setNull(3, java.sql.Types.VARCHAR);
-				}
 				else
 				{
-					pstmt.setString(3, authCredentials.getKey());
+					sqlQuery = "INSERT INTO iwj_users_auth_data (provider, user, user_key, user_secret) VALUES (?,?,?,?)";
+					Environment.logger.debug("sql query: " + sqlQuery);
+					pstmt = dbConnection.prepareStatement(sqlQuery);
+					pstmt.setString(1, provider);
+					pstmt.setString(2, userName);
+					if (authCredentials.getKey() == null)
+					{
+						Environment.logger.info("consumer key is null");
+						pstmt.setNull(3, java.sql.Types.VARCHAR);
+					}
+					else
+					{
+						pstmt.setString(3, authCredentials.getKey());
+					}
+					if (authCredentials.getSecret() == null)
+					{
+						pstmt.setNull(4, java.sql.Types.VARCHAR);
+					}
+					else
+					{
+						pstmt.setString(4, authCredentials.getSecret());
+					}
 				}
-				if (authCredentials.getSecret() == null)
-				{
-					pstmt.setNull(4, java.sql.Types.VARCHAR);
-				}
-				else
-				{
-					pstmt.setString(4, authCredentials.getSecret());
-				}
+				pstmt.executeUpdate();
+				silentCloseStatement(pstmt);
+				dbConnection.commit();
 			}
-			pstmt.executeUpdate();
-			silentCloseStatement(pstmt);
-			dbConnection.commit();
 		}
 		catch (SQLException e)
 		{

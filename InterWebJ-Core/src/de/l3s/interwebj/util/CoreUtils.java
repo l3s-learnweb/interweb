@@ -24,6 +24,12 @@ public class CoreUtils
 
 	public static <T> String convertToString(Collection<T> c)
 	{
+		return convertToString(c, ',');
+	}
+	
+
+	public static <T> String convertToString(Collection<T> c, char delimiter)
+	{
 		StringBuilder sb = new StringBuilder();
 		for (Iterator<T> i = c.iterator(); i.hasNext();)
 		{
@@ -31,7 +37,7 @@ public class CoreUtils
 			sb.append(t.toString());
 			if (i.hasNext())
 			{
-				sb.append(',');
+				sb.append(delimiter);
 			}
 		}
 		return sb.toString();
@@ -40,6 +46,12 @@ public class CoreUtils
 
 	public static <T> String convertToString(Enumeration<T> e)
 	{
+		return convertToString(e, ',');
+	}
+	
+
+	public static <T> String convertToString(Enumeration<T> e, char delimiter)
+	{
 		StringBuilder sb = new StringBuilder();
 		while (e.hasMoreElements())
 		{
@@ -47,23 +59,7 @@ public class CoreUtils
 			sb.append(t.toString());
 			if (e.hasMoreElements())
 			{
-				sb.append(',');
-			}
-		}
-		return sb.toString();
-	}
-	
-
-	public static <T> String convertToString(Set<T> s)
-	{
-		StringBuilder sb = new StringBuilder();
-		for (Iterator<T> i = s.iterator(); i.hasNext();)
-		{
-			T t = i.next();
-			sb.append(t.toString());
-			if (i.hasNext())
-			{
-				sb.append(',');
+				sb.append(delimiter);
 			}
 		}
 		return sb.toString();

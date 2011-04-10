@@ -121,9 +121,9 @@ public abstract class AbstractServiceConnector
 
 	private void init()
 	{
-		name = configuration.getProperty("name");
-		baseUrl = configuration.getProperty("base-url");
-		contentTypes = new TreeSet<String>(configuration.getProperties("content-types.content-type"));
+		name = configuration.getValue("name");
+		baseUrl = configuration.getValue("base-url");
+		contentTypes = new TreeSet<String>(configuration.getValues("content-types.content-type"));
 	}
 	
 

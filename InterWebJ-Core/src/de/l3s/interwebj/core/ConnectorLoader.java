@@ -14,7 +14,7 @@ import de.l3s.interwebj.connector.*;
 public class ConnectorLoader
 {
 	
-	private static final String CONNECTOR_CONFIG_FILE_NAME = "connector-config.xml";
+	public static final String CONNECTOR_CONFIG_FILE_NAME = "connector-config.xml";
 	
 
 	private File[] getJars(File dir)
@@ -75,11 +75,10 @@ public class ConnectorLoader
 			Environment.logger.info("trying load connector from folder: ["
 			                        + connectorDir.getAbsolutePath() + "]");
 			File configFile = new File(connectorDir, CONNECTOR_CONFIG_FILE_NAME);
-			Configuration configuration;
-			configuration = new Configuration(new FileInputStream(configFile));
-			String connectorName = configuration.getProperty("name");
+			Configuration configuration = new Configuration(new FileInputStream(configFile));
+			String connectorName = configuration.getValue("name");
 			File connectorJarFile = new File(connectorDir,
-			                                 configuration.getProperty("jar-name"));
+			                                 configuration.getValue("jar-name"));
 			JarClassLoader jcl = new JarClassLoader();
 			try
 			{
@@ -109,7 +108,7 @@ public class ConnectorLoader
 				}
 			}
 			JclObjectFactory factory = JclObjectFactory.getInstance();
-			String connectorClassName = configuration.getProperty("class");
+			String connectorClassName = configuration.getValue("class");
 			Object o = factory.create(jcl, connectorClassName, configuration);
 			connector = JclUtils.cast(o, ServiceConnector.class);
 			Environment.logger.info("Connector [" + connector.getName()
@@ -118,10 +117,12 @@ public class ConnectorLoader
 		catch (ConfigurationException e)
 		{
 			e.printStackTrace();
+			Environment.logger.error(e);
 		}
 		catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
+			Environment.logger.error(e);
 		}
 		return connector;
 	}

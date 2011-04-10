@@ -28,7 +28,7 @@ public class Environment
 	{
 		logger.info("Logger initialized successfully");
 		ClassLoader cl = this.getClass().getClassLoader();
-		InputStream is = cl.getResourceAsStream("de/l3s/interwebj/config/config.xml");
+		InputStream is = cl.getResourceAsStream("config/config.xml");
 		try
 		{
 			configuration = new Configuration(is);

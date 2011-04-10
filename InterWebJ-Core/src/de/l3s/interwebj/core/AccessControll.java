@@ -10,7 +10,6 @@ public class AccessControll
 	private static AccessControll singleton;
 	
 	private List<ResourceConstraint> constraints;
-	private String contextName;
 	
 
 	public AccessControll()
@@ -46,21 +45,21 @@ public class AccessControll
 		// TODO: find easy and flexible way to store/read constraints
 		// Public access resources
 		constraints = new LinkedList<ResourceConstraint>();
-		constraints.add(buildPublicConstraint("/InterWebJ/api/.*"));
-		constraints.add(buildPublicConstraint("/InterWebJ/css/.*"));
-		constraints.add(buildPublicConstraint("/InterWebJ/img/.*"));
-		constraints.add(buildPublicConstraint("/InterWebJ(/view/)?"));
-		constraints.add(buildPublicConstraint("/InterWebJ/view/index\\.xhtml"));
-		constraints.add(buildPublicConstraint("/InterWebJ/view/register\\.xhtml"));
-		constraints.add(buildPublicConstraint("/InterWebJ/view/login\\.xhtml"));
-		constraints.add(buildPublicConstraint("/InterWebJ/view/rfRes/.*"));
-		constraints.add(buildPublicConstraint("/InterWebJ/view/javax\\.faces\\.resource/.*"));
-		constraints.add(buildPublicConstraint("/InterWebJ/view/login\\.xhtml"));
-		constraints.add(buildPublicConstraint("/InterWebJ/view/login\\.xhtml"));
+		constraints.add(buildPublicConstraint("/api/.*"));
+		constraints.add(buildPublicConstraint("/css/.*"));
+		constraints.add(buildPublicConstraint("/img/.*"));
+		constraints.add(buildPublicConstraint("(/view/)?"));
+		constraints.add(buildPublicConstraint("/view/index\\.xhtml"));
+		constraints.add(buildPublicConstraint("/view/register\\.xhtml"));
+		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
+		constraints.add(buildPublicConstraint("/view/rfRes/.*"));
+		constraints.add(buildPublicConstraint("/view/javax\\.faces\\.resource/.*"));
+		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
+		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
 		// User access resources
-		constraints.add(new ResourceConstraint("/InterWebJ/.*", "user", 10));
+		constraints.add(new ResourceConstraint("/.*", "user", 10));
 		// Manager access resources
-		constraints.add(new ResourceConstraint("/InterWebJ/view/admin/(.*)?",
+		constraints.add(new ResourceConstraint("/view/admin/(.*)?",
 		                                       "manager",
 		                                       20));
 	}

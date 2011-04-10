@@ -2,7 +2,7 @@
 
 <connector-configuration>
   <jar-name>flickr-connector.jar</jar-name>
-  <class>de.l3s.connector.flickr.FlickrConnector</class>
+  <class>de.l3s.interwebj.connector.flickr.FlickrConnector</class>
   <name>flickr</name>
   <base-url>http://www.flickr.com</base-url>
   <content-types>

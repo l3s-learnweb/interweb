@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project name="InterWebJ.createjar" default="createjar" basedir=".">
-	<delete file="../InterWebJ-Tomcat/WebContent/WEB-INF/lib/interwebj-core.jar" />
+	<delete file="./interwebj-core.jar" />
 	<target name="createjar">
-		<jar destfile="../InterWebJ-Tomcat/WebContent/WEB-INF/lib/interwebj-core.jar" includes="**/*.class" basedir="bin">
-			<!--include name="config/*"/-->
-		</jar>
 		<jar destfile="./interwebj-core.jar" includes="**/*.class" basedir="bin">
-			<!--include name="config/*"/-->
+			<zipfileset dir="config" includes="config.xml" fullpath="config/config.xml"/>
+			<fileset dir="src" includes="log4j.properties"/>
 		</jar>
 		<copy file="./interwebj-core.jar" tofile="../InterWebJ-Tomcat/WebContent/WEB-INF/lib/interwebj-core.jar" overwrite="true" />
 		<copy file="./interwebj-core.jar" tofile="../FlickrConnector/lib/interwebj-core.jar" overwrite="true" />
 		<copy file="./interwebj-core.jar" tofile="../YouTubeConnector/lib/interwebj-core.jar" overwrite="true" />
+		<copy file="./interwebj-core.jar" tofile="../InterWebConnector/lib/interwebj-core.jar" overwrite="true" />
 	</target>
 </project>

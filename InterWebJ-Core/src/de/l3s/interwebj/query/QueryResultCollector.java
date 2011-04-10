@@ -46,10 +46,11 @@ public class QueryResultCollector
 	
 
 	private Query query;
+	private QueryResultMerger merger;
 	private List<QueryResultRetriever> retrievers;
 	
 
-	public QueryResultCollector(Query query)
+	public QueryResultCollector(Query query, QueryResultMerger merger)
 	{
 		this.query = query;
 		retrievers = new ArrayList<QueryResultCollector.QueryResultRetriever>();
@@ -100,6 +101,7 @@ public class QueryResultCollector
 			}
 		}
 		queryResult.setElapsedTime(System.currentTimeMillis() - startTime);
+		queryResult = merger.merge(queryResult);
 		return queryResult;
 	}
 }

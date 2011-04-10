@@ -83,11 +83,12 @@ public class Engine
 	
 
 	public QueryResultCollector getQueryResultCollector(Query query,
-	                                                    IWPrincipal principal)
+	                                                    IWPrincipal principal,
+	                                                    QueryResultMerger merger)
 	    throws InterWebException
 	{
 		query.addParam("user", principal.getName());
-		QueryResultCollector collector = new QueryResultCollector(query);
+		QueryResultCollector collector = new QueryResultCollector(query, merger);
 		for (String connectorName : query.getConnectorNames())
 		{
 			ServiceConnector connector = getConnector(connectorName);
@@ -148,21 +149,22 @@ public class Engine
 	}
 	
 
-	public void setConsumerAuthCredentials(ServiceConnector connector,
+	public void setConsumerAuthCredentials(String connectorName,
 	                                       AuthCredentials consumerAuthCredentials)
 	{
-		database.saveConsumer(connector.getName(),
+		database.saveConsumer(connectorName,
 		                      Environment.INTERWEBJ_SERVICE_NAME,
 		                      consumerAuthCredentials);
+		ServiceConnector connector = connectors.get(connectorName);
 		connector.setConsumerAuthCredentials(consumerAuthCredentials);
 	}
 	
 
-	public void setUserAuthCredentials(ServiceConnector connector,
+	public void setUserAuthCredentials(String connectorName,
 	                                   IWPrincipal principal,
 	                                   AuthCredentials consumerAuthCredentials)
 	{
-		database.saveUserAuthCredentials(connector.getName(),
+		database.saveUserAuthCredentials(connectorName,
 		                                 principal.getName(),
 		                                 consumerAuthCredentials);
 	}
@@ -197,6 +199,7 @@ public class Engine
 	}
 	
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args)
 	    throws InterWebException
 	{
@@ -244,8 +247,10 @@ public class Engine
 		{
 			query.addConnectorName(connectorName);
 		}
+		QueryResultMerger merger = new DumbQueryResultMerger();
 		QueryResultCollector collector = engine.getQueryResultCollector(query,
-		                                                                principal);
+		                                                                principal,
+		                                                                merger);
 		QueryResult queryResult = collector.retrieve();
 		System.out.println("query: [" + query + "]");
 		System.out.println("elapsed time : [" + queryResult.getElapsedTime()

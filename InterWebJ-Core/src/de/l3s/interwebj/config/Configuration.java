@@ -21,28 +21,42 @@ public class Configuration
 	}
 	
 
-	@SuppressWarnings("unchecked")
-	public List<String> getProperties(String key)
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public String getPropertyValue(String propertiesBase, String propertyName)
 	{
-		return configuration.getList(key, new ArrayList<String>());
+		List properties = configuration.configurationsAt(propertiesBase
+		                                                 + ".property");
+		for (Iterator<HierarchicalConfiguration> it = properties.iterator(); it.hasNext();)
+		{
+			HierarchicalConfiguration sub = it.next();
+			if (propertyName.equals(sub.getString("name")))
+			{
+				return sub.getString("value");
+			}
+		}
+		return null;
 	}
 	
 
-	public String getProperty(String key)
+	public String getValue(String key)
 	{
 		return configuration.getProperty(key).toString();
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	public List<String> getValues(String key)
+	{
+		return configuration.getList(key, new ArrayList<String>());
 	}
 	
 
 	public static void main(String[] args)
 	    throws Exception
 	{
-		Configuration configuration = new Configuration(new FileInputStream("./temp/connector-config.xml"));
-		System.out.println(configuration.getProperty("class"));
-		System.out.println(configuration.getProperty("name"));
-		System.out.println(configuration.getProperty("base-url"));
-		System.out.println(configuration.getProperties("content-types.content-type"));
-		System.out.println(configuration.getProperties("properties.property.name"));
+		Configuration configuration = new Configuration(new FileInputStream("./connector-config.xml"));
+		System.out.println(configuration.getPropertyValue("properties",
+		                                                  "services"));
 	}
 	
 }
