@@ -53,6 +53,7 @@ public class QueryResultCollector
 	public QueryResultCollector(Query query, QueryResultMerger merger)
 	{
 		this.query = query;
+		this.merger = merger;
 		retrievers = new ArrayList<QueryResultCollector.QueryResultRetriever>();
 	}
 	
