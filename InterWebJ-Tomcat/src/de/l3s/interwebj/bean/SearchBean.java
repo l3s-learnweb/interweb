@@ -10,7 +10,7 @@ import javax.faces.model.*;
 
 import com.sun.istack.internal.*;
 
-import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.*;
 import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.query.*;
@@ -200,8 +200,10 @@ public class SearchBean
 		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		try
 		{
+			QueryResultMerger merger = new DumbQueryResultMerger();
 			QueryResultCollector collector = engine.getQueryResultCollector(query,
-			                                                                principal);
+			                                                                principal,
+			                                                                merger);
 			queryResult = collector.retrieve();
 		}
 		catch (InterWebException e)

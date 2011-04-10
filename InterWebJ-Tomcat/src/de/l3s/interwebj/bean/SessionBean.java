@@ -59,7 +59,7 @@ public class SessionBean
 				pendingAuthorizationConnectors.remove(connector);
 				Environment.logger.debug(connector.getName() + " authenticated");
 				Engine engine = Environment.getInstance().getEngine();
-				engine.setUserAuthCredentials(connector,
+				engine.setUserAuthCredentials(connector.getName(),
 				                              principal,
 				                              authCredentials);
 				Environment.logger.debug("authentication data saved");

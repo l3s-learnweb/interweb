@@ -7,7 +7,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.*;
 import de.l3s.interwebj.bean.*;
 import de.l3s.interwebj.core.*;
 
@@ -78,7 +78,8 @@ public class CallbackServlet
 		sessionBean.processAuthenticationCallback(params);
 		try
 		{
-			response.sendRedirect("/InterWebJ/view/services.xhtml");
+			response.sendRedirect(request.getContextPath()
+			                      + "/view/services.xhtml");
 		}
 		catch (IOException e)
 		{

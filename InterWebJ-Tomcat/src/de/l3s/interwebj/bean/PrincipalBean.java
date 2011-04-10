@@ -8,7 +8,7 @@ import javax.faces.bean.*;
 import javax.faces.context.*;
 import javax.servlet.http.*;
 
-import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.webutil.*;
@@ -61,7 +61,8 @@ public class PrincipalBean
 			sessionBean.setSavedRequestUrl(null);
 			Environment.logger.debug("redirecting to: " + savedRequestUrl);
 			ExternalContext externalContext = FacesUtils.getExternalContext();
-			externalContext.redirect(savedRequestUrl);
+			String contextPath = FacesUtils.getContextPath();
+			externalContext.redirect(contextPath + savedRequestUrl);
 		}
 		return "success";
 	}

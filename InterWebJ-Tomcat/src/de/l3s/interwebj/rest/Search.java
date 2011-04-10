@@ -8,7 +8,7 @@ import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.jaxb.*;
 import de.l3s.interwebj.query.*;
@@ -248,8 +248,10 @@ public class Search
 			//		 IWPrincipal principal = request.getUserPrincipal();
 			IWPrincipal principal = new IWPrincipal("olex", "");
 			query.addParam("user", principal.getName());
+			QueryResultMerger merger = new DumbQueryResultMerger();
 			QueryResultCollector collector = engine.getQueryResultCollector(query,
-			                                                                principal);
+			                                                                principal,
+			                                                                merger);
 			QueryResult queryResult = collector.retrieve();
 			engine.getStandingQueryResultPool().add(queryResult);
 			IWSearchResponse iwSearchResponse = new IWSearchResponse(queryResult);

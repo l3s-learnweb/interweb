@@ -75,15 +75,17 @@
 					<rich:column>
 						<div>
 						<h6><img
-							src="/#{interwebj.contextName}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
+							src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
 							style="vertical-align: middle; margin: 3px;" /><h:outputLink
-							value="#{resultItem.url}" target="_blank">#{resultItem.title}</h:outputLink></h6>
+							value="#{resultItem.url}" target="_blank">&nbsp;#{resultItem.title}</h:outputLink></h6>
 						<div><h:outputText value="#{resultItem.asHtml()}"
 							escape="false" />
 						<div><span>#{resultItem.description}</span></div>
 						<div><span
-							style="text-align: left; vertical-align: bottom; color: #0077CC; font-size: 0.8em">#{resultItem.date}
-						- Tags: #{searchBean.getTags(resultItem)}</span></div>
+							style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;"><span
+							style="background-color: #D0EFEF;">Added</span>:
+						#{resultItem.date} &ndash; <span style="background-color: #D0EFEF;">Tags</span>:
+						#{searchBean.getTags(resultItem)}</span></div>
 						</div>
 						</div>
 					</rich:column>

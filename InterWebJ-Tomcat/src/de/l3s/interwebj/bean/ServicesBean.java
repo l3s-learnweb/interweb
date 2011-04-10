@@ -41,12 +41,14 @@ public class ServicesBean
 		                         + permissionLevel.getName());
 		String callbackUrl = FacesUtils.getInterWebJBean().getBaseUrl()
 		                     + "callback";
+		Environment.logger.debug("callbackUrl: [" + callbackUrl + "]");
 		Parameters params = ((ServiceConnector) connector).authenticate(permissionLevel,
 		                                                                callbackUrl);
 		String oauthAuthorizationUrl = params.get(Parameters.OAUTH_AUTHORIZATION_URL);
 		if (oauthAuthorizationUrl != null)
 		{
-			//			Environment.logger.debug(oauthAuthorizationUrl);
+			Environment.logger.debug("redirecting to service authorization url: "
+			                         + oauthAuthorizationUrl);
 			SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
 			sessionBean.addPendingAuthorizationConnector((ServiceConnector) connector,
 			                                             params);
@@ -80,12 +82,12 @@ public class ServicesBean
 	    throws InterWebException
 	{
 		Engine engine = Environment.getInstance().getEngine();
-		List<ServiceConnector> registeredConnectors = engine.getConnectors();
-		for (ServiceConnector connector : registeredConnectors)
+		List<ServiceConnector> registeredConnectors = new ArrayList<ServiceConnector>();
+		for (ServiceConnector connector : engine.getConnectors())
 		{
-			if (!connector.isRegistered())
+			if (connector.isRegistered())
 			{
-				registeredConnectors.remove(connector);
+				registeredConnectors.add(connector);
 			}
 		}
 		return registeredConnectors;
@@ -113,7 +115,7 @@ public class ServicesBean
 		Engine engine = Environment.getInstance().getEngine();
 		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		//		Environment.logger.debug("current user: " + principal.getName());
-		engine.setUserAuthCredentials((ServiceConnector) connector,
+		engine.setUserAuthCredentials(((ServiceConnector) connector).getName(),
 		                              principal,
 		                              null);
 		return null;

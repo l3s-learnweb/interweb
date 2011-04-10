@@ -43,6 +43,13 @@ public class FacesUtils
 	}
 	
 
+	public static String getContextPath()
+	{
+		HttpServletRequest request = (HttpServletRequest) FacesUtils.getExternalContext().getRequest();
+		return request.getContextPath();
+	}
+	
+
 	public static ExternalContext getExternalContext()
 	{
 		FacesContext fc = FacesContext.getCurrentInstance();

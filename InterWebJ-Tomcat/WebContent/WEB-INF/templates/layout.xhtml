@@ -7,29 +7,29 @@
 <h:head>
 	<title>InterWebJ</title>
 	<link rel="stylesheet" type="text/css" media="screen"
-		href="/#{interwebj.contextName}/css/main.css" />
+		href="#{interwebj.contextPath}/css/main.css" />
 </h:head>
 <body>
 <div id="topnav"><h:form>
 	<ul>
-		<li><h:outputLink value="/#{interwebj.contextName}/view/login.xhtml"
+		<li><h:outputLink value="#{interwebj.contextPath}/view/login.xhtml"
 			rendered="#{!principalBean.loggedIn}">
 			<h:outputText value="Login" />
 		</h:outputLink></li>
 		<li><h:outputLink
-			value="/#{interwebj.contextName}/view/register.xhtml"
+			value="#{interwebj.contextPath}/view/register.xhtml"
 			rendered="#{!principalBean.loggedIn}">
 			<h:outputText value="Register" />
 		</h:outputLink></li>
 		<li><h:commandLink action="#{principalBean.logout()}"
 			value="Logout" rendered="#{principalBean.loggedIn}" /></li>
 		<!--li><h:outputLink
-			value="/#{interwebj.contextName}/view/profile.xhtml"
+			value="#{interwebj.contextPath}/view/profile.xhtml"
 			rendered="#{principalBean.loggedIn}">
 			<h:outputText value="Profile: #{sessionBean.principal.name}" />
 		</h:outputLink></li-->
 		<li id="skip"><h:outputLink
-			value="/#{interwebj.contextName}/view/index.xhtml">
+			value="#{interwebj.contextPath}/view/index.xhtml">
 			<h:outputText value="Home" />
 		</h:outputLink></li>
 	</ul>
@@ -40,28 +40,28 @@
 	<h:form>
 		<ui:fragment rendered="#{principalBean.loggedIn}">
 			<li><h:outputLink
-				value="/#{interwebj.contextName}/view/services.xhtml">
+				value="#{interwebj.contextPath}/view/services.xhtml">
 				<h:outputText value="Services" />
 			</h:outputLink></li>
 			<li><h:outputLink
-				value="/#{interwebj.contextName}/view/search.xhtml">
+				value="#{interwebj.contextPath}/view/search.xhtml">
 				<h:outputText value="Search" />
 			</h:outputLink></li>
 			<li><h:outputLink
-				value="/#{interwebj.contextName}/view/upload.xhtml">
+				value="#{interwebj.contextPath}/view/upload.xhtml">
 				<h:outputText value="Upload" />
 			</h:outputLink></li>
 			<li><h:outputLink
-				value="/#{interwebj.contextName}/view/consumers.xhtml">
+				value="#{interwebj.contextPath}/view/consumers.xhtml">
 				<h:outputText value="Apps" />
 			</h:outputLink></li>
 		</ui:fragment>
-		<li><h:outputLink value="/#{interwebj.contextName}/view/api.xhtml">
+		<li><h:outputLink value="#{interwebj.contextPath}/view/api.xhtml">
 			<h:outputText value="API Docs" />
 		</h:outputLink></li>
 		<ui:fragment rendered="#{principalBean.hasRole('manager')}">
 			<li id="admin_menu_item"><h:outputLink
-				value="/#{interwebj.contextName}/view/admin/register_services.xhtml">
+				value="#{interwebj.contextPath}/view/admin/register_services.xhtml">
 				<h:outputText value="WS Registration" />
 			</h:outputLink></li>
 		</ui:fragment>

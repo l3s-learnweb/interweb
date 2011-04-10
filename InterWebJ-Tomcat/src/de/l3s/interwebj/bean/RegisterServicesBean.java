@@ -4,12 +4,12 @@ package de.l3s.interwebj.bean;
 import java.util.*;
 
 import javax.faces.bean.*;
-
-import com.sun.istack.internal.*;
+import javax.servlet.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
+import de.l3s.interwebj.webutil.*;
 
 
 @ManagedBean
@@ -17,15 +17,20 @@ import de.l3s.interwebj.core.*;
 public class RegisterServicesBean
 {
 	
-	@NotNull
 	private String key;
-	@NotNull
 	private String secret;
+	
+
+	public List<ServiceConnector> getConnectors()
+	{
+		Engine engine = Environment.getInstance().getEngine();
+		return engine.getConnectors();
+	}
 	
 
 	public String getKey()
 	{
-		return key;
+		return null;
 	}
 	
 
@@ -46,7 +51,7 @@ public class RegisterServicesBean
 
 	public String getSecret()
 	{
-		return secret;
+		return null;
 	}
 	
 
@@ -63,13 +68,29 @@ public class RegisterServicesBean
 		{
 			Engine engine = Environment.getInstance().getEngine();
 			AuthCredentials authCredentials = new AuthCredentials(key, secret);
-			Environment.logger.debug("registering " + authCredentials);
-			engine.setConsumerAuthCredentials(connector, authCredentials);
+			Environment.logger.debug("registering connector: ["
+			                         + connector.getName()
+			                         + "] with credentials: " + authCredentials);
+			connector.setConsumerAuthCredentials(authCredentials);
+			engine.setConsumerAuthCredentials(connector.getName(),
+			                                  authCredentials);
 		}
 		catch (Exception e)
 		{
 			return "failed";
 		}
+		return "success";
+	}
+	
+
+	public String reload()
+	{
+		Environment.logger.debug("Reloading installed connectors...");
+		ServletContext servletContext = (ServletContext) FacesUtils.getExternalContext().getContext();
+		String contextRealPath = servletContext.getRealPath("/");
+		String connectorsDirPath = contextRealPath + "connectors";
+		Engine engine = Environment.getInstance().getEngine();
+		engine.loadConnectors(connectorsDirPath);
 		return "success";
 	}
 	
@@ -90,9 +111,11 @@ public class RegisterServicesBean
 	{
 		try
 		{
-			Environment.logger.debug("unregistering");
+			Environment.logger.debug("unregistering connector: ["
+			                         + connector.getName() + "]");
 			Engine engine = Environment.getInstance().getEngine();
-			engine.setConsumerAuthCredentials(connector, null);
+			connector.setConsumerAuthCredentials(null);
+			engine.setConsumerAuthCredentials(connector.getName(), null);
 		}
 		catch (Exception e)
 		{
