@@ -49,14 +49,4 @@ public class Configuration
 	{
 		return configuration.getList(key, new ArrayList<String>());
 	}
-	
-
-	public static void main(String[] args)
-	    throws Exception
-	{
-		Configuration configuration = new Configuration(new FileInputStream("./connector-config.xml"));
-		System.out.println(configuration.getPropertyValue("properties",
-		                                                  "services"));
-	}
-	
 }

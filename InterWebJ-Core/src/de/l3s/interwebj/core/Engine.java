@@ -8,8 +8,6 @@ import de.l3s.interwebj.*;
 import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.query.*;
-import de.l3s.interwebj.query.Query.SearchScope;
-import de.l3s.interwebj.query.Query.SortOrder;
 
 
 public class Engine
@@ -198,62 +196,61 @@ public class Engine
 		Environment.logger.debug("... uploading done");
 	}
 	
-
-	@SuppressWarnings("unused")
-	public static void main(String[] args)
-	    throws InterWebException
-	{
-		Database database = Environment.getInstance().getDatabase();
-		Engine engine = new Engine(database);
-		engine.loadConnectors("./connectors");
-		IWPrincipal principal = database.authenticate("olex", "123456");
-		String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
-		List<String> connectorNames = engine.getConnectorNames();
-		//		List<String> connectorNames = new ArrayList<String>();
-		//		connectorNames.add("interweb");
-		//		connectorNames.add("youtube");
-		//		connectorNames.add("youtube2");
-		//		connectorNames.add("flickr");
-		
-		System.out.println("Searching in connectors: " + connectorNames);
-		int retryCount = 50;
-		for (int i = 0; i < retryCount; i++)
-		{
-			testSearch("people", connectorNames, engine, principal);
-		}
-		//		for (String word : words)
-		//		{
-		//			testSearch(word, connectorNames, engine, principal);
-		//		}
-		System.out.println("finished");
-	}
-	
-
-	private static void testSearch(String word,
-	                               List<String> connectorNames,
-	                               Engine engine,
-	                               IWPrincipal principal)
-	    throws InterWebException
-	{
-		QueryFactory queryFactory = new QueryFactory();
-		Query query = queryFactory.createQuery(word);
-		query.addContentType(Query.CT_VIDEO);
-		query.addContentType(Query.CT_IMAGE);
-		query.addSearchScope(SearchScope.TEXT);
-		query.addSearchScope(SearchScope.TAGS);
-		query.setResultCount(50);
-		query.setSortOrder(SortOrder.RELEVANCE);
-		for (String connectorName : connectorNames)
-		{
-			query.addConnectorName(connectorName);
-		}
-		QueryResultMerger merger = new DumbQueryResultMerger();
-		QueryResultCollector collector = engine.getQueryResultCollector(query,
-		                                                                principal,
-		                                                                merger);
-		QueryResult queryResult = collector.retrieve();
-		System.out.println("query: [" + query + "]");
-		System.out.println("elapsed time : [" + queryResult.getElapsedTime()
-		                   + "]");
-	}
+	//	@SuppressWarnings("unused")
+	//	public static void main(String[] args)
+	//	    throws InterWebException
+	//	{
+	//		Database database = Environment.getInstance().getDatabase();
+	//		Engine engine = new Engine(database);
+	//		engine.loadConnectors("./connectors");
+	//		IWPrincipal principal = database.authenticate("olex", "123456");
+	//		String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
+	//		List<String> connectorNames = engine.getConnectorNames();
+	//		//		List<String> connectorNames = new ArrayList<String>();
+	//		//		connectorNames.add("interweb");
+	//		//		connectorNames.add("youtube");
+	//		//		connectorNames.add("youtube2");
+	//		//		connectorNames.add("flickr");
+	//		
+	//		System.out.println("Searching in connectors: " + connectorNames);
+	//		int retryCount = 50;
+	//		for (int i = 0; i < retryCount; i++)
+	//		{
+	//			testSearch("people", connectorNames, engine, principal);
+	//		}
+	//		//		for (String word : words)
+	//		//		{
+	//		//			testSearch(word, connectorNames, engine, principal);
+	//		//		}
+	//		System.out.println("finished");
+	//	}
+	//	
+	//
+	//	private static void testSearch(String word,
+	//	                               List<String> connectorNames,
+	//	                               Engine engine,
+	//	                               IWPrincipal principal)
+	//	    throws InterWebException
+	//	{
+	//		QueryFactory queryFactory = new QueryFactory();
+	//		Query query = queryFactory.createQuery(word);
+	//		query.addContentType(Query.CT_VIDEO);
+	//		query.addContentType(Query.CT_IMAGE);
+	//		query.addSearchScope(SearchScope.TEXT);
+	//		query.addSearchScope(SearchScope.TAGS);
+	//		query.setResultCount(50);
+	//		query.setSortOrder(SortOrder.RELEVANCE);
+	//		for (String connectorName : connectorNames)
+	//		{
+	//			query.addConnectorName(connectorName);
+	//		}
+	//		QueryResultMerger merger = new DumbQueryResultMerger();
+	//		QueryResultCollector collector = engine.getQueryResultCollector(query,
+	//		                                                                principal,
+	//		                                                                merger);
+	//		QueryResult queryResult = collector.retrieve();
+	//		System.out.println("query: [" + query + "]");
+	//		System.out.println("elapsed time : [" + queryResult.getElapsedTime()
+	//		                   + "]");
+	//	}
 }

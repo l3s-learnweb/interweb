@@ -7,8 +7,6 @@ import java.util.*;
 public class AccessControll
 {
 	
-	private static AccessControll singleton;
-	
 	private List<ResourceConstraint> constraints;
 	
 
@@ -91,24 +89,5 @@ public class AccessControll
 	{
 		ResourceConstraint resourceConstraint = getResourceConstraint(resource);
 		return (resourceConstraint.getRole() == null);
-	}
-	
-
-	public static AccessControll getInstance()
-	{
-		if (singleton == null)
-		{
-			singleton = new AccessControll();
-		}
-		return singleton;
-	}
-	
-
-	public static void main(String[] args)
-	{
-		AccessControll accessControll = new AccessControll();
-		Environment.logger.debug("grant access: "
-		                         + accessControll.isPublicResource("/css/main.css"));
-		;
 	}
 }
