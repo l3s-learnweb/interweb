@@ -1,6 +1,9 @@
 package de.l3s.interwebj;
 
 
+import static de.l3s.interwebj.util.Assertions.*;
+
+
 public class AuthCredentials
 {
 	
@@ -16,10 +19,7 @@ public class AuthCredentials
 
 	public AuthCredentials(String key, String secret)
 	{
-		if (key == null)
-		{
-			throw new NullPointerException("Argument [key] can not be null");
-		}
+		notNull(key, "key");
 		this.key = key;
 		this.secret = secret;
 	}
