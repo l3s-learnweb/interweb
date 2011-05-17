@@ -8,7 +8,6 @@ import org.apache.commons.configuration.*;
 import org.xeustechnologies.jcl.*;
 
 import de.l3s.interwebj.config.Configuration;
-import de.l3s.interwebj.connector.*;
 
 
 public class ConnectorLoader

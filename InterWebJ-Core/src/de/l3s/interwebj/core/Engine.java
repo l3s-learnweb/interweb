@@ -3,11 +3,12 @@ package de.l3s.interwebj.core;
 
 import java.security.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import de.l3s.interwebj.*;
-import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.util.*;
 
 
 public class Engine
@@ -16,7 +17,7 @@ public class Engine
 	private Map<String, ServiceConnector> connectors;
 	private Set<String> contentTypes;
 	private Database database;
-	private StandingQueryResultPool standingQueryResultPool;
+	private ExpirableMap<String, Object> expirableMap;
 	
 
 	public Engine(Database database)
@@ -26,20 +27,17 @@ public class Engine
 	}
 	
 
-	private void addConnector(ServiceConnector connector)
-	{
-		AuthCredentials authCredentials = getConsumerAuthCredentials(connector);
-		connector.setConsumerAuthCredentials(authCredentials);
-		contentTypes.addAll(connector.getContentTypes());
-		connectors.put(connector.getName(), connector);
-	}
-	
-
 	public ServiceConnector getConnector(String connectorName)
 	{
 		ServiceConnector storedServiceConnector = connectors.get(connectorName);
 		return (storedServiceConnector == null)
 		    ? null : storedServiceConnector.clone();
+	}
+	
+
+	public AuthCredentials getConnectorAuthCredentials(ServiceConnector connector)
+	{
+		return database.readConnectorAuthCredentials(connector.getName());
 	}
 	
 
@@ -67,21 +65,20 @@ public class Engine
 	}
 	
 
-	public AuthCredentials getConsumerAuthCredentials(ServiceConnector connector)
-	{
-		return database.readConsumerAuthCredentials(connector.getName(),
-		                                            Environment.INTERWEBJ_SERVICE_NAME);
-	}
-	
-
 	public List<String> getContentTypes()
 	{
 		return new ArrayList<String>(contentTypes);
 	}
 	
 
+	public ExpirableMap<String, Object> getExpirableMap()
+	{
+		return expirableMap;
+	}
+	
+
 	public QueryResultCollector getQueryResultCollector(Query query,
-	                                                    IWPrincipal principal,
+	                                                    InterWebPrincipal principal,
 	                                                    QueryResultMerger merger)
 	    throws InterWebException
 	{
@@ -102,26 +99,12 @@ public class Engine
 	}
 	
 
-	public StandingQueryResultPool getStandingQueryResultPool()
-	{
-		return standingQueryResultPool;
-	}
-	
-
 	public AuthCredentials getUserAuthCredentials(ServiceConnector connector,
 	                                              Principal principal)
 	{
 		return (principal == null)
 		    ? null : database.readUserAuthCredentials(connector.getName(),
 		                                              principal.getName());
-	}
-	
-
-	private void init()
-	{
-		connectors = new TreeMap<String, ServiceConnector>();
-		contentTypes = new TreeSet<String>();
-		standingQueryResultPool = new StandingQueryResultPool();
 	}
 	
 
@@ -141,25 +124,20 @@ public class Engine
 		{
 			addConnector(connector);
 		}
-		//		addConnector(new FlickrConnector(null));
-		//		addConnector(new YouTubeConnector(null));
-		//		addConnector(new InterWebConnector(null));
 	}
 	
 
 	public void setConsumerAuthCredentials(String connectorName,
-	                                       AuthCredentials consumerAuthCredentials)
+	                                       AuthCredentials connectorAuthCredentials)
 	{
-		database.saveConsumer(connectorName,
-		                      Environment.INTERWEBJ_SERVICE_NAME,
-		                      consumerAuthCredentials);
+		database.saveConnector(connectorName, connectorAuthCredentials);
 		ServiceConnector connector = connectors.get(connectorName);
-		connector.setConsumerAuthCredentials(consumerAuthCredentials);
+		connector.setAuthCredentials(connectorAuthCredentials);
 	}
 	
 
 	public void setUserAuthCredentials(String connectorName,
-	                                   IWPrincipal principal,
+	                                   InterWebPrincipal principal,
 	                                   AuthCredentials consumerAuthCredentials)
 	{
 		database.saveUserAuthCredentials(connectorName,
@@ -196,36 +174,59 @@ public class Engine
 		Environment.logger.debug("... uploading done");
 	}
 	
-	//	@SuppressWarnings("unused")
-	//	public static void main(String[] args)
-	//	    throws InterWebException
-	//	{
-	//		Database database = Environment.getInstance().getDatabase();
-	//		Engine engine = new Engine(database);
-	//		engine.loadConnectors("./connectors");
-	//		IWPrincipal principal = database.authenticate("olex", "123456");
-	//		String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
-	//		List<String> connectorNames = engine.getConnectorNames();
-	//		//		List<String> connectorNames = new ArrayList<String>();
-	//		//		connectorNames.add("interweb");
-	//		//		connectorNames.add("youtube");
-	//		//		connectorNames.add("youtube2");
-	//		//		connectorNames.add("flickr");
-	//		
-	//		System.out.println("Searching in connectors: " + connectorNames);
-	//		int retryCount = 50;
-	//		for (int i = 0; i < retryCount; i++)
-	//		{
-	//			testSearch("people", connectorNames, engine, principal);
-	//		}
-	//		//		for (String word : words)
-	//		//		{
-	//		//			testSearch(word, connectorNames, engine, principal);
-	//		//		}
-	//		System.out.println("finished");
-	//	}
-	//	
-	//
+
+	private void addConnector(ServiceConnector connector)
+	{
+		AuthCredentials authCredentials = getConnectorAuthCredentials(connector);
+		connector.setAuthCredentials(authCredentials);
+		contentTypes.addAll(connector.getContentTypes());
+		connectors.put(connector.getName(), connector);
+	}
+	
+
+	private void init()
+	{
+		connectors = new TreeMap<String, ServiceConnector>();
+		contentTypes = new TreeSet<String>();
+		ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
+		expirableMap = new ExpirableMap<String, Object>(builder.timeToIdle(60,
+		                                                                   TimeUnit.MINUTES).build());
+	}
+	
+
+	@SuppressWarnings("unused")
+	public static void main(String[] args)
+	{
+		Database database = Environment.getInstance().getDatabase();
+		InterWebPrincipal principal;
+		principal = database.authenticate("olex", "123456");
+		AuthCredentials authCredentials;
+		authCredentials = database.readConnectorAuthCredentials("flickr");
+		System.out.println(authCredentials);
+		database.saveConnector("flickr",
+		                       new AuthCredentials("***REMOVED***",
+		                                           "***REMOVED***"));
+		authCredentials = database.readConnectorAuthCredentials("flickr");
+		System.out.println(authCredentials);
+		
+		//		Engine engine = new Engine(database);
+		//		engine.loadConnectors("./connectors");
+		//		IWPrincipal principal = database.authenticate("olex", "123456");
+		//		String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
+		//		List<String> connectorNames = engine.getConnectorNames();
+		//		Environment.logger.debug("Searching in connectors: " + connectorNames);
+		//		int retryCount = 50;
+		//		for (int i = 0; i < retryCount; i++)
+		//		{
+		//			testSearch("people", connectorNames, engine, principal);
+		//		}
+		//		for (String word : words)
+		//		{
+		//			testSearch(word, connectorNames, engine, principal);
+		//		}
+		Environment.logger.debug("finished");
+	}
+	
 	//	private static void testSearch(String word,
 	//	                               List<String> connectorNames,
 	//	                               Engine engine,

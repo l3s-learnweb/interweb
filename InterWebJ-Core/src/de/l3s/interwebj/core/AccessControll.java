@@ -63,7 +63,7 @@ public class AccessControll
 	}
 	
 
-	public boolean isAuthorized(IWPrincipal principal,
+	public boolean isAuthorized(InterWebPrincipal principal,
 	                            String resource,
 	                            String action)
 	{
