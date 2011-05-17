@@ -7,7 +7,6 @@ import java.text.*;
 import java.util.*;
 
 import javax.ws.rs.core.*;
-import javax.xml.bind.*;
 
 import org.apache.commons.codec.binary.*;
 
@@ -22,50 +21,6 @@ public class CoreUtils
 	private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 
-	public static <T> String convertToString(Collection<T> c)
-	{
-		return convertToString(c, ',');
-	}
-	
-
-	public static <T> String convertToString(Collection<T> c, char delimiter)
-	{
-		StringBuilder sb = new StringBuilder();
-		for (Iterator<T> i = c.iterator(); i.hasNext();)
-		{
-			T t = i.next();
-			sb.append(t.toString());
-			if (i.hasNext())
-			{
-				sb.append(delimiter);
-			}
-		}
-		return sb.toString();
-	}
-	
-
-	public static <T> String convertToString(Enumeration<T> e)
-	{
-		return convertToString(e, ',');
-	}
-	
-
-	public static <T> String convertToString(Enumeration<T> e, char delimiter)
-	{
-		StringBuilder sb = new StringBuilder();
-		while (e.hasMoreElements())
-		{
-			T t = e.nextElement();
-			sb.append(t.toString());
-			if (e.hasMoreElements())
-			{
-				sb.append(delimiter);
-			}
-		}
-		return sb.toString();
-	}
-	
-
 	public static List<String> convertToUniqueList(String s)
 	{
 		Set<String> list = new HashSet<String>();
@@ -78,16 +33,6 @@ public class CoreUtils
 			}
 		}
 		return new ArrayList<String>(list);
-	}
-	
-
-	@SuppressWarnings("unchecked")
-	public static <T> T create(Class<T> clazz, InputStream is)
-	    throws JAXBException
-	{
-		JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		return (T) unmarshaller.unmarshal(is);
 	}
 	
 
@@ -135,13 +80,6 @@ public class CoreUtils
 		}
 		br.close();
 		return sb.toString();
-	}
-	
-
-	public static void main(String[] args)
-	{
-		String s = "te\nst1,te,,,\t st2";
-		System.out.println(convertToUniqueList(s));
 	}
 	
 

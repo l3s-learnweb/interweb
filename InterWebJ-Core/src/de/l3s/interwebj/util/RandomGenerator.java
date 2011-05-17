@@ -4,11 +4,17 @@ package de.l3s.interwebj.util;
 import java.math.*;
 import java.security.*;
 
+import org.apache.commons.lang.*;
+
+import de.l3s.interwebj.*;
+
 
 public class RandomGenerator
 {
 	
 	private static final int DEFAULT_BIT_COUNT = 144;
+	
+	private static char[] alphanumericChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_".toCharArray();
 	
 	private static RandomGenerator singleton;
 	
@@ -21,15 +27,15 @@ public class RandomGenerator
 	}
 	
 
-	public String nextAlphaNumericId()
+	public String nextAlphanumericId()
 	{
-		return nextAlphaNumericId(DEFAULT_BIT_COUNT);
+		return nextAlphanumericId(16);
 	}
 	
 
-	public String nextAlphaNumericId(int bitCount)
+	public String nextAlphanumericId(int charCount)
 	{
-		return new BigInteger(bitCount, random).toString(36);
+		return RandomStringUtils.random(charCount, alphanumericChars);
 	}
 	
 
@@ -57,6 +63,20 @@ public class RandomGenerator
 	}
 	
 
+	public AuthCredentials nextOAuthCredentials()
+	{
+		String key = nextAlphanumericId(16);
+		String secret = nextAlphanumericId(24);
+		return new AuthCredentials(key, secret);
+	}
+	
+
+	public String nextOAuthToken()
+	{
+		return nextAlphanumericId(16);
+	}
+	
+
 	public static RandomGenerator getInstance()
 	{
 		if (singleton == null)
@@ -70,6 +90,6 @@ public class RandomGenerator
 	public static void main(String[] args)
 	{
 		RandomGenerator randomGenerator = RandomGenerator.getInstance();
-		System.out.println(randomGenerator.nextHexId());
+		System.out.println(randomGenerator.nextOAuthCredentials());
 	}
 }
