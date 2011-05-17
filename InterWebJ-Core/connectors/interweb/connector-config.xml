@@ -14,8 +14,8 @@
   <properties>
     <property>
       <name>services</name>
-      <!-- <value>Flickr\,YouTube</value> -->
-      <value>Delicious\,Ipernity\,LastFm\,SlideShare\,Vimeo\,Blogger\,Facebook\,GroupMe</value>
+      <value>Flickr\,YouTube</value>
+      <!-- value>Delicious\,Ipernity\,LastFm\,SlideShare\,Vimeo\,Blogger\,Facebook\,GroupMe</value -->
     </property>
   </properties>
 </connector-configuration>
