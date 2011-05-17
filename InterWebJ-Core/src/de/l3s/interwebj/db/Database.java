@@ -1,6 +1,8 @@
 package de.l3s.interwebj.db;
 
 
+import java.util.*;
+
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 
@@ -8,39 +10,55 @@ import de.l3s.interwebj.core.*;
 public interface Database
 {
 	
-	public IWPrincipal authenticate(String userName, String userPassword);
+	public InterWebPrincipal authenticate(String userName, String userPassword);
 	
 
 	public void close();
 	
 
-	public void deleteConsumer(String provider, String consumer);
+	public void deleteConnector(String connectorName);
 	
 
-	public boolean hasUser(String username);
+	public void deleteConsumer(String userName, String consumerName);
 	
 
-	public AuthCredentials readConsumerAuthCredentials(String provider,
-	                                                   String consumer);
+	public boolean hasPrincipal(String userName);
 	
 
-	public AuthCredentials readUserAuthCredentials(String provider,
+	public AuthCredentials readConnectorAuthCredentials(String connectorName);
+	
+
+	public Consumer readConsumerByKey(String key);
+	
+
+	public List<Consumer> readConsumers(String userName);
+	
+
+	public InterWebPrincipal readPrincipalByName(String name);
+	
+
+	public InterWebPrincipal readPrincipalByKey(String key);
+	
+
+	public AuthCredentials readUserAuthCredentials(String connectorName,
 	                                               String userName);
 	
 
-	public void saveConsumer(String provider,
-	                         String consumer,
-	                         AuthCredentials authCredentials);
+	public void saveConnector(String connectorName,
+	                          AuthCredentials authCredentials);
 	
 
-	public boolean savePrincipal(IWPrincipal principal, String password);
+	public void saveConsumer(String userName, Consumer consumer);
 	
 
-	public boolean saveRole(String role);
+	public void savePrincipal(InterWebPrincipal principal, String password);
 	
 
-	public void saveUserAuthCredentials(String provider,
+	public void saveUserAuthCredentials(String connectorName,
 	                                    String userName,
 	                                    AuthCredentials authCredentials);
+	
+
+	public void updatePrincipal(InterWebPrincipal principal);
 	
 }

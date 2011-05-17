@@ -1,6 +1,8 @@
 package de.l3s.interwebj.db;
 
 
+import static de.l3s.interwebj.util.Assertions.*;
+
 import java.sql.*;
 import java.util.*;
 
@@ -15,23 +17,44 @@ public class JDBCDatabase
     implements Database
 {
 	
+	private static final String PSTMT_HAS_PRINCIPAL = "SELECT count(*) FROM iwj_principals WHERE user=?";
+	private static final String PSTMT_GET_PRINCIPAL_BY_NAME = "SELECT password,email,oauth_key,oauth_secret FROM iwj_principals WHERE user=?";
+	private static final String PSTMT_GET_PRINCIPAL_BY_KEY = "SELECT user,email,oauth_secret FROM iwj_principals WHERE oauth_key=?";
+	private static final String PSTMT_PUT_PRINCIPAL = "INSERT INTO iwj_principals VALUES (?,?,?,?,?)";
+	private static final String PSTMT_UPDATE_PRINCIPAL = "UPDATE iwj_principals SET email=?,oauth_key=?,oauth_secret=? WHERE user=?";
+	private static final String PSTMT_REMOVE_PRINCIPAL = "DELETE FROM iwj_principals WHERE user=?";
+	
+	private static final String PSTMT_HAS_PRINCIPAL_ROLE = "SELECT count(*) FROM iwj_principals_roles WHERE user=? AND role=?";
+	private static final String PSTMT_GET_PRINCIPAL_ROLES = "SELECT role FROM iwj_principals_roles WHERE user=?";
+	private static final String PSTMT_PUT_PRINCIPAL_ROLE = "INSERT INTO iwj_principals_roles VALUES (?,?)";
+	private static final String PSTMT_REMOVE_PRINCIPAL_ROLES = "DELETE FROM iwj_principals_roles WHERE user=?";
+	
+	private static final String PSTMT_HAS_CONNECTOR = "SELECT count(*) FROM iwj_connectors WHERE name=?";
+	private static final String PSTMT_GET_CONNECTOR_AUTH_CREDENTIALS = "SELECT `key`, secret FROM iwj_connectors WHERE name=?";
+	private static final String PSTMT_PUT_CONNECTOR = "INSERT INTO iwj_connectors VALUES (?,?,?)";
+	private static final String PSTMT_REMOVE_CONNECTOR = "DELETE FROM iwj_connectors WHERE name=?";
+	
+	private static final String PSTMT_GET_CONSUMER_BY_KEY = "SELECT name, url, description, secret FROM iwj_consumers WHERE `key`=?";
+	private static final String PSTMT_GET_CONSUMERS = "SELECT name, url, description, `key`, secret FROM iwj_consumers WHERE user=?";
+	private static final String PSTMT_PUT_CONSUMER = "INSERT INTO iwj_consumers VALUES (?,?,?,?,?,?)";
+	private static final String PSTMT_REMOVE_CONSUMER = "DELETE FROM iwj_consumers WHERE user=? AND name=?";
+	
+	private static final String PSTMT_HAS_USER_AUTH_CREDENTIALS = "SELECT count(*) FROM iwj_users_auth_data WHERE connector=? AND user=?";
+	private static final String PSTMT_GET_USER_AUTH_CREDENTIALS = "SELECT `key`, secret FROM iwj_users_auth_data WHERE connector=? AND user=?";
+	private static final String PSTMT_PUT_USER_AUTH_CREDENTIALS = "INSERT INTO iwj_users_auth_data VALUES (?,?,?,?)";
+	private static final String PSTMT_REMOVE_USER_AUTH_CREDENTIALS = "DELETE FROM iwj_users_auth_data WHERE connector=? AND user=?";
+	
 	private Logger logger;
 	
 	private Connection dbConnection = null;
 	private String connectionUserName = null;
 	private String connectionPassword = null;
 	private String connectionURL = null;
-	private Driver driver = null;
 	private String driverName = null;
-	private String userTable = null;
-	private String userNameCol = null;
-	private String userPasswordCol = null;
-	private String userEmailCol = null;
-	private String roleTable = null;
-	private String roleNameCol = null;
-	private String userRolesTable = null;
+	private Driver driver = null;
 	
-	private Statement stmt = null;
+	private Map<String, PreparedStatement> preparedStatements;
+	
 	private ResultSet rs = null;
 	
 
@@ -42,19 +65,13 @@ public class JDBCDatabase
 	
 
 	@Override
-	public IWPrincipal authenticate(String userName, String userPassword)
+	public InterWebPrincipal authenticate(String userName, String password)
 	{
-		if (userName == null)
-		{
-			throw new NullPointerException("Argument [userName] can not be null");
-		}
-		if (userPassword == null)
-		{
-			throw new NullPointerException("Argument [userPassword] can not be null");
-		}
+		notNull(userName, "userName");
+		notNull(password, "userPassword");
 		Environment.logger.debug("authenticating InterWebJ user [" + userName
 		                         + "]");
-		IWPrincipal dbPrincipal = getPrincipal(userName, userPassword);
+		InterWebPrincipal dbPrincipal = getPrincipal(userName, password);
 		if (dbPrincipal != null)
 		{
 			List<String> roles = getRoles(userName);
@@ -74,88 +91,29 @@ public class JDBCDatabase
 	{
 		silentCloseResultSet(rs);
 		rs = null;
-		silentCloseStatement(stmt);
-		stmt = null;
+		for (String key : preparedStatements.keySet())
+		{
+			Statement stmt = preparedStatements.get(key);
+			silentCloseStatement(stmt);
+		}
+		preparedStatements = null;
 		silentCloseConnection(dbConnection);
 		dbConnection = null;
 	}
 	
 
-	private PreparedStatement createInsertPrincipalRolesStmt(String name,
-	                                                         String role)
-	    throws SQLException
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.append(" INSERT INTO ").append(userRolesTable);
-		sb.append(" (").append(userNameCol).append(",").append(roleNameCol).append(")");
-		sb.append(" SELECT name, ? FROM ").append(userTable);
-		sb.append(" WHERE ").append(userNameCol).append("=?");
-		Environment.logger.debug("sql query: " + sb);
-		PreparedStatement pstmt = dbConnection.prepareStatement(sb.toString());
-		pstmt.setString(1, role);
-		pstmt.setString(2, name);
-		return pstmt;
-	}
-	
-
-	private PreparedStatement createInsertPrincipalStmt(IWPrincipal principal,
-	                                                    String password)
-	    throws SQLException
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.append(" INSERT INTO ").append(userTable);
-		sb.append(" (").append(userNameCol).append(",").append(userPasswordCol).append(",").append(userEmailCol).append(")");
-		sb.append(" VALUES (?,?,?)");
-		Environment.logger.debug("sql query: " + sb);
-		PreparedStatement pstmt = dbConnection.prepareStatement(sb.toString());
-		pstmt.setString(1, principal.getName());
-		pstmt.setString(2, password);
-		pstmt.setString(3, principal.getEmail());
-		return pstmt;
-	}
-	
-
-	private PreparedStatement createInsertRoleStatement(String role)
-	    throws SQLException
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.append(" INSERT INTO ").append(roleTable);
-		sb.append(" (").append(roleNameCol).append(")");
-		sb.append(" VALUES (?)");
-		Environment.logger.debug("sql query: " + sb);
-		PreparedStatement pstmt = dbConnection.prepareStatement(sb.toString());
-		pstmt.setString(1, role);
-		return pstmt;
-	}
-	
-
 	@Override
-	public void deleteConsumer(String provider, String consumer)
+	public void deleteConnector(String connectorName)
 	{
-		if (provider == null)
-		{
-			throw new NullPointerException("Argument [provider] can not be null");
-		}
-		if (consumer == null)
-		{
-			throw new NullPointerException("Argument [consumer] can not be null");
-		}
+		notNull(connectorName, "connectorName");
 		try
 		{
-			boolean exists = hasConsumer(provider, consumer);
-			if (exists)
+			if (openConnection())
 			{
-				if (openConnection())
-				{
-					String sqlQuery = "DELETE FROM iwj_connectors";
-					sqlQuery += " WHERE provider='" + provider
-					            + "' AND consumer='" + consumer + "'";
-					Environment.logger.debug("sql query: " + sqlQuery);
-					Statement stmt = dbConnection.createStatement();
-					stmt.execute(sqlQuery);
-					silentCloseStatement(stmt);
-					dbConnection.commit();
-				}
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_CONNECTOR);
+				pstmt.setString(1, connectorName);
+				pstmt.executeUpdate();
+				dbConnection.commit();
 			}
 		}
 		catch (SQLException e)
@@ -166,33 +124,490 @@ public class JDBCDatabase
 	}
 	
 
-	private IWPrincipal getPrincipal(String userName, String userPassword)
+	@Override
+	public void deleteConsumer(String userName, String consumerName)
 	{
-		IWPrincipal dbPrincipal = null;
+		notNull(userName, "userName");
+		notNull(consumerName, "consumerName");
 		try
 		{
 			if (openConnection())
 			{
-				StringBuilder sb = new StringBuilder();
-				sb.append(" SELECT ").append(userPasswordCol).append(",").append(userEmailCol);
-				sb.append(" FROM ").append(userTable);
-				sb.append(" WHERE ").append(userNameCol).append("='").append(userName).append("'");
-				Environment.logger.debug("sql query: " + sb);
-				stmt = dbConnection.createStatement();
-				rs = stmt.executeQuery(sb.toString());
-				String dbPassword = null;
-				String dbEmail = null;
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_CONSUMER);
+				pstmt.setString(1, userName);
+				pstmt.setString(2, consumerName);
+				pstmt.executeUpdate();
+				dbConnection.commit();
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+	}
+	
+
+	@Override
+	public boolean hasPrincipal(String userName)
+	{
+		notNull(userName, "userName");
+		boolean exists = true;
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_HAS_PRINCIPAL);
+				pstmt.setString(1, userName);
+				rs = pstmt.executeQuery();
 				if (rs.next())
 				{
-					dbPassword = rs.getString(1);
-					dbEmail = rs.getString(2);
-				}
-				if (dbPassword != null && dbPassword.equals(userPassword))
-				{
-					dbPrincipal = new IWPrincipal(userName, dbEmail);
+					exists = (rs.getInt(1) == 1);
 				}
 				silentCloseResultSet(rs);
-				silentCloseStatement(stmt);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+		return exists;
+	}
+	
+
+	@Override
+	public AuthCredentials readConnectorAuthCredentials(String connectorName)
+	{
+		notNull(connectorName, "connectorName");
+		AuthCredentials authCredentials = null;
+		try
+		{
+			String key;
+			String secret;
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_CONNECTOR_AUTH_CREDENTIALS);
+				pstmt.setString(1, connectorName);
+				rs = pstmt.executeQuery();
+				if (rs.next())
+				{
+					key = rs.getString(1);
+					secret = rs.getString(2);
+					if (key != null)
+					{
+						authCredentials = new AuthCredentials(key, secret);
+					}
+				}
+				silentCloseResultSet(rs);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+		return authCredentials;
+	}
+	
+
+	@Override
+	public Consumer readConsumerByKey(String key)
+	{
+		Consumer consumer = null;
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_CONSUMER_BY_KEY);
+				pstmt.setString(1, key);
+				rs = pstmt.executeQuery();
+				while (rs.next())
+				{
+					String name = rs.getString(1);
+					String url = rs.getString(2);
+					String description = rs.getString(3);
+					String secret = rs.getString(4);
+					AuthCredentials credentials = new AuthCredentials(key,
+					                                                  secret);
+					consumer = new Consumer(name, url, description, credentials);
+				}
+				silentCloseResultSet(rs);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+		return consumer;
+	}
+	
+
+	@Override
+	public List<Consumer> readConsumers(String userName)
+	{
+		notNull(userName, "userName");
+		ArrayList<Consumer> consumers = new ArrayList<Consumer>();
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_CONSUMERS);
+				pstmt.setString(1, userName);
+				rs = pstmt.executeQuery();
+				while (rs.next())
+				{
+					String name = rs.getString(1);
+					String url = rs.getString(2);
+					String description = rs.getString(3);
+					String key = rs.getString(4);
+					String secret = rs.getString(5);
+					AuthCredentials credentials = new AuthCredentials(key,
+					                                                  secret);
+					Consumer consumer = new Consumer(name,
+					                                 url,
+					                                 description,
+					                                 credentials);
+					consumers.add(consumer);
+				}
+				silentCloseResultSet(rs);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+		return consumers;
+	}
+	
+
+	@Override
+	public InterWebPrincipal readPrincipalByKey(String key)
+	{
+		if (key == null)
+		{
+			return null;
+		}
+		InterWebPrincipal principal = null;
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_PRINCIPAL_BY_KEY);
+				pstmt.setString(1, key);
+				rs = pstmt.executeQuery();
+				while (rs.next())
+				{
+					String name = rs.getString(1);
+					String email = rs.getString(2);
+					String secret = rs.getString(3);
+					AuthCredentials authCredentials = new AuthCredentials(key,
+					                                                      secret);
+					principal = new InterWebPrincipal(name, email);
+					principal.setOauthCredentials(authCredentials);
+				}
+				silentCloseResultSet(rs);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+		return principal;
+	}
+	
+
+	@Override
+	public InterWebPrincipal readPrincipalByName(String userName)
+	{
+		if (userName == null)
+		{
+			return null;
+		}
+		InterWebPrincipal principal = null;
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_PRINCIPAL_BY_NAME);
+				pstmt.setString(1, userName);
+				rs = pstmt.executeQuery();
+				while (rs.next())
+				{
+					String email = rs.getString(2);
+					String key = rs.getString(3);
+					String secret = rs.getString(4);
+					AuthCredentials authCredentials = new AuthCredentials(key,
+					                                                      secret);
+					principal = new InterWebPrincipal(userName, email);
+					principal.setOauthCredentials(authCredentials);
+				}
+				silentCloseResultSet(rs);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+		return principal;
+	}
+	
+
+	@Override
+	public AuthCredentials readUserAuthCredentials(String connectorName,
+	                                               String userName)
+	{
+		notNull(connectorName, "connectorName");
+		notNull(userName, "userName");
+		AuthCredentials authCredentials = null;
+		try
+		{
+			String key;
+			String secret;
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_USER_AUTH_CREDENTIALS);
+				pstmt.setString(1, connectorName);
+				pstmt.setString(2, userName);
+				rs = pstmt.executeQuery();
+				if (rs.next())
+				{
+					key = rs.getString(1);
+					secret = rs.getString(2);
+					if (key != null)
+					{
+						authCredentials = new AuthCredentials(key, secret);
+					}
+				}
+				silentCloseResultSet(rs);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+		return authCredentials;
+	}
+	
+
+	@Override
+	public void saveConnector(String connectorName,
+	                          AuthCredentials authCredentials)
+	{
+		notNull(connectorName, "connectorName");
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_CONNECTOR);
+				pstmt.setString(1, connectorName);
+				pstmt.executeUpdate();
+				pstmt = preparedStatements.get(PSTMT_PUT_CONNECTOR);
+				pstmt.setString(1, connectorName);
+				String key = (authCredentials == null)
+				    ? null : authCredentials.getKey();
+				String secret = (authCredentials == null)
+				    ? null : authCredentials.getSecret();
+				setString(pstmt, 2, key);
+				setString(pstmt, 3, secret);
+				pstmt.executeUpdate();
+				dbConnection.commit();
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+	}
+	
+
+	@Override
+	public void saveConsumer(String userName, Consumer consumer)
+	{
+		notNull(userName, "userName");
+		notNull(consumer, "consumer");
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_CONSUMER);
+				pstmt.setString(1, userName);
+				pstmt.setString(2, consumer.getName());
+				pstmt.executeUpdate();
+				pstmt = preparedStatements.get(PSTMT_PUT_CONSUMER);
+				pstmt.setString(1, userName);
+				pstmt.setString(2, consumer.getName());
+				pstmt.setString(3, consumer.getUrl());
+				pstmt.setString(4, consumer.getDescription());
+				AuthCredentials authCredentials = consumer.getAuthCredentials();
+				String key = (authCredentials == null)
+				    ? null : authCredentials.getKey();
+				String secret = (authCredentials == null)
+				    ? null : authCredentials.getSecret();
+				setString(pstmt, 5, key);
+				setString(pstmt, 6, secret);
+				pstmt.executeUpdate();
+				dbConnection.commit();
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+	}
+	
+
+	@Override
+	public void savePrincipal(InterWebPrincipal principal, String password)
+	{
+		notNull(principal, "principal");
+		notNull(password, "password");
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_PRINCIPAL);
+				pstmt.setString(1, principal.getName());
+				pstmt.executeUpdate();
+				pstmt = preparedStatements.get(PSTMT_PUT_PRINCIPAL);
+				pstmt.setString(1, principal.getName());
+				pstmt.setString(2, password);
+				pstmt.setString(3, principal.getEmail());
+				AuthCredentials authCredentials = principal.getOauthCredentials();
+				String key = (authCredentials == null)
+				    ? null : authCredentials.getKey();
+				String secret = (authCredentials == null)
+				    ? null : authCredentials.getSecret();
+				setString(pstmt, 4, key);
+				setString(pstmt, 5, secret);
+				pstmt.executeUpdate();
+				for (String role : principal.getRoles())
+				{
+					pstmt = preparedStatements.get(PSTMT_PUT_PRINCIPAL_ROLE);
+					pstmt.setString(1, principal.getName());
+					pstmt.setString(2, role);
+					pstmt.executeUpdate();
+				}
+				dbConnection.commit();
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+	}
+	
+
+	@Override
+	public void saveUserAuthCredentials(String connectorName,
+	                                    String userName,
+	                                    AuthCredentials authCredentials)
+	{
+		notNull(connectorName, "connectorName");
+		notNull(userName, "userName");
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_USER_AUTH_CREDENTIALS);
+				pstmt.setString(1, connectorName);
+				pstmt.setString(2, userName);
+				pstmt.executeUpdate();
+				pstmt = preparedStatements.get(PSTMT_PUT_USER_AUTH_CREDENTIALS);
+				pstmt.setString(1, connectorName);
+				pstmt.setString(2, userName);
+				String key = (authCredentials == null)
+				    ? null : authCredentials.getKey();
+				String secret = (authCredentials == null)
+				    ? null : authCredentials.getSecret();
+				setString(pstmt, 3, key);
+				setString(pstmt, 4, secret);
+				pstmt.executeUpdate();
+				dbConnection.commit();
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+	}
+	
+
+	@Override
+	public void updatePrincipal(InterWebPrincipal principal)
+	{
+		notNull(principal, "principal");
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_UPDATE_PRINCIPAL);
+				pstmt.setString(1, principal.getEmail());
+				AuthCredentials authCredentials = principal.getOauthCredentials();
+				String key = (authCredentials == null)
+				    ? null : authCredentials.getKey();
+				String secret = (authCredentials == null)
+				    ? null : authCredentials.getSecret();
+				setString(pstmt, 2, key);
+				setString(pstmt, 3, secret);
+				pstmt.setString(4, principal.getName());
+				pstmt.executeUpdate();
+				dbConnection.commit();
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+	}
+	
+
+	private void addPreparedStatement(String sqlQuery)
+	    throws SQLException
+	{
+		preparedStatements.put(sqlQuery,
+		                       dbConnection.prepareStatement(sqlQuery));
+	}
+	
+
+	private InterWebPrincipal getPrincipal(String userName, String userPassword)
+	{
+		InterWebPrincipal dbPrincipal = null;
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_PRINCIPAL_BY_NAME);
+				pstmt.setString(1, userName);
+				rs = pstmt.executeQuery();
+				if (rs.next())
+				{
+					String dbPassword = rs.getString(1);
+					String dbEmail = rs.getString(2);
+					String key = rs.getString(3);
+					String secret = rs.getString(4);
+					if (dbPassword != null && dbPassword.equals(userPassword))
+					{
+						dbPrincipal = new InterWebPrincipal(userName, dbEmail);
+						if (key != null)
+						{
+							AuthCredentials authCredentials = new AuthCredentials(key,
+							                                                      secret);
+							dbPrincipal.setOauthCredentials(authCredentials);
+						}
+					}
+				}
+				silentCloseResultSet(rs);
 			}
 		}
 		catch (SQLException e)
@@ -204,34 +619,26 @@ public class JDBCDatabase
 	}
 	
 
-	private ArrayList<String> getRoles(String usermame)
+	private ArrayList<String> getRoles(String userName)
 	{
-		if (usermame == null)
-		{
-			throw new NullPointerException("Argument [userName] can not be null");
-		}
+		notNull(userName, "userName");
 		ArrayList<String> roles = new ArrayList<String>();
 		try
 		{
 			if (openConnection())
 			{
-				StringBuilder sb = new StringBuilder();
-				sb.append("SELECT distinct(").append(roleNameCol).append(")");
-				sb.append(" FROM ").append(userTable).append(" NATURAL JOIN ").append(userRolesTable);
-				sb.append(" WHERE ").append(userNameCol).append("='").append(usermame).append("'");
-				Environment.logger.debug("sql query: " + sb);
-				stmt = dbConnection.createStatement();
-				rs = stmt.executeQuery(sb.toString());
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_PRINCIPAL_ROLES);
+				pstmt.setString(1, userName);
+				rs = pstmt.executeQuery();
 				while (rs.next())
 				{
 					String role = rs.getString(1);
 					if (role != null)
 					{
-						roles.add(role.trim());
+						roles.add(role);
 					}
 				}
 				silentCloseResultSet(rs);
-				silentCloseStatement(stmt);
 			}
 		}
 		catch (SQLException e)
@@ -243,84 +650,6 @@ public class JDBCDatabase
 	}
 	
 
-	private boolean hasConsumer(String provider, String consumer)
-	    throws SQLException
-	{
-		boolean exists = false;
-		if (openConnection())
-		{
-			String sqlQuery = "SELECT count(*) FROM iwj_connectors WHERE provider='"
-			                  + provider + "' AND consumer='" + consumer + "'";
-			Environment.logger.debug("sql query: " + sqlQuery);
-			Statement stmt = dbConnection.createStatement();
-			rs = stmt.executeQuery(sqlQuery);
-			if (rs.next())
-			{
-				exists = (rs.getInt(1) == 1);
-			}
-			silentCloseResultSet(rs);
-			silentCloseStatement(stmt);
-		}
-		return exists;
-	}
-	
-
-	@Override
-	public boolean hasUser(String username)
-	{
-		if (username == null)
-		{
-			throw new NullPointerException("Argument [userName] can not be null");
-		}
-		boolean userExists = true;
-		try
-		{
-			if (openConnection())
-			{
-				String sqlQuery = " SELECT count(*) FROM " + userTable;
-				sqlQuery += " WHERE " + userNameCol + "='" + username + "'";
-				Environment.logger.debug("sql query: " + sqlQuery);
-				stmt = dbConnection.createStatement();
-				rs = stmt.executeQuery(sqlQuery);
-				if (rs.next())
-				{
-					userExists = (rs.getInt(1) == 1);
-				}
-				silentCloseResultSet(rs);
-				silentCloseStatement(stmt);
-			}
-		}
-		catch (SQLException e)
-		{
-			logger.error(e);
-			close();
-		}
-		return userExists;
-	}
-	
-
-	private boolean hasUserAuthCredentials(String provider, String userName)
-	    throws SQLException
-	{
-		boolean exists = false;
-		if (openConnection())
-		{
-			String sqlQuery = "SELECT count(*) FROM iwj_users_auth_data WHERE provider='"
-			                  + provider + "' AND user='" + userName + "'";
-			Environment.logger.debug("sql query: " + sqlQuery);
-			Statement stmt = dbConnection.createStatement();
-			rs = stmt.executeQuery(sqlQuery);
-			if (rs.next())
-			{
-				exists = (rs.getInt(1) == 1);
-			}
-			silentCloseResultSet(rs);
-			silentCloseStatement(stmt);
-		}
-		return exists;
-	}
-	
-
 	private void init(Configuration configuration)
 	{
 		logger = Environment.logger;
@@ -328,13 +657,6 @@ public class JDBCDatabase
 		connectionPassword = configuration.getValue("database.connection.user-password");
 		connectionURL = configuration.getValue("database.connection.url");
 		driverName = configuration.getValue("database.driver-name");
-		userTable = configuration.getValue("database.user-table.name");
-		userNameCol = configuration.getValue("database.user-table.user-column");
-		userPasswordCol = configuration.getValue("database.user-table.password-column");
-		userEmailCol = configuration.getValue("database.user-table.email-column");
-		roleTable = configuration.getValue("database.role-table.name");
-		userRolesTable = configuration.getValue("database.user-role-table.name");
-		roleNameCol = configuration.getValue("database.user-role-table.role-column");
 		try
 		{
 			openConnection();
@@ -356,10 +678,43 @@ public class JDBCDatabase
 	}
 	
 
+	private void initPreparedStatements()
+	    throws SQLException
+	{
+		preparedStatements = new HashMap<String, PreparedStatement>();
+		
+		addPreparedStatement(PSTMT_HAS_PRINCIPAL);
+		addPreparedStatement(PSTMT_GET_PRINCIPAL_BY_NAME);
+		addPreparedStatement(PSTMT_GET_PRINCIPAL_BY_KEY);
+		addPreparedStatement(PSTMT_PUT_PRINCIPAL);
+		addPreparedStatement(PSTMT_UPDATE_PRINCIPAL);
+		addPreparedStatement(PSTMT_REMOVE_PRINCIPAL);
+		
+		addPreparedStatement(PSTMT_HAS_PRINCIPAL_ROLE);
+		addPreparedStatement(PSTMT_GET_PRINCIPAL_ROLES);
+		addPreparedStatement(PSTMT_PUT_PRINCIPAL_ROLE);
+		addPreparedStatement(PSTMT_REMOVE_PRINCIPAL_ROLES);
+		
+		addPreparedStatement(PSTMT_HAS_CONNECTOR);
+		addPreparedStatement(PSTMT_GET_CONNECTOR_AUTH_CREDENTIALS);
+		addPreparedStatement(PSTMT_PUT_CONNECTOR);
+		addPreparedStatement(PSTMT_REMOVE_CONNECTOR);
+		
+		addPreparedStatement(PSTMT_GET_CONSUMER_BY_KEY);
+		addPreparedStatement(PSTMT_GET_CONSUMERS);
+		addPreparedStatement(PSTMT_PUT_CONSUMER);
+		addPreparedStatement(PSTMT_REMOVE_CONSUMER);
+		
+		addPreparedStatement(PSTMT_HAS_USER_AUTH_CREDENTIALS);
+		addPreparedStatement(PSTMT_GET_USER_AUTH_CREDENTIALS);
+		addPreparedStatement(PSTMT_PUT_USER_AUTH_CREDENTIALS);
+		addPreparedStatement(PSTMT_REMOVE_USER_AUTH_CREDENTIALS);
+	}
+	
+
 	private boolean openConnection()
 	    throws SQLException
 	{
-		logger.error("Trying open DB connection");
 		if (dbConnection != null && !dbConnection.isValid(10))
 		{
 			close();
@@ -393,344 +748,27 @@ public class JDBCDatabase
 		}
 		if (dbConnection == null)
 		{
-			logger.error("Unable to open connection to database "
-			             + connectionURL);
+			logger.error("Opening connection to database " + connectionURL
+			             + " failed!");
+		}
+		else
+		{
+			initPreparedStatements();
 		}
 		return (dbConnection != null);
 	}
 	
 
-	@Override
-	public AuthCredentials readConsumerAuthCredentials(String provider,
-	                                                   String consumer)
+	private void setString(PreparedStatement pstmt, int index, String value)
+	    throws SQLException
 	{
-		if (provider == null)
+		if (value == null)
 		{
-			throw new NullPointerException("Argument [provider] can not be null");
+			pstmt.setNull(index, java.sql.Types.VARCHAR);
 		}
-		if (consumer == null)
+		else
 		{
-			throw new NullPointerException("Argument [consumer] can not be null");
-		}
-		AuthCredentials consumerAuthCredentials = null;
-		try
-		{
-			String key;
-			String secret;
-			if (openConnection())
-			{
-				String sqlQuery = "SELECT consumer_key, consumer_secret FROM iwj_connectors WHERE provider='"
-				                  + provider
-				                  + "' AND consumer='"
-				                  + consumer
-				                  + "'";
-				Environment.logger.debug("sql query: " + sqlQuery);
-				stmt = dbConnection.createStatement();
-				rs = stmt.executeQuery(sqlQuery);
-				if (rs.next())
-				{
-					key = rs.getString(1);
-					secret = rs.getString(2);
-					if (key != null)
-					{
-						consumerAuthCredentials = new AuthCredentials(key,
-						                                              secret);
-					}
-				}
-				silentCloseResultSet(rs);
-				silentCloseStatement(stmt);
-			}
-		}
-		catch (SQLException e)
-		{
-			logger.error(e);
-			close();
-		}
-		return consumerAuthCredentials;
-	}
-	
-
-	@Override
-	public AuthCredentials readUserAuthCredentials(String provider,
-	                                               String userName)
-	{
-		if (provider == null)
-		{
-			throw new NullPointerException("Argument [provider] can not be null");
-		}
-		if (userName == null)
-		{
-			throw new NullPointerException("Argument [userName] can not be null");
-		}
-		AuthCredentials authCredentials = null;
-		try
-		{
-			String key;
-			String secret;
-			if (openConnection())
-			{
-				String sqlQuery = "SELECT user_key, user_secret FROM iwj_users_auth_data WHERE provider='"
-				                  + provider + "' AND user='" + userName + "'";
-				//			Environment.logger.debug("sql query: " + sqlQuery);
-				stmt = dbConnection.createStatement();
-				rs = stmt.executeQuery(sqlQuery);
-				if (rs.next())
-				{
-					key = rs.getString(1);
-					secret = rs.getString(2);
-					if (key != null)
-					{
-						authCredentials = new AuthCredentials(key, secret);
-					}
-				}
-				silentCloseResultSet(rs);
-				silentCloseStatement(stmt);
-			}
-		}
-		catch (SQLException e)
-		{
-			logger.error(e);
-			close();
-		}
-		return authCredentials;
-	}
-	
-
-	@Override
-	public void saveConsumer(String provider,
-	                         String consumer,
-	                         AuthCredentials authCredentials)
-	{
-		if (provider == null)
-		{
-			throw new NullPointerException("Argument [provider] can not be null");
-		}
-		if (consumer == null)
-		{
-			throw new NullPointerException("Argument [consumer] can not be null");
-		}
-		try
-		{
-			boolean exists = hasConsumer(provider, consumer);
-			if (openConnection())
-			{
-				PreparedStatement pstmt = null;
-				String sqlQuery = null;
-				if (exists)
-				{
-					sqlQuery = "UPDATE iwj_connectors SET consumer_key=?, consumer_secret=? WHERE provider ='"
-					           + provider + "' AND consumer='" + consumer + "'";
-					Environment.logger.debug("sql query: " + sqlQuery);
-					pstmt = dbConnection.prepareStatement(sqlQuery);
-					if (authCredentials == null)
-					{
-						pstmt.setNull(1, java.sql.Types.VARCHAR);
-						pstmt.setNull(2, java.sql.Types.VARCHAR);
-					}
-					else
-					{
-						pstmt.setString(1, authCredentials.getKey());
-						if (authCredentials.getSecret() == null)
-						{
-							pstmt.setNull(2, java.sql.Types.VARCHAR);
-						}
-						else
-						{
-							pstmt.setString(2, authCredentials.getSecret());
-						}
-					}
-				}
-				else
-				{
-					sqlQuery = "INSERT INTO iwj_connectors (provider, consumer, consumer_key, consumer_secret) VALUES (?,?,?,?)";
-					Environment.logger.debug("sql query: " + sqlQuery);
-					pstmt = dbConnection.prepareStatement(sqlQuery);
-					pstmt.setString(1, provider);
-					pstmt.setString(2, consumer);
-					if (authCredentials.getKey() == null)
-					{
-						Environment.logger.info("consumer key is null");
-						pstmt.setNull(3, java.sql.Types.VARCHAR);
-					}
-					else
-					{
-						pstmt.setString(3, authCredentials.getKey());
-					}
-					if (authCredentials.getSecret() == null)
-					{
-						pstmt.setNull(4, java.sql.Types.VARCHAR);
-					}
-					else
-					{
-						pstmt.setString(4, authCredentials.getSecret());
-					}
-				}
-				pstmt.executeUpdate();
-				silentCloseStatement(pstmt);
-				dbConnection.commit();
-			}
-		}
-		catch (SQLException e)
-		{
-			logger.error(e);
-			close();
-		}
-	}
-	
-
-	@Override
-	public boolean savePrincipal(IWPrincipal principal, String password)
-	{
-		if (principal == null)
-		{
-			throw new NullPointerException("Argument [principal] can not be null");
-		}
-		if (password == null)
-		{
-			throw new NullPointerException("Argument [password] can not be null");
-		}
-		try
-		{
-			if (openConnection())
-			{
-				PreparedStatement pstmt = createInsertPrincipalStmt(principal,
-				                                                    password);
-				if (pstmt.executeUpdate() != 1)
-				{
-					silentCloseStatement(pstmt);
-					return false;
-				}
-				for (String role : principal.getRoles())
-				{
-					pstmt = createInsertPrincipalRolesStmt(principal.getName(),
-					                                       role);
-					if (pstmt.executeUpdate() != 1)
-					{
-						silentCloseStatement(pstmt);
-						return false;
-					}
-				}
-				silentCloseStatement(pstmt);
-				dbConnection.commit();
-			}
-		}
-		catch (SQLException e)
-		{
-			logger.error(e);
-			close();
-		}
-		return true;
-	}
-	
-
-	@Override
-	public boolean saveRole(String role)
-	{
-		if (role == null)
-		{
-			throw new NullPointerException("Argument [role] can not be null");
-		}
-		try
-		{
-			if (openConnection())
-			{
-				PreparedStatement pstmt = createInsertRoleStatement(role);
-				if (pstmt.executeUpdate() != 1)
-				{
-					silentCloseStatement(pstmt);
-					return false;
-				}
-				silentCloseStatement(pstmt);
-				dbConnection.commit();
-			}
-		}
-		catch (SQLException e)
-		{
-			logger.error(e);
-			close();
-		}
-		return true;
-	}
-	
-
-	@Override
-	public void saveUserAuthCredentials(String provider,
-	                                    String userName,
-	                                    AuthCredentials authCredentials)
-	{
-		if (provider == null)
-		{
-			throw new NullPointerException("Argument [provider] can not be null");
-		}
-		if (userName == null)
-		{
-			throw new NullPointerException("Argument [userName] can not be null");
-		}
-		try
-		{
-			boolean exists = hasUserAuthCredentials(provider, userName);
-			if (openConnection())
-			{
-				PreparedStatement pstmt = null;
-				String sqlQuery = null;
-				if (exists)
-				{
-					sqlQuery = "UPDATE iwj_users_auth_data SET user_key=?, user_secret=? WHERE provider ='"
-					           + provider + "' AND user='" + userName + "'";
-					Environment.logger.debug("sql query: " + sqlQuery);
-					pstmt = dbConnection.prepareStatement(sqlQuery);
-					if (authCredentials == null)
-					{
-						pstmt.setNull(1, java.sql.Types.VARCHAR);
-						pstmt.setNull(2, java.sql.Types.VARCHAR);
-					}
-					else
-					{
-						pstmt.setString(1, authCredentials.getKey());
-						if (authCredentials.getSecret() == null)
-						{
-							pstmt.setNull(2, java.sql.Types.VARCHAR);
-						}
-						else
-						{
-							pstmt.setString(2, authCredentials.getSecret());
-						}
-					}
-				}
-				else
-				{
-					sqlQuery = "INSERT INTO iwj_users_auth_data (provider, user, user_key, user_secret) VALUES (?,?,?,?)";
-					Environment.logger.debug("sql query: " + sqlQuery);
-					pstmt = dbConnection.prepareStatement(sqlQuery);
-					pstmt.setString(1, provider);
-					pstmt.setString(2, userName);
-					if (authCredentials.getKey() == null)
-					{
-						Environment.logger.info("consumer key is null");
-						pstmt.setNull(3, java.sql.Types.VARCHAR);
-					}
-					else
-					{
-						pstmt.setString(3, authCredentials.getKey());
-					}
-					if (authCredentials.getSecret() == null)
-					{
-						pstmt.setNull(4, java.sql.Types.VARCHAR);
-					}
-					else
-					{
-						pstmt.setString(4, authCredentials.getSecret());
-					}
-				}
-				pstmt.executeUpdate();
-				silentCloseStatement(pstmt);
-				dbConnection.commit();
-			}
-		}
-		catch (SQLException e)
-		{
-			logger.error(e);
-			close();
+			pstmt.setString(index, value);
 		}
 	}
 	
