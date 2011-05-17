@@ -1,6 +1,8 @@
 package de.l3s.interwebj.query;
 
 
+import static de.l3s.interwebj.util.Assertions.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -82,27 +84,15 @@ public class Query
 	      List<String> contentTypes,
 	      Map<String, String> params)
 	{
-		if (id == null)
-		{
-			throw new NullPointerException("Argument [id] can not be null");
-		}
-		if (query == null)
-		{
-			throw new NullPointerException("Argument [query] can not be null");
-		}
-		if (contentTypes == null)
-		{
-			throw new NullPointerException("Argument [contentTypes] can not be null");
-		}
+		notNull(id, "id");
+		notNull(query, "query");
+		notNull(contentTypes, "contentTypes");
+		notNull(params, "params");
 		if (resultCount < 0)
 		{
 			throw new IllegalArgumentException("Argument [resultCount] = ["
 			                                   + resultCount
 			                                   + "] must not apply condition [< 0]");
-		}
-		if (params == null)
-		{
-			throw new NullPointerException("Argument [params] can not be null");
 		}
 		this.id = id;
 		this.query = query;

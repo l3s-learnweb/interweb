@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import de.l3s.interwebj.*;
-import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
 
 
