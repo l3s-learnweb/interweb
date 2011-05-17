@@ -8,7 +8,36 @@
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
-
+		<h:form>
+			<h:dataTable var="consumer"
+				value="#{consumersBean.registeredConsumers}" cellpadding="10">
+				<h:column>
+					<f:facet name="header">Application name</f:facet>
+					<h:outputText value="#{consumer.name}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">URL</f:facet>
+					<h:outputText value="#{consumer.url}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">OAuth key and secret</f:facet>
+					<h:panelGrid columns="2" cellpadding="0" cellspacing="0"
+						style="font-size: 0.8em; color:#0E774A;">
+						<h:outputLabel value="Key:" style="margin-right:5px" />
+						<h:outputLabel value="#{consumer.authCredentials.key}" />
+						<h:outputLabel value="Secret:" style="margin-right:5px" />
+						<h:outputLabel value="#{consumer.authCredentials.secret}" />
+					</h:panelGrid>
+				</h:column>
+				<h:column>
+					<h:commandButton value="Revoke"
+						action="#{consumersBean.revoke(consumer)}" />
+				</h:column>
+			</h:dataTable>
+			<br />
+			<h:commandButton value="Add new application"
+				action="#{consumersBean.newConsumer()}" />
+		</h:form>
 	</ui:define>
 </ui:composition>
 </html>

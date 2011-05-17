@@ -114,12 +114,20 @@
   </context-param>
   <servlet>
     <description>JAX-RS Tools Generated - Do not modify</description>
-    <servlet-name>InterWebJ REST Servlet</servlet-name>
+    <servlet-name>InterWebJ OAuth Servlet</servlet-name>
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+      <param-value>de.l3s.interwebj.servlet.filter.OAuthFilter</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.oauth.provider</param-name>
+      <param-value>com.sun.jersey.oauth.server.api.providers.DefaultOAuthProvider</param-value>
+    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-    <servlet-name>InterWebJ REST Servlet</servlet-name>
+    <servlet-name>InterWebJ OAuth Servlet</servlet-name>
     <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
 </web-app>

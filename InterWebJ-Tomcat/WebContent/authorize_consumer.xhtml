@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+	<ui:define name="content">
+		<h:panelGroup rendered="#{!consumersBean.registered and !empty consumersBean.authorizationConsumer.name}">
+			<p>Application <b>#{consumersBean.authorizationConsumer.name}</b>
+			wants to link to your InterWebJ account. You should not authorize
+			unless you trust them with access to your account.</p>
+			<h:form id="authorize_consumer_form">
+				<h:panelGrid columns="2" cellpadding="10" cellspacing="0">
+					<h:commandButton value="Allow"
+						action="#{consumersBean.authorizeConsumer()}">
+						<f:param name="oauth_token" value="#{consumersBean.oauthToken}" />
+						<f:param name="oauth_callback" value="#{consumersBean.callback}" />
+					</h:commandButton>
+				</h:panelGrid>
+			</h:form>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{consumersBean.registered}">
+			<p>Application <b>#{consumersBean.authorizationConsumer.name}</b>
+			was successfully authorized to your InterWebJ account. Your OAuth
+			access token data:</p>
+			<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+				<h:outputLabel value="Access token:" style="margin-right:5px" />
+				<h:outputLabel value="#{consumersBean.accessToken.key}" style="font-weight: bold;" />
+				<h:outputLabel value="Access token secret:" style="margin-right:5px" />
+				<h:outputLabel value="#{consumersBean.accessToken.secret}" style="font-weight: bold;"/>
+			</h:panelGrid>
+		</h:panelGroup>
+	</ui:define>
+</ui:composition>
+</html>

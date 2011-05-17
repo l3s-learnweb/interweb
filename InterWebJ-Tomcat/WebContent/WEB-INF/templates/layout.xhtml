@@ -12,7 +12,8 @@
 <body>
 <div id="topnav"><h:form>
 	<ul>
-		<li><h:outputLink value="#{interwebj.contextPath}/view/login.xhtml"
+		<li><h:outputLink
+			value="#{interwebj.contextPath}/view/login.xhtml"
 			rendered="#{!principalBean.loggedIn}">
 			<h:outputText value="Login" />
 		</h:outputLink></li>
@@ -69,7 +70,10 @@
 </ul>
 </div>
 </div>
-<div id="content"><ui:insert name="content">
+<div id="content">
+<p><h:messages showSummary="true" showDetail="false"
+	styleClass="error" /></p>
+<ui:insert name="content">
 </ui:insert></div>
 <div id="footer">
 <p><a href="#">About</a> | <a href="#">Terms of Service</a> | <a
