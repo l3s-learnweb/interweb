@@ -11,7 +11,6 @@ import javax.faces.model.*;
 import com.sun.istack.internal.*;
 
 import de.l3s.interwebj.*;
-import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.query.*;
 import de.l3s.interwebj.query.Query.SearchScope;
@@ -56,7 +55,7 @@ public class SearchBean
 	{
 		List<SelectItem> connectorSelectItems = new ArrayList<SelectItem>();
 		Engine engine = Environment.getInstance().getEngine();
-		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
 			if (connector.isRegistered()
@@ -197,7 +196,7 @@ public class SearchBean
 		query.setResultCount(resultCount);
 		QueryResult queryResult = new QueryResult(query);
 		Engine engine = Environment.getInstance().getEngine();
-		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		try
 		{
 			QueryResultMerger merger = new DumbQueryResultMerger();
@@ -212,7 +211,8 @@ public class SearchBean
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR,
 			                            e.getMessage());
 		}
-		engine.getStandingQueryResultPool().add(queryResult);
+		ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
+		expirableMap.put(queryResult.getQuery().getId(), queryResult);
 		this.queryResult = queryResult;
 		return "success";
 	}

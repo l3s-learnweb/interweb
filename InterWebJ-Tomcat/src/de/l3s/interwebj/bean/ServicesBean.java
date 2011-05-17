@@ -8,9 +8,8 @@ import javax.faces.bean.*;
 import javax.faces.model.*;
 
 import de.l3s.interwebj.*;
-import de.l3s.interwebj.connector.*;
-import de.l3s.interwebj.connector.ServiceConnector.PermissionLevel;
 import de.l3s.interwebj.core.*;
+import de.l3s.interwebj.core.ServiceConnector.PermissionLevel;
 import de.l3s.interwebj.webutil.*;
 
 
@@ -98,7 +97,7 @@ public class ServicesBean
 	    throws InterWebException
 	{
 		Engine engine = Environment.getInstance().getEngine();
-		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		if (principal != null)
 		{
 			return engine.isUserAuthenticated((ServiceConnector) connector,
@@ -113,7 +112,7 @@ public class ServicesBean
 	{
 		Environment.logger.debug("revoking user authentication");
 		Engine engine = Environment.getInstance().getEngine();
-		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		//		Environment.logger.debug("current user: " + principal.getName());
 		engine.setUserAuthCredentials(((ServiceConnector) connector).getName(),
 		                              principal,

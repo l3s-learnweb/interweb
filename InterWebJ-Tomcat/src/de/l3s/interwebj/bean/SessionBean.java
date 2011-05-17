@@ -6,7 +6,6 @@ import java.util.*;
 import javax.faces.bean.*;
 
 import de.l3s.interwebj.*;
-import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
 
 
@@ -16,7 +15,7 @@ public class SessionBean
 {
 	
 	private Map<ServiceConnector, Parameters> pendingAuthorizationConnectors;
-	private IWPrincipal principal;
+	private InterWebPrincipal principal;
 	private String savedRequestUrl;
 	
 
@@ -34,7 +33,7 @@ public class SessionBean
 	}
 	
 
-	public IWPrincipal getPrincipal()
+	public InterWebPrincipal getPrincipal()
 	{
 		return principal;
 	}
@@ -69,7 +68,7 @@ public class SessionBean
 	}
 	
 
-	public void setPrincipal(IWPrincipal principal)
+	public void setPrincipal(InterWebPrincipal principal)
 	{
 		this.principal = principal;
 	}

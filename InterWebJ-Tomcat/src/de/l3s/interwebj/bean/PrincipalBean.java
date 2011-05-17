@@ -5,10 +5,8 @@ import java.io.*;
 
 import javax.faces.application.*;
 import javax.faces.bean.*;
-import javax.faces.context.*;
 import javax.servlet.http.*;
 
-import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.webutil.*;
@@ -22,7 +20,7 @@ public class PrincipalBean
 	public boolean hasRole(String role)
 	{
 		SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
-		IWPrincipal principal = sessionBean.getPrincipal();
+		InterWebPrincipal principal = sessionBean.getPrincipal();
 		//		Environment.logger.debug("requesting role for principal "
 		//		                         + principal
 		//		                         + ": "
@@ -41,16 +39,16 @@ public class PrincipalBean
 	
 
 	public String login(String username, String password)
-	    throws InterWebException, IOException
+	    throws IOException
 	{
 		Environment environment = Environment.getInstance();
 		Database database = environment.getDatabase();
-		IWPrincipal principal = database.authenticate(username, password);
+		InterWebPrincipal principal = null;
+		principal = database.authenticate(username, password);
 		if (principal == null)
 		{
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR,
-			                            "Incorrect login. Please check username/password.",
-			                            "login_form:login_button");
+			                            "Incorrect login. Please check username and/or password.");
 			return "failed";
 		}
 		SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
@@ -60,9 +58,8 @@ public class PrincipalBean
 		{
 			sessionBean.setSavedRequestUrl(null);
 			Environment.logger.debug("redirecting to: " + savedRequestUrl);
-			ExternalContext externalContext = FacesUtils.getExternalContext();
 			String contextPath = FacesUtils.getContextPath();
-			externalContext.redirect(contextPath + savedRequestUrl);
+			FacesUtils.redirect(contextPath + savedRequestUrl);
 		}
 		return "success";
 	}

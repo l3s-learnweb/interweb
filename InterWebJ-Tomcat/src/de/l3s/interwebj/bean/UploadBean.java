@@ -12,7 +12,6 @@ import org.richfaces.event.*;
 import org.richfaces.model.*;
 
 import de.l3s.interwebj.*;
-import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.query.*;
 import de.l3s.interwebj.webutil.*;
@@ -52,7 +51,7 @@ public class UploadBean
 	{
 		List<SelectItem> connectors = new ArrayList<SelectItem>();
 		Engine engine = Environment.getInstance().getEngine();
-		IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
 			if (connector.supportContentType(selectedContentType)
@@ -198,7 +197,7 @@ public class UploadBean
 		if (data != null && selectedConnectors != null)
 		{
 			Engine engine = Environment.getInstance().getEngine();
-			IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+			InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 			Parameters params = new Parameters();
 			if (title != null)
 			{
@@ -233,7 +232,7 @@ public class UploadBean
 		if (text != null && selectedConnectors != null)
 		{
 			Engine engine = Environment.getInstance().getEngine();
-			IWPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+			InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 			Parameters params = new Parameters();
 			if (title != null)
 			{

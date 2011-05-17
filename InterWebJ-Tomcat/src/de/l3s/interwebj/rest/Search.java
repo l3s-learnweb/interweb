@@ -27,6 +27,104 @@ public class Search
 	private UriInfo uriInfo;
 	
 
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	public XMLResponse getQueryResult(@QueryParam("q") String queryString,
+	                                  @QueryParam("search_in") String searchIn,
+	                                  @QueryParam("media_types") String mediaTypes,
+	                                  @QueryParam("date_from") String dateFrom,
+	                                  @QueryParam("date_till") String dateTill,
+	                                  @QueryParam("ranking") String ranking,
+	                                  @QueryParam("number_of_results") String resultCount,
+	                                  @QueryParam("services") String services)
+	{
+		QueryFactory queryFactory = new QueryFactory();
+		ErrorResponse errorResponse;
+		errorResponse = checkQueryString(queryString);
+		if (errorResponse != null)
+		{
+			return errorResponse;
+		}
+		Query query = queryFactory.createQuery(queryString.trim());
+		query.setLink(uriInfo.getAbsolutePath() + "/" + query.getId() + ".xml");
+		errorResponse = checkSearchIn(query, searchIn);
+		if (errorResponse != null)
+		{
+			return errorResponse;
+		}
+		errorResponse = checkMediaTypes(query, mediaTypes);
+		if (errorResponse != null)
+		{
+			return errorResponse;
+		}
+		errorResponse = checkDates(query, dateFrom, dateTill);
+		if (errorResponse != null)
+		{
+			return errorResponse;
+		}
+		errorResponse = checkRanking(query, ranking);
+		if (errorResponse != null)
+		{
+			return errorResponse;
+		}
+		errorResponse = checkResultCount(query, resultCount);
+		if (errorResponse != null)
+		{
+			return errorResponse;
+		}
+		errorResponse = checkServices(query, services);
+		if (errorResponse != null)
+		{
+			return errorResponse;
+		}
+		Environment.logger.debug(query);
+		try
+		{
+			Engine engine = Environment.getInstance().getEngine();
+			// TODO: Stub. Implement OAuth Filter, which authenticate user against OAuth key/secret pair, 
+			//       read principal from the database and store it in RequestWrapper. 
+			//       Get Principal from the request.
+			//		 IWPrincipal principal = request.getUserPrincipal();
+			InterWebPrincipal principal = (InterWebPrincipal) request.getUserPrincipal();
+			System.out.println("principal: [" + principal + "]");
+			query.addParam("user", principal.getName());
+			QueryResultMerger merger = new DumbQueryResultMerger();
+			QueryResultCollector collector = engine.getQueryResultCollector(query,
+			                                                                principal,
+			                                                                merger);
+			QueryResult queryResult = collector.retrieve();
+			ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
+			expirableMap.put(queryResult.getQuery().getId(), queryResult);
+			SearchResponse iwSearchResponse = new SearchResponse(queryResult);
+			iwSearchResponse.getQuery().setUser(principal.getName());
+			return iwSearchResponse;
+		}
+		catch (InterWebException e)
+		{
+			e.printStackTrace();
+			Environment.logger.error(e);
+			return new ErrorResponse(999, e.getMessage());
+		}
+	}
+	
+
+	@GET
+	@Path("/{id}.xml")
+	@Produces(MediaType.APPLICATION_XML)
+	public XMLResponse getStandingQueryResult(@PathParam(value = "id") String id)
+	{
+		Engine engine = Environment.getInstance().getEngine();
+		ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
+		QueryResult queryResult = (QueryResult) expirableMap.get(id);
+		if (queryResult == null)
+		{
+			return new ErrorResponse(206, "Standing query does not exist");
+		}
+		SearchResponse iwSearchResponse = new SearchResponse(queryResult);
+		return iwSearchResponse;
+	}
+	
+
 	private boolean checkDate(String date)
 	{
 		try
@@ -42,7 +140,9 @@ public class Search
 	}
 	
 
-	private IWError checkDates(Query query, String dateFrom, String dateTill)
+	private ErrorResponse checkDates(Query query,
+	                                 String dateFrom,
+	                                 String dateTill)
 	{
 		if (dateFrom != null)
 		{
@@ -52,7 +152,7 @@ public class Search
 			}
 			else
 			{
-				return new IWError(204, "Invalid format of date_from");
+				return new ErrorResponse(204, "Invalid format of date_from");
 			}
 		}
 		if (dateFrom != null)
@@ -63,18 +163,18 @@ public class Search
 			}
 			else
 			{
-				return new IWError(205, "Invalid format of date_till");
+				return new ErrorResponse(205, "Invalid format of date_till");
 			}
 		}
 		return null;
 	}
 	
 
-	private IWError checkMediaTypes(Query query, String mediaTypes)
+	private ErrorResponse checkMediaTypes(Query query, String mediaTypes)
 	{
 		if (mediaTypes == null || mediaTypes.trim().length() == 0)
 		{
-			return new IWError(202, "No media type chosen");
+			return new ErrorResponse(202, "No media type chosen");
 		}
 		String[] mediaTypeArray = mediaTypes.split(",");
 		Engine engine = Environment.getInstance().getEngine();
@@ -83,7 +183,8 @@ public class Search
 		{
 			if (!contentTypes.contains(mediaType))
 			{
-				return new IWError(203, "Unknown media type: " + mediaType);
+				return new ErrorResponse(203, "Unknown media type: "
+				                              + mediaType);
 			}
 			query.addContentType(mediaType);
 		}
@@ -91,17 +192,17 @@ public class Search
 	}
 	
 
-	private IWError checkQueryString(String queryString)
+	private ErrorResponse checkQueryString(String queryString)
 	{
 		if (queryString == null || queryString.trim().length() == 0)
 		{
-			return new IWError(201, "Query string not set");
+			return new ErrorResponse(201, "Query string not set");
 		}
 		return null;
 	}
 	
 
-	private IWError checkRanking(Query query, String ranking)
+	private ErrorResponse checkRanking(Query query, String ranking)
 	{
 		if (ranking == null || ranking.trim().length() == 0)
 		{
@@ -119,7 +220,7 @@ public class Search
 	}
 	
 
-	private IWError checkResultCount(Query query, String resultCount)
+	private ErrorResponse checkResultCount(Query query, String resultCount)
 	{
 		if (resultCount == null || resultCount.trim().length() == 0)
 		{
@@ -140,7 +241,7 @@ public class Search
 	}
 	
 
-	private IWError checkSearchIn(Query query, String searchIn)
+	private ErrorResponse checkSearchIn(Query query, String searchIn)
 	{
 		if (searchIn == null || searchIn.trim().length() == 0)
 		{
@@ -163,7 +264,7 @@ public class Search
 	}
 	
 
-	private IWError checkServices(Query query, String services)
+	private ErrorResponse checkServices(Query query, String services)
 	{
 		Engine engine = Environment.getInstance().getEngine();
 		if (services == null || services.trim().length() == 0)
@@ -185,102 +286,5 @@ public class Search
 			}
 		}
 		return null;
-	}
-	
-
-	@GET
-	@Produces(MediaType.APPLICATION_XML)
-	public IWSearchResponse getQueryResult(@QueryParam("q") String queryString,
-	                                       @QueryParam("search_in") String searchIn,
-	                                       @QueryParam("media_types") String mediaTypes,
-	                                       @QueryParam("date_from") String dateFrom,
-	                                       @QueryParam("date_till") String dateTill,
-	                                       @QueryParam("ranking") String ranking,
-	                                       @QueryParam("number_of_results") String resultCount,
-	                                       @QueryParam("services") String services)
-	{
-		QueryFactory queryFactory = new QueryFactory();
-		IWError iwError;
-		iwError = checkQueryString(queryString);
-		if (iwError != null)
-		{
-			return new IWSearchResponse(iwError);
-		}
-		Query query = queryFactory.createQuery(queryString.trim());
-		query.setLink(uriInfo.getAbsolutePath() + "/" + query.getId() + ".xml");
-		iwError = checkSearchIn(query, searchIn);
-		if (iwError != null)
-		{
-			return new IWSearchResponse(iwError);
-		}
-		iwError = checkMediaTypes(query, mediaTypes);
-		if (iwError != null)
-		{
-			return new IWSearchResponse(iwError);
-		}
-		iwError = checkDates(query, dateFrom, dateTill);
-		if (iwError != null)
-		{
-			return new IWSearchResponse(iwError);
-		}
-		iwError = checkRanking(query, ranking);
-		if (iwError != null)
-		{
-			return new IWSearchResponse(iwError);
-		}
-		iwError = checkResultCount(query, resultCount);
-		if (iwError != null)
-		{
-			return new IWSearchResponse(iwError);
-		}
-		iwError = checkServices(query, services);
-		if (iwError != null)
-		{
-			return new IWSearchResponse(iwError);
-		}
-		Environment.logger.debug(query);
-		try
-		{
-			Engine engine = Environment.getInstance().getEngine();
-			// TODO: Stub. Implement OAuth Filter, which authenticate user against OAuth key/secret pair, 
-			//       read principal from the database and store it in RequestWrapper. 
-			//       Get Principal from the request.
-			//		 IWPrincipal principal = request.getUserPrincipal();
-			IWPrincipal principal = new IWPrincipal("olex", "");
-			query.addParam("user", principal.getName());
-			QueryResultMerger merger = new DumbQueryResultMerger();
-			QueryResultCollector collector = engine.getQueryResultCollector(query,
-			                                                                principal,
-			                                                                merger);
-			QueryResult queryResult = collector.retrieve();
-			engine.getStandingQueryResultPool().add(queryResult);
-			IWSearchResponse iwSearchResponse = new IWSearchResponse(queryResult);
-			iwSearchResponse.getQuery().setUser(principal.getName());
-			return iwSearchResponse;
-		}
-		catch (InterWebException e)
-		{
-			e.printStackTrace();
-			Environment.logger.error(e);
-			return new IWSearchResponse(new IWError(999, e.getMessage()));
-		}
-	}
-	
-
-	@GET
-	@Path("/{id}.xml")
-	@Produces(MediaType.APPLICATION_XML)
-	public IWSearchResponse getStandingQueryResult(@PathParam(value = "id") String id)
-	{
-		Engine engine = Environment.getInstance().getEngine();
-		StandingQueryResultPool queryResultPool = engine.getStandingQueryResultPool();
-		QueryResult queryResult = queryResultPool.get(id);
-		if (queryResult == null)
-		{
-			return new IWSearchResponse(new IWError(206,
-			                                        "Standing query does not exist"));
-		}
-		IWSearchResponse iwSearchResponse = new IWSearchResponse(queryResult);
-		return iwSearchResponse;
 	}
 }

@@ -1,6 +1,8 @@
 package de.l3s.interwebj.webutil;
 
 
+import java.io.*;
+
 import javax.el.*;
 import javax.faces.*;
 import javax.faces.application.*;
@@ -122,6 +124,13 @@ public class FacesUtils
 	}
 	
 
+	public static HttpServletResponse getResponse()
+	{
+		ExternalContext ec = getExternalContext();
+		return (HttpServletResponse) ec.getResponse();
+	}
+	
+
 	public static SessionBean getSessionBean()
 	{
 		return (SessionBean) getManagedBean("sessionBean");
@@ -131,5 +140,13 @@ public class FacesUtils
 	public static SessionBean getSessionBean(FacesContext fc)
 	{
 		return (SessionBean) getManagedBean(fc, "sessionBean");
+	}
+	
+
+	public static void redirect(String redirectPath)
+	    throws IOException
+	{
+		ExternalContext externalContext = getExternalContext();
+		externalContext.redirect(redirectPath);
 	}
 }

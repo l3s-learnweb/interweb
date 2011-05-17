@@ -62,7 +62,7 @@ public class SecurityFilter
 				return;
 			}
 		}
-		IWPrincipal principal = sessionBean.getPrincipal();
+		InterWebPrincipal principal = sessionBean.getPrincipal();
 		boolean authorized = accessControll.isAuthorized(principal,
 		                                                 requestUrl,
 		                                                 null);
@@ -85,6 +85,14 @@ public class SecurityFilter
 	}
 	
 
+	@Override
+	public void init(FilterConfig config)
+	    throws ServletException
+	{
+		environment = Environment.getInstance();
+	}
+	
+
 	private String getRequestUrl(HttpServletRequest httpRequest)
 	{
 		String requestURL = httpRequest.getServletPath();
@@ -92,15 +100,11 @@ public class SecurityFilter
 		{
 			requestURL += httpRequest.getPathInfo();
 		}
+		if (httpRequest.getQueryString() != null)
+		{
+			requestURL += "?" + httpRequest.getQueryString();
+		}
 		return requestURL;
-	}
-	
-
-	@Override
-	public void init(FilterConfig config)
-	    throws ServletException
-	{
-		environment = Environment.getInstance();
 	}
 	
 

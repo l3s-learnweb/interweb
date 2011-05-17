@@ -7,7 +7,6 @@ import javax.faces.bean.*;
 import javax.servlet.*;
 
 import de.l3s.interwebj.*;
-import de.l3s.interwebj.connector.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.webutil.*;
 
@@ -71,7 +70,7 @@ public class RegisterServicesBean
 			Environment.logger.debug("registering connector: ["
 			                         + connector.getName()
 			                         + "] with credentials: " + authCredentials);
-			connector.setConsumerAuthCredentials(authCredentials);
+			connector.setAuthCredentials(authCredentials);
 			engine.setConsumerAuthCredentials(connector.getName(),
 			                                  authCredentials);
 		}
@@ -114,7 +113,7 @@ public class RegisterServicesBean
 			Environment.logger.debug("unregistering connector: ["
 			                         + connector.getName() + "]");
 			Engine engine = Environment.getInstance().getEngine();
-			connector.setConsumerAuthCredentials(null);
+			connector.setAuthCredentials(null);
 			engine.setConsumerAuthCredentials(connector.getName(), null);
 		}
 		catch (Exception e)

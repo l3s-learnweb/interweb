@@ -164,7 +164,7 @@ public class RegistrationBean
 		{
 			errors.put("userName", "User name length must be in bounds [4, 20]");
 		}
-		else if (iwDatabase.hasUser(username))
+		else if (iwDatabase.hasPrincipal(username))
 		{
 			errors.put("userName", "User already exists");
 		}

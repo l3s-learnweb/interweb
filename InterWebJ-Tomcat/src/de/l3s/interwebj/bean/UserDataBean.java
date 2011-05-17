@@ -52,7 +52,7 @@ public class UserDataBean
 		Database database = environment.getDatabase();
 		if (validate(database))
 		{
-			IWPrincipal principal = new IWPrincipal(username, email);
+			InterWebPrincipal principal = new InterWebPrincipal(username, email);
 			principal.addRole("user");
 			database.savePrincipal(principal, password);
 			FacesUtils.getSessionBean().setPrincipal(principal);
@@ -88,7 +88,7 @@ public class UserDataBean
 
 	private boolean validate(Database database)
 	{
-		if (database.hasUser(username))
+		if (database.hasPrincipal(username))
 		{
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR,
 			                            "Sorry, such user name already exists",

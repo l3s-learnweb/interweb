@@ -44,7 +44,7 @@ public class Upload
 		//       read principal from the database and store it in RequestWrapper. 
 		//       Get Principal from the request.
 		//		 IWPrincipal principal = request.getUserPrincipal();
-		IWPrincipal principal = new IWPrincipal("olex", "");
+		InterWebPrincipal principal = new InterWebPrincipal("olex", "");
 		Parameters params = new Parameters();
 		if (title != null)
 		{
