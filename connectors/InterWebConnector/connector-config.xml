@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<connector-configuration>
+  <jar-name>interweb-connector.jar</jar-name>
+  <class>de.l3s.interwebj.connector.interweb.InterWebConnector</class>
+  <name>interweb</name>
+  <base-url>http://athena.l3s.uni-hannover.de:8000</base-url>
+  <content-types>
+    <content-type>image</content-type>
+    <content-type>video</content-type>
+    <content-type>text</content-type>
+    <content-type>audio</content-type>
+  </content-types>
+  <properties>
+    <property>
+      <name>services</name>
+      <!-- <value>Flickr\,YouTube</value> -->
+      <value>Delicious\,Ipernity\,LastFm\,SlideShare\,Vimeo\,Blogger\,Facebook\,GroupMe</value>
+    </property>
+  </properties>
+</connector-configuration>
