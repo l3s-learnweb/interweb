@@ -78,6 +78,10 @@ public interface ServiceConnector
 	public abstract String getName();
 	
 
+	public abstract String getUserId(AuthCredentials userAuthCredentials)
+	    throws InterWebException;
+	
+
 	public abstract boolean isRegistered();
 	
 

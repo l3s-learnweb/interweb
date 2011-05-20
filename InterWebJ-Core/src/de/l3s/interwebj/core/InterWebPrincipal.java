@@ -18,6 +18,12 @@ public class InterWebPrincipal
 	private AuthCredentials oauthCredentials;
 	
 
+	public InterWebPrincipal(String name)
+	{
+		this(name, null);
+	}
+	
+
 	public InterWebPrincipal(String name, String email)
 	{
 		this(name, email, new HashSet<String>());
@@ -26,17 +32,21 @@ public class InterWebPrincipal
 
 	public InterWebPrincipal(String name, String email, Set<String> roles)
 	{
-		notNull(name, "name");
+		notEmpty(name, "name");
 		notNull(roles, "roles");
 		this.name = name;
 		this.email = email;
-		this.roles = roles;
+		this.roles = new HashSet<String>();
+		for (String role : roles)
+		{
+			addRole(role);
+		}
 	}
 	
 
 	public void addRole(String role)
 	{
-		notNull(role, "role");
+		notEmpty(role, "role");
 		roles.add(role.toLowerCase());
 	}
 	
@@ -69,6 +79,10 @@ public class InterWebPrincipal
 	public boolean hasRole(String role)
 	{
 		//		Environment.logger.debug("user roles: " + roles);
+		if (role == null)
+		{
+			return false;
+		}
 		return roles.contains(role.toLowerCase());
 	}
 	
@@ -83,17 +97,29 @@ public class InterWebPrincipal
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder();
-		builder.append("IWPrincipal [");
+		builder.append("InterWebPrincipal [");
 		if (name != null)
 		{
 			builder.append("name=");
 			builder.append(name);
 			builder.append(", ");
 		}
+		if (email != null)
+		{
+			builder.append("email=");
+			builder.append(email);
+			builder.append(", ");
+		}
 		if (roles != null)
 		{
 			builder.append("roles=");
 			builder.append(roles);
+			builder.append(", ");
+		}
+		if (oauthCredentials != null)
+		{
+			builder.append("oauthCredentials=");
+			builder.append(oauthCredentials);
 		}
 		builder.append("]");
 		return builder.toString();

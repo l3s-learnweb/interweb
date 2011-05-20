@@ -36,6 +36,8 @@ public class Environment
 		try
 		{
 			File configFile = new File(configPath);
+			logger.info("Loading configuration file: ["
+			            + configFile.getAbsolutePath() + "]");
 			InputStream is;
 			if (configFile.exists())
 			{

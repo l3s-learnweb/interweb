@@ -4,13 +4,14 @@ package de.l3s.interwebj.util;
 public class Assertions
 {
 	
-	public static long isNotZero(long value, String name)
+	public static void notEmpty(Object object, String name)
 	{
-		if (value == 0)
+		notNull(object, name);
+		if (object.toString().length() == 0)
 		{
-			throw new IllegalArgumentException("Value must not be zero");
+			throw new IllegalArgumentException("Argument [" + name
+			                                   + "] must not be empty string");
 		}
-		return value;
 	}
 	
 
@@ -31,5 +32,15 @@ public class Assertions
 			throw new NullPointerException("Argument [" + name
 			                               + "] must not be null");
 		}
+	}
+	
+
+	public static long notZero(long value, String name)
+	{
+		if (value == 0)
+		{
+			throw new IllegalArgumentException("Value must not be equal zero");
+		}
+		return value;
 	}
 }

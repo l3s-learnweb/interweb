@@ -18,31 +18,31 @@ public class JDBCDatabase
 {
 	
 	private static final String PSTMT_HAS_PRINCIPAL = "SELECT count(*) FROM iwj_principals WHERE user=?";
-	private static final String PSTMT_GET_PRINCIPAL_BY_NAME = "SELECT password,email,oauth_key,oauth_secret FROM iwj_principals WHERE user=?";
-	private static final String PSTMT_GET_PRINCIPAL_BY_KEY = "SELECT user,email,oauth_secret FROM iwj_principals WHERE oauth_key=?";
-	private static final String PSTMT_PUT_PRINCIPAL = "INSERT INTO iwj_principals VALUES (?,?,?,?,?)";
+	private static final String PSTMT_SELECT_PRINCIPAL_BY_NAME = "SELECT password,email,oauth_key,oauth_secret FROM iwj_principals WHERE user=?";
+	private static final String PSTMT_SELECT_PRINCIPAL_BY_KEY = "SELECT user,email,oauth_secret FROM iwj_principals WHERE oauth_key=?";
+	private static final String PSTMT_INSERT_PRINCIPAL = "INSERT INTO (user,password,email,oauth_key,oauth_secret) iwj_principals VALUES (?,?,?,?,?)";
 	private static final String PSTMT_UPDATE_PRINCIPAL = "UPDATE iwj_principals SET email=?,oauth_key=?,oauth_secret=? WHERE user=?";
-	private static final String PSTMT_REMOVE_PRINCIPAL = "DELETE FROM iwj_principals WHERE user=?";
+	private static final String PSTMT_DELETE_PRINCIPAL = "DELETE FROM iwj_principals WHERE user=?";
 	
 	private static final String PSTMT_HAS_PRINCIPAL_ROLE = "SELECT count(*) FROM iwj_principals_roles WHERE user=? AND role=?";
-	private static final String PSTMT_GET_PRINCIPAL_ROLES = "SELECT role FROM iwj_principals_roles WHERE user=?";
-	private static final String PSTMT_PUT_PRINCIPAL_ROLE = "INSERT INTO iwj_principals_roles VALUES (?,?)";
-	private static final String PSTMT_REMOVE_PRINCIPAL_ROLES = "DELETE FROM iwj_principals_roles WHERE user=?";
+	private static final String PSTMT_SELECT_PRINCIPAL_ROLES = "SELECT role FROM iwj_principals_roles WHERE user=?";
+	private static final String PSTMT_INSERT_PRINCIPAL_ROLE = "INSERT INTO iwj_principals_roles (user,role) VALUES (?,?)";
+	private static final String PSTMT_DELETE_PRINCIPAL_ROLES = "DELETE FROM iwj_principals_roles WHERE user=?";
 	
 	private static final String PSTMT_HAS_CONNECTOR = "SELECT count(*) FROM iwj_connectors WHERE name=?";
-	private static final String PSTMT_GET_CONNECTOR_AUTH_CREDENTIALS = "SELECT `key`, secret FROM iwj_connectors WHERE name=?";
-	private static final String PSTMT_PUT_CONNECTOR = "INSERT INTO iwj_connectors VALUES (?,?,?)";
-	private static final String PSTMT_REMOVE_CONNECTOR = "DELETE FROM iwj_connectors WHERE name=?";
+	private static final String PSTMT_SELECT_CONNECTOR_AUTH_CREDENTIALS = "SELECT `key`, secret FROM iwj_connectors WHERE name=?";
+	private static final String PSTMT_INSERT_CONNECTOR = "INSERT INTO iwj_connectors (name,`key`,secret) VALUES (?,?,?)";
+	private static final String PSTMT_DELETE_CONNECTOR = "DELETE FROM iwj_connectors WHERE name=?";
 	
-	private static final String PSTMT_GET_CONSUMER_BY_KEY = "SELECT name, url, description, secret FROM iwj_consumers WHERE `key`=?";
-	private static final String PSTMT_GET_CONSUMERS = "SELECT name, url, description, `key`, secret FROM iwj_consumers WHERE user=?";
-	private static final String PSTMT_PUT_CONSUMER = "INSERT INTO iwj_consumers VALUES (?,?,?,?,?,?)";
-	private static final String PSTMT_REMOVE_CONSUMER = "DELETE FROM iwj_consumers WHERE user=? AND name=?";
+	private static final String PSTMT_SELECT_CONSUMER_BY_KEY = "SELECT name, url, description, secret FROM iwj_consumers WHERE `key`=?";
+	private static final String PSTMT_SELECT_CONSUMERS = "SELECT name, url, description, `key`, secret FROM iwj_consumers WHERE user=?";
+	private static final String PSTMT_INSERT_CONSUMER = "INSERT INTO iwj_consumers (user,name,url,description,`key`,secret) VALUES (?,?,?,?,?,?)";
+	private static final String PSTMT_DELETE_CONSUMER = "DELETE FROM iwj_consumers WHERE user=? AND name=?";
 	
 	private static final String PSTMT_HAS_USER_AUTH_CREDENTIALS = "SELECT count(*) FROM iwj_users_auth_data WHERE connector=? AND user=?";
-	private static final String PSTMT_GET_USER_AUTH_CREDENTIALS = "SELECT `key`, secret FROM iwj_users_auth_data WHERE connector=? AND user=?";
-	private static final String PSTMT_PUT_USER_AUTH_CREDENTIALS = "INSERT INTO iwj_users_auth_data VALUES (?,?,?,?)";
-	private static final String PSTMT_REMOVE_USER_AUTH_CREDENTIALS = "DELETE FROM iwj_users_auth_data WHERE connector=? AND user=?";
+	private static final String PSTMT_SELECT_USER_AUTH_CREDENTIALS = "SELECT `key`, secret FROM iwj_users_auth_data WHERE connector=? AND user=?";
+	private static final String PSTMT_INSERT_USER_AUTH_CREDENTIALS = "INSERT INTO iwj_users_auth_data (connector,user,connector_uid,`key`,secret) VALUES (?,?,?,?,?)";
+	private static final String PSTMT_DELETE_USER_AUTH_CREDENTIALS = "DELETE FROM iwj_users_auth_data WHERE connector=? AND user=?";
 	
 	private Logger logger;
 	
@@ -110,7 +110,7 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_CONNECTOR);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_DELETE_CONNECTOR);
 				pstmt.setString(1, connectorName);
 				pstmt.executeUpdate();
 				dbConnection.commit();
@@ -133,7 +133,7 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_CONSUMER);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_DELETE_CONSUMER);
 				pstmt.setString(1, userName);
 				pstmt.setString(2, consumerName);
 				pstmt.executeUpdate();
@@ -187,7 +187,7 @@ public class JDBCDatabase
 			String secret;
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_CONNECTOR_AUTH_CREDENTIALS);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_CONNECTOR_AUTH_CREDENTIALS);
 				pstmt.setString(1, connectorName);
 				rs = pstmt.executeQuery();
 				if (rs.next())
@@ -219,7 +219,7 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_CONSUMER_BY_KEY);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_CONSUMER_BY_KEY);
 				pstmt.setString(1, key);
 				rs = pstmt.executeQuery();
 				while (rs.next())
@@ -253,7 +253,7 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_CONSUMERS);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_CONSUMERS);
 				pstmt.setString(1, userName);
 				rs = pstmt.executeQuery();
 				while (rs.next())
@@ -295,7 +295,7 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_PRINCIPAL_BY_KEY);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_PRINCIPAL_BY_KEY);
 				pstmt.setString(1, key);
 				rs = pstmt.executeQuery();
 				while (rs.next())
@@ -332,7 +332,7 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_PRINCIPAL_BY_NAME);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_PRINCIPAL_BY_NAME);
 				pstmt.setString(1, userName);
 				rs = pstmt.executeQuery();
 				while (rs.next())
@@ -370,7 +370,7 @@ public class JDBCDatabase
 			String secret;
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_USER_AUTH_CREDENTIALS);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_USER_AUTH_CREDENTIALS);
 				pstmt.setString(1, connectorName);
 				pstmt.setString(2, userName);
 				rs = pstmt.executeQuery();
@@ -404,10 +404,10 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_CONNECTOR);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_DELETE_CONNECTOR);
 				pstmt.setString(1, connectorName);
 				pstmt.executeUpdate();
-				pstmt = preparedStatements.get(PSTMT_PUT_CONNECTOR);
+				pstmt = preparedStatements.get(PSTMT_INSERT_CONNECTOR);
 				pstmt.setString(1, connectorName);
 				String key = (authCredentials == null)
 				    ? null : authCredentials.getKey();
@@ -436,11 +436,11 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_CONSUMER);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_DELETE_CONSUMER);
 				pstmt.setString(1, userName);
 				pstmt.setString(2, consumer.getName());
 				pstmt.executeUpdate();
-				pstmt = preparedStatements.get(PSTMT_PUT_CONSUMER);
+				pstmt = preparedStatements.get(PSTMT_INSERT_CONSUMER);
 				pstmt.setString(1, userName);
 				pstmt.setString(2, consumer.getName());
 				pstmt.setString(3, consumer.getUrl());
@@ -473,10 +473,10 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_PRINCIPAL);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_DELETE_PRINCIPAL);
 				pstmt.setString(1, principal.getName());
 				pstmt.executeUpdate();
-				pstmt = preparedStatements.get(PSTMT_PUT_PRINCIPAL);
+				pstmt = preparedStatements.get(PSTMT_INSERT_PRINCIPAL);
 				pstmt.setString(1, principal.getName());
 				pstmt.setString(2, password);
 				pstmt.setString(3, principal.getEmail());
@@ -490,7 +490,7 @@ public class JDBCDatabase
 				pstmt.executeUpdate();
 				for (String role : principal.getRoles())
 				{
-					pstmt = preparedStatements.get(PSTMT_PUT_PRINCIPAL_ROLE);
+					pstmt = preparedStatements.get(PSTMT_INSERT_PRINCIPAL_ROLE);
 					pstmt.setString(1, principal.getName());
 					pstmt.setString(2, role);
 					pstmt.executeUpdate();
@@ -509,6 +509,7 @@ public class JDBCDatabase
 	@Override
 	public void saveUserAuthCredentials(String connectorName,
 	                                    String userName,
+	                                    String userId,
 	                                    AuthCredentials authCredentials)
 	{
 		notNull(connectorName, "connectorName");
@@ -517,19 +518,20 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_REMOVE_USER_AUTH_CREDENTIALS);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_DELETE_USER_AUTH_CREDENTIALS);
 				pstmt.setString(1, connectorName);
 				pstmt.setString(2, userName);
 				pstmt.executeUpdate();
-				pstmt = preparedStatements.get(PSTMT_PUT_USER_AUTH_CREDENTIALS);
+				pstmt = preparedStatements.get(PSTMT_INSERT_USER_AUTH_CREDENTIALS);
 				pstmt.setString(1, connectorName);
 				pstmt.setString(2, userName);
+				pstmt.setString(3, userId);
 				String key = (authCredentials == null)
 				    ? null : authCredentials.getKey();
 				String secret = (authCredentials == null)
 				    ? null : authCredentials.getSecret();
-				setString(pstmt, 3, key);
-				setString(pstmt, 4, secret);
+				setString(pstmt, 4, key);
+				setString(pstmt, 5, secret);
 				pstmt.executeUpdate();
 				dbConnection.commit();
 			}
@@ -587,7 +589,7 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_PRINCIPAL_BY_NAME);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_PRINCIPAL_BY_NAME);
 				pstmt.setString(1, userName);
 				rs = pstmt.executeQuery();
 				if (rs.next())
@@ -627,7 +629,7 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_GET_PRINCIPAL_ROLES);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_PRINCIPAL_ROLES);
 				pstmt.setString(1, userName);
 				rs = pstmt.executeQuery();
 				while (rs.next())
@@ -684,31 +686,31 @@ public class JDBCDatabase
 		preparedStatements = new HashMap<String, PreparedStatement>();
 		
 		addPreparedStatement(PSTMT_HAS_PRINCIPAL);
-		addPreparedStatement(PSTMT_GET_PRINCIPAL_BY_NAME);
-		addPreparedStatement(PSTMT_GET_PRINCIPAL_BY_KEY);
-		addPreparedStatement(PSTMT_PUT_PRINCIPAL);
+		addPreparedStatement(PSTMT_SELECT_PRINCIPAL_BY_NAME);
+		addPreparedStatement(PSTMT_SELECT_PRINCIPAL_BY_KEY);
+		addPreparedStatement(PSTMT_INSERT_PRINCIPAL);
 		addPreparedStatement(PSTMT_UPDATE_PRINCIPAL);
-		addPreparedStatement(PSTMT_REMOVE_PRINCIPAL);
+		addPreparedStatement(PSTMT_DELETE_PRINCIPAL);
 		
 		addPreparedStatement(PSTMT_HAS_PRINCIPAL_ROLE);
-		addPreparedStatement(PSTMT_GET_PRINCIPAL_ROLES);
-		addPreparedStatement(PSTMT_PUT_PRINCIPAL_ROLE);
-		addPreparedStatement(PSTMT_REMOVE_PRINCIPAL_ROLES);
+		addPreparedStatement(PSTMT_SELECT_PRINCIPAL_ROLES);
+		addPreparedStatement(PSTMT_INSERT_PRINCIPAL_ROLE);
+		addPreparedStatement(PSTMT_DELETE_PRINCIPAL_ROLES);
 		
 		addPreparedStatement(PSTMT_HAS_CONNECTOR);
-		addPreparedStatement(PSTMT_GET_CONNECTOR_AUTH_CREDENTIALS);
-		addPreparedStatement(PSTMT_PUT_CONNECTOR);
-		addPreparedStatement(PSTMT_REMOVE_CONNECTOR);
+		addPreparedStatement(PSTMT_SELECT_CONNECTOR_AUTH_CREDENTIALS);
+		addPreparedStatement(PSTMT_INSERT_CONNECTOR);
+		addPreparedStatement(PSTMT_DELETE_CONNECTOR);
 		
-		addPreparedStatement(PSTMT_GET_CONSUMER_BY_KEY);
-		addPreparedStatement(PSTMT_GET_CONSUMERS);
-		addPreparedStatement(PSTMT_PUT_CONSUMER);
-		addPreparedStatement(PSTMT_REMOVE_CONSUMER);
+		addPreparedStatement(PSTMT_SELECT_CONSUMER_BY_KEY);
+		addPreparedStatement(PSTMT_SELECT_CONSUMERS);
+		addPreparedStatement(PSTMT_INSERT_CONSUMER);
+		addPreparedStatement(PSTMT_DELETE_CONSUMER);
 		
 		addPreparedStatement(PSTMT_HAS_USER_AUTH_CREDENTIALS);
-		addPreparedStatement(PSTMT_GET_USER_AUTH_CREDENTIALS);
-		addPreparedStatement(PSTMT_PUT_USER_AUTH_CREDENTIALS);
-		addPreparedStatement(PSTMT_REMOVE_USER_AUTH_CREDENTIALS);
+		addPreparedStatement(PSTMT_SELECT_USER_AUTH_CREDENTIALS);
+		addPreparedStatement(PSTMT_INSERT_USER_AUTH_CREDENTIALS);
+		addPreparedStatement(PSTMT_DELETE_USER_AUTH_CREDENTIALS);
 	}
 	
 

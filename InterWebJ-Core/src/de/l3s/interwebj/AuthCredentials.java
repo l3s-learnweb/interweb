@@ -20,6 +20,7 @@ public class AuthCredentials
 	public AuthCredentials(String key, String secret)
 	{
 		notNull(key, "key");
+		notEmpty(key, "key");
 		this.key = key;
 		this.secret = secret;
 	}

@@ -8,6 +8,8 @@ import java.util.concurrent.*;
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.query.Query.SearchScope;
+import de.l3s.interwebj.query.Query.SortOrder;
 import de.l3s.interwebj.util.*;
 
 
@@ -138,10 +140,12 @@ public class Engine
 
 	public void setUserAuthCredentials(String connectorName,
 	                                   InterWebPrincipal principal,
+	                                   String userId,
 	                                   AuthCredentials consumerAuthCredentials)
 	{
 		database.saveUserAuthCredentials(connectorName,
 		                                 principal.getName(),
+		                                 userId,
 		                                 consumerAuthCredentials);
 	}
 	
@@ -196,6 +200,7 @@ public class Engine
 
 	@SuppressWarnings("unused")
 	public static void main(String[] args)
+	    throws InterWebException
 	{
 		Database database = Environment.getInstance().getDatabase();
 		InterWebPrincipal principal;
@@ -203,55 +208,50 @@ public class Engine
 		AuthCredentials authCredentials;
 		authCredentials = database.readConnectorAuthCredentials("flickr");
 		System.out.println(authCredentials);
-		database.saveConnector("flickr",
-		                       new AuthCredentials("***REMOVED***",
-		                                           "***REMOVED***"));
-		authCredentials = database.readConnectorAuthCredentials("flickr");
-		System.out.println(authCredentials);
-		
-		//		Engine engine = new Engine(database);
-		//		engine.loadConnectors("./connectors");
-		//		IWPrincipal principal = database.authenticate("olex", "123456");
-		//		String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
-		//		List<String> connectorNames = engine.getConnectorNames();
-		//		Environment.logger.debug("Searching in connectors: " + connectorNames);
-		//		int retryCount = 50;
-		//		for (int i = 0; i < retryCount; i++)
-		//		{
-		//			testSearch("people", connectorNames, engine, principal);
-		//		}
+		Engine engine = new Engine(database);
+		engine.loadConnectors("./connectors");
+		String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
+		List<String> connectorNames = engine.getConnectorNames();
+		Environment.logger.debug("Searching in connectors: " + connectorNames);
+		int retryCount = 5;
+		for (int i = 0; i < retryCount; i++)
+		{
+			testSearch("people", connectorNames, engine, principal);
+		}
 		//		for (String word : words)
 		//		{
 		//			testSearch(word, connectorNames, engine, principal);
 		//		}
 		Environment.logger.debug("finished");
+		
 	}
 	
-	//	private static void testSearch(String word,
-	//	                               List<String> connectorNames,
-	//	                               Engine engine,
-	//	                               IWPrincipal principal)
-	//	    throws InterWebException
-	//	{
-	//		QueryFactory queryFactory = new QueryFactory();
-	//		Query query = queryFactory.createQuery(word);
-	//		query.addContentType(Query.CT_VIDEO);
-	//		query.addContentType(Query.CT_IMAGE);
-	//		query.addSearchScope(SearchScope.TEXT);
-	//		query.addSearchScope(SearchScope.TAGS);
-	//		query.setResultCount(50);
-	//		query.setSortOrder(SortOrder.RELEVANCE);
-	//		for (String connectorName : connectorNames)
-	//		{
-	//			query.addConnectorName(connectorName);
-	//		}
-	//		QueryResultMerger merger = new DumbQueryResultMerger();
-	//		QueryResultCollector collector = engine.getQueryResultCollector(query,
-	//		                                                                principal,
-	//		                                                                merger);
-	//		QueryResult queryResult = collector.retrieve();
-	//		System.out.println("query: [" + query + "]");
-	//		System.out.println("elapsed time : [" + queryResult.getElapsedTime()
-	//		                   + "]");
-	//	}
+
+	private static void testSearch(String word,
+	                               List<String> connectorNames,
+	                               Engine engine,
+	                               InterWebPrincipal principal)
+	    throws InterWebException
+	{
+		QueryFactory queryFactory = new QueryFactory();
+		Query query = queryFactory.createQuery(word);
+		query.addContentType(Query.CT_VIDEO);
+		query.addContentType(Query.CT_IMAGE);
+		query.addSearchScope(SearchScope.TEXT);
+		query.addSearchScope(SearchScope.TAGS);
+		query.setResultCount(10);
+		query.setSortOrder(SortOrder.RELEVANCE);
+		for (String connectorName : connectorNames)
+		{
+			query.addConnectorName(connectorName);
+		}
+		QueryResultMerger merger = new DumbQueryResultMerger();
+		QueryResultCollector collector = engine.getQueryResultCollector(query,
+		                                                                principal,
+		                                                                merger);
+		QueryResult queryResult = collector.retrieve();
+		System.out.println("query: [" + query + "]");
+		System.out.println("elapsed time : [" + queryResult.getElapsedTime()
+		                   + "]");
+	}
 }

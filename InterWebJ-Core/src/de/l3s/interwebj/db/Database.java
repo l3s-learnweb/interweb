@@ -34,10 +34,10 @@ public interface Database
 	public List<Consumer> readConsumers(String userName);
 	
 
-	public InterWebPrincipal readPrincipalByName(String name);
+	public InterWebPrincipal readPrincipalByKey(String key);
 	
 
-	public InterWebPrincipal readPrincipalByKey(String key);
+	public InterWebPrincipal readPrincipalByName(String name);
 	
 
 	public AuthCredentials readUserAuthCredentials(String connectorName,
@@ -56,9 +56,9 @@ public interface Database
 
 	public void saveUserAuthCredentials(String connectorName,
 	                                    String userName,
+	                                    String userId,
 	                                    AuthCredentials authCredentials);
 	
 
 	public void updatePrincipal(InterWebPrincipal principal);
-	
 }

@@ -7,6 +7,8 @@ import java.util.*;
 public class AccessControll
 {
 	
+	private static final String SYSTEM_ROLE = "system";
+	
 	private List<ResourceConstraint> constraints;
 	
 
@@ -16,9 +18,44 @@ public class AccessControll
 	}
 	
 
+	public boolean isAuthorized(InterWebPrincipal principal,
+	                            String resource,
+	                            String action)
+	{
+		ResourceConstraint resourceConstraint = getResourceConstraint(resource);
+		if (resourceConstraint == null)
+		{
+			return false;
+		}
+		if (isPublicResource(resource))
+		{
+			return true;
+		}
+		if (principal == null)
+		{
+			return false;
+		}
+		String role = resourceConstraint.getRole();
+		return (role == null) || principal.hasRole(role);
+	}
+	
+
+	public boolean isPublicResource(String resource)
+	{
+		ResourceConstraint resourceConstraint = getResourceConstraint(resource);
+		return (resourceConstraint.getRole() == null);
+	}
+	
+
 	private ResourceConstraint buildPublicConstraint(String pattern)
 	{
 		return new ResourceConstraint(pattern, Integer.MAX_VALUE);
+	}
+	
+
+	private ResourceConstraint buildRestrictedConstraint(String pattern)
+	{
+		return new ResourceConstraint(pattern, SYSTEM_ROLE, Integer.MAX_VALUE);
 	}
 	
 
@@ -53,41 +90,13 @@ public class AccessControll
 		constraints.add(buildPublicConstraint("/view/rfRes/.*"));
 		constraints.add(buildPublicConstraint("/view/javax\\.faces\\.resource/.*"));
 		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
-		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
 		// User access resources
 		constraints.add(new ResourceConstraint("/.*", "user", 10));
 		// Manager access resources
 		constraints.add(new ResourceConstraint("/view/admin/(.*)?",
 		                                       "manager",
 		                                       20));
-	}
-	
-
-	public boolean isAuthorized(InterWebPrincipal principal,
-	                            String resource,
-	                            String action)
-	{
-		ResourceConstraint resourceConstraint = getResourceConstraint(resource);
-		if (resourceConstraint == null)
-		{
-			return false;
-		}
-		if (isPublicResource(resource))
-		{
-			return true;
-		}
-		if (principal == null)
-		{
-			return false;
-		}
-		String role = resourceConstraint.getRole();
-		return (role == null) || principal.hasRole(role);
-	}
-	
-
-	public boolean isPublicResource(String resource)
-	{
-		ResourceConstraint resourceConstraint = getResourceConstraint(resource);
-		return (resourceConstraint.getRole() == null);
+		// Restricted access resources
+		constraints.add(buildRestrictedConstraint("fkjfberlfer"));
 	}
 }
