@@ -28,6 +28,9 @@ public interface Database
 	public AuthCredentials readConnectorAuthCredentials(String connectorName);
 	
 
+	public String readConnectorUserId(String connectorName, String userName);
+	
+
 	public Consumer readConsumerByKey(String key);
 	
 

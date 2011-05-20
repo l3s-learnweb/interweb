@@ -41,6 +41,7 @@ public class JDBCDatabase
 	
 	private static final String PSTMT_HAS_USER_AUTH_CREDENTIALS = "SELECT count(*) FROM iwj_users_auth_data WHERE connector=? AND user=?";
 	private static final String PSTMT_SELECT_USER_AUTH_CREDENTIALS = "SELECT `key`, secret FROM iwj_users_auth_data WHERE connector=? AND user=?";
+	private static final String PSTMT_SELECT_CONNECTOR_USER_ID = "SELECT connector_uid, secret FROM iwj_users_auth_data WHERE connector=? AND user=?";
 	private static final String PSTMT_INSERT_USER_AUTH_CREDENTIALS = "INSERT INTO iwj_users_auth_data (connector,user,connector_uid,`key`,secret) VALUES (?,?,?,?,?)";
 	private static final String PSTMT_DELETE_USER_AUTH_CREDENTIALS = "DELETE FROM iwj_users_auth_data WHERE connector=? AND user=?";
 	
@@ -208,6 +209,36 @@ public class JDBCDatabase
 			close();
 		}
 		return authCredentials;
+	}
+	
+
+	@Override
+	public String readConnectorUserId(String connectorName, String userName)
+	{
+		notNull(connectorName, "connectorName");
+		notNull(userName, "userName");
+		String userId = null;
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_CONNECTOR_USER_ID);
+				pstmt.setString(1, connectorName);
+				pstmt.setString(2, userName);
+				rs = pstmt.executeQuery();
+				if (rs.next())
+				{
+					userId = rs.getString(1);
+				}
+				silentCloseResultSet(rs);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+		return userId;
 	}
 	
 
@@ -709,6 +740,7 @@ public class JDBCDatabase
 		
 		addPreparedStatement(PSTMT_HAS_USER_AUTH_CREDENTIALS);
 		addPreparedStatement(PSTMT_SELECT_USER_AUTH_CREDENTIALS);
+		addPreparedStatement(PSTMT_SELECT_CONNECTOR_USER_ID);
 		addPreparedStatement(PSTMT_INSERT_USER_AUTH_CREDENTIALS);
 		addPreparedStatement(PSTMT_DELETE_USER_AUTH_CREDENTIALS);
 	}
