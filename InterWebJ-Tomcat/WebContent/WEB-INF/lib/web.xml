@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="InterWebJ" version="2.5">
+  <display-name>InterWebJ</display-name>
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <security-role>
+    <description>The Secure ROLE</description>
+    <role-name>user</role-name>
+  </security-role>
+  <security-role>
+    <description>The Secure ROLE</description>
+    <role-name>admin</role-name>
+  </security-role>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Public content</web-resource-name>
+      <url-pattern>/</url-pattern>
+      <url-pattern>/index.jsp</url-pattern>
+      <url-pattern>/logout</url-pattern>
+      <url-pattern>/css/*</url-pattern>
+      <url-pattern>/img/*</url-pattern>
+    </web-resource-collection>
+    <user-data-constraint>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Secured public content</web-resource-name>
+      <url-pattern>/register.jsp</url-pattern>
+    </web-resource-collection>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Private content</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>user</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Administrative content</web-resource-name>
+      <url-pattern>/admin/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>admin</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+  <login-config>
+    <auth-method>FORM</auth-method>
+    <form-login-config>
+      <form-login-page>/login.jsp</form-login-page>
+      <form-error-page>/error.jsp</form-error-page>
+    </form-login-config>
+  </login-config>
+  <servlet>
+    <description></description>
+    <display-name>logout</display-name>
+    <servlet-name>logout</servlet-name>
+    <servlet-class>de.l3s.interwebj.servlet.Logout</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>logout</servlet-name>
+    <url-pattern>/logout</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Registration</display-name>
+    <servlet-name>Registration</servlet-name>
+    <servlet-class>de.l3s.interwebj.servlet.Registration</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Registration</servlet-name>
+    <url-pattern>/register</url-pattern>
+  </servlet-mapping>
+</web-app>

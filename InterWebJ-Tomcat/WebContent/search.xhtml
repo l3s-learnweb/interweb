@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+	<ui:define name="content">
+		<h:messages showSummary="true" showDetail="false" styleClass="error" />
+		<h:form>
+			<h:panelGrid columns="2" columnClasses="top,top">
+				<rich:panel styleClass="richpanel">
+					<h:outputLabel for="query" value="Search query: " />
+					<h:inputText id="query" label="query" required="true"
+						value="#{searchBean.query}" size="30" />
+					<h:commandButton action="#{searchBean.search()}" value="Search"
+						id="search_button" style="margin-left:5px" />
+				</rich:panel>
+				<h:panelGrid columns="3" columnClasses="top,top,top">
+					<h:panelGroup>
+						<h:outputLabel value="Results: " for="result_count" />
+						<h:inputText id="result_count" label="results count"
+							required="true" value="#{searchBean.resultCount}" size="4"
+							style="margin-right: 5px;" />
+					</h:panelGroup>
+					<rich:panel styleClass="richpanel" style="border-width: 1px;">
+						<f:facet name="header">
+							<h:outputText value="Connectors" />
+						</f:facet>
+						<h:selectManyCheckbox id="connectors"
+							value="#{searchBean.selectedConnectorNames}"
+							layout="pageDirection">
+							<f:selectItems value="#{searchBean.connectorNames}" />
+							<f:ajax event="change" render="content_types" />
+						</h:selectManyCheckbox>
+					</rich:panel>
+					<rich:panel styleClass="richpanel" style="border-width: 1px;">
+						<f:facet name="header">
+							<h:outputText value="Supported content types" />
+						</f:facet>
+						<h:selectManyCheckbox id="content_types"
+							value="#{searchBean.selectedContentTypes}" layout="pageDirection">
+							<f:selectItems value="#{searchBean.contentTypes}" />
+							<f:ajax event="change" execute="#{searchBean.save()}" />
+						</h:selectManyCheckbox>
+					</rich:panel>
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:form>
+		<ui:fragment rendered="#{searchBean.hasResults()}">
+			<h:outputText value="No results found"
+				rendered="#{searchBean.queryResult.size()==0}" />
+			<h:outputText
+				value="Total #{searchBean.queryResult.resultItems.size()} result(s) found (#{searchBean.queryResult.elapsedTime/1000} s)"
+				rendered="#{searchBean.queryResult.size()>0}" />
+		</ui:fragment>
+		<h:form rendered="#{searchBean.hasResults()}">
+			<h:panelGrid>
+				<rich:dataScroller for="result_table" maxPages="11" />
+				<rich:dataTable value="#{searchBean.queryResult.resultItems}"
+					var="resultItem" id="result_table" rows="10">
+					<rich:column style="vertical-align: top;">
+						<span style="text-align: left; vertical-align: top;">#{searchBean.getResultIndex(resultItem)+1}</span>
+					</rich:column>
+					<rich:column style="vertical-align: top;">
+						<img
+							src="#{searchBean.getConnectorBaseUrl(resultItem.connectorName)}/favicon.ico"
+							style="vertical-align: middle; margin: 3px;" />
+						<h:outputText value="#{resultItem.serviceName}" />
+					</rich:column>
+					<rich:column>
+						<div>
+						<h6><img
+							src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
+							style="vertical-align: middle; margin: 3px;" /><h:outputLink
+							value="#{resultItem.url}" target="_blank">&nbsp;#{resultItem.title}</h:outputLink></h6>
+						<div><h:outputText value="#{resultItem.asHtml()}"
+							escape="false" />
+						<div><span>#{resultItem.description}</span></div>
+						<div><span
+							style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;"><span
+							style="background-color: #D0EFEF;">Added</span>:
+						#{resultItem.date} &ndash; <span style="background-color: #D0EFEF;">Tags</span>:
+						#{searchBean.getTags(resultItem)}</span></div>
+						</div>
+						</div>
+					</rich:column>
+				</rich:dataTable>
+				<rich:dataScroller for="result_table" maxPages="11" />
+			</h:panelGrid>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>
