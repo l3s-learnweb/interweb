@@ -1,9 +1,10 @@
 package de.l3s.interwebj.servlet.filter;
 
 
+import static de.l3s.interwebj.webutil.RestUtils.*;
+
 import java.security.*;
 
-import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 import com.sun.jersey.oauth.server.*;
@@ -23,6 +24,7 @@ public class OAuthFilter
 	SecurityContext context;
 	
 
+	@SuppressWarnings("null")
 	@Override
 	public ContainerRequest filter(ContainerRequest containerRequest)
 	{
@@ -40,31 +42,19 @@ public class OAuthFilter
 		OAuthSecrets secrets = new OAuthSecrets();
 		params.readRequest(request);
 		String consumerKey = params.getConsumerKey();
-		Environment.logger.debug("consumerKey: [" + consumerKey + "]");
 		if (consumerKey == null)
 		{
-			ErrorResponse errorResponse = new ErrorResponse(101,
-			                                                "No consumer key given");
-			Response response = Response.ok(errorResponse,
-			                                MediaType.APPLICATION_XML).build();
-			throw new WebApplicationException(response);
+			throwWebApplicationException(ErrorResponse.NO_CONSUMER_KEY_GIVEN);
 		}
 		Database database = Environment.getInstance().getDatabase();
 		Consumer consumer = database.readConsumerByKey(consumerKey);
 		if (consumer == null)
 		{
-			Environment.logger.error("bad consumer key");
-			ErrorResponse errorResponse = new ErrorResponse(104,
-			                                                "Invalid signature");
-			Response response = Response.ok(errorResponse,
-			                                MediaType.APPLICATION_XML).build();
-			throw new WebApplicationException(response);
+			throwWebApplicationException(ErrorResponse.INVALID_SIGNATURE);
 		}
 		String consumerSecret = consumer.getAuthCredentials().getSecret();
-		Environment.logger.debug("consumerSecret: [" + consumerSecret + "]");
 		secrets.consumerSecret(consumerSecret);
 		String token = params.getToken();
-		Environment.logger.debug("tokenKey: [" + token + "]");
 		if (token != null)
 		{
 			String tokenSecret = null;
@@ -89,33 +79,20 @@ public class OAuthFilter
 				tokenSecret = principal.getOauthCredentials().getSecret();
 				containerRequest.setSecurityContext(createSecurityContext(principal));
 			}
-			Environment.logger.debug("tokenSecret: [" + tokenSecret + "]");
 			secrets.tokenSecret(tokenSecret);
 		}
 		try
 		{
-			Environment.logger.debug("received signature: ["
-			                         + params.getSignature() + "]");
-			Environment.logger.debug("signature: ["
-			                         + OAuthSignature.generate(request,
-			                                                   params,
-			                                                   secrets) + "]");
 			if (!OAuthSignature.verify(request, params, secrets))
 			{
 				Environment.logger.error("failed to verify signature");
-				ErrorResponse errorResponse = new ErrorResponse(104,
-				                                                "Invalid signature");
-				Response response = Response.ok(errorResponse,
-				                                MediaType.APPLICATION_XML).build();
-				throw new WebApplicationException(response);
+				throwWebApplicationException(ErrorResponse.INVALID_SIGNATURE);
 			}
 		}
 		catch (OAuthSignatureException e)
 		{
 			ErrorResponse errorResponse = new ErrorResponse(999, e.getMessage());
-			Response response = Response.ok(errorResponse,
-			                                MediaType.APPLICATION_XML).build();
-			throw new WebApplicationException(response);
+			throwWebApplicationException(errorResponse);
 		}
 		return containerRequest;
 	}

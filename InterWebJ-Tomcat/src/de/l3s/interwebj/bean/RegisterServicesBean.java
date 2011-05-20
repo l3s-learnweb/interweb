@@ -12,24 +12,34 @@ import de.l3s.interwebj.webutil.*;
 
 
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class RegisterServicesBean
 {
 	
-	private String key;
-	private String secret;
+	private List<ConnectorWrapper> connectorWrappers;
 	
 
-	public List<ServiceConnector> getConnectors()
+	public RegisterServicesBean()
 	{
+		connectorWrappers = new ArrayList<ConnectorWrapper>();
 		Engine engine = Environment.getInstance().getEngine();
-		return engine.getConnectors();
+		for (ServiceConnector connector : engine.getConnectors())
+		{
+			ConnectorWrapper connectorWrapper = new ConnectorWrapper();
+			connectorWrapper.setConnector(connector);
+			if (connector.getAuthCredentials() != null)
+			{
+				connectorWrapper.setKey(connector.getAuthCredentials().getKey());
+				connectorWrapper.setSecret(connector.getAuthCredentials().getSecret());
+			}
+			connectorWrappers.add(connectorWrapper);
+		}
 	}
 	
 
-	public String getKey()
+	public List<ConnectorWrapper> getConnectorWrappers()
 	{
-		return null;
+		return connectorWrappers;
 	}
 	
 
@@ -48,25 +58,22 @@ public class RegisterServicesBean
 	}
 	
 
-	public String getSecret()
-	{
-		return null;
-	}
-	
-
-	public boolean isRegistered(Object connector)
+	public boolean isRegistered(Object o)
 	    throws InterWebException
 	{
-		return ((ServiceConnector) connector).isRegistered();
+		ConnectorWrapper connectorWrapper = (ConnectorWrapper) o;
+		return connectorWrapper.getConnector().isRegistered();
 	}
 	
 
-	public String register(ServiceConnector connector)
+	public String register(ConnectorWrapper connectorWrapper)
 	{
 		try
 		{
 			Engine engine = Environment.getInstance().getEngine();
-			AuthCredentials authCredentials = new AuthCredentials(key, secret);
+			AuthCredentials authCredentials = new AuthCredentials(connectorWrapper.getKey(),
+			                                                      connectorWrapper.getSecret());
+			ServiceConnector connector = connectorWrapper.getConnector();
 			Environment.logger.debug("registering connector: ["
 			                         + connector.getName()
 			                         + "] with credentials: " + authCredentials);
@@ -94,22 +101,11 @@ public class RegisterServicesBean
 	}
 	
 
-	public void setKey(String key)
-	{
-		this.key = key;
-	}
-	
-
-	public void setSecret(String secret)
-	{
-		this.secret = secret;
-	}
-	
-
-	public String unregister(ServiceConnector connector)
+	public String unregister(ConnectorWrapper connectorWrapper)
 	{
 		try
 		{
+			ServiceConnector connector = connectorWrapper.getConnector();
 			Environment.logger.debug("unregistering connector: ["
 			                         + connector.getName() + "]");
 			Engine engine = Environment.getInstance().getEngine();

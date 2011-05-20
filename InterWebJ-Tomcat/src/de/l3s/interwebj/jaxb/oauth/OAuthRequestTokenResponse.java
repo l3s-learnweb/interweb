@@ -1,9 +1,10 @@
-package de.l3s.interwebj.jaxb;
+package de.l3s.interwebj.jaxb.oauth;
 
 
 import javax.xml.bind.annotation.*;
 
 import de.l3s.interwebj.*;
+import de.l3s.interwebj.jaxb.*;
 
 
 @XmlRootElement(name = "rsp")

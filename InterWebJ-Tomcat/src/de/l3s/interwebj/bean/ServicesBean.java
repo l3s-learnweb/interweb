@@ -107,15 +107,16 @@ public class ServicesBean
 	}
 	
 
-	public String revoke(Object connector)
+	public String revoke(Object o)
 	    throws InterWebException
 	{
+		ServiceConnector connector = (ServiceConnector) o;
 		Environment.logger.debug("revoking user authentication");
 		Engine engine = Environment.getInstance().getEngine();
 		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
-		//		Environment.logger.debug("current user: " + principal.getName());
-		engine.setUserAuthCredentials(((ServiceConnector) connector).getName(),
+		engine.setUserAuthCredentials(connector.getName(),
 		                              principal,
+		                              null,
 		                              null);
 		return null;
 	}

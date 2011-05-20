@@ -3,7 +3,6 @@ package de.l3s.interwebj.rest;
 
 import java.io.*;
 
-import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
@@ -18,18 +17,14 @@ import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.util.*;
 
 
-@Path("/users/{user}/uploads")
+@Path("/users/default/uploads")
 public class Upload
+    extends Endpoint
 {
 	
-	@Context
-	HttpServletRequest request;
-	
-
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	//	public IWUploadResponse getQueryResult()
 	public String getQueryResult(@FormDataParam("title") String title,
 	                             @FormDataParam("description") String description,
 	                             @FormDataParam("tags") String tags,
@@ -40,11 +35,8 @@ public class Upload
 	    throws IOException, InterWebException
 	{
 		Engine engine = Environment.getInstance().getEngine();
-		// TODO: Stub. Implement OAuth Filter, which authenticate user against OAuth key/secret pair, 
-		//       read principal from the database and store it in RequestWrapper. 
-		//       Get Principal from the request.
-		//		 IWPrincipal principal = request.getUserPrincipal();
-		InterWebPrincipal principal = new InterWebPrincipal("olex", "");
+		InterWebPrincipal principal = getPrincipal();
+		System.out.println("principal: [" + principal + "]");
 		Parameters params = new Parameters();
 		if (title != null)
 		{

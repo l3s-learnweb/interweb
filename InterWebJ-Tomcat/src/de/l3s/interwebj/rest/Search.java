@@ -19,6 +19,7 @@ import de.l3s.interwebj.util.*;
 
 @Path("/search")
 public class Search
+    extends Endpoint
 {
 	
 	@Context
@@ -81,13 +82,12 @@ public class Search
 		try
 		{
 			Engine engine = Environment.getInstance().getEngine();
-			// TODO: Stub. Implement OAuth Filter, which authenticate user against OAuth key/secret pair, 
-			//       read principal from the database and store it in RequestWrapper. 
-			//       Get Principal from the request.
-			//		 IWPrincipal principal = request.getUserPrincipal();
-			InterWebPrincipal principal = (InterWebPrincipal) request.getUserPrincipal();
+			InterWebPrincipal principal = getPrincipal();
 			System.out.println("principal: [" + principal + "]");
-			query.addParam("user", principal.getName());
+			if (principal == null)
+			{
+				return ErrorResponse.NO_USER;
+			}
 			QueryResultMerger merger = new DumbQueryResultMerger();
 			QueryResultCollector collector = engine.getQueryResultCollector(query,
 			                                                                principal,
@@ -116,9 +116,12 @@ public class Search
 		Engine engine = Environment.getInstance().getEngine();
 		ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
 		QueryResult queryResult = (QueryResult) expirableMap.get(id);
-		if (queryResult == null)
+		InterWebPrincipal principal = getPrincipal();
+		if (queryResult == null
+		    || principal == null
+		    || principal.getName().equals(queryResult.getQuery().getParam("user")))
 		{
-			return new ErrorResponse(206, "Standing query does not exist");
+			return ErrorResponse.NO_STANDING_QUERY;
 		}
 		SearchResponse iwSearchResponse = new SearchResponse(queryResult);
 		return iwSearchResponse;
@@ -152,7 +155,7 @@ public class Search
 			}
 			else
 			{
-				return new ErrorResponse(204, "Invalid format of date_from");
+				return ErrorResponse.INVALID_DATE_FROM;
 			}
 		}
 		if (dateFrom != null)
@@ -163,7 +166,7 @@ public class Search
 			}
 			else
 			{
-				return new ErrorResponse(205, "Invalid format of date_till");
+				return ErrorResponse.INVALID_DATE_TILL;
 			}
 		}
 		return null;
@@ -174,7 +177,7 @@ public class Search
 	{
 		if (mediaTypes == null || mediaTypes.trim().length() == 0)
 		{
-			return new ErrorResponse(202, "No media type chosen");
+			return ErrorResponse.NO_MEDIA_TYPE;
 		}
 		String[] mediaTypeArray = mediaTypes.split(",");
 		Engine engine = Environment.getInstance().getEngine();
@@ -183,8 +186,7 @@ public class Search
 		{
 			if (!contentTypes.contains(mediaType))
 			{
-				return new ErrorResponse(203, "Unknown media type: "
-				                              + mediaType);
+				return ErrorResponse.UNKNOWN_MEDIA_TYPE;
 			}
 			query.addContentType(mediaType);
 		}
@@ -196,7 +198,7 @@ public class Search
 	{
 		if (queryString == null || queryString.trim().length() == 0)
 		{
-			return new ErrorResponse(201, "Query string not set");
+			return ErrorResponse.NO_QUERY_STRING;
 		}
 		return null;
 	}
