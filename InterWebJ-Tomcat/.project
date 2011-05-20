@@ -39,10 +39,5 @@
 			<type>2</type>
 			<location>/home/olex/works/ws/InterWebJ-Core/src</location>
 		</link>
-		<link>
-			<name>WebContent/connectors</name>
-			<type>2</type>
-			<location>/home/olex/works/ws/InterWebJ-Core/connectors</location>
-		</link>
 	</linkedResources>
 </projectDescription>
