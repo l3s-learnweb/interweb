@@ -1,0 +1,11 @@
+DEBUG : 2011-05-22 15:22:46.284 InterWebConnector.testRevokeFromLearnWeb() :: querying interweb: http://athena.l3s.uni-hannover.de:8000/api/users/olex_3/services/Flickr/auth.xml?iw_consumer_key=***REMOVED***&iw_signature=15fb7502e7a2beb7ac396d8a3febaa79&iw_token=***REMOVED***
+<?xml version="1.0" encoding="utf-8"?>
+<rsp stat="ok">
+	<service id="Flickr">
+		<authorized>false</authorized>
+		<message>Authorization successfully revoked</message>
+			<authorization type="token">
+				<link method="POST">http://athena.l3s.uni-hannover.de:8000/api/users/default/services/Flickr/auth</link>
+			</authorization>
+	</service>
+</rsp>

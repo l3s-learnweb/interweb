@@ -68,12 +68,19 @@ public class FlickrConnector
 		Parameters params = new Parameters();
 		try
 		{
-			Flickr flickr = createFlickrInstance();
-			AuthInterface authInterface = flickr.getAuthInterface();
+			AuthCredentials consumerAuthCredentials = getAuthCredentials();
+			AuthInterface authInterface = new ExtraAuthInterface(consumerAuthCredentials.getKey(),
+			                                                     consumerAuthCredentials.getSecret(),
+			                                                     new REST(),
+			                                                     callbackUrl);
 			String authId = authInterface.getFrob();
+			System.out.println("authId: [" + authId + "]");
 			Permission permission = Permission.fromString(permissionLevel.getName());
 			URL requestTokenUrl = authInterface.buildAuthenticationUrl(permission,
 			                                                           authId);
+			System.out.println("callbackUrl: [" + callbackUrl + "]");
+			System.out.println("requestTokenUrl: ["
+			                   + requestTokenUrl.toExternalForm() + "]");
 			params.add(Parameters.OAUTH_AUTHORIZATION_URL,
 			           requestTokenUrl.toExternalForm());
 		}
@@ -251,6 +258,14 @@ public class FlickrConnector
 	}
 	
 
+	@Override
+	public void revokeAuthentication()
+	    throws InterWebException
+	{
+		// Flickr doesn't provide api for token revokation
+	}
+	
+
 	private Flickr createFlickrInstance()
 	    throws InterWebException
 	{
@@ -261,17 +276,11 @@ public class FlickrConnector
 		try
 		{
 			AuthCredentials consumerAuthCredentials = getAuthCredentials();
-			URL baseUrl = new URL(getBaseUrl());
 			return new Flickr(consumerAuthCredentials.getKey(),
 			                  consumerAuthCredentials.getSecret(),
-			                  new REST(baseUrl.getHost()));
+			                  new REST());
 		}
 		catch (ParserConfigurationException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (MalformedURLException e)
 		{
 			e.printStackTrace();
 			throw new InterWebException(e);

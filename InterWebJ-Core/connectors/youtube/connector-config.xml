@@ -3,7 +3,7 @@
 <connector-configuration>
   <jar-name>youtube-connector.jar</jar-name>
   <class>de.l3s.interwebj.connector.youtube.YouTubeConnector</class>
-  <name>youtube</name>
+  <name>YouTube</name>
   <base-url>http://www.youtube.com</base-url>
   <content-types>
     <content-type>video</content-type>

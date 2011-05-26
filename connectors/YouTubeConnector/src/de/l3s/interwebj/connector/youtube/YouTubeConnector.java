@@ -376,6 +376,14 @@ public class YouTubeConnector
 	}
 	
 
+	@Override
+	public void revokeAuthentication()
+	    throws InterWebException
+	{
+		// YouTube doesn't provide api for token revokation
+	}
+	
+
 	private YouTubeService createYouTubeService(AuthCredentials authCredentials)
 	    throws OAuthException
 	{

@@ -86,6 +86,13 @@ public class OAuthFilter
 			if (!OAuthSignature.verify(request, params, secrets))
 			{
 				Environment.logger.error("failed to verify signature");
+				Environment.logger.error("received signature: ["
+				                         + params.getSignature() + "]");
+				Environment.logger.error("generated signature: ["
+				                         + OAuthSignature.generate(request,
+				                                                   params,
+				                                                   secrets)
+				                         + "]");
 				throwWebApplicationException(ErrorResponse.INVALID_SIGNATURE);
 			}
 		}

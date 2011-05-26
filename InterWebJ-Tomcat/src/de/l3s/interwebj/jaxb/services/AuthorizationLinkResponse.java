@@ -3,15 +3,22 @@ package de.l3s.interwebj.jaxb.services;
 
 import javax.xml.bind.annotation.*;
 
+import de.l3s.interwebj.jaxb.*;
 
+
+@XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AuthorizationEntity
+public class AuthorizationLinkResponse
+    extends XMLResponse
 {
 	
-	@XmlAttribute(name = "type")
-	protected String type;
 	@XmlElement(name = "link")
 	protected AuthorizationLinkEntity authorizationLinkEntity;
+	
+
+	public AuthorizationLinkResponse()
+	{
+	}
 	
 
 	public AuthorizationLinkEntity getAuthorizationLinkEntity()
@@ -20,21 +27,9 @@ public class AuthorizationEntity
 	}
 	
 
-	public String getType()
-	{
-		return type;
-	}
-	
-
 	public void setAuthorizationLinkEntity(AuthorizationLinkEntity authorizationLinkEntity)
 	{
 		this.authorizationLinkEntity = authorizationLinkEntity;
-	}
-	
-
-	public void setType(String type)
-	{
-		this.type = type;
 	}
 	
 }

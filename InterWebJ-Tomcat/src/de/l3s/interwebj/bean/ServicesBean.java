@@ -31,7 +31,7 @@ public class ServicesBean
 	}
 	
 
-	public String authenticate(Object connector)
+	public String authenticate(Object obj)
 	    throws InterWebException
 	{
 		Environment.logger.debug("requested permission: " + permission);
@@ -41,16 +41,16 @@ public class ServicesBean
 		String callbackUrl = FacesUtils.getInterWebJBean().getBaseUrl()
 		                     + "callback";
 		Environment.logger.debug("callbackUrl: [" + callbackUrl + "]");
-		Parameters params = ((ServiceConnector) connector).authenticate(permissionLevel,
-		                                                                callbackUrl);
+		ServiceConnector connector = (ServiceConnector) obj;
+		Parameters params = connector.authenticate(permissionLevel, callbackUrl);
 		String oauthAuthorizationUrl = params.get(Parameters.OAUTH_AUTHORIZATION_URL);
 		if (oauthAuthorizationUrl != null)
 		{
 			Environment.logger.debug("redirecting to service authorization url: "
 			                         + oauthAuthorizationUrl);
-			SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
-			sessionBean.addPendingAuthorizationConnector((ServiceConnector) connector,
-			                                             params);
+			Engine engine = Environment.getInstance().getEngine();
+			params.add(Parameters.CLIENT_TYPE, "SERVLET");
+			engine.addPendingAuthorizationConnector(connector, params);
 			try
 			{
 				FacesUtils.getExternalContext().redirect(oauthAuthorizationUrl);
@@ -118,6 +118,7 @@ public class ServicesBean
 		                              principal,
 		                              null,
 		                              null);
+		connector.revokeAuthentication();
 		return null;
 	}
 	

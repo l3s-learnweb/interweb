@@ -95,6 +95,10 @@ public interface ServiceConnector
 	    throws InterWebException;
 	
 
+	public abstract void revokeAuthentication()
+	    throws InterWebException;
+	
+
 	public abstract void setAuthCredentials(AuthCredentials consumerAuthCredentials);
 	
 

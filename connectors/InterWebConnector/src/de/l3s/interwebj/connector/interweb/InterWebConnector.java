@@ -3,9 +3,12 @@ package de.l3s.interwebj.connector.interweb;
 
 import static de.l3s.interwebj.util.Assertions.*;
 
+import java.awt.*;
 import java.io.*;
+import java.net.*;
 import java.nio.charset.*;
 import java.util.*;
+import java.util.List;
 
 import javax.ws.rs.core.*;
 
@@ -66,7 +69,7 @@ public class InterWebConnector
 		params.add("iw_consumer_key", consumerAuthCredentials.getKey());
 		String iwSignature = generateSignature(API_REQUEST_TOKEN_PATH, params);
 		params.add("iw_signature", iwSignature);
-		addUriParameters(uriBuilder, params);
+		addQueryParameters(uriBuilder, params);
 		WebResource resource = client.resource(uriBuilder.build());
 		Environment.logger.debug("querying interweb request token: "
 		                         + resource.toString());
@@ -96,7 +99,7 @@ public class InterWebConnector
 		params.add("callback", callbackUrl);
 		uriBuilder = UriBuilder.fromUri(getBaseUrl());
 		uriBuilder.path("api").path(API_AUTHORIZE_TOKEN_PATH);
-		addUriParameters(uriBuilder, params);
+		addQueryParameters(uriBuilder, params);
 		params.add(Parameters.OAUTH_AUTHORIZATION_URL,
 		           uriBuilder.build().toASCIIString());
 		return params;
@@ -158,7 +161,7 @@ public class InterWebConnector
 		params.add("services", getServices());
 		String iwSignature = generateSignature(API_SEARCH_PATH, params);
 		params.add("iw_signature", iwSignature);
-		addUriParameters(uriBuilder, params);
+		addQueryParameters(uriBuilder, params);
 		WebResource resource = client.resource(uriBuilder.build());
 		Environment.logger.debug("querying interweb search: "
 		                         + resource.toString());
@@ -169,6 +172,7 @@ public class InterWebConnector
 			throw new InterWebException(response.toString());
 		}
 		SearchResponse iwSearchResponse = response.getEntity(SearchResponse.class);
+		System.out.println(iwSearchResponse);
 		if ("fail".equals(iwSearchResponse.getStat()))
 		{
 			ErrorEntity error = iwSearchResponse.getError();
@@ -200,7 +204,7 @@ public class InterWebConnector
 		params.add("iw_token", authCredentials.getKey());
 		String iwSignature = generateSignature(API_CURRENT_USER_INFO, params);
 		params.add("iw_signature", iwSignature);
-		addUriParameters(uriBuilder, params);
+		addQueryParameters(uriBuilder, params);
 		Client client = Client.create();
 		WebResource resource = client.resource(uriBuilder.build());
 		Environment.logger.debug("querying interweb resource: "
@@ -279,7 +283,7 @@ public class InterWebConnector
 		iwParams.remove(Parameters.DESCRIPTION);
 		iwParams.remove(Parameters.TAGS);
 		iwParams.remove("is_private");
-		addUriParameters(uriBuilder, iwParams);
+		addQueryParameters(uriBuilder, iwParams);
 		WebResource resource = client.resource(uriBuilder.build());
 		Environment.logger.debug("uploading to interweb: "
 		                         + resource.toString());
@@ -327,7 +331,15 @@ public class InterWebConnector
 	}
 	
 
-	private void addUriParameters(UriBuilder uriBuilder, Parameters params)
+	@Override
+	public void revokeAuthentication()
+	    throws InterWebException
+	{
+		// Interweb doesn't provide api for token revokation
+	}
+	
+
+	private void addQueryParameters(UriBuilder uriBuilder, Parameters params)
 	{
 		for (String name : params.keySet())
 		{
@@ -348,6 +360,28 @@ public class InterWebConnector
 		os.write(data);
 		os.close();
 		return file;
+	}
+	
+
+	@SuppressWarnings("unused")
+	private String generateSignature(String path,
+	                                 MultivaluedMap<String, String> params)
+	{
+		AuthCredentials consumerAuthCredentials = getAuthCredentials();
+		params.add("iw_path", path);
+		StringBuilder sb = new StringBuilder(consumerAuthCredentials.getSecret());
+		Set<String> paramNames = new TreeSet<String>(params.keySet());
+		for (String name : paramNames)
+		{
+			if (!name.equals("data"))
+			{
+				sb.append(name);
+				sb.append(params.get(name));
+			}
+		}
+		params.remove("iw_path");
+		Environment.logger.debug("hashing string: [" + sb.toString() + "]");
+		return CoreUtils.generateMD5Hash(sb.toString().getBytes(Charset.forName("UTF-8")));
 	}
 	
 
@@ -509,9 +543,59 @@ public class InterWebConnector
 	public static void main(String[] args)
 	    throws Exception
 	{
-		testServices();
-		testUserServices();
+		//		testAuthenticate("Flickr");
+		//		testRevokeFromLearnWeb("Flickr");
+		//		testRevokeFromLearnWeb("YouTube");
+		//		testServices();
+		//		testUserServices();
 		//		testService("Flickr");
+		testGet();
+	}
+	
+
+	public static void testAuthenticate(String service)
+	    throws Exception
+	{
+		File configFile = new File("connector-config.xml");
+		Configuration configuration = new Configuration(new FileInputStream(configFile));
+		//		AuthCredentials consumerAuthCredentials = new AuthCredentials("***REMOVED***",
+		//		                                                              "***REMOVED***");
+		//		AuthCredentials userAuthCredentials = new AuthCredentials("***REMOVED***",
+		//		                                                          "***REMOVED***");
+		//
+		AuthCredentials consumerAuthCredentials = new AuthCredentials("***REMOVED***",
+		                                                              "***REMOVED***");
+		AuthCredentials userAuthCredentials = new AuthCredentials("***REMOVED***");
+		InterWebConnector iwc = new InterWebConnector(configuration,
+		                                              consumerAuthCredentials);
+		UriBuilder uriBuilder = UriBuilder.fromUri(iwc.getBaseUrl());
+		uriBuilder.path("api").path("users/default/services/" + service
+		                            + "/auth");
+		Parameters params = new Parameters();
+		params.add("iw_consumer_key", consumerAuthCredentials.getKey());
+		params.add("iw_token", userAuthCredentials.getKey());
+		String iwSignature = iwc.generateSignature("users/default/services/"
+		                                           + service + "/auth", params);
+		params.add("iw_signature", iwSignature);
+		Client client = Client.create();
+		WebResource resource = client.resource(uriBuilder.build());
+		Environment.logger.debug("querying interweb: " + resource.toString());
+		WebResource.Builder builder = resource.accept(MediaType.WILDCARD);
+		builder = resource.type(MediaType.APPLICATION_FORM_URLENCODED);
+		System.out.println(params.toQueryString());
+		ClientResponse response = builder.post(ClientResponse.class,
+		                                       params.toQueryString());
+		if (response.getStatus() == 302)
+		{
+			List<String> locations = response.getHeaders().get("location");
+			if (locations != null && locations.size() == 1)
+			{
+				String location = locations.get(0);
+				System.out.println("redirecting to: [" + location + "]");
+				Desktop.getDesktop().browse(URI.create(location));
+			}
+		}
+		System.out.println(CoreUtils.getClientResponseContent(response));
 	}
 	
 
@@ -543,6 +627,36 @@ public class InterWebConnector
 	}
 	
 
+	public static void testRevokeFromLearnWeb(String service)
+	    throws Exception
+	{
+		File configFile = new File("connector-config.xml");
+		Configuration configuration = new Configuration(new FileInputStream(configFile));
+		AuthCredentials consumerAuthCredentials = new AuthCredentials("***REMOVED***",
+		                                                              "***REMOVED***");
+		AuthCredentials userAuthCredentials = new AuthCredentials("***REMOVED***");
+		InterWebConnector iwc = new InterWebConnector(configuration,
+		                                              consumerAuthCredentials);
+		UriBuilder uriBuilder = UriBuilder.fromUri(iwc.getBaseUrl());
+		uriBuilder.path("api").path("users/default/services/" + service
+		                            + "/auth.xml");
+		Parameters params = new Parameters();
+		params.add("iw_consumer_key", consumerAuthCredentials.getKey());
+		params.add("iw_token", userAuthCredentials.getKey());
+		String iwSignature = iwc.generateSignature("users/default/services/"
+		                                           + service + "/auth", params);
+		params.add("iw_signature", iwSignature);
+		iwc.addQueryParameters(uriBuilder, params);
+		Client client = Client.create();
+		WebResource resource = client.resource(uriBuilder.build());
+		Environment.logger.debug("querying interweb: " + resource.toString());
+		WebResource.Builder builder = resource.accept(MediaType.WILDCARD);
+		builder = builder.type(MediaType.APPLICATION_FORM_URLENCODED);
+		ClientResponse response = builder.delete(ClientResponse.class);
+		System.out.println(CoreUtils.getClientResponseContent(response));
+	}
+	
+
 	public static void testService(String id)
 	    throws Exception
 	{
@@ -555,7 +669,7 @@ public class InterWebConnector
 		                                              consumerAuthCredentials);
 		
 		UriBuilder uriBuilder = UriBuilder.fromUri(iwc.getBaseUrl());
-		uriBuilder.path("api").path("users/olexd/services/" + id + ".xml");
+		uriBuilder.path("api").path("users/default/services/" + id + ".xml");
 		Parameters params = new Parameters();
 		params.add("iw_consumer_key", consumerAuthCredentials.getKey());
 		params.add("iw_token", userAuthCredentials.getKey());
@@ -563,7 +677,7 @@ public class InterWebConnector
 		                                           + id, params);
 		System.out.println(iwSignature);
 		params.add("iw_signature", iwSignature);
-		iwc.addUriParameters(uriBuilder, params);
+		iwc.addQueryParameters(uriBuilder, params);
 		Client client = Client.create();
 		WebResource resource = client.resource(uriBuilder.build());
 		Environment.logger.debug("querying interweb search: "
@@ -594,7 +708,7 @@ public class InterWebConnector
 		String iwSignature = iwc.generateSignature("services", params);
 		System.out.println(iwSignature);
 		params.add("iw_signature", iwSignature);
-		iwc.addUriParameters(uriBuilder, params);
+		iwc.addQueryParameters(uriBuilder, params);
 		Client client = Client.create();
 		WebResource resource = client.resource(uriBuilder.build());
 		Environment.logger.debug("querying interweb search: "
@@ -617,7 +731,7 @@ public class InterWebConnector
 		InterWebConnector iwc = new InterWebConnector(configuration,
 		                                              consumerAuthCredentials);
 		UriBuilder uriBuilder = UriBuilder.fromUri(iwc.getBaseUrl());
-		uriBuilder.path("api").path("users/olexd/services" + ".xml");
+		uriBuilder.path("api").path("users/default/services" + ".xml");
 		Parameters params = new Parameters();
 		params.add("iw_consumer_key", consumerAuthCredentials.getKey());
 		params.add("iw_token", userAuthCredentials.getKey());
@@ -625,7 +739,7 @@ public class InterWebConnector
 		                                           params);
 		System.out.println(iwSignature);
 		params.add("iw_signature", iwSignature);
-		iwc.addUriParameters(uriBuilder, params);
+		iwc.addQueryParameters(uriBuilder, params);
 		Client client = Client.create();
 		WebResource resource = client.resource(uriBuilder.build());
 		Environment.logger.debug("querying interweb search: "

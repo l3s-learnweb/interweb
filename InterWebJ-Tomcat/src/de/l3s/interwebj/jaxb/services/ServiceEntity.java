@@ -16,6 +16,8 @@ public class ServiceEntity
 	protected boolean authorized;
 	@XmlElement(name = "serviceuserid")
 	protected String serviceUserId;
+	@XmlElement(name = "message")
+	protected String message;
 	@XmlElement(name = "authorization")
 	protected AuthorizationEntity authorizationEntity;
 	@XmlElement(name = "revokeauthorization")
@@ -51,6 +53,12 @@ public class ServiceEntity
 	public String getId()
 	{
 		return id;
+	}
+	
+
+	public String getMessage()
+	{
+		return message;
 	}
 	
 
@@ -92,6 +100,12 @@ public class ServiceEntity
 	public void setId(String id)
 	{
 		this.id = id;
+	}
+	
+
+	public void setMessage(String message)
+	{
+		this.message = message;
 	}
 	
 

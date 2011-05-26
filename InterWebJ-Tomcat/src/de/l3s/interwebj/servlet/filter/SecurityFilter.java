@@ -6,7 +6,6 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import de.l3s.interwebj.*;
 import de.l3s.interwebj.bean.*;
 import de.l3s.interwebj.core.*;
 
@@ -48,19 +47,8 @@ public class SecurityFilter
 		{
 			httpRequest.getSession(true);
 			Environment.logger.debug("WARNING! SessionBean is NULL! Creating and storing new SessionBean instance");
-			try
-			{
-				sessionBean = new SessionBean();
-				httpRequest.getSession().setAttribute("sessionBean",
-				                                      sessionBean);
-			}
-			catch (InterWebException e)
-			{
-				e.printStackTrace();
-				Environment.logger.error(e);
-				chain.doFilter(request, response);
-				return;
-			}
+			sessionBean = new SessionBean();
+			httpRequest.getSession().setAttribute("sessionBean", sessionBean);
 		}
 		InterWebPrincipal principal = sessionBean.getPrincipal();
 		boolean authorized = accessControll.isAuthorized(principal,

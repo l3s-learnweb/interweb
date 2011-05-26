@@ -23,14 +23,14 @@ public class SearchResponse
 
 	public SearchResponse(QueryResult queryResult)
 	{
-		SearchQueryEntity iwSearchQuery = new SearchQueryEntity(queryResult.getQuery());
-		iwSearchQuery.setElapsedTime(String.valueOf(queryResult.getElapsedTime()));
+		SearchQueryEntity searchQueryEntity = new SearchQueryEntity(queryResult.getQuery());
+		searchQueryEntity.setElapsedTime(String.valueOf(queryResult.getElapsedTime()));
 		for (ResultItem resultItem : queryResult.getResultItems())
 		{
 			SearchResultEntity iwSearchResult = new SearchResultEntity(resultItem);
-			iwSearchQuery.addResult(iwSearchResult);
+			searchQueryEntity.addResult(iwSearchResult);
 		}
-		query = iwSearchQuery;
+		query = searchQueryEntity;
 	}
 	
 

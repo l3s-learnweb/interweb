@@ -84,10 +84,6 @@ public class Search
 			Engine engine = Environment.getInstance().getEngine();
 			InterWebPrincipal principal = getPrincipal();
 			System.out.println("principal: [" + principal + "]");
-			if (principal == null)
-			{
-				return ErrorResponse.NO_USER;
-			}
 			QueryResultMerger merger = new DumbQueryResultMerger();
 			QueryResultCollector collector = engine.getQueryResultCollector(query,
 			                                                                principal,
@@ -95,9 +91,12 @@ public class Search
 			QueryResult queryResult = collector.retrieve();
 			ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
 			expirableMap.put(queryResult.getQuery().getId(), queryResult);
-			SearchResponse iwSearchResponse = new SearchResponse(queryResult);
-			iwSearchResponse.getQuery().setUser(principal.getName());
-			return iwSearchResponse;
+			SearchResponse searchResponse = new SearchResponse(queryResult);
+			String userName = (principal == null)
+			    ? null : principal.getName();
+			searchResponse.getQuery().setUser(userName);
+			System.out.println(searchResponse);
+			return searchResponse;
 		}
 		catch (InterWebException e)
 		{

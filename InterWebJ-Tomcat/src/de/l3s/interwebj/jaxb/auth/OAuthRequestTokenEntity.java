@@ -1,4 +1,4 @@
-package de.l3s.interwebj.jaxb.oauth;
+package de.l3s.interwebj.jaxb.auth;
 
 
 import javax.xml.bind.annotation.*;

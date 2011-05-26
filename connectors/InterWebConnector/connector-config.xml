@@ -3,7 +3,7 @@
 <connector-configuration>
   <jar-name>interweb-connector.jar</jar-name>
   <class>de.l3s.interwebj.connector.interweb.InterWebConnector</class>
-  <name>interweb</name>
+  <name>InterWeb</name>
   <base-url>http://athena.l3s.uni-hannover.de:8000</base-url>
   <content-types>
     <content-type>image</content-type>

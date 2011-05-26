@@ -27,6 +27,16 @@ public class Endpoint
 	}
 	
 
+	public OAuthParameters getOAuthParameters()
+	{
+		HttpContext httpContext = getHttpContext();
+		OAuthServerRequest request = new OAuthServerRequest(httpContext.getRequest());
+		OAuthParameters params = new OAuthParameters();
+		params.readRequest(request);
+		return params;
+	}
+	
+
 	public InterWebPrincipal getPrincipal()
 	{
 		OAuthServerRequest request = new OAuthServerRequest(httpContext.getRequest());

@@ -20,7 +20,7 @@ import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.jaxb.*;
-import de.l3s.interwebj.jaxb.oauth.*;
+import de.l3s.interwebj.jaxb.auth.*;
 import de.l3s.interwebj.util.*;
 
 
@@ -35,6 +35,7 @@ public class OAuth
 	public XMLResponse authorizeToken(@QueryParam("oauth_token") String requestToken,
 	                                  @QueryParam("oauth_callback") String callbackUrl)
 	{
+		Environment.logger.debug("callbackUrl: [" + callbackUrl + "]");
 		HttpContext httpContext = getHttpContext();
 		URI uri = httpContext.getUriInfo().getBaseUri().resolve("../view/authorize_consumer.xhtml");
 		UriBuilder builder = UriBuilder.fromUri(uri);
@@ -105,12 +106,8 @@ public class OAuth
 	                                @FormParam("default_token") String defaultToken,
 	                                @FormParam("default_secret") String defaultTokenSecret)
 	{
-		HttpContext httpContext = getHttpContext();
-		OAuthServerRequest request = new OAuthServerRequest(httpContext.getRequest());
-		OAuthParameters params = new OAuthParameters();
-		params.readRequest(request);
 		Database database = Environment.getInstance().getDatabase();
-		InterWebPrincipal principal = new InterWebPrincipal(userName);
+		InterWebPrincipal principal = InterWebPrincipal.createDefault(userName);
 		if (database.hasPrincipal(userName))
 		{
 			throwWebApplicationException(ErrorResponse.USER_EXISTS);
@@ -127,11 +124,12 @@ public class OAuth
 	    throws Exception
 	{
 		//		testOauthAuthentication();
-		//		testSearch();
-		testAddUser();
+		testSearch();
+		//		testAddUser();
 	}
 	
 
+	@SuppressWarnings("all")
 	private static void testAddUser()
 	    throws Exception
 	{

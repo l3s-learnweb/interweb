@@ -20,7 +20,7 @@ public class JDBCDatabase
 	private static final String PSTMT_HAS_PRINCIPAL = "SELECT count(*) FROM iwj_principals WHERE user=?";
 	private static final String PSTMT_SELECT_PRINCIPAL_BY_NAME = "SELECT password,email,oauth_key,oauth_secret FROM iwj_principals WHERE user=?";
 	private static final String PSTMT_SELECT_PRINCIPAL_BY_KEY = "SELECT user,email,oauth_secret FROM iwj_principals WHERE oauth_key=?";
-	private static final String PSTMT_INSERT_PRINCIPAL = "INSERT INTO (user,password,email,oauth_key,oauth_secret) iwj_principals VALUES (?,?,?,?,?)";
+	private static final String PSTMT_INSERT_PRINCIPAL = "INSERT INTO iwj_principals (user,password,email,oauth_key,oauth_secret) VALUES (?,?,?,?,?)";
 	private static final String PSTMT_UPDATE_PRINCIPAL = "UPDATE iwj_principals SET email=?,oauth_key=?,oauth_secret=? WHERE user=?";
 	private static final String PSTMT_DELETE_PRINCIPAL = "DELETE FROM iwj_principals WHERE user=?";
 	
@@ -340,6 +340,7 @@ public class JDBCDatabase
 					principal.setOauthCredentials(authCredentials);
 				}
 				silentCloseResultSet(rs);
+				readRoles(principal);
 			}
 		}
 		catch (SQLException e)
@@ -377,6 +378,7 @@ public class JDBCDatabase
 					principal.setOauthCredentials(authCredentials);
 				}
 				silentCloseResultSet(rs);
+				readRoles(principal);
 			}
 		}
 		catch (SQLException e)
@@ -509,8 +511,8 @@ public class JDBCDatabase
 				pstmt.executeUpdate();
 				pstmt = preparedStatements.get(PSTMT_INSERT_PRINCIPAL);
 				pstmt.setString(1, principal.getName());
-				pstmt.setString(2, password);
-				pstmt.setString(3, principal.getEmail());
+				setString(pstmt, 2, password);
+				setString(pstmt, 3, principal.getEmail());
 				AuthCredentials authCredentials = principal.getOauthCredentials();
 				String key = (authCredentials == null)
 				    ? null : authCredentials.getKey();
@@ -613,6 +615,7 @@ public class JDBCDatabase
 	}
 	
 
+	@SuppressWarnings("null")
 	private InterWebPrincipal getPrincipal(String userName, String userPassword)
 	{
 		InterWebPrincipal dbPrincipal = null;
@@ -641,6 +644,7 @@ public class JDBCDatabase
 					}
 				}
 				silentCloseResultSet(rs);
+				readRoles(dbPrincipal);
 			}
 		}
 		catch (SQLException e)
@@ -790,6 +794,31 @@ public class JDBCDatabase
 			initPreparedStatements();
 		}
 		return (dbConnection != null);
+	}
+	
+
+	private void readRoles(InterWebPrincipal principal)
+	{
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_PRINCIPAL_ROLES);
+				pstmt.setString(1, principal.getName());
+				rs = pstmt.executeQuery();
+				while (rs.next())
+				{
+					String role = rs.getString(1);
+					principal.addRole(role);
+				}
+				silentCloseResultSet(rs);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
 	}
 	
 

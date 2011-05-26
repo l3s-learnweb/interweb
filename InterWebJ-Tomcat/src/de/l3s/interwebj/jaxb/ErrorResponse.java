@@ -26,7 +26,7 @@ public class ErrorResponse
 	                                                              "User does not exist");
 	public static final ErrorResponse AUTHENTICATION_FAILED = new ErrorResponse(108,
 	                                                                            "Authentication on service failed");
-	public static final ErrorResponse SERVICE_UNKNOWN = new ErrorResponse(109,
+	public static final ErrorResponse UNKNOWN_SERVICE = new ErrorResponse(109,
 	                                                                      "Service unknown");
 	public static final ErrorResponse USER_EXISTS = new ErrorResponse(110,
 	                                                                  "User already exists");

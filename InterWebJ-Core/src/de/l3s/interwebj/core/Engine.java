@@ -20,12 +20,20 @@ public class Engine
 	private Set<String> contentTypes;
 	private Database database;
 	private ExpirableMap<String, Object> expirableMap;
+	private Map<ServiceConnector, Parameters> pendingAuthorizationConnectors;
 	
 
 	public Engine(Database database)
 	{
 		this.database = database;
 		init();
+	}
+	
+
+	public void addPendingAuthorizationConnector(ServiceConnector connector,
+	                                             Parameters params)
+	{
+		pendingAuthorizationConnectors.put(connector, params);
 	}
 	
 
@@ -84,7 +92,9 @@ public class Engine
 	                                                    QueryResultMerger merger)
 	    throws InterWebException
 	{
-		query.addParam("user", principal.getName());
+		String userName = (principal == null)
+		    ? null : principal.getName();
+		query.addParam("user", userName);
 		QueryResultCollector collector = new QueryResultCollector(query, merger);
 		for (String connectorName : query.getConnectorNames())
 		{
@@ -95,6 +105,12 @@ public class Engine
 				AuthCredentials authCredentials = getUserAuthCredentials(connector,
 				                                                         principal);
 				collector.addQueryResultRetriever(connector, authCredentials);
+			}
+			else
+			{
+				System.out.println("principal is not authenticated on connector "
+				                   + connectorName);
+				System.out.println(connector);
 			}
 		}
 		return collector;
@@ -126,6 +142,50 @@ public class Engine
 		{
 			addConnector(connector);
 		}
+	}
+	
+
+	public Parameters processAuthenticationCallback(InterWebPrincipal principal,
+	                                                Map<String, String[]> params)
+	{
+		for (ServiceConnector connector : pendingAuthorizationConnectors.keySet())
+		{
+			Parameters parameters = pendingAuthorizationConnectors.get(connector);
+			if (principal == null)
+			{
+				String userToken = parameters.get(Parameters.TOKEN);
+				principal = database.readPrincipalByKey(userToken);
+			}
+			parameters.addMultivaluedParams(params);
+			try
+			{
+				AuthCredentials authCredentials = connector.completeAuthentication(parameters);
+				if (authCredentials != null)
+				{
+					parameters.add(Parameters.CONNECTOR_NAME,
+					               connector.getName());
+					pendingAuthorizationConnectors.remove(connector);
+					Environment.logger.debug(connector.getName()
+					                         + " authenticated");
+					String userId = connector.getUserId(authCredentials);
+					setUserAuthCredentials(connector.getName(),
+					                       principal,
+					                       userId,
+					                       authCredentials);
+					Environment.logger.debug("authentication data saved");
+					return parameters;
+				}
+				
+			}
+			catch (Exception e)
+			{
+				Environment.logger.warn("Unable to continue authentication for service ["
+				                        + connector.getName()
+				                        + "]. Reason ["
+				                        + e.getMessage() + "]");
+			}
+		}
+		return null;
 	}
 	
 
@@ -195,6 +255,8 @@ public class Engine
 		ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
 		expirableMap = new ExpirableMap<String, Object>(builder.timeToIdle(60,
 		                                                                   TimeUnit.MINUTES).build());
+		pendingAuthorizationConnectors = new ExpirableMap<ServiceConnector, Parameters>(builder.timeToIdle(60,
+		                                                                                                   TimeUnit.MINUTES).build());
 	}
 	
 

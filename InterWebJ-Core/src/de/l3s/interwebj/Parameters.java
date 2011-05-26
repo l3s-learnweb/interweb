@@ -13,11 +13,17 @@ public class Parameters
 	public static final String OAUTH_TOKEN = "oauth_token";
 	public static final String OAUTH_TOKEN_SECRET = "oauth_token_secret";
 	public static final String OAUTH_VERIFIER = "oauth_verifier";
+	public static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key";
 	public static final String TITLE = "title";
 	public static final String DESCRIPTION = "description";
 	public static final String FILENAME = "filename";
 	public static final String TAGS = "tags";
 	public static final String PRIVACY = "privacy";
+	public static final String CLIENT_TYPE = "client_type";
+	public static final String CONNECTOR_NAME = "connector_name";
+	public static final String TOKEN = "token";
+	public static final String CONSUMER_KEY = "consumer_key";
+	public static final String CALLBACK = "callback";
 	
 	private Map<String, String> parameters;
 	
@@ -25,7 +31,6 @@ public class Parameters
 	public Parameters()
 	{
 		parameters = new TreeMap<String, String>();
-		
 	}
 	
 
@@ -113,6 +118,12 @@ public class Parameters
 	}
 	
 
+	public boolean hasParameter(String key)
+	{
+		return parameters.containsKey(key);
+	}
+	
+
 	public Set<String> keySet()
 	{
 		return parameters.keySet();
@@ -122,5 +133,22 @@ public class Parameters
 	public String remove(String name)
 	{
 		return parameters.remove(name);
+	}
+	
+
+	public String toQueryString()
+	{
+		StringBuilder sb = new StringBuilder();
+		for (Iterator<String> iterator = parameters.keySet().iterator(); iterator.hasNext();)
+		{
+			String name = iterator.next();
+			String value = parameters.get(name);
+			sb.append(name).append("=").append(value);
+			if (iterator.hasNext())
+			{
+				sb.append('&');
+			}
+		}
+		return sb.toString();
 	}
 }

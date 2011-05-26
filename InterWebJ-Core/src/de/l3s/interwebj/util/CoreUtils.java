@@ -99,12 +99,21 @@ public class CoreUtils
 
 	public static void printClientResponse(ClientResponse response)
 	{
-		Environment.logger.debug("Status: " + response.getStatus());
-		Environment.logger.debug("Headers: ");
+		Environment.logger.debug("Status: [" + response.getStatus() + "]");
+		Environment.logger.debug("Headers:");
 		MultivaluedMap<String, String> headers = response.getHeaders();
 		for (String header : headers.keySet())
 		{
-			Environment.logger.debug(header + ": " + headers.get(header));
+			Environment.logger.debug("    " + header + ": "
+			                         + headers.get(header));
+		}
+		Environment.logger.debug("Location: [" + response.getLocation() + "]");
+		Environment.logger.debug("Properties:");
+		Map<String, Object> properties = response.getProperties();
+		for (String property : properties.keySet())
+		{
+			Environment.logger.debug("    " + property + ": "
+			                         + properties.get(property).toString());
 		}
 	}
 }

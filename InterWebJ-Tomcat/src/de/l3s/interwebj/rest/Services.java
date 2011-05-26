@@ -16,7 +16,6 @@ import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.jaxb.*;
 import de.l3s.interwebj.jaxb.services.*;
-import de.l3s.interwebj.jaxb.services.AuthorizationEntity.AuthorizationLinkEntity;
 
 
 @Path("/services")
@@ -89,7 +88,7 @@ public class Services
 		ServiceConnector connector = engine.getConnector(serviceName);
 		if (connector == null)
 		{
-			throwWebApplicationException(ErrorResponse.SERVICE_UNKNOWN);
+			throwWebApplicationException(ErrorResponse.UNKNOWN_SERVICE);
 		}
 		ServiceEntity serviceEntity = createServiceEntity(httpContext,
 		                                                  principal,

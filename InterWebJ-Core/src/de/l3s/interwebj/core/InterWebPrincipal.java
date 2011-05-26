@@ -12,6 +12,9 @@ public class InterWebPrincipal
     implements java.security.Principal
 {
 	
+	public static final String DEFAULT_ROLE = "default";
+	public static final String MANAGER_ROLE = "manager";
+	
 	private String name;
 	private String email;
 	private Set<String> roles;
@@ -125,4 +128,17 @@ public class InterWebPrincipal
 		return builder.toString();
 	}
 	
+
+	public static InterWebPrincipal createDefault(String name)
+	{
+		return createDefault(name, null);
+	}
+	
+
+	public static InterWebPrincipal createDefault(String name, String email)
+	{
+		InterWebPrincipal principal = new InterWebPrincipal(name, email);
+		principal.addRole(DEFAULT_ROLE);
+		return principal;
+	}
 }

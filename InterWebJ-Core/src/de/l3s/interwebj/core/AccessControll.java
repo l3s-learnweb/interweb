@@ -83,6 +83,7 @@ public class AccessControll
 		constraints.add(buildPublicConstraint("/api/.*"));
 		constraints.add(buildPublicConstraint("/css/.*"));
 		constraints.add(buildPublicConstraint("/img/.*"));
+		constraints.add(buildPublicConstraint("/callback.*"));
 		constraints.add(buildPublicConstraint("(/view/)?"));
 		constraints.add(buildPublicConstraint("/view/index\\.xhtml"));
 		constraints.add(buildPublicConstraint("/view/register\\.xhtml"));
@@ -91,12 +92,14 @@ public class AccessControll
 		constraints.add(buildPublicConstraint("/view/javax\\.faces\\.resource/.*"));
 		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
 		// User access resources
-		constraints.add(new ResourceConstraint("/.*", "user", 10));
+		constraints.add(new ResourceConstraint("/.*",
+		                                       InterWebPrincipal.DEFAULT_ROLE,
+		                                       10));
 		// Manager access resources
 		constraints.add(new ResourceConstraint("/view/admin/(.*)?",
-		                                       "manager",
+		                                       InterWebPrincipal.MANAGER_ROLE,
 		                                       20));
 		// Restricted access resources
-		constraints.add(buildRestrictedConstraint("fkjfberlfer"));
+		constraints.add(buildRestrictedConstraint("no such resource"));
 	}
 }

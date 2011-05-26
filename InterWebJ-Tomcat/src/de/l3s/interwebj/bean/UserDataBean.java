@@ -4,7 +4,7 @@ package de.l3s.interwebj.bean;
 import javax.faces.application.*;
 import javax.faces.bean.*;
 
-import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.webutil.*;
@@ -52,8 +52,8 @@ public class UserDataBean
 		Database database = environment.getDatabase();
 		if (validate(database))
 		{
-			InterWebPrincipal principal = new InterWebPrincipal(username, email);
-			principal.addRole("user");
+			InterWebPrincipal principal = InterWebPrincipal.createDefault(username,
+			                                                              email);
 			database.savePrincipal(principal, password);
 			FacesUtils.getSessionBean().setPrincipal(principal);
 			return "success";

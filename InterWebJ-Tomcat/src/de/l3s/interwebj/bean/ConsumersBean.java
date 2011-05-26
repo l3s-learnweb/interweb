@@ -87,7 +87,8 @@ public class ConsumersBean
 		oauthToken = accessToken.getKey();
 		if (!StringUtils.isEmpty(callback))
 		{
-			UriBuilder builder = UriBuilder.fromPath(callback);
+			Environment.logger.debug("callback: [" + callback + "]");
+			UriBuilder builder = UriBuilder.fromUri(callback);
 			builder = builder.queryParam("oauth_token", accessToken.getKey());
 			builder = builder.queryParam("oauth_token_secret",
 			                             accessToken.getSecret());
@@ -98,7 +99,7 @@ public class ConsumersBean
 		}
 		else
 		{
-			UriBuilder builder = UriBuilder.fromPath(request.getRequestURI());
+			UriBuilder builder = UriBuilder.fromUri(request.getRequestURI());
 			builder = builder.queryParam("oauth_token", oauthToken);
 			builder = (callback == null)
 			    ? builder : builder.queryParam("oauth_callback", callback);
@@ -214,5 +215,4 @@ public class ConsumersBean
 	{
 		url = consumerUrl;
 	}
-	
 }
