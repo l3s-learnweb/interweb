@@ -78,7 +78,6 @@ public class Search
 		{
 			return errorResponse;
 		}
-		Environment.logger.debug(query);
 		try
 		{
 			Engine engine = Environment.getInstance().getEngine();
@@ -93,7 +92,7 @@ public class Search
 			expirableMap.put(queryResult.getQuery().getId(), queryResult);
 			SearchResponse searchResponse = new SearchResponse(queryResult);
 			String userName = (principal == null)
-			    ? null : principal.getName();
+			    ? "anonymous" : principal.getName();
 			searchResponse.getQuery().setUser(userName);
 			System.out.println(searchResponse.getQuery().getResults().size()
 			                   + " results found in "

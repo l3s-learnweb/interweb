@@ -92,8 +92,9 @@ public class Engine
 	                                                    QueryResultMerger merger)
 	    throws InterWebException
 	{
+		Environment.logger.debug(query);
 		String userName = (principal == null)
-		    ? null : principal.getName();
+		    ? "anonymous" : principal.getName();
 		query.addParam("user", userName);
 		QueryResultCollector collector = new QueryResultCollector(query, merger);
 		for (String connectorName : query.getConnectorNames())

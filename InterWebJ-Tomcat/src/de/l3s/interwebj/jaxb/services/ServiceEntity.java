@@ -12,6 +12,8 @@ public class ServiceEntity
 	protected String id;
 	@XmlElement(name = "title")
 	protected String title;
+	@XmlElement(name = "mediatypes")
+	protected String mediaTypes;
 	@XmlElement(name = "authorized")
 	protected boolean authorized;
 	@XmlElement(name = "serviceuserid")
@@ -53,6 +55,12 @@ public class ServiceEntity
 	public String getId()
 	{
 		return id;
+	}
+	
+
+	public String getMediaTypes()
+	{
+		return mediaTypes;
 	}
 	
 
@@ -100,6 +108,12 @@ public class ServiceEntity
 	public void setId(String id)
 	{
 		this.id = id;
+	}
+	
+
+	public void setMediaTypes(String mediaTypes)
+	{
+		this.mediaTypes = mediaTypes;
 	}
 	
 

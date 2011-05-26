@@ -55,11 +55,9 @@ public class SearchBean
 	{
 		List<SelectItem> connectorSelectItems = new ArrayList<SelectItem>();
 		Engine engine = Environment.getInstance().getEngine();
-		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
-			if (connector.isRegistered()
-			    && engine.isUserAuthenticated(connector, principal))
+			if (connector.isRegistered())
 			{
 				SelectItem selectItem = new SelectItem(connector.getName());
 				connectorSelectItems.add(selectItem);
@@ -183,8 +181,6 @@ public class SearchBean
 
 	public String search()
 	{
-		Environment.logger.debug("searching the query [" + query
-		                         + "], content types " + selectedContentTypes);
 		QueryFactory queryFactory = new QueryFactory();
 		Query query = queryFactory.createQuery(this.query, selectedContentTypes);
 		query.setConnectorNames(selectedConnectorNames);

@@ -8,6 +8,8 @@ import java.util.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import org.apache.commons.lang.*;
+
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.core.*;
 
@@ -32,6 +34,7 @@ public class Services
 		                                                            getPrincipal());
 		ServicesResponse servicesResponse = new ServicesResponse();
 		servicesResponse.setServiceEntities(serviceEntities);
+		System.out.println(servicesResponse);
 		return servicesResponse;
 	}
 	
@@ -67,6 +70,8 @@ public class Services
 		                                                authenticated);
 		serviceEntity.setId(connector.getName());
 		serviceEntity.setTitle(connector.getName());
+		serviceEntity.setMediaTypes(StringUtils.join(connector.getContentTypes(),
+		                                             ','));
 		Database database = Environment.getInstance().getDatabase();
 		if (principal != null)
 		{
@@ -146,9 +151,11 @@ public class Services
 	{
 		AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***",
 		                                                          "***REMOVED***");
+		//		AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***",
+		//		"***REMOVED***");
 		AuthCredentials userCredentials = null;
-		userCredentials = new AuthCredentials("***REMOVED***",
-		                                      "***REMOVED***");
+		//		userCredentials = new AuthCredentials("***REMOVED***",
+		//		                                      "***REMOVED***");
 		WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/services",
 		                                         consumerCredentials,
 		                                         userCredentials);

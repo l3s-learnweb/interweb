@@ -92,12 +92,15 @@ public class JDBCDatabase
 	{
 		silentCloseResultSet(rs);
 		rs = null;
-		for (String key : preparedStatements.keySet())
+		if (preparedStatements != null)
 		{
-			Statement stmt = preparedStatements.get(key);
-			silentCloseStatement(stmt);
+			for (String key : preparedStatements.keySet())
+			{
+				Statement stmt = preparedStatements.get(key);
+				silentCloseStatement(stmt);
+			}
+			preparedStatements = null;
 		}
-		preparedStatements = null;
 		silentCloseConnection(dbConnection);
 		dbConnection = null;
 	}
@@ -615,7 +618,6 @@ public class JDBCDatabase
 	}
 	
 
-	@SuppressWarnings("null")
 	private InterWebPrincipal getPrincipal(String userName, String userPassword)
 	{
 		InterWebPrincipal dbPrincipal = null;

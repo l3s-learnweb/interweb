@@ -39,24 +39,28 @@
 <div id="menu">
 <ul>
 	<h:form>
-		<ui:fragment rendered="#{principalBean.loggedIn}">
+		<h:panelGroup rendered="#{principalBean.loggedIn}">
 			<li><h:outputLink
 				value="#{interwebj.contextPath}/view/services.xhtml">
 				<h:outputText value="Services" />
 			</h:outputLink></li>
-			<li><h:outputLink
-				value="#{interwebj.contextPath}/view/search.xhtml">
-				<h:outputText value="Search" />
-			</h:outputLink></li>
+		</h:panelGroup>
+		<li><h:outputLink
+			value="#{interwebj.contextPath}/view/search.xhtml">
+			<h:outputText value="Search" />
+		</h:outputLink></li>
+		<h:panelGroup rendered="#{principalBean.loggedIn}">
 			<li><h:outputLink
 				value="#{interwebj.contextPath}/view/upload.xhtml">
 				<h:outputText value="Upload" />
 			</h:outputLink></li>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{principalBean.loggedIn}">
 			<li><h:outputLink
 				value="#{interwebj.contextPath}/view/consumers.xhtml">
 				<h:outputText value="Apps" />
 			</h:outputLink></li>
-		</ui:fragment>
+		</h:panelGroup>
 		<li><h:outputLink value="#{interwebj.contextPath}/view/api.xhtml">
 			<h:outputText value="API Docs" />
 		</h:outputLink></li>

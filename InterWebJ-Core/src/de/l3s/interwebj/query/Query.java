@@ -273,6 +273,12 @@ public class Query
 			builder.append(contentTypes);
 			builder.append(", ");
 		}
+		if (connectorNames != null)
+		{
+			builder.append("connectorNames=");
+			builder.append(connectorNames);
+			builder.append(", ");
+		}
 		builder.append("resultCount=");
 		builder.append(resultCount);
 		builder.append(", ");

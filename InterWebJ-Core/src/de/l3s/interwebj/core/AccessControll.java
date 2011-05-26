@@ -88,6 +88,8 @@ public class AccessControll
 		constraints.add(buildPublicConstraint("/view/index\\.xhtml"));
 		constraints.add(buildPublicConstraint("/view/register\\.xhtml"));
 		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
+		constraints.add(buildPublicConstraint("/view/search\\.xhtml"));
+		constraints.add(buildPublicConstraint("/view/api\\.xhtml"));
 		constraints.add(buildPublicConstraint("/view/rfRes/.*"));
 		constraints.add(buildPublicConstraint("/view/javax\\.faces\\.resource/.*"));
 		constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
