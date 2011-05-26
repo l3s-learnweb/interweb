@@ -388,8 +388,11 @@ public class YouTubeConnector
 	    throws OAuthException
 	{
 		YouTubeService service = new YouTubeService(CLIENT_ID, DEVELOPER_KEY);
-		OAuthParameters oauthParams = getOAuthParameters(authCredentials);
-		service.setOAuthCredentials(oauthParams, new OAuthHmacSha1Signer());
+		if (authCredentials != null)
+		{
+			OAuthParameters oauthParams = getOAuthParameters(authCredentials);
+			service.setOAuthCredentials(oauthParams, new OAuthHmacSha1Signer());
+		}
 		return service;
 	}
 	

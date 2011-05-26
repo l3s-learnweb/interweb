@@ -99,18 +99,11 @@ public class Engine
 		for (String connectorName : query.getConnectorNames())
 		{
 			ServiceConnector connector = getConnector(connectorName);
-			if (connector.isRegistered()
-			    && isUserAuthenticated(connector, principal))
+			if (connector.isRegistered())
 			{
 				AuthCredentials authCredentials = getUserAuthCredentials(connector,
 				                                                         principal);
 				collector.addQueryResultRetriever(connector, authCredentials);
-			}
-			else
-			{
-				System.out.println("principal is not authenticated on connector "
-				                   + connectorName);
-				System.out.println(connector);
 			}
 		}
 		return collector;

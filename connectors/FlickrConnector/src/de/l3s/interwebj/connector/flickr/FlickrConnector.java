@@ -395,10 +395,13 @@ public class FlickrConnector
 			try
 			{
 				RequestContext requestContext = RequestContext.getRequestContext();
-				Auth auth = new Auth();
-				requestContext.setAuth(auth);
-				auth.setToken(authCredentials.getKey());
-				auth.setPermission(Permission.READ);
+				if (authCredentials != null)
+				{
+					Auth auth = new Auth();
+					requestContext.setAuth(auth);
+					auth.setToken(authCredentials.getKey());
+					auth.setPermission(Permission.READ);
+				}
 				Flickr flickr = createFlickrInstance();
 				PhotosInterface pi = flickr.getPhotosInterface();
 				SearchParameters params = new SearchParameters();

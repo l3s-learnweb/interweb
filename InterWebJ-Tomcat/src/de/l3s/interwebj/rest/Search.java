@@ -83,7 +83,7 @@ public class Search
 		{
 			Engine engine = Environment.getInstance().getEngine();
 			InterWebPrincipal principal = getPrincipal();
-			System.out.println("principal: [" + principal + "]");
+			System.out.println(principal);
 			QueryResultMerger merger = new DumbQueryResultMerger();
 			QueryResultCollector collector = engine.getQueryResultCollector(query,
 			                                                                principal,
@@ -95,7 +95,10 @@ public class Search
 			String userName = (principal == null)
 			    ? null : principal.getName();
 			searchResponse.getQuery().setUser(userName);
-			System.out.println(searchResponse);
+			System.out.println(searchResponse.getQuery().getResults().size()
+			                   + " results found in "
+			                   + searchResponse.getQuery().getElapsedTime()
+			                   + " ms");
 			return searchResponse;
 		}
 		catch (InterWebException e)

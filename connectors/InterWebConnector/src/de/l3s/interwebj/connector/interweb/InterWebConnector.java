@@ -143,6 +143,10 @@ public class InterWebConnector
 			throw new InterWebException("Service is not yet registered");
 		}
 		QueryResult queryResult = new QueryResult(query);
+		if (authCredentials == null)
+		{
+			return queryResult;
+		}
 		AuthCredentials consumerAuthCredentials = getAuthCredentials();
 		ClientConfig config = new DefaultClientConfig();
 		Client client = Client.create(config);
