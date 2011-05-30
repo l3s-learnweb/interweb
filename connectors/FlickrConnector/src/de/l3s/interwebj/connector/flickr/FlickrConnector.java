@@ -1,6 +1,8 @@
 package de.l3s.interwebj.connector.flickr;
 
 
+import static de.l3s.interwebj.util.Assertions.*;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -11,7 +13,6 @@ import org.xml.sax.*;
 
 import com.aetrion.flickr.*;
 import com.aetrion.flickr.auth.*;
-import com.aetrion.flickr.contacts.*;
 import com.aetrion.flickr.people.*;
 import com.aetrion.flickr.photos.*;
 import com.aetrion.flickr.tags.*;
@@ -57,10 +58,7 @@ public class FlickrConnector
 	                               String callbackUrl)
 	    throws InterWebException
 	{
-		if (permissionLevel == null)
-		{
-			throw new NullPointerException("Argument [permissionLevel] can not be null");
-		}
+		notNull(permissionLevel, "permissionLevel");
 		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
@@ -104,10 +102,7 @@ public class FlickrConnector
 	public AuthCredentials completeAuthentication(Parameters params)
 	    throws InterWebException
 	{
-		if (params == null)
-		{
-			throw new NullPointerException("Argument [params] can not be null");
-		}
+		notNull(params, "params");
 		AuthCredentials authCredentials = null;
 		if (!isRegistered())
 		{
@@ -135,10 +130,7 @@ public class FlickrConnector
 	public QueryResult get(Query query, AuthCredentials authCredentials)
 	    throws InterWebException
 	{
-		if (query == null)
-		{
-			throw new NullPointerException("Argument [query] can not be null");
-		}
+		notNull(query, "query");
 		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
@@ -147,6 +139,63 @@ public class FlickrConnector
 		//		queryResult.addQueryResult(getFriends(query, authCredentials));
 		queryResult.addQueryResult(getMedia(query, authCredentials));
 		return queryResult;
+	}
+	
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public String getEmbedded(AuthCredentials authCredentials,
+	                          String url,
+	                          int maxWidth,
+	                          int maxHeight)
+	    throws InterWebException
+	{
+		notNull(url, "url");
+		URI uri = URI.create(url);
+		URI baseUri = URI.create(getBaseUrl());
+		if (!baseUri.getHost().endsWith(uri.getHost()))
+		{
+			throw new InterWebException("URL: [" + url
+			                            + "] doesn't belong to connector");
+		}
+		String path = uri.getPath();
+		String id = path.substring(path.lastIndexOf('/') + 1);
+		RequestContext requestContext = RequestContext.getRequestContext();
+		if (authCredentials != null)
+		{
+			Auth auth = new Auth();
+			requestContext.setAuth(auth);
+			auth.setToken(authCredentials.getKey());
+			auth.setPermission(Permission.READ);
+		}
+		try
+		{
+			Flickr flickr = createFlickrInstance();
+			PhotosInterface pi = flickr.getPhotosInterface();
+			Collection sizes = pi.getSizes(id);
+			notNull(sizes, "sizes");
+			if (sizes.size() == 0)
+			{
+				throw new InterWebException("There are no thumbnails available for an image with URL: ["
+				                            + url + "]");
+			}
+			return createEmbeddedCode(sizes, maxWidth, maxHeight);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new InterWebException(e);
+		}
+		catch (SAXException e)
+		{
+			e.printStackTrace();
+			throw new InterWebException(e);
+		}
+		catch (FlickrException e)
+		{
+			e.printStackTrace();
+			throw new InterWebException(e);
+		}
 	}
 	
 
@@ -194,18 +243,9 @@ public class FlickrConnector
 	                AuthCredentials authCredentials)
 	    throws InterWebException
 	{
-		if (data == null)
-		{
-			throw new NullPointerException("Argument [data] can not be null");
-		}
-		if (contentType == null)
-		{
-			throw new NullPointerException("Argument [contentType] can not be null");
-		}
-		if (params == null)
-		{
-			throw new NullPointerException("Argument [params] can not be null");
-		}
+		notNull(data, "data");
+		notNull(contentType, "contentType");
+		notNull(params, "params");
 		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
@@ -253,7 +293,6 @@ public class FlickrConnector
 				e.printStackTrace();
 				throw new InterWebException(e);
 			}
-			
 		}
 	}
 	
@@ -263,6 +302,39 @@ public class FlickrConnector
 	    throws InterWebException
 	{
 		// Flickr doesn't provide api for token revokation
+	}
+	
+
+	private String createContentType(String media)
+	{
+		if ("photo".equals(media))
+		{
+			return Query.CT_IMAGE;
+		}
+		return media;
+	}
+	
+
+	@SuppressWarnings({"rawtypes", "null"})
+	private String createEmbeddedCode(Collection sizes,
+	                                  int maxWidth,
+	                                  int maxHeight)
+	{
+		Size size = null;
+		for (Object obj : sizes)
+		{
+			Size s = (Size) obj;
+			if (size == null
+			    || (s.getWidth() > size.getWidth() && s.getHeight() > size.getHeight())
+			    && (s.getWidth() <= maxWidth && s.getHeight() <= maxHeight))
+			{
+				size = s;
+			}
+		}
+		String embeddedCode = "<img src=\"" + size.getSource() + "\" width=\""
+		                      + size.getWidth() + "\" height=\""
+		                      + size.getHeight() + "\" />";
+		return embeddedCode;
 	}
 	
 
@@ -288,16 +360,19 @@ public class FlickrConnector
 	}
 	
 
-	private ResultItem createPhoto(Photo photo, int rank, int totalResultCount)
+	private ResultItem createResultItem(Photo photo,
+	                                    int rank,
+	                                    int totalResultCount)
+	    throws FlickrException
 	{
 		ResultItem resultItem = new ImageResultItem(getName());
 		resultItem.setId(photo.getId());
-		resultItem.setType(getContentType(photo.getMedia()));
+		resultItem.setType(createContentType(photo.getMedia()));
 		resultItem.setTitle(photo.getTitle());
 		resultItem.setDescription(photo.getDescription());
-		resultItem.setTags(getTags(photo.getTags()));
+		resultItem.setTags(createTags(photo.getTags()));
 		resultItem.setUrl(photo.getUrl());
-		resultItem.setImageUrl(photo.getSmallUrl());
+		resultItem.setThumbnails(createThumbnails(photo));
 		Date date = photo.getDatePosted();
 		if (date != null)
 		{
@@ -310,19 +385,38 @@ public class FlickrConnector
 	}
 	
 
+	@SuppressWarnings("rawtypes")
+	private String createTags(Collection tags)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (Iterator i = tags.iterator(); i.hasNext();)
+		{
+			Tag tag = (Tag) i.next();
+			sb.append(tag.getValue());
+			if (i.hasNext())
+			{
+				sb.append(',');
+			}
+		}
+		return sb.toString();
+	}
+	
+
 	private String[] createTags(String query)
 	{
 		return query.split("[\\W]+");
 	}
 	
 
-	private String getContentType(String media)
+	private Set<Thumbnail> createThumbnails(Photo photo)
+	    throws FlickrException
 	{
-		if ("photo".equals(media))
-		{
-			return Query.CT_IMAGE;
-		}
-		return media;
+		SortedSet<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
+		thumbnails.add(new Thumbnail(photo.getSmallSquareUrl(), 75, 75));
+		thumbnails.add(new Thumbnail(photo.getThumbnailUrl(), 100, 100));
+		thumbnails.add(new Thumbnail(photo.getSmallUrl(), 240, 240));
+		thumbnails.add(new Thumbnail(photo.getMediumUrl(), 500, 500));
+		return thumbnails;
 	}
 	
 
@@ -335,54 +429,6 @@ public class FlickrConnector
 		extras.add("views");
 		extras.add("media");
 		return extras;
-	}
-	
-
-	@SuppressWarnings({"unchecked", "unused"})
-	private QueryResult getFriends(Query query, AuthCredentials authCredentials)
-	    throws InterWebException
-	{
-		QueryResult queryResult = new QueryResult(query);
-		if (query.getContentTypes().contains(Query.CT_FRIEND))
-		{
-			
-			try
-			{
-				RequestContext requestContext = RequestContext.getRequestContext();
-				Auth auth = new Auth();
-				requestContext.setAuth(auth);
-				auth.setToken(authCredentials.getKey());
-				auth.setPermission(Permission.READ);
-				Flickr flickr = createFlickrInstance();
-				ContactsInterface ci = flickr.getContactsInterface();
-				Collection<Contact> contacts = ci.getList();
-				for (Contact contact : contacts)
-				{
-					ResultItem resultItem = new FriendResultItem(getName());
-					resultItem.setId(contact.getId());
-					resultItem.setTitle(contact.getUsername());
-					resultItem.setDescription(contact.getRealName());
-					resultItem.setImageUrl(contact.getBuddyIconUrl());
-					queryResult.addResultItem(resultItem);
-				}
-			}
-			catch (FlickrException e)
-			{
-				e.printStackTrace();
-				throw new InterWebException(e);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-				throw new InterWebException(e);
-			}
-			catch (SAXException e)
-			{
-				e.printStackTrace();
-				throw new InterWebException(e);
-			}
-		}
-		return queryResult;
 	}
 	
 
@@ -430,9 +476,9 @@ public class FlickrConnector
 					if (o instanceof Photo)
 					{
 						Photo photo = (Photo) o;
-						ResultItem resultItem = createPhoto(photo,
-						                                    count,
-						                                    photoList.getTotal());
+						ResultItem resultItem = createResultItem(photo,
+						                                         count,
+						                                         photoList.getTotal());
 						queryResult.addResultItem(resultItem);
 						count++;
 					}
@@ -460,10 +506,7 @@ public class FlickrConnector
 
 	private String getMediaType(Query query)
 	{
-		if (query == null)
-		{
-			throw new NullPointerException("Argument [query] can not be null");
-		}
+		notNull(query, "query");
 		String media = null;
 		if (query.getContentTypes().contains(Query.CT_IMAGE)
 		    && query.getContentTypes().contains(Query.CT_VIDEO))
@@ -497,27 +540,19 @@ public class FlickrConnector
 	}
 	
 
-	@SuppressWarnings("rawtypes")
-	private String getTags(Collection tags)
-	{
-		StringBuilder sb = new StringBuilder();
-		for (Iterator i = tags.iterator(); i.hasNext();)
-		{
-			Tag tag = (Tag) i.next();
-			sb.append(tag.getValue());
-			if (i.hasNext())
-			{
-				sb.append(',');
-			}
-		}
-		return sb.toString();
-	}
-	
-
 	private boolean supportContentTypes(List<String> contentTypes)
 	{
 		return contentTypes.contains(Query.CT_IMAGE)
 		       || contentTypes.contains(Query.CT_VIDEO);
 	}
 	
+
+	public static void main(String[] args)
+	{
+		String urlString = "http://flickr.com/photos/46648241@N00/4056831952";
+		URI uri = URI.create(urlString);
+		String path = uri.getPath();
+		String id = path.substring(path.lastIndexOf('/') + 1);
+		System.out.println(id);
+	}
 }

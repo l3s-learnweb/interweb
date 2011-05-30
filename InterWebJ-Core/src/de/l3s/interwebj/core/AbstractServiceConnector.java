@@ -5,7 +5,6 @@ import java.util.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.config.*;
-import de.l3s.interwebj.query.*;
 
 
 public abstract class AbstractServiceConnector
@@ -26,17 +25,8 @@ public abstract class AbstractServiceConnector
 	}
 	
 
-	public abstract Parameters authenticate(PermissionLevel permissionLevel,
-	                                        String callbackUrl)
-	    throws InterWebException;
-	
-
 	@Override
 	public abstract ServiceConnector clone();
-	
-
-	public abstract AuthCredentials completeAuthentication(Parameters params)
-	    throws InterWebException;
 	
 
 	@Override
@@ -68,10 +58,6 @@ public abstract class AbstractServiceConnector
 		}
 		return true;
 	}
-	
-
-	public abstract QueryResult get(Query query, AuthCredentials authCredentials)
-	    throws InterWebException;
 	
 
 	@Override
@@ -119,29 +105,11 @@ public abstract class AbstractServiceConnector
 	}
 	
 
-	private void init()
-	{
-		name = configuration.getValue("name");
-		baseUrl = configuration.getValue("base-url");
-		contentTypes = new TreeSet<String>(configuration.getValues("content-types.content-type"));
-	}
-	
-
 	@Override
 	public boolean isRegistered()
 	{
 		return consumerAuthCredentials != null;
 	}
-	
-
-	public abstract boolean isRegistrationRequired();
-	
-
-	public abstract void put(byte[] data,
-	                         String contentType,
-	                         Parameters params,
-	                         AuthCredentials authCredentials)
-	    throws InterWebException;
 	
 
 	@Override
@@ -157,4 +125,11 @@ public abstract class AbstractServiceConnector
 		return (contentType != null) && contentTypes.contains(contentType);
 	}
 	
+
+	private void init()
+	{
+		name = configuration.getValue("name");
+		baseUrl = configuration.getValue("base-url");
+		contentTypes = new TreeSet<String>(configuration.getValues("content-types.content-type"));
+	}
 }

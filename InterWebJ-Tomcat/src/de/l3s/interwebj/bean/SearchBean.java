@@ -91,6 +91,30 @@ public class SearchBean
 	}
 	
 
+	public String getImageUrl(Object obj, Long maxWidth, Long maxHeight)
+	    throws InterWebException
+	{
+		ResultItem resultItem = (ResultItem) obj;
+		Thumbnail thumbnail = resultItem.getThumbnail(maxWidth.intValue(),
+		                                              maxHeight.intValue());
+		if (thumbnail == null)
+		{
+			return "";
+		}
+		String embeddedCode = "<img src=\"" + thumbnail.getUrl() + "\" />";
+		//		Engine engine = Environment.getInstance().getEngine();
+		//		ServiceConnector connector = engine.getConnector(resultItem.getConnectorName());
+		//		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+		//		AuthCredentials authCredentials = (principal == null)
+		//		    ? null : engine.getUserAuthCredentials(connector, principal);
+		//		embeddedCode = connector.getEmbedded(authCredentials,
+		//		                                     resultItem.getUrl(),
+		//		                                     500,
+		//		                                     500);
+		return embeddedCode;
+	}
+	
+
 	public String getQuery()
 	{
 		return query;
@@ -236,5 +260,4 @@ public class SearchBean
 	{
 		this.selectedContentTypes = selectedContentTypes;
 	}
-	
 }

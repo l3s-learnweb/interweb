@@ -221,7 +221,7 @@ public class YouTubeConnector
 					MediaGroup mg = ve.getMediaGroup();
 					resultItem.setDescription(mg.getDescription().getPlainTextContent());
 					resultItem.setUrl(mg.getPlayer().getUrl());
-					resultItem.setImageUrl(mg.getThumbnails().get(1).getUrl());
+					resultItem.setThumbnails(createThumbnails(mg));
 					resultItem.setDate(CoreUtils.formatDate(ve.getPublished().getValue()));
 					String tags = StringUtils.join(mg.getKeywords().getKeywords(),
 					                               ',');
@@ -259,6 +259,45 @@ public class YouTubeConnector
 	
 
 	@Override
+	public String getEmbedded(AuthCredentials authCredentials,
+	                          String url,
+	                          int maxWidth,
+	                          int maxHeight)
+	    throws InterWebException
+	{
+		URI uri = URI.create(url);
+		URI baseUri = URI.create(getBaseUrl());
+		if (!baseUri.getHost().endsWith(uri.getHost()))
+		{
+			throw new InterWebException("URL: [" + url
+			                            + "] doesn't belong to connector");
+		}
+		String[] queryParams = uri.getQuery().split("&");
+		String id = null;
+		for (String queryParam : queryParams)
+		{
+			String[] param = queryParam.split("=");
+			if (param.length == 2 && param[0].equals("v"))
+			{
+				id = param[1];
+			}
+		}
+		if (id == null)
+		{
+			throw new InterWebException("No id found in URL: [" + url + "]");
+		}
+		String embeddedCode = "<embed pluginspage=\"http://www.adobe.com/go/getflashplayer\" src=\"http://www.youtube.com/v/"
+		                      + id
+		                      + "\" type=\"application/x-shockwave-flash\" width=\""
+		                      + maxWidth
+		                      + "\" height=\""
+		                      + maxHeight
+		                      + "\"></embed>";
+		return embeddedCode;
+	}
+	
+
+	@Override
 	public String getUserId(AuthCredentials authCredentials)
 	    throws InterWebException
 	{
@@ -273,23 +312,26 @@ public class YouTubeConnector
 		{
 			e.printStackTrace();
 			Environment.logger.error(e);
+			throw new InterWebException(e);
 		}
 		catch (MalformedURLException e)
 		{
 			e.printStackTrace();
 			Environment.logger.error(e);
+			throw new InterWebException(e);
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 			Environment.logger.error(e);
+			throw new InterWebException(e);
 		}
 		catch (ServiceException e)
 		{
 			e.printStackTrace();
 			Environment.logger.error(e);
+			throw new InterWebException(e);
 		}
-		return null;
 	}
 	
 
@@ -384,6 +426,21 @@ public class YouTubeConnector
 	}
 	
 
+	private Set<Thumbnail> createThumbnails(MediaGroup mg)
+	{
+		Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
+		List<MediaThumbnail> mediaThumbnails = mg.getThumbnails();
+		for (MediaThumbnail mt : mediaThumbnails)
+		{
+			Thumbnail thumbnail = new Thumbnail(mt.getUrl(),
+			                                    mt.getWidth(),
+			                                    mt.getHeight());
+			thumbnails.add(thumbnail);
+		}
+		return thumbnails;
+	}
+	
+
 	private YouTubeService createYouTubeService(AuthCredentials authCredentials)
 	    throws OAuthException
 	{
@@ -457,18 +514,4 @@ public class YouTubeConnector
 		return (int) ve.getStatistics().getViewCount();
 	}
 	
-
-	public static void main(String[] args)
-	    throws Exception
-	{
-		File configFile = new File("connector-config.xml");
-		Configuration configuration = new Configuration(new FileInputStream(configFile));
-		AuthCredentials consumerAuthCredentials = new AuthCredentials("***REMOVED***",
-		                                                              "***REMOVED***");
-		AuthCredentials userAuthCredentials = new AuthCredentials("***REMOVED***",
-		                                                          "2a0LkjOsrj8DJuV6mXJFGjx2");
-		YouTubeConnector ytc = new YouTubeConnector(configuration,
-		                                            consumerAuthCredentials);
-		ytc.getUserId(userAuthCredentials);
-	}
 }

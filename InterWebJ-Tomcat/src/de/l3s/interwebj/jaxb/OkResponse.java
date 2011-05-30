@@ -1,4 +1,4 @@
-package de.l3s.interwebj.connector.interweb;
+package de.l3s.interwebj.jaxb;
 
 
 import javax.xml.bind.annotation.*;
@@ -6,11 +6,7 @@ import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UploadResponse
+public class OkResponse
     extends XMLResponse
 {
-	
-	public UploadResponse()
-	{
-	}
 }

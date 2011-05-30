@@ -12,6 +12,7 @@ import javax.ws.rs.core.*;
 
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.core.*;
+import com.sun.jersey.core.util.*;
 import com.sun.jersey.oauth.signature.*;
 
 import de.l3s.interwebj.*;
@@ -65,6 +66,7 @@ public class User
 				{
 					params.add(Parameters.CALLBACK, callback);
 				}
+				
 				engine.addPendingAuthorizationConnector(connector, params);
 				AuthorizationLinkResponse response = new AuthorizationLinkResponse();
 				AuthorizationLinkEntity linkEntity = new AuthorizationLinkEntity("GET",
@@ -124,6 +126,46 @@ public class User
 		}
 		throwWebApplicationException(ErrorResponse.NO_USER);
 		return null;
+	}
+	
+
+	@POST
+	@Path("/mediator")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_XML)
+	public XMLResponse registerUser(@FormParam("mediator_token") String token)
+	{
+		System.out.println("set");
+		Database database = Environment.getInstance().getDatabase();
+		InterWebPrincipal mediator = database.readPrincipalByKey(token);
+		if (mediator == null)
+		{
+			return ErrorResponse.NO_ACCOUNT_FOR_TOKEN;
+		}
+		InterWebPrincipal principal = getPrincipal();
+		if (principal == null || !principal.equals(getTargetPrincipal()))
+		{
+			return ErrorResponse.NOT_AUTHORIZED;
+		}
+		database.saveMediator(principal.getName(), mediator.getName());
+		return new OkResponse();
+	}
+	
+
+	@DELETE
+	@Path("/mediator")
+	@Produces(MediaType.APPLICATION_XML)
+	public XMLResponse removeMediator()
+	{
+		System.out.println("remove");
+		Database database = Environment.getInstance().getDatabase();
+		InterWebPrincipal principal = getPrincipal();
+		if (principal == null || !principal.equals(getTargetPrincipal()))
+		{
+			return ErrorResponse.NOT_AUTHORIZED;
+		}
+		database.deleteMediator(principal.getName());
+		return new OkResponse();
 	}
 	
 
@@ -194,10 +236,11 @@ public class User
 	public static void main(String[] args)
 	    throws Exception
 	{
-		//		testUserService("flickr");
+		//				testUserService("flickr");
 		//		testRevokeService("youtube");
-		testAuthService("interweb");
-		//		testUserServices();
+		//		testAuthService("interweb");
+		//		testRemoveMediator();
+		//		testSetMediator();
 		//		testUserService("flickr");
 		//		testUserInfo();
 	}
@@ -227,6 +270,26 @@ public class User
 	
 
 	@SuppressWarnings("all")
+	private static void testRemoveMediator()
+	    throws Exception
+	{
+		AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***",
+		                                                          "***REMOVED***");
+		AuthCredentials mediatorCredentials = new AuthCredentials("***REMOVED***",
+		                                                          "***REMOVED***");
+		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
+		                                                      "***REMOVED***");
+		WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/users/default/mediator",
+		                                         consumerCredentials,
+		                                         userCredentials);
+		System.out.println("querying InterWebJ URL: " + resource.toString());
+		ClientResponse response = resource.delete(ClientResponse.class);
+		OkResponse servicesResponse = response.getEntity(OkResponse.class);
+		System.out.println(servicesResponse);
+	}
+	
+
+	@SuppressWarnings("all")
 	private static void testRevokeService(String connectorName)
 	    throws Exception
 	{
@@ -242,6 +305,29 @@ public class User
 		ClientResponse response = resource.delete(ClientResponse.class);
 		ServiceResponse serviceResponse = response.getEntity(ServiceResponse.class);
 		System.out.println(serviceResponse);
+	}
+	
+
+	@SuppressWarnings("all")
+	private static void testSetMediator()
+	    throws Exception
+	{
+		AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***",
+		                                                          "***REMOVED***");
+		AuthCredentials mediatorCredentials = new AuthCredentials("***REMOVED***",
+		                                                          "***REMOVED***");
+		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
+		                                                      "***REMOVED***");
+		WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/users/default/mediator",
+		                                         consumerCredentials,
+		                                         userCredentials);
+		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+		params.add("mediator_token", mediatorCredentials.getKey());
+		System.out.println("querying InterWebJ URL: " + resource.toString());
+		ClientResponse response = resource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class,
+		                                                                                    params);
+		OkResponse servicesResponse = response.getEntity(OkResponse.class);
+		System.out.println(servicesResponse);
 	}
 	
 
@@ -288,6 +374,8 @@ public class User
 	{
 		AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***",
 		                                                          "***REMOVED***");
+		//		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
+		//		                                                      "***REMOVED***");
 		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
 		                                                      "***REMOVED***");
 		WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/users/default/services",

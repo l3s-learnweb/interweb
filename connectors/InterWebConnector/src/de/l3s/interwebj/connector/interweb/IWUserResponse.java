@@ -6,8 +6,8 @@ import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserResponse
-    extends XMLResponse
+public class IWUserResponse
+    extends IWXMLResponse
 {
 	
 	@XmlAccessorType(XmlAccessType.FIELD)

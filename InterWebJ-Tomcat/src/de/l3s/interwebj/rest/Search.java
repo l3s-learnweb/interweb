@@ -8,6 +8,8 @@ import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import com.sun.jersey.api.client.*;
+
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.jaxb.*;
@@ -289,5 +291,27 @@ public class Search
 			}
 		}
 		return null;
+	}
+	
+
+	public static void main(String[] args)
+	{
+		AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***",
+		                                                          "***REMOVED***");
+		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
+		                                                      "***REMOVED***");
+		//		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
+		//		                                                      "***REMOVED***");
+		WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/search",
+		                                         consumerCredentials,
+		                                         userCredentials);
+		resource = resource.queryParam("q", "people");
+		resource = resource.queryParam("media_types", "image,video,text,audio");
+		resource = resource.queryParam("services", "Flickr");
+		resource = resource.queryParam("number_of_results", "50");
+		System.out.println("querying InterWebJ URL: " + resource.toString());
+		ClientResponse response = resource.get(ClientResponse.class);
+		SearchResponse searchResponse = response.getEntity(SearchResponse.class);
+		System.out.println(searchResponse);
 	}
 }

@@ -14,6 +14,7 @@ import javax.ws.rs.core.*;
 
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.config.*;
+import com.sun.jersey.core.util.*;
 import com.sun.jersey.multipart.*;
 import com.sun.jersey.multipart.file.*;
 
@@ -31,6 +32,7 @@ public class InterWebConnector
 {
 	
 	private static final String API_REQUEST_TOKEN_PATH = "auth/request_token";
+	private static final String API_EMBEDDED_PATH = "embedded";
 	private static final String API_AUTHORIZE_TOKEN_PATH = "auth/authorize";
 	private static final String API_SEARCH_PATH = "search";
 	private static final String API_UPLOAD_PATH = "users/default/uploads";
@@ -82,9 +84,9 @@ public class InterWebConnector
 		}
 		IWRequestTokenResponse requestTokenResponse = response.getEntity(IWRequestTokenResponse.class);
 		Environment.logger.debug(requestTokenResponse);
-		if ("fail".equals(requestTokenResponse.getStat()))
+		if (IWXMLResponse.FAILED.equals(requestTokenResponse.getStat()))
 		{
-			ErrorEntity error = requestTokenResponse.getError();
+			IWErrorEntity error = requestTokenResponse.getError();
 			throw new InterWebException("InterWeb service returned respose: "
 			                            + error.getMessage() + " (error code "
 			                            + error.getCode() + ")");
@@ -175,25 +177,51 @@ public class InterWebConnector
 		{
 			throw new InterWebException(response.toString());
 		}
-		SearchResponse iwSearchResponse = response.getEntity(SearchResponse.class);
-		System.out.println(iwSearchResponse);
-		if ("fail".equals(iwSearchResponse.getStat()))
+		IWSearchResponse searchResponse = response.getEntity(IWSearchResponse.class);
+		if (IWXMLResponse.FAILED.equals(searchResponse.getStat()))
 		{
-			ErrorEntity error = iwSearchResponse.getError();
+			IWErrorEntity error = searchResponse.getError();
 			throw new InterWebException("InterWeb service returned respose: "
 			                            + error.getMessage() + " (error code "
 			                            + error.getCode() + ")");
 		}
 		Environment.logger.debug("standing link: "
-		                         + iwSearchResponse.getQuery().getLink());
-		parseIWSearchResponse(queryResult, iwSearchResponse);
+		                         + searchResponse.getQuery().getLink());
+		parseSearchResponse(queryResult, searchResponse);
 		Environment.logger.debug("results count: ["
-		                         + iwSearchResponse.getQuery().getResults().size()
+		                         + searchResponse.getQuery().getResults().size()
 		                         + "]");
 		Environment.logger.debug("time elapsed: ["
-		                         + iwSearchResponse.getQuery().getElapsedTime()
+		                         + searchResponse.getQuery().getElapsedTime()
 		                         + "]");
 		return queryResult;
+	}
+	
+
+	@Override
+	public String getEmbedded(AuthCredentials authCredentials,
+	                          String url,
+	                          int maxWidth,
+	                          int maxHeight)
+	{
+		AuthCredentials consumerAuthCredentials = getAuthCredentials();
+		Client client = Client.create();
+		UriBuilder uriBuilder = UriBuilder.fromUri(getBaseUrl());
+		uriBuilder.path("api").path(API_EMBEDDED_PATH + ".xml");
+		Parameters params = new Parameters();
+		params.add("url", new String(Base64.encode(url)));
+		params.add("iw_consumer_key", consumerAuthCredentials.getKey());
+		String iwSignature = generateSignature(API_EMBEDDED_PATH, params);
+		params.add("iw_signature", iwSignature);
+		addQueryParameters(uriBuilder, params);
+		WebResource resource = client.resource(uriBuilder.build());
+		Environment.logger.debug("querying interweb embedded: "
+		                         + resource.toString());
+		WebResource.Builder builder = resource.accept(MediaType.TEXT_XML);
+		ClientResponse response = builder.get(ClientResponse.class);
+		Environment.logger.debug(response);
+		IWEmbeddedResponse iwEmbeddedResponse = response.getEntity(IWEmbeddedResponse.class);
+		return iwEmbeddedResponse.getEmbedded();
 	}
 	
 
@@ -215,7 +243,7 @@ public class InterWebConnector
 		                         + resource.toString());
 		WebResource.Builder builder = resource.accept(MediaType.APPLICATION_XML);
 		ClientResponse response = builder.get(ClientResponse.class);
-		UserResponse userResponse = response.getEntity(UserResponse.class);
+		IWUserResponse userResponse = response.getEntity(IWUserResponse.class);
 		Environment.logger.debug("userName: ["
 		                         + userResponse.getUser().getUserName() + "]");
 		return userResponse.getUser().getUserName();
@@ -518,27 +546,30 @@ public class InterWebConnector
 	}
 	
 
-	private void parseIWSearchResponse(QueryResult queryResult,
-	                                   SearchResponse iwSearchResponse)
+	private void parseSearchResponse(QueryResult queryResult,
+	                                 IWSearchResponse searchResponse)
 	{
-		List<SearchResultEntity> iwSearchResults = iwSearchResponse.getQuery().getResults();
-		for (SearchResultEntity iwSearchResult : iwSearchResults)
+		List<IWSearchResultEntity> searchResults = searchResponse.getQuery().getResults();
+		for (IWSearchResultEntity searchResult : searchResults)
 		{
 			ResultItem resultItem = new ImageResultItem(getName());
-			resultItem.setServiceName(iwSearchResult.getService() + " ("
+			resultItem.setServiceName(searchResult.getService() + " ("
 			                          + getName() + ")");
-			resultItem.setId(iwSearchResult.getIdAtService());
-			resultItem.setType(mediaTypeToContentType(iwSearchResult.getType()));
-			resultItem.setTitle(iwSearchResult.getTitle());
-			resultItem.setDescription(iwSearchResult.getDescription());
-			resultItem.setUrl(iwSearchResult.getUrl());
-			resultItem.setImageUrl(iwSearchResult.getImage());
-			resultItem.setDate(iwSearchResult.getDate());
-			resultItem.setTags(iwSearchResult.getTags());
-			resultItem.setRank(iwSearchResult.getRankAtService());
-			resultItem.setTotalResultCount(iwSearchResult.getTotalResultsAtService());
-			resultItem.setViewCount(iwSearchResult.getNumberOfViews());
-			resultItem.setCommentCount(iwSearchResult.getNumberOfComments());
+			resultItem.setId(searchResult.getIdAtService());
+			resultItem.setType(mediaTypeToContentType(searchResult.getType()));
+			resultItem.setTitle(searchResult.getTitle());
+			resultItem.setDescription(searchResult.getDescription());
+			resultItem.setUrl(searchResult.getUrl());
+			String imageUrl = searchResult.getImage();
+			Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
+			thumbnails.add(new Thumbnail(imageUrl, -1, -1));
+			resultItem.setThumbnails(thumbnails);
+			resultItem.setDate(searchResult.getDate());
+			resultItem.setTags(searchResult.getTags());
+			resultItem.setRank(searchResult.getRankAtService());
+			resultItem.setTotalResultCount(searchResult.getTotalResultsAtService());
+			resultItem.setViewCount(searchResult.getNumberOfViews());
+			resultItem.setCommentCount(searchResult.getNumberOfComments());
 			queryResult.addResultItem(resultItem);
 		}
 	}
@@ -553,7 +584,8 @@ public class InterWebConnector
 		//		testServices();
 		//		testUserServices();
 		//		testService("Flickr");
-		testGet();
+		//		testGet();
+		testEmbedded();
 	}
 	
 
@@ -600,6 +632,22 @@ public class InterWebConnector
 			}
 		}
 		System.out.println(CoreUtils.getClientResponseContent(response));
+	}
+	
+
+	public static void testEmbedded()
+	    throws Exception
+	{
+		File configFile = new File("connector-config.xml");
+		Configuration configuration = new Configuration(new FileInputStream(configFile));
+		AuthCredentials consumerAuthCredentials = new AuthCredentials("***REMOVED***",
+		                                                              "***REMOVED***");
+		//		AuthCredentials userAuthCredentials = new AuthCredentials("***REMOVED***");
+		InterWebConnector iwc = new InterWebConnector(configuration,
+		                                              consumerAuthCredentials);
+		String url = "http://flickr.com/photos/50762179@N06/4873099667";
+		String embedded = iwc.getEmbedded(null, url, -1, -1);
+		System.out.println(embedded);
 	}
 	
 

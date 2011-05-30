@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class IWRequestTokenResponse
-    extends XMLResponse
+    extends IWXMLResponse
 {
 	
 	@XmlElement(name = "token")

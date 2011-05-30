@@ -13,6 +13,9 @@ import org.apache.commons.lang.text.*;
 public class XMLResponse
 {
 	
+	public static final String OK = "ok";
+	public static final String FAILED = "fail";
+	
 	@XmlAttribute(name = "stat")
 	protected String stat;
 	@XmlElement(name = "error")
@@ -21,7 +24,7 @@ public class XMLResponse
 
 	public XMLResponse()
 	{
-		stat = "ok";
+		stat = OK;
 	}
 	
 

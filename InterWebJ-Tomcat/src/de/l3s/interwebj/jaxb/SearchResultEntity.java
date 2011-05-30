@@ -1,6 +1,8 @@
 package de.l3s.interwebj.jaxb;
 
 
+import java.util.*;
+
 import javax.xml.bind.annotation.*;
 
 import de.l3s.interwebj.query.*;
@@ -23,8 +25,9 @@ public class SearchResultEntity
 	protected String description;
 	@XmlElement(name = "url")
 	protected String url;
-	@XmlElement(name = "image")
-	protected String image;
+	@XmlElementWrapper(name = "thumbnails")
+	@XmlElement(name = "thumbnail")
+	protected List<ThumbnailEntity> thumbnailEntities;
 	@XmlElement(name = "date")
 	protected String date;
 	@XmlElement(name = "tags")
@@ -53,7 +56,13 @@ public class SearchResultEntity
 		setTitle(resultItem.getTitle());
 		setDescription(resultItem.getDescription());
 		setUrl(resultItem.getUrl());
-		setImage(resultItem.getImageUrl());
+		Set<Thumbnail> thumbnails = resultItem.getThumbnails();
+		List<ThumbnailEntity> thumbnailEntities = new ArrayList<ThumbnailEntity>();
+		for (Thumbnail thumbnail : thumbnails)
+		{
+			thumbnailEntities.add(new ThumbnailEntity(thumbnail));
+		}
+		setThumbnailEntities(thumbnailEntities);
 		setDate(resultItem.getDate());
 		setTags(resultItem.getTags());
 		setRankAtService(resultItem.getRank());
@@ -78,12 +87,6 @@ public class SearchResultEntity
 	public String getIdAtService()
 	{
 		return idAtService;
-	}
-	
-
-	public String getImage()
-	{
-		return image;
 	}
 	
 
@@ -114,6 +117,12 @@ public class SearchResultEntity
 	public String getTags()
 	{
 		return tags;
+	}
+	
+
+	public List<ThumbnailEntity> getThumbnailEntities()
+	{
+		return thumbnailEntities;
 	}
 	
 
@@ -159,12 +168,6 @@ public class SearchResultEntity
 	}
 	
 
-	public void setImage(String image)
-	{
-		this.image = image;
-	}
-	
-
 	public void setNumberOfComments(int numberOfComments)
 	{
 		this.numberOfComments = numberOfComments;
@@ -186,6 +189,12 @@ public class SearchResultEntity
 	public void setTags(String tags)
 	{
 		this.tags = tags;
+	}
+	
+
+	public void setThumbnailEntities(List<ThumbnailEntity> thumbnailEntities)
+	{
+		this.thumbnailEntities = thumbnailEntities;
 	}
 	
 

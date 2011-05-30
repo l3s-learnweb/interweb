@@ -40,10 +40,21 @@ public class JDBCDatabase
 	private static final String PSTMT_DELETE_CONSUMER = "DELETE FROM iwj_consumers WHERE user=? AND name=?";
 	
 	private static final String PSTMT_HAS_USER_AUTH_CREDENTIALS = "SELECT count(*) FROM iwj_users_auth_data WHERE connector=? AND user=?";
-	private static final String PSTMT_SELECT_USER_AUTH_CREDENTIALS = "SELECT `key`, secret FROM iwj_users_auth_data WHERE connector=? AND user=?";
+	
+	//	private static final String PSTMT_SELECT_USER_AUTH_CREDENTIALS = "SELECT `key`, secret FROM iwj_users_auth_data WHERE connector=? AND user=?";
+	private static final String PSTMT_SELECT_USER_AUTH_CREDENTIALS = "SELECT CASE WHEN u.key IS NOT NULL THEN u.key ELSE m.key END, "
+	                                                                 + "CASE WHEN u.key IS NOT NULL THEN u.secret ELSE m.secret END "
+	                                                                 + "FROM iwj_users_auth_data u LEFT OUTER JOIN iwj_mediators um ON(u.user=um.user) "
+	                                                                 + "LEFT OUTER JOIN iwj_users_auth_data m ON(um.mediator=m.user AND u.connector=m.connector) "
+	                                                                 + "WHERE u.user=? AND u.connector=?";
 	private static final String PSTMT_SELECT_CONNECTOR_USER_ID = "SELECT connector_uid, secret FROM iwj_users_auth_data WHERE connector=? AND user=?";
 	private static final String PSTMT_INSERT_USER_AUTH_CREDENTIALS = "INSERT INTO iwj_users_auth_data (connector,user,connector_uid,`key`,secret) VALUES (?,?,?,?,?)";
 	private static final String PSTMT_DELETE_USER_AUTH_CREDENTIALS = "DELETE FROM iwj_users_auth_data WHERE connector=? AND user=?";
+	
+	private static final String PSTMT_HAS_MEDIATOR = "SELECT count(*) FROM iwj_mediators WHERE user=?";
+	private static final String PSTMT_SELECT_MEDIATOR = "SELECT mediator FROM iwj_mediators WHERE name=?";
+	private static final String PSTMT_INSERT_MEDIATOR = "INSERT INTO iwj_mediators (user,mediator) VALUES (?,?)";
+	private static final String PSTMT_DELETE_MEDIATOR = "DELETE FROM iwj_mediators WHERE user=?";
 	
 	private Logger logger;
 	
@@ -153,6 +164,28 @@ public class JDBCDatabase
 	
 
 	@Override
+	public void deleteMediator(String userName)
+	{
+		notNull(userName, "userName");
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_DELETE_MEDIATOR);
+				pstmt.setString(1, userName);
+				pstmt.executeUpdate();
+				dbConnection.commit();
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+	}
+	
+
+	@Override
 	public boolean hasPrincipal(String userName)
 	{
 		notNull(userName, "userName");
@@ -248,6 +281,7 @@ public class JDBCDatabase
 	@Override
 	public Consumer readConsumerByKey(String key)
 	{
+		notNull(key, "key");
 		Consumer consumer = null;
 		try
 		{
@@ -314,6 +348,34 @@ public class JDBCDatabase
 			close();
 		}
 		return consumers;
+	}
+	
+
+	@Override
+	public String readMediator(String userName)
+	{
+		notNull(userName, "userName");
+		String mediator = null;
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_MEDIATOR);
+				pstmt.setString(1, userName);
+				rs = pstmt.executeQuery();
+				if (rs.next())
+				{
+					mediator = rs.getString(1);
+				}
+				silentCloseResultSet(rs);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+		return mediator;
 	}
 	
 
@@ -407,8 +469,8 @@ public class JDBCDatabase
 			if (openConnection())
 			{
 				PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_USER_AUTH_CREDENTIALS);
-				pstmt.setString(1, connectorName);
-				pstmt.setString(2, userName);
+				pstmt.setString(1, userName);
+				pstmt.setString(2, connectorName);
 				rs = pstmt.executeQuery();
 				if (rs.next())
 				{
@@ -436,14 +498,12 @@ public class JDBCDatabase
 	                          AuthCredentials authCredentials)
 	{
 		notNull(connectorName, "connectorName");
+		deleteConnector(connectorName);
 		try
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_DELETE_CONNECTOR);
-				pstmt.setString(1, connectorName);
-				pstmt.executeUpdate();
-				pstmt = preparedStatements.get(PSTMT_INSERT_CONNECTOR);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_INSERT_CONNECTOR);
 				pstmt.setString(1, connectorName);
 				String key = (authCredentials == null)
 				    ? null : authCredentials.getKey();
@@ -468,15 +528,12 @@ public class JDBCDatabase
 	{
 		notNull(userName, "userName");
 		notNull(consumer, "consumer");
+		deleteConsumer(userName, consumer.getName());
 		try
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_DELETE_CONSUMER);
-				pstmt.setString(1, userName);
-				pstmt.setString(2, consumer.getName());
-				pstmt.executeUpdate();
-				pstmt = preparedStatements.get(PSTMT_INSERT_CONSUMER);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_INSERT_CONSUMER);
 				pstmt.setString(1, userName);
 				pstmt.setString(2, consumer.getName());
 				pstmt.setString(3, consumer.getUrl());
@@ -488,6 +545,31 @@ public class JDBCDatabase
 				    ? null : authCredentials.getSecret();
 				setString(pstmt, 5, key);
 				setString(pstmt, 6, secret);
+				pstmt.executeUpdate();
+				dbConnection.commit();
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+	}
+	
+
+	@Override
+	public void saveMediator(String userName, String mediator)
+	{
+		notNull(userName, "userName");
+		notNull(mediator, "mediator");
+		deleteMediator(mediator);
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_INSERT_MEDIATOR);
+				pstmt.setString(1, userName);
+				pstmt.setString(2, mediator);
 				pstmt.executeUpdate();
 				dbConnection.commit();
 			}
@@ -749,6 +831,11 @@ public class JDBCDatabase
 		addPreparedStatement(PSTMT_SELECT_CONNECTOR_USER_ID);
 		addPreparedStatement(PSTMT_INSERT_USER_AUTH_CREDENTIALS);
 		addPreparedStatement(PSTMT_DELETE_USER_AUTH_CREDENTIALS);
+		
+		addPreparedStatement(PSTMT_HAS_MEDIATOR);
+		addPreparedStatement(PSTMT_SELECT_MEDIATOR);
+		addPreparedStatement(PSTMT_INSERT_MEDIATOR);
+		addPreparedStatement(PSTMT_DELETE_MEDIATOR);
 	}
 	
 

@@ -75,6 +75,13 @@ public interface ServiceConnector
 	public abstract Set<String> getContentTypes();
 	
 
+	public abstract String getEmbedded(AuthCredentials authCredentials,
+	                                   String url,
+	                                   int width,
+	                                   int height)
+	    throws InterWebException;
+	
+
 	public abstract String getName();
 	
 

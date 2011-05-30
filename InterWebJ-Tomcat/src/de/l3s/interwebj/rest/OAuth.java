@@ -102,9 +102,7 @@ public class OAuth
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_XML)
 	public XMLResponse registerUser(@FormParam("username") String userName,
-	                                @FormParam("password") String password,
-	                                @FormParam("default_token") String defaultToken,
-	                                @FormParam("default_secret") String defaultTokenSecret)
+	                                @FormParam("password") String password)
 	{
 		Database database = Environment.getInstance().getDatabase();
 		InterWebPrincipal principal = InterWebPrincipal.createDefault(userName);
@@ -120,6 +118,26 @@ public class OAuth
 	}
 	
 
+	//	@POST
+	//	@Path("/set_defaults")
+	//	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	//	@Produces(MediaType.APPLICATION_XML)
+	//	public XMLResponse registerUser(@FormParam("default_token") String defaultToken,
+	//	                                @FormParam("default_secret") String defaultTokenSecret)
+	//	{
+	//		Database database = Environment.getInstance().getDatabase();
+	//		InterWebPrincipal principal = InterWebPrincipal.createDefault(userName);
+	//		if (database.hasPrincipal(userName))
+	//		{
+	//			throwWebApplicationException(ErrorResponse.USER_EXISTS);
+	//		}
+	//		AuthCredentials accessToken = RandomGenerator.getInstance().nextOAuthCredentials();
+	//		principal.setOauthCredentials(accessToken);
+	//		database.savePrincipal(principal, password);
+	//		OAuthAccessTokenResponse response = new OAuthAccessTokenResponse(accessToken);
+	//		return response;
+	//	}
+	
 	public static void main(String[] args)
 	    throws Exception
 	{

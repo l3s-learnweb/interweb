@@ -64,4 +64,13 @@ public interface Database
 	
 
 	public void updatePrincipal(InterWebPrincipal principal);
+	
+
+	void deleteMediator(String mediator);
+	
+
+	String readMediator(String userName);
+	
+
+	void saveMediator(String userName, String mediator);
 }

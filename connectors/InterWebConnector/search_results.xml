@@ -20,6 +20,14 @@
                 <description></description>
                 <url>http://www.last.fm/music/The+Doors/_/People+Are+Strange</url>
                 <image>http://userserve-ak.last.fm/serve/64s/58721595.jpg</image>
+                <embedded>CDATA[[    ]]</embedded>
+                <thumbnails>
+                <thumbnail height="" width="" size="">http://userserve-ak.last.fm/serve/64s/58721595.jpg</thumbnail>
+                <thumbnail height="" width="" size="">http://userserve-ak.last.fm/serve/64s/58721595.jpg</thumbnail>
+                <thumbnail height="" width="" size="">http://userserve-ak.last.fm/serve/64s/58721595.jpg</thumbnail>
+                <thumbnail height="" width="" size="">http://userserve-ak.last.fm/serve/64s/58721595.jpg</thumbnail>
+                <thumbnail height="" width="" size="">http://userserve-ak.last.fm/serve/64s/58721595.jpg</thumbnail>
+                </thumbnails>
                 <date></date>
                 <tags></tags>
                 <rank_at_service>1</rank_at_service>

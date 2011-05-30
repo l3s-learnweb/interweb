@@ -2,6 +2,7 @@ package de.l3s.interwebj.query;
 
 
 import java.io.*;
+import java.util.*;
 
 import org.apache.commons.lang.*;
 
@@ -23,7 +24,7 @@ public abstract class ResultItem
 	private String serviceName;
 	private String tags;
 	private String url;
-	private String imageUrl;
+	private Set<Thumbnail> thumbnails;
 	private String date;
 	private int rank = -1;
 	private int totalResultCount = -1;
@@ -36,9 +37,6 @@ public abstract class ResultItem
 		this.connectorName = connectorName;
 		serviceName = connectorName;
 	}
-	
-
-	abstract String asHtml();
 	
 
 	public int getCommentCount()
@@ -71,12 +69,6 @@ public abstract class ResultItem
 	}
 	
 
-	public String getImageUrl()
-	{
-		return imageUrl;
-	}
-	
-
 	public int getRank()
 	{
 		return rank;
@@ -92,6 +84,28 @@ public abstract class ResultItem
 	public String getTags()
 	{
 		return tags;
+	}
+	
+
+	public Thumbnail getThumbnail(int maxWidth, int maxHeight)
+	{
+		Set<Thumbnail> thumbnails = getThumbnails();
+		Thumbnail thumbnail = null;
+		for (Thumbnail t : thumbnails)
+		{
+			if (thumbnail == null || t.getWidth() <= maxWidth
+			    && t.getHeight() <= maxHeight)
+			{
+				thumbnail = t;
+			}
+		}
+		return thumbnail;
+	}
+	
+
+	public Set<Thumbnail> getThumbnails()
+	{
+		return thumbnails;
 	}
 	
 
@@ -164,12 +178,6 @@ public abstract class ResultItem
 	}
 	
 
-	public void setImageUrl(String imageUrl)
-	{
-		this.imageUrl = imageUrl;
-	}
-	
-
 	public void setRank(int rank)
 	{
 		this.rank = rank;
@@ -185,6 +193,12 @@ public abstract class ResultItem
 	public void setTags(String tags)
 	{
 		this.tags = tags;
+	}
+	
+
+	public void setThumbnails(Set<Thumbnail> thumbnails)
+	{
+		this.thumbnails = thumbnails;
 	}
 	
 

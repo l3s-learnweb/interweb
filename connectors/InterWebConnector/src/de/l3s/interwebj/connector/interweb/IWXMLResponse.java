@@ -10,22 +10,25 @@ import org.apache.commons.lang.text.*;
 
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XMLResponse
+public class IWXMLResponse
 {
+	
+	public static final String OK = "ok";
+	public static final String FAILED = "fail";
 	
 	@XmlAttribute(name = "stat")
 	protected String stat;
 	@XmlElement(name = "error")
-	protected ErrorEntity error;
+	protected IWErrorEntity error;
 	
 
-	public XMLResponse()
+	public IWXMLResponse()
 	{
-		stat = "ok";
+		stat = OK;
 	}
 	
 
-	public ErrorEntity getError()
+	public IWErrorEntity getError()
 	{
 		return error;
 	}
@@ -37,7 +40,7 @@ public class XMLResponse
 	}
 	
 
-	public void setError(ErrorEntity error)
+	public void setError(IWErrorEntity error)
 	{
 		this.error = error;
 	}

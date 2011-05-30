@@ -13,7 +13,7 @@ import de.l3s.interwebj.util.*;
 
 @XmlRootElement(name = "query")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SearchQueryEntity
+public class IWSearchQueryEntity
 {
 	
 	@XmlAttribute(name = "id")
@@ -42,16 +42,16 @@ public class SearchQueryEntity
 	protected String elapsedTime;
 	@XmlElementWrapper(name = "results")
 	@XmlElement(name = "result")
-	protected List<SearchResultEntity> results;
+	protected List<IWSearchResultEntity> results;
 	
 
-	public SearchQueryEntity()
+	public IWSearchQueryEntity()
 	{
-		results = new ArrayList<SearchResultEntity>();
+		results = new ArrayList<IWSearchResultEntity>();
 	}
 	
 
-	public SearchQueryEntity(Query query)
+	public IWSearchQueryEntity(Query query)
 	{
 		this();
 		setId(query.getId());
@@ -69,7 +69,7 @@ public class SearchQueryEntity
 	}
 	
 
-	public void addResult(SearchResultEntity result)
+	public void addResult(IWSearchResultEntity result)
 	{
 		results.add(result);
 	}
@@ -129,7 +129,7 @@ public class SearchQueryEntity
 	}
 	
 
-	public List<SearchResultEntity> getResults()
+	public List<IWSearchResultEntity> getResults()
 	{
 		return results;
 	}
@@ -207,7 +207,7 @@ public class SearchQueryEntity
 	}
 	
 
-	public void setResults(List<SearchResultEntity> results)
+	public void setResults(List<IWSearchResultEntity> results)
 	{
 		this.results = results;
 	}

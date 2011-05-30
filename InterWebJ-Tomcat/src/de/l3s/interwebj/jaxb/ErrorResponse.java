@@ -64,7 +64,7 @@ public class ErrorResponse
 
 	public ErrorResponse()
 	{
-		stat = "fail";
+		stat = XMLResponse.FAILED;
 	}
 	
 

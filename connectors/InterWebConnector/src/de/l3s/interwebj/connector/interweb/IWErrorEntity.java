@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "error")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ErrorEntity
+public class IWErrorEntity
 {
 	
 	@XmlAttribute(name = "code")
@@ -15,12 +15,12 @@ public class ErrorEntity
 	protected String message;
 	
 
-	public ErrorEntity()
+	public IWErrorEntity()
 	{
 	}
 	
 
-	public ErrorEntity(int code, String message)
+	public IWErrorEntity(int code, String message)
 	{
 		this();
 		this.code = code;

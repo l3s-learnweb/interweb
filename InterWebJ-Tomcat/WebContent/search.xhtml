@@ -78,7 +78,7 @@
 							src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
 							style="vertical-align: middle; margin: 3px;" /><h:outputLink
 							value="#{resultItem.url}" target="_blank">&nbsp;#{resultItem.title}</h:outputLink></h6>
-						<div><h:outputText value="#{resultItem.asHtml()}"
+						<div><h:outputText value="#{searchBean.getImageUrl(resultItem, 500, 400)}"
 							escape="false" />
 						<div><span>#{resultItem.description}</span></div>
 						<div><span
@@ -93,6 +93,7 @@
 				<rich:dataScroller for="result_table" maxPages="11" />
 			</h:panelGrid>
 		</h:form>
+		<img src="http://www.flickr.com/photos/35948364@N00/330342884/sizes/m/" width="500" height="376" />
 	</ui:define>
 </ui:composition>
 </html>

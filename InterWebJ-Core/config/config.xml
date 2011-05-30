@@ -2,16 +2,16 @@
 
 <configuration>
   <database>
-    <connection>
+    <!-- <connection>
       <url>jdbc:mysql://oracle.l3s.uni-hannover.de:3306/interwebj</url>
       <user-name>interwebj</user-name>
       <user-password>IckNu5boc=</user-password>
-    </connection>
-    <!-- <connection>
+    </connection> -->
+    <connection>
       <url>jdbc:mysql://localhost:3306/interwebj</url>
       <user-name>interwebj</user-name>
       <user-password>W4CA4mNbORbsIrNp</user-password>
-    </connection> -->
+    </connection>
     <driver-name>com.mysql.jdbc.Driver</driver-name>
   </database>
 </configuration>

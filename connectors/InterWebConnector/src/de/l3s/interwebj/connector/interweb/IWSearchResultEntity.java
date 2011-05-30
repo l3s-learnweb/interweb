@@ -3,12 +3,10 @@ package de.l3s.interwebj.connector.interweb;
 
 import javax.xml.bind.annotation.*;
 
-import de.l3s.interwebj.query.*;
-
 
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SearchResultEntity
+public class IWSearchResultEntity
 {
 	
 	@XmlElement(name = "service")
@@ -39,27 +37,8 @@ public class SearchResultEntity
 	protected int numberOfComments;
 	
 
-	public SearchResultEntity()
+	public IWSearchResultEntity()
 	{
-	}
-	
-
-	public SearchResultEntity(ResultItem resultItem)
-	{
-		this();
-		setService(resultItem.getServiceName());
-		setIdAtService(resultItem.getId());
-		setType(resultItem.getType());
-		setTitle(resultItem.getTitle());
-		setDescription(resultItem.getDescription());
-		setUrl(resultItem.getUrl());
-		setImage(resultItem.getImageUrl());
-		setDate(resultItem.getDate());
-		setTags(resultItem.getTags());
-		setRankAtService(resultItem.getRank());
-		setTotalResultsAtService(resultItem.getTotalResultCount());
-		setViews(resultItem.getViewCount());
-		setNumberOfComments(resultItem.getCommentCount());
 	}
 	
 

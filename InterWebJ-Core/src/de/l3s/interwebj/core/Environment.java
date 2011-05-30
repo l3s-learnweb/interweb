@@ -32,12 +32,12 @@ public class Environment
 
 	private Environment(String configPath)
 	{
-		logger.info("Logger initialized successfully");
+		logger.info("Logger initialized");
 		try
 		{
 			File configFile = new File(configPath);
-			logger.info("Loading configuration file: ["
-			            + configFile.getAbsolutePath() + "]");
+			logger.info("Loading configuration ["
+			            + configFile.getAbsolutePath() + "] ...");
 			InputStream is;
 			if (configFile.exists())
 			{
@@ -49,7 +49,10 @@ public class Environment
 				is = cl.getResourceAsStream(configPath);
 			}
 			configuration = new Configuration(is);
+			logger.info("Configuration loaded");
+			logger.info("Initializing database ...");
 			database = new JDBCDatabase(configuration);
+			logger.info("Database connected");
 			engine = new Engine(database);
 			accessControll = new AccessControll();
 		}
