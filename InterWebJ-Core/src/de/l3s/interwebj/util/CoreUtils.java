@@ -107,13 +107,5 @@ public class CoreUtils
 			Environment.logger.debug("    " + header + ": "
 			                         + headers.get(header));
 		}
-		Environment.logger.debug("Location: [" + response.getLocation() + "]");
-		Environment.logger.debug("Properties:");
-		Map<String, Object> properties = response.getProperties();
-		for (String property : properties.keySet())
-		{
-			Environment.logger.debug("    " + property + ": "
-			                         + properties.get(property).toString());
-		}
 	}
 }

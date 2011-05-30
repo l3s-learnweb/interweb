@@ -405,7 +405,10 @@ public class JDBCDatabase
 					principal.setOauthCredentials(authCredentials);
 				}
 				silentCloseResultSet(rs);
-				readRoles(principal);
+				if (principal != null)
+				{
+					readRoles(principal);
+				}
 			}
 		}
 		catch (SQLException e)
@@ -443,7 +446,10 @@ public class JDBCDatabase
 					principal.setOauthCredentials(authCredentials);
 				}
 				silentCloseResultSet(rs);
-				readRoles(principal);
+				if (principal != null)
+				{
+					readRoles(principal);
+				}
 			}
 		}
 		catch (SQLException e)
@@ -728,7 +734,10 @@ public class JDBCDatabase
 					}
 				}
 				silentCloseResultSet(rs);
-				readRoles(dbPrincipal);
+				if (dbPrincipal != null)
+				{
+					readRoles(dbPrincipal);
+				}
 			}
 		}
 		catch (SQLException e)

@@ -25,9 +25,14 @@ public class SearchResultEntity
 	protected String description;
 	@XmlElement(name = "url")
 	protected String url;
+	// TODO: Remove image element. Used only for the InterWeb compatibility
+	@XmlElement(name = "image")
+	protected String image;
 	@XmlElementWrapper(name = "thumbnails")
 	@XmlElement(name = "thumbnail")
 	protected List<ThumbnailEntity> thumbnailEntities;
+	@XmlElement(name = "embedded")
+	protected String embedded;
 	@XmlElement(name = "date")
 	protected String date;
 	@XmlElement(name = "tags")
@@ -60,15 +65,21 @@ public class SearchResultEntity
 		List<ThumbnailEntity> thumbnailEntities = new ArrayList<ThumbnailEntity>();
 		for (Thumbnail thumbnail : thumbnails)
 		{
+			if (image == null)
+			{
+				setImage(thumbnail.getUrl());
+			}
 			thumbnailEntities.add(new ThumbnailEntity(thumbnail));
 		}
 		setThumbnailEntities(thumbnailEntities);
+		setEmbedded(resultItem.getEmbedded());
 		setDate(resultItem.getDate());
 		setTags(resultItem.getTags());
 		setRankAtService(resultItem.getRank());
 		setTotalResultsAtService(resultItem.getTotalResultCount());
 		setViews(resultItem.getViewCount());
 		setNumberOfComments(resultItem.getCommentCount());
+		setNumberOfViews(resultItem.getViewCount());
 	}
 	
 
@@ -84,9 +95,21 @@ public class SearchResultEntity
 	}
 	
 
+	public String getEmbedded()
+	{
+		return embedded;
+	}
+	
+
 	public String getIdAtService()
 	{
 		return idAtService;
+	}
+	
+
+	public String getImage()
+	{
+		return image;
 	}
 	
 
@@ -162,15 +185,33 @@ public class SearchResultEntity
 	}
 	
 
+	public void setEmbedded(String embedded)
+	{
+		this.embedded = embedded;
+	}
+	
+
 	public void setIdAtService(String idAtService)
 	{
 		this.idAtService = idAtService;
 	}
 	
 
+	public void setImage(String image)
+	{
+		this.image = image;
+	}
+	
+
 	public void setNumberOfComments(int numberOfComments)
 	{
 		this.numberOfComments = numberOfComments;
+	}
+	
+
+	public void setNumberOfViews(int numberOfViews)
+	{
+		this.numberOfViews = numberOfViews;
 	}
 	
 

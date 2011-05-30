@@ -102,9 +102,20 @@ public class OAuth
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_XML)
 	public XMLResponse registerUser(@FormParam("username") String userName,
-	                                @FormParam("password") String password)
+	                                @FormParam("password") String password,
+	                                @FormParam("mediator_username") String mediatorUserName,
+	                                @FormParam("mediator_password") String mediatorPassword)
 	{
 		Database database = Environment.getInstance().getDatabase();
+		InterWebPrincipal mediator = null;
+		if (mediatorUserName != null)
+		{
+			mediator = database.authenticate(mediatorUserName, mediatorPassword);
+			if (mediator == null)
+			{
+				return ErrorResponse.NO_ACCOUNT_FOR_TOKEN;
+			}
+		}
 		InterWebPrincipal principal = InterWebPrincipal.createDefault(userName);
 		if (database.hasPrincipal(userName))
 		{
@@ -112,7 +123,12 @@ public class OAuth
 		}
 		AuthCredentials accessToken = RandomGenerator.getInstance().nextOAuthCredentials();
 		principal.setOauthCredentials(accessToken);
+		Environment.logger.debug(principal);
 		database.savePrincipal(principal, password);
+		if (mediator != null)
+		{
+			database.saveMediator(principal.getName(), mediator.getName());
+		}
 		OAuthAccessTokenResponse response = new OAuthAccessTokenResponse(accessToken);
 		return response;
 	}

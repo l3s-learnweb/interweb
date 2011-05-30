@@ -133,11 +133,11 @@ public class User
 	@Path("/mediator")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_XML)
-	public XMLResponse registerUser(@FormParam("mediator_token") String token)
+	public XMLResponse registerUser(@FormParam("mediator_token") String mediatorToken)
 	{
 		System.out.println("set");
 		Database database = Environment.getInstance().getDatabase();
-		InterWebPrincipal mediator = database.readPrincipalByKey(token);
+		InterWebPrincipal mediator = database.readPrincipalByKey(mediatorToken);
 		if (mediator == null)
 		{
 			return ErrorResponse.NO_ACCOUNT_FOR_TOKEN;

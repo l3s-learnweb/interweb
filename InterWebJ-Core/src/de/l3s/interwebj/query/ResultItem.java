@@ -30,6 +30,7 @@ public abstract class ResultItem
 	private int totalResultCount = -1;
 	private int viewCount = -1;
 	private int commentCount = -1;
+	private String embedded;
 	
 
 	public ResultItem(String connectorName)
@@ -60,6 +61,12 @@ public abstract class ResultItem
 	public String getDescription()
 	{
 		return description;
+	}
+	
+
+	public String getEmbedded()
+	{
+		return embedded;
 	}
 	
 
@@ -169,6 +176,12 @@ public abstract class ResultItem
 			description = description.substring(0, cutIndex) + "...";
 		}
 		this.description = description;
+	}
+	
+
+	public void setEmbedded(String embedded)
+	{
+		this.embedded = embedded;
 	}
 	
 

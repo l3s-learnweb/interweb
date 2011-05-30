@@ -203,6 +203,7 @@ public class InterWebConnector
 	                          String url,
 	                          int maxWidth,
 	                          int maxHeight)
+	    throws InterWebException
 	{
 		AuthCredentials consumerAuthCredentials = getAuthCredentials();
 		Client client = Client.create();
@@ -221,6 +222,12 @@ public class InterWebConnector
 		ClientResponse response = builder.get(ClientResponse.class);
 		Environment.logger.debug(response);
 		IWEmbeddedResponse iwEmbeddedResponse = response.getEntity(IWEmbeddedResponse.class);
+		System.out.println(iwEmbeddedResponse);
+		if (iwEmbeddedResponse.getStat().equals(IWXMLResponse.FAILED))
+		{
+			throw new InterWebException("URL: [" + url
+			                            + "] doesn't belong to connector");
+		}
 		return iwEmbeddedResponse.getEmbedded();
 	}
 	

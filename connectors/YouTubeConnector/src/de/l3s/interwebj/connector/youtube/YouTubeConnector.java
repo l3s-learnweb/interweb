@@ -1,6 +1,8 @@
 package de.l3s.interwebj.connector.youtube;
 
 
+import static de.l3s.interwebj.util.Assertions.*;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -121,10 +123,7 @@ public class YouTubeConnector
 	public AuthCredentials completeAuthentication(Parameters params)
 	    throws InterWebException
 	{
-		if (params == null)
-		{
-			throw new NullPointerException("Argument [params] can not be null");
-		}
+		notNull(params, "params");
 		AuthCredentials authCredentials = null;
 		if (!isRegistered())
 		{
@@ -187,10 +186,7 @@ public class YouTubeConnector
 	public QueryResult get(Query query, AuthCredentials authCredentials)
 	    throws InterWebException
 	{
-		if (query == null)
-		{
-			throw new NullPointerException("Argument [query] can not be null");
-		}
+		notNull(query, "query");
 		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
@@ -230,6 +226,10 @@ public class YouTubeConnector
 					resultItem.setTotalResultCount(vf.getTotalResults());
 					resultItem.setViewCount(getViewCount(ve));
 					resultItem.setCommentCount(getCommentCount(ve));
+					resultItem.setEmbedded(getEmbedded(authCredentials,
+					                                   resultItem.getUrl(),
+					                                   YouTubeVideoResultItem.DEFAULT_EMBEDDED_WIDTH,
+					                                   YouTubeVideoResultItem.DEFAULT_EMBEDDED_HEIGHT));
 					queryResult.addResultItem(resultItem);
 				}
 			}
@@ -349,18 +349,9 @@ public class YouTubeConnector
 	                AuthCredentials authCredentials)
 	    throws InterWebException
 	{
-		if (data == null)
-		{
-			throw new NullPointerException("Argument [data] can not be null");
-		}
-		if (contentType == null)
-		{
-			throw new NullPointerException("Argument [contentType] can not be null");
-		}
-		if (params == null)
-		{
-			throw new NullPointerException("Argument [params] can not be null");
-		}
+		notNull(data, "data");
+		notNull(contentType, "contentType");
+		notNull(params, "params");
 		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");

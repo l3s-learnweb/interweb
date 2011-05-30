@@ -47,10 +47,13 @@ public class Services
 		List<ServiceConnector> connectors = engine.getConnectors();
 		for (ServiceConnector connector : connectors)
 		{
-			ServiceEntity serviceEntity = createServiceEntity(httpContext,
-			                                                  principal,
-			                                                  connector);
-			serviceEntities.add(serviceEntity);
+			if (connector.isRegistered())
+			{
+				ServiceEntity serviceEntity = createServiceEntity(httpContext,
+				                                                  principal,
+				                                                  connector);
+				serviceEntities.add(serviceEntity);
+			}
 		}
 		return serviceEntities;
 		

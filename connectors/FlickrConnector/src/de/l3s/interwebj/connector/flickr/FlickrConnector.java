@@ -325,7 +325,7 @@ public class FlickrConnector
 		{
 			Size s = (Size) obj;
 			if (size == null
-			    || (s.getWidth() > size.getWidth() && s.getHeight() > size.getHeight())
+			    || (s.getWidth() >= size.getWidth() && s.getHeight() >= size.getHeight())
 			    && (s.getWidth() <= maxWidth && s.getHeight() <= maxHeight))
 			{
 				size = s;

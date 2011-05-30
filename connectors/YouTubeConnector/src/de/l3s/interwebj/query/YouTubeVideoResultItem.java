@@ -6,6 +6,8 @@ public class YouTubeVideoResultItem
 {
 	
 	private static final long serialVersionUID = -1049898089517241548L;
+	public static final int DEFAULT_EMBEDDED_WIDTH = 240;
+	public static final int DEFAULT_EMBEDDED_HEIGHT = 180;
 	
 
 	public YouTubeVideoResultItem(String connectorName)
