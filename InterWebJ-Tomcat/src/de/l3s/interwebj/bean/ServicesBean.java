@@ -5,11 +5,9 @@ import java.io.*;
 import java.util.*;
 
 import javax.faces.bean.*;
-import javax.faces.model.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.core.ServiceConnector.PermissionLevel;
 import de.l3s.interwebj.webutil.*;
 
 
@@ -18,42 +16,61 @@ import de.l3s.interwebj.webutil.*;
 public class ServicesBean
 {
 	
-	private String permission;
-	private List<SelectItem> permissions;
+	private List<ConnectorWrapper> connectorWrappers;
 	
 
 	public ServicesBean()
 	{
-		permissions = new ArrayList<SelectItem>();
-		permissions.add(new SelectItem("read"));
-		permissions.add(new SelectItem("write"));
-		permissions.add(new SelectItem("delete"));
+		Engine engine = Environment.getInstance().getEngine();
+		connectorWrappers = new ArrayList<ConnectorWrapper>();
+		for (ServiceConnector connector : engine.getConnectors())
+		{
+			if (connector.isConnectorRegistered())
+			{
+				ConnectorWrapper connectorWrapper = new ConnectorWrapper();
+				connectorWrapper.setConnector(connector);
+				connectorWrappers.add(connectorWrapper);
+			}
+		}
 	}
 	
 
 	public String authenticate(Object obj)
 	    throws InterWebException
 	{
-		Environment.logger.debug("requested permission: " + permission);
-		PermissionLevel permissionLevel = PermissionLevel.getPermissionLevel(permission);
-		Environment.logger.debug("requested permission level fetched: "
-		                         + permissionLevel.getName());
-		String callbackUrl = FacesUtils.getInterWebJBean().getBaseUrl()
-		                     + "callback";
-		Environment.logger.debug("callbackUrl: [" + callbackUrl + "]");
-		ServiceConnector connector = (ServiceConnector) obj;
-		Parameters params = connector.authenticate(permissionLevel, callbackUrl);
-		String oauthAuthorizationUrl = params.get(Parameters.OAUTH_AUTHORIZATION_URL);
-		if (oauthAuthorizationUrl != null)
+		String baseApiUrl = FacesUtils.getInterWebJBean().getBaseUrl();
+		ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
+		ServiceConnector connector = connectorWrapper.getConnector();
+		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+		Parameters parameters = new Parameters();
+		parameters.add(Parameters.IWJ_USER_ID, principal.getName());
+		parameters.add(Parameters.IWJ_CONNECTOR_ID, connector.getName());
+		String interwebjCallbackUrl = baseApiUrl + "callback?"
+		                              + parameters.toQueryString();
+		Environment.logger.debug("interwebjCallbackUrl: ["
+		                         + interwebjCallbackUrl + "]");
+		parameters = connector.authenticate(interwebjCallbackUrl);
+		if (connectorWrapper.getKey() != null)
+		{
+			parameters.add(Parameters.USER_KEY, connectorWrapper.getKey());
+		}
+		if (connectorWrapper.getSecret() != null)
+		{
+			parameters.add(Parameters.USER_SECRET, connectorWrapper.getSecret());
+		}
+		String authorizationUrl = parameters.get(Parameters.AUTHORIZATION_URL);
+		if (authorizationUrl != null)
 		{
 			Environment.logger.debug("redirecting to service authorization url: "
-			                         + oauthAuthorizationUrl);
+			                         + authorizationUrl);
 			Engine engine = Environment.getInstance().getEngine();
-			params.add(Parameters.CLIENT_TYPE, "SERVLET");
-			engine.addPendingAuthorizationConnector(connector, params);
+			parameters.add(Parameters.CLIENT_TYPE, "SERVLET");
+			engine.addPendingAuthorizationConnector(principal,
+			                                        connector,
+			                                        parameters);
 			try
 			{
-				FacesUtils.getExternalContext().redirect(oauthAuthorizationUrl);
+				FacesUtils.getExternalContext().redirect(authorizationUrl);
 			}
 			catch (IOException e)
 			{
@@ -65,52 +82,43 @@ public class ServicesBean
 	}
 	
 
-	public String getPermission()
-	{
-		return permission;
-	}
-	
-
-	public List<SelectItem> getPermissions()
-	{
-		return permissions;
-	}
-	
-
-	public List<ServiceConnector> getRegisteredConnectors()
+	public List<ConnectorWrapper> getConnectorWrappers()
 	    throws InterWebException
 	{
-		Engine engine = Environment.getInstance().getEngine();
-		List<ServiceConnector> registeredConnectors = new ArrayList<ServiceConnector>();
-		for (ServiceConnector connector : engine.getConnectors())
-		{
-			if (connector.isRegistered())
-			{
-				registeredConnectors.add(connector);
-			}
-		}
-		return registeredConnectors;
+		return connectorWrappers;
 	}
 	
 
-	public boolean isUserAuthenticated(Object connector)
+	public boolean isUserAuthenticated(Object obj)
 	    throws InterWebException
 	{
 		Engine engine = Environment.getInstance().getEngine();
 		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		if (principal != null)
 		{
-			return engine.isUserAuthenticated((ServiceConnector) connector,
-			                                  principal);
+			ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
+			ServiceConnector connector = connectorWrapper.getConnector();
+			return engine.isUserAuthenticated(connector, principal);
 		}
 		return false;
 	}
 	
 
-	public String revoke(Object o)
+	public boolean isUserRegistrationRequired(Object obj)
 	    throws InterWebException
 	{
-		ServiceConnector connector = (ServiceConnector) o;
+		ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
+		ServiceConnector connector = connectorWrapper.getConnector();
+		return connector.isUserRegistrationDataRequired()
+		       && !isUserAuthenticated(obj);
+	}
+	
+
+	public String revoke(Object obj)
+	    throws InterWebException
+	{
+		ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
+		ServiceConnector connector = connectorWrapper.getConnector();
 		Environment.logger.debug("revoking user authentication");
 		Engine engine = Environment.getInstance().getEngine();
 		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
@@ -121,11 +129,4 @@ public class ServicesBean
 		connector.revokeAuthentication();
 		return null;
 	}
-	
-
-	public void setPermission(String permission)
-	{
-		this.permission = permission;
-	}
-	
 }

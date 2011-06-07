@@ -29,7 +29,6 @@ public class Endpoint
 
 	public OAuthParameters getOAuthParameters()
 	{
-		HttpContext httpContext = getHttpContext();
 		OAuthServerRequest request = new OAuthServerRequest(httpContext.getRequest());
 		OAuthParameters params = new OAuthParameters();
 		params.readRequest(request);

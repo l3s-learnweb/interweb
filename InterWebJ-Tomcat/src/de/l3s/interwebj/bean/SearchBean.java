@@ -57,7 +57,7 @@ public class SearchBean
 		Engine engine = Environment.getInstance().getEngine();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
-			if (connector.isRegistered())
+			if (connector.isConnectorRegistered())
 			{
 				SelectItem selectItem = new SelectItem(connector.getName());
 				connectorSelectItems.add(selectItem);
@@ -101,17 +101,7 @@ public class SearchBean
 		{
 			return "";
 		}
-		String embeddedCode = "<img src=\"" + thumbnail.getUrl() + "\" />";
-		//		Engine engine = Environment.getInstance().getEngine();
-		//		ServiceConnector connector = engine.getConnector(resultItem.getConnectorName());
-		//		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
-		//		AuthCredentials authCredentials = (principal == null)
-		//		    ? null : engine.getUserAuthCredentials(connector, principal);
-		//		embeddedCode = connector.getEmbedded(authCredentials,
-		//		                                     resultItem.getUrl(),
-		//		                                     500,
-		//		                                     500);
-		return embeddedCode;
+		return thumbnail.getUrl();
 	}
 	
 
@@ -151,9 +141,12 @@ public class SearchBean
 	}
 	
 
-	public String getTags(Object resultItem)
+	public String getTags(Object obj)
 	{
-		return CoreUtils.convertToUniqueList(((ResultItem) resultItem).getTags()).toString();
+		ResultItem resultItem = (ResultItem) obj;
+		String tags = resultItem.getTags();
+		return (tags == null)
+		    ? null : CoreUtils.convertToUniqueList(tags).toString();
 	}
 	
 
@@ -178,6 +171,10 @@ public class SearchBean
 		if (Query.CT_FRIEND.equals(type))
 		{
 			return "user.png";
+		}
+		if (Query.CT_PRESENTATION.equals(type))
+		{
+			return "pictures.png";
 		}
 		return null;
 	}

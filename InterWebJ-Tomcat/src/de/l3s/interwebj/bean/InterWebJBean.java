@@ -21,7 +21,6 @@ public class InterWebJBean
 		HttpServletRequest req = (HttpServletRequest) FacesUtils.getExternalContext().getRequest();
 		URI currentUri = URI.create(HttpUtils.getRequestURL(req).toString());
 		URI baseUri = currentUri.resolve(getContextPath() + "/");
-		Environment.logger.debug("baseUri: " + baseUri);
 		return baseUri.toASCIIString();
 	}
 	

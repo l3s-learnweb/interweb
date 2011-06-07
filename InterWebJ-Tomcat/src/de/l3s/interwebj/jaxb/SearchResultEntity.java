@@ -31,8 +31,8 @@ public class SearchResultEntity
 	@XmlElementWrapper(name = "thumbnails")
 	@XmlElement(name = "thumbnail")
 	protected List<ThumbnailEntity> thumbnailEntities;
-	@XmlElement(name = "embedded")
-	protected String embedded;
+	//	@XmlElement(name = "embedded")
+	//	protected String embedded;
 	@XmlElement(name = "date")
 	protected String date;
 	@XmlElement(name = "tags")
@@ -72,7 +72,7 @@ public class SearchResultEntity
 			thumbnailEntities.add(new ThumbnailEntity(thumbnail));
 		}
 		setThumbnailEntities(thumbnailEntities);
-		setEmbedded(resultItem.getEmbedded());
+		//		setEmbedded(resultItem.getEmbedded());
 		setDate(resultItem.getDate());
 		setTags(resultItem.getTags());
 		setRankAtService(resultItem.getRank());
@@ -95,12 +95,11 @@ public class SearchResultEntity
 	}
 	
 
-	public String getEmbedded()
-	{
-		return embedded;
-	}
+	//	public String getEmbedded()
+	//	{
+	//		return embedded;
+	//	}
 	
-
 	public String getIdAtService()
 	{
 		return idAtService;
@@ -185,12 +184,11 @@ public class SearchResultEntity
 	}
 	
 
-	public void setEmbedded(String embedded)
-	{
-		this.embedded = embedded;
-	}
+	//	public void setEmbedded(String embedded)
+	//	{
+	//		this.embedded = embedded;
+	//	}
 	
-
 	public void setIdAtService(String idAtService)
 	{
 		this.idAtService = idAtService;

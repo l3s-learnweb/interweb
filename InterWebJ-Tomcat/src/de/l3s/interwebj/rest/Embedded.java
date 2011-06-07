@@ -45,7 +45,7 @@ public class Embedded
 		String embedded = null;
 		for (ServiceConnector connector : connectors)
 		{
-			if (connector.isRegistered())
+			if (connector.isConnectorRegistered())
 			{
 				try
 				{

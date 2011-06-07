@@ -47,7 +47,7 @@ public class Services
 		List<ServiceConnector> connectors = engine.getConnectors();
 		for (ServiceConnector connector : connectors)
 		{
-			if (connector.isRegistered())
+			if (connector.isConnectorRegistered())
 			{
 				ServiceEntity serviceEntity = createServiceEntity(httpContext,
 				                                                  principal,
@@ -118,7 +118,7 @@ public class Services
 	                                                             boolean isAuthenticated)
 	{
 		AuthorizationEntity authorizationEntity;
-		if (connector.isRegistrationRequired())
+		if (connector.isConnectorRegistrationDataRequired())
 		{
 			authorizationEntity = new TokenAuthorizationEntity();
 		}

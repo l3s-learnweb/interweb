@@ -17,7 +17,6 @@ import com.sun.jersey.oauth.signature.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.core.ServiceConnector.PermissionLevel;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.jaxb.*;
 import de.l3s.interwebj.jaxb.services.*;
@@ -37,26 +36,53 @@ public class User
 	@POST
 	@Path("/services/{service}/auth")
 	@Produces(MediaType.APPLICATION_XML)
-	public XMLResponse authenticateOnService(@PathParam("service") String serviceName,
-	                                         @QueryParam("callback") String callback)
+	public XMLResponse authenticateOnService(@PathParam("service") String connectorName,
+	                                         @QueryParam("callback") String callback,
+	                                         @FormParam("username") String userName,
+	                                         @FormParam("password") String password)
 	{
 		Engine engine = Environment.getInstance().getEngine();
-		ServiceConnector connector = engine.getConnector(serviceName);
+		ServiceConnector connector = engine.getConnector(connectorName);
 		if (connector == null)
 		{
 			return ErrorResponse.UNKNOWN_SERVICE;
 		}
+		InterWebPrincipal principal = getPrincipal();
+		if (principal == null)
+		{
+			return ErrorResponse.NO_USER;
+		}
+		InterWebPrincipal targetPrincipal = getTargetPrincipal();
+		if (!principal.equals(targetPrincipal))
+		{
+			
+			return ErrorResponse.TOKEN_NOT_AUTHORIZED;
+		}
 		HttpContext httpContext = getHttpContext();
 		String baseApiUrl = httpContext.getUriInfo().getBaseUri().resolve("..").toASCIIString();
+		Parameters parameters = new Parameters();
+		parameters.add(Parameters.IWJ_USER_ID, principal.getName());
+		parameters.add(Parameters.IWJ_CONNECTOR_ID, connector.getName());
+		String interwebjCallbackUrl = baseApiUrl + "callback?"
+		                              + parameters.toQueryString();
+		Environment.logger.debug("interwebjCallbackUrl: ["
+		                         + interwebjCallbackUrl + "]");
 		try
 		{
-			Parameters params = connector.authenticate(PermissionLevel.DELETE,
-			                                           baseApiUrl + "callback");
-			String oauthAuthorizationUrl = params.get(Parameters.OAUTH_AUTHORIZATION_URL);
-			if (oauthAuthorizationUrl != null)
+			Parameters params = connector.authenticate(interwebjCallbackUrl);
+			if (userName != null)
+			{
+				params.add(Parameters.USER_KEY, userName);
+			}
+			if (password != null)
+			{
+				params.add(Parameters.USER_SECRET, password);
+			}
+			String authorizationUrl = params.get(Parameters.AUTHORIZATION_URL);
+			if (authorizationUrl != null)
 			{
 				Environment.logger.debug("redirecting to service authorization url: "
-				                         + oauthAuthorizationUrl);
+				                         + authorizationUrl);
 				params.add(Parameters.CLIENT_TYPE, "REST");
 				OAuthParameters oauthParameters = getOAuthParameters();
 				params.add(Parameters.CONSUMER_KEY,
@@ -66,11 +92,12 @@ public class User
 				{
 					params.add(Parameters.CALLBACK, callback);
 				}
-				
-				engine.addPendingAuthorizationConnector(connector, params);
+				engine.addPendingAuthorizationConnector(principal,
+				                                        connector,
+				                                        params);
 				AuthorizationLinkResponse response = new AuthorizationLinkResponse();
 				AuthorizationLinkEntity linkEntity = new AuthorizationLinkEntity("GET",
-				                                                                 oauthAuthorizationUrl);
+				                                                                 authorizationUrl);
 				response.setAuthorizationLinkEntity(linkEntity);
 				return response;
 			}

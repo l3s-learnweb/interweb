@@ -4,7 +4,6 @@ package de.l3s.interwebj.servlet;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
-import java.util.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -13,7 +12,6 @@ import javax.ws.rs.core.*;
 import com.sun.jersey.api.client.*;
 
 import de.l3s.interwebj.*;
-import de.l3s.interwebj.bean.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.jaxb.services.*;
@@ -43,18 +41,17 @@ public class CallbackServlet
 	public void process(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, InterWebException
 	{
-		Map<String, String[]> params = request.getParameterMap();
 		Environment.logger.debug("query string: [" + request.getQueryString()
 		                         + "]");
+		Parameters parameters = new Parameters();
+		parameters.addMultivaluedParams(request.getParameterMap());
+		refineParameters(parameters);
+		InterWebPrincipal principal = getPrincipal(parameters);
+		ServiceConnector connector = getConnector(parameters);
 		Engine engine = Environment.getInstance().getEngine();
-		SessionBean sessionBean = (SessionBean) request.getSession().getAttribute("sessionBean");
-		InterWebPrincipal principal = sessionBean.getPrincipal();
-		if (principal == null)
-		{
-			
-		}
-		Parameters parameters = engine.processAuthenticationCallback(principal,
-		                                                             params);
+		parameters = engine.processAuthenticationCallback(principal,
+		                                                  connector,
+		                                                  parameters);
 		try
 		{
 			if (parameters != null
@@ -67,7 +64,6 @@ public class CallbackServlet
 					response.sendRedirect(callback);
 					return;
 				}
-				String connectorName = parameters.get(Parameters.CONNECTOR_NAME);
 				String userToken = parameters.get(Parameters.TOKEN);
 				String consumerKey = parameters.get(Parameters.CONSUMER_KEY);
 				Database database = Environment.getInstance().getDatabase();
@@ -76,7 +72,7 @@ public class CallbackServlet
 				URI baseUri = URI.create(request.getRequestURL().toString()).resolve(".");
 				String serviceApiPath = baseUri.toASCIIString()
 				                        + "api/users/default/services/"
-				                        + connectorName;
+				                        + connector.getName();
 				WebResource webResource = Endpoint.createWebResource(serviceApiPath,
 				                                                     consumerAuthCredentials,
 				                                                     userAuthCredentials);
@@ -138,4 +134,65 @@ public class CallbackServlet
 		}
 	}
 	
+
+	private String fetchParam(Parameters parameters, String paramName)
+	{
+		for (String parameter : parameters.keySet())
+		{
+			if (parameter.equals(paramName))
+			{
+				return parameters.get(parameter);
+			}
+		}
+		return null;
+	}
+	
+
+	private ServiceConnector getConnector(Parameters parameters)
+	    throws InterWebException
+	{
+		String connectorName = fetchParam(parameters,
+		                                  Parameters.IWJ_CONNECTOR_ID);
+		if (connectorName == null)
+		{
+			throw new InterWebException("Unable to fetch connector name from the callback URL");
+		}
+		Engine engine = Environment.getInstance().getEngine();
+		ServiceConnector connector = engine.getConnector(connectorName);
+		if (connector == null)
+		{
+			throw new InterWebException("Connector [" + connectorName
+			                            + "] not found");
+		}
+		return connector;
+	}
+	
+
+	private InterWebPrincipal getPrincipal(Parameters parameters)
+	    throws InterWebException
+	{
+		String userName = fetchParam(parameters, Parameters.IWJ_USER_ID);
+		if (userName == null)
+		{
+			throw new InterWebException("Unable to fetch user name from the callback URL");
+		}
+		Database database = Environment.getInstance().getDatabase();
+		InterWebPrincipal principal = database.readPrincipalByName(userName);
+		if (principal == null)
+		{
+			throw new InterWebException("User [" + userName + "] not found");
+		}
+		return principal;
+	}
+	
+
+	private void refineParameters(Parameters parameters)
+	{
+		Engine engine = Environment.getInstance().getEngine();
+		for (ServiceConnector connector : engine.getConnectors())
+		{
+			Parameters refinedParameters = connector.getRefinedCallbackParameters(parameters);
+			parameters.add(refinedParameters);
+		}
+	}
 }

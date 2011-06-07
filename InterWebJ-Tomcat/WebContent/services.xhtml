@@ -9,37 +9,38 @@
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
 		<h:form>
-			<h:dataTable var="connector" value="#{servicesBean.registeredConnectors}"
-				cellpadding="10">
+			<h:dataTable var="connectorWrapper"
+				value="#{servicesBean.connectorWrappers}" cellpadding="10">
 				<h:column>
-					<img src="#{connector.baseUrl}/favicon.ico"
+					<img src="#{connectorWrapper.connector.baseUrl}/favicon.ico"
 						style="vertical-align: middle; margin: 3px;" />
 				</h:column>
 				<h:column>
-					<h:outputLink value="#{connector.baseUrl}"
-						style="margin-left: 10px; margin-right: 10px; margin-top: 3px; margin-bottom: 3px;" target="_blank">
-								#{connector.name}
+					<h:outputLink value="#{connectorWrapper.connector.baseUrl}"
+						style="margin-left: 10px; margin-right: 10px; margin-top: 3px; margin-bottom: 3px;"
+						target="_blank">
+								#{connectorWrapper.connector.name}
 							</h:outputLink>
 				</h:column>
 				<h:column>
-					<h:selectOneMenu id="permission" value="#{servicesBean.permission}"
-						rendered="#{!servicesBean.isUserAuthenticated(connector)}">
-						<f:selectItems value="#{servicesBean.permissions}" />
-					</h:selectOneMenu>
+					<h:panelGrid columns="2" cellpadding="0" cellspacing="0"
+						style="font-size: 0.8em; color:#5C5C5C;"
+						rendered="#{servicesBean.isUserRegistrationRequired(connectorWrapper)}">
+						<h:outputLabel value="Key:" style="margin-right:5px" />
+						<h:inputText id="key" label="key" value="#{connectorWrapper.key}"
+							style="margin-bottom:5px" />
+						<h:outputLabel value="Secret:" style="margin-right:5px" />
+						<h:inputText id="secret" label="secret"
+							value="#{connectorWrapper.secret}" />
+					</h:panelGrid>
 				</h:column>
 				<h:column>
 					<h:commandButton value="Authenticate"
-						action="#{servicesBean.authenticate(connector)}"
-						rendered="#{!servicesBean.isUserAuthenticated(connector)}" />
+						action="#{servicesBean.authenticate(connectorWrapper)}"
+						rendered="#{!servicesBean.isUserAuthenticated(connectorWrapper)}" />
 					<h:commandButton value="Revoke"
-						action="#{servicesBean.revoke(connector)}"
-						rendered="#{servicesBean.isUserAuthenticated(connector)}" />
-				</h:column>
-				<h:column>
-					<h:outputLink value="#"
-						rendered="#{servicesBean.isUserAuthenticated(connector)}">
-								Preferences
-					</h:outputLink>
+						action="#{servicesBean.revoke(connectorWrapper)}"
+						rendered="#{servicesBean.isUserAuthenticated(connectorWrapper)}" />
 				</h:column>
 			</h:dataTable>
 		</h:form>

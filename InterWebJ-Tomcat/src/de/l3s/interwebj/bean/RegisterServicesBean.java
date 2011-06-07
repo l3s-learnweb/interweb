@@ -25,14 +25,17 @@ public class RegisterServicesBean
 		Engine engine = Environment.getInstance().getEngine();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
-			ConnectorWrapper connectorWrapper = new ConnectorWrapper();
-			connectorWrapper.setConnector(connector);
-			if (connector.getAuthCredentials() != null)
+			if (connector.isConnectorRegistrationDataRequired())
 			{
-				connectorWrapper.setKey(connector.getAuthCredentials().getKey());
-				connectorWrapper.setSecret(connector.getAuthCredentials().getSecret());
+				ConnectorWrapper connectorWrapper = new ConnectorWrapper();
+				connectorWrapper.setConnector(connector);
+				if (connector.getAuthCredentials() != null)
+				{
+					connectorWrapper.setKey(connector.getAuthCredentials().getKey());
+					connectorWrapper.setSecret(connector.getAuthCredentials().getSecret());
+				}
+				connectorWrappers.add(connectorWrapper);
 			}
-			connectorWrappers.add(connectorWrapper);
 		}
 	}
 	
@@ -43,26 +46,11 @@ public class RegisterServicesBean
 	}
 	
 
-	public String getRowClasses()
+	public boolean isRegistered(Object obj)
 	    throws InterWebException
 	{
-		Engine engine = Environment.getInstance().getEngine();
-		List<ServiceConnector> connectors = engine.getConnectors();
-		StringBuilder sb = new StringBuilder();
-		for (ServiceConnector connector : connectors)
-		{
-			sb.append(connector.isRegistrationRequired()
-			    ? "show," : "hide,");
-		}
-		return sb.toString();
-	}
-	
-
-	public boolean isRegistered(Object o)
-	    throws InterWebException
-	{
-		ConnectorWrapper connectorWrapper = (ConnectorWrapper) o;
-		return connectorWrapper.getConnector().isRegistered();
+		ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
+		return connectorWrapper.getConnector().isConnectorRegistered();
 	}
 	
 

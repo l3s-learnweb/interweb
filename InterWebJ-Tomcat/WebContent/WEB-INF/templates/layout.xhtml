@@ -29,6 +29,9 @@
 			rendered="#{principalBean.loggedIn}">
 			<h:outputText value="Profile: #{sessionBean.principal.name}" />
 		</h:outputLink></li-->
+		<li><h:outputLink value="#{interwebj.contextPath}/view/api.xhtml">
+			<h:outputText value="API Docs" />
+		</h:outputLink></li>
 		<li id="skip"><h:outputLink
 			value="#{interwebj.contextPath}/view/index.xhtml">
 			<h:outputText value="Home" />
@@ -39,12 +42,6 @@
 <div id="menu">
 <ul>
 	<h:form>
-		<h:panelGroup rendered="#{principalBean.loggedIn}">
-			<li><h:outputLink
-				value="#{interwebj.contextPath}/view/services.xhtml">
-				<h:outputText value="Services" />
-			</h:outputLink></li>
-		</h:panelGroup>
 		<li><h:outputLink
 			value="#{interwebj.contextPath}/view/search.xhtml">
 			<h:outputText value="Search" />
@@ -61,9 +58,12 @@
 				<h:outputText value="Apps" />
 			</h:outputLink></li>
 		</h:panelGroup>
-		<li><h:outputLink value="#{interwebj.contextPath}/view/api.xhtml">
-			<h:outputText value="API Docs" />
-		</h:outputLink></li>
+		<h:panelGroup rendered="#{principalBean.loggedIn}">
+			<li><h:outputLink
+				value="#{interwebj.contextPath}/view/services.xhtml">
+				<h:outputText value="Services" />
+			</h:outputLink></li>
+		</h:panelGroup>
 		<ui:fragment rendered="#{principalBean.hasRole('manager')}">
 			<li id="admin_menu_item"><h:outputLink
 				value="#{interwebj.contextPath}/view/admin/register_services.xhtml">

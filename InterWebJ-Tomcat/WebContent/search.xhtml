@@ -55,7 +55,7 @@
 			<h:outputText value="No results found"
 				rendered="#{searchBean.queryResult.size()==0}" />
 			<h:outputText
-				value="Total #{searchBean.queryResult.resultItems.size()} result(s) found (#{searchBean.queryResult.elapsedTime/1000} s)"
+				value="#{searchBean.queryResult.resultItems.size()} result(s) found (#{searchBean.queryResult.elapsedTime/1000} s)"
 				rendered="#{searchBean.queryResult.size()>0}" />
 		</ui:fragment>
 		<h:form rendered="#{searchBean.hasResults()}">
@@ -67,10 +67,10 @@
 						<span style="text-align: left; vertical-align: top;">#{searchBean.getResultIndex(resultItem)+1}</span>
 					</rich:column>
 					<rich:column style="vertical-align: top;">
-						<img
+						<span style="white-space: nowrap;"><img
 							src="#{searchBean.getConnectorBaseUrl(resultItem.connectorName)}/favicon.ico"
-							style="vertical-align: middle; margin: 3px;" />
-						<h:outputText value="#{resultItem.serviceName}" />
+							style="vertical-align: middle; margin: 3px;" />&nbsp;&nbsp;<h:outputText
+							value="#{resultItem.serviceName}" /> </span>
 					</rich:column>
 					<rich:column>
 						<div>
@@ -78,13 +78,15 @@
 							src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
 							style="vertical-align: middle; margin: 3px;" /><h:outputLink
 							value="#{resultItem.url}" target="_blank">&nbsp;#{resultItem.title}</h:outputLink></h6>
-						<div><h:outputText value="#{searchBean.getImageUrl(resultItem, 500, 400)}"
-							escape="false" />
+						<div><h:outputLink value="#{resultItem.url}" target="_blank">
+							<img src="#{searchBean.getImageUrl(resultItem, 500, 400)}" />
+						</h:outputLink>
 						<div><span>#{resultItem.description}</span></div>
 						<div><span
 							style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;"><span
 							style="background-color: #D0EFEF;">Added</span>:
-						#{resultItem.date} &ndash; <span style="background-color: #D0EFEF;">Tags</span>:
+						#{resultItem.date} &ndash; <span
+							style="background-color: #D0EFEF;">Tags</span>:
 						#{searchBean.getTags(resultItem)}</span></div>
 						</div>
 						</div>
@@ -93,7 +95,9 @@
 				<rich:dataScroller for="result_table" maxPages="11" />
 			</h:panelGrid>
 		</h:form>
-		<img src="http://www.flickr.com/photos/35948364@N00/330342884/sizes/m/" width="500" height="376" />
+		<img
+			src="http://www.flickr.com/photos/35948364@N00/330342884/sizes/m/"
+			width="500" height="376" />
 	</ui:define>
 </ui:composition>
 </html>
