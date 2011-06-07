@@ -35,7 +35,8 @@ public class CoreUtils
 
 	public static String formatDate(Date date)
 	{
-		return formatDate(DEFAULT_DATE_FORMAT, date.getTime());
+		return (date == null)
+		    ? null : formatDate(DEFAULT_DATE_FORMAT, date.getTime());
 	}
 	
 

@@ -105,7 +105,9 @@ public class SlideShareConnector
 			resultItem.setDescription(sre.getDescription());
 			resultItem.setUrl(sre.getUrl());
 			resultItem.setThumbnails(createThumbnails(sre));
+			// start: to correct
 			String date = CoreUtils.formatDate(parseDate(sre.getUpdated()));
+			// end:
 			resultItem.setDate(date);
 			resultItem.setRank(count++);
 			resultItem.setEmbedded(sre.getEmbed());
@@ -266,8 +268,10 @@ public class SlideShareConnector
 	
 
 	private Date parseDate(String dateString)
+	    throws InterWebException
 	{
-		SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy",
+		                                                   Locale.US);
 		try
 		{
 			return dateFormat.parse(dateString);
@@ -275,7 +279,8 @@ public class SlideShareConnector
 		catch (ParseException e)
 		{
 			e.printStackTrace();
-			return null;
+			throw new InterWebException("dateString: [" + dateString + "] "
+			                            + e.getMessage());
 		}
 	}
 	
@@ -330,5 +335,6 @@ public class SlideShareConnector
 		                                  -1,
 		                                  -1);
 		System.out.println(embedded);
+		
 	}
 }
