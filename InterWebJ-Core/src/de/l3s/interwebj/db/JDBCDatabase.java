@@ -469,10 +469,13 @@ public class JDBCDatabase
 					String email = rs.getString(2);
 					String key = rs.getString(3);
 					String secret = rs.getString(4);
-					AuthCredentials authCredentials = new AuthCredentials(key,
-					                                                      secret);
 					principal = new InterWebPrincipal(userName, email);
-					principal.setOauthCredentials(authCredentials);
+					if (key != null)
+					{
+						AuthCredentials authCredentials = new AuthCredentials(key,
+						                                                      secret);
+						principal.setOauthCredentials(authCredentials);
+					}
 				}
 				silentCloseResultSet(rs);
 				if (principal != null)
