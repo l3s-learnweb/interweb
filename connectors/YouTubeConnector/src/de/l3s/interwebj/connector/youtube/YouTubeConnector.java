@@ -59,11 +59,10 @@ public class YouTubeConnector
 	
 
 	@Override
-	public Parameters authenticate(PermissionLevel permissionLevel,
-	                               String callbackUrl)
+	public Parameters authenticate(String callbackUrl)
 	    throws InterWebException
 	{
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -96,7 +95,7 @@ public class YouTubeConnector
 			String authUrl = AUTHORIZATION_PATH + "?oauth_token="
 			                 + params.get(Parameters.OAUTH_TOKEN);
 			Environment.logger.debug("requesting url: " + authUrl);
-			params.add(Parameters.OAUTH_AUTHORIZATION_URL, authUrl);
+			params.add(Parameters.AUTHORIZATION_URL, authUrl);
 		}
 		catch (UniformInterfaceException e)
 		{
@@ -125,7 +124,7 @@ public class YouTubeConnector
 	{
 		notNull(params, "params");
 		AuthCredentials authCredentials = null;
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -187,7 +186,7 @@ public class YouTubeConnector
 	    throws InterWebException
 	{
 		notNull(query, "query");
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -207,11 +206,11 @@ public class YouTubeConnector
 				}
 				VideoFeed vf = service.query(ytq, VideoFeed.class);
 				int count = 0;
-				Environment.logger.debug("Total " + vf.getTotalResults()
-				                         + " result(s) found");
+				queryResult.setTotalResultCount(vf.getTotalResults());
 				for (VideoEntry ve : vf.getEntries())
 				{
-					ResultItem resultItem = new YouTubeVideoResultItem(getName());
+					ResultItem resultItem = new ResultItem(getName());
+					resultItem.setType(Query.CT_VIDEO);
 					resultItem.setId(ve.getId());
 					resultItem.setTitle(ve.getTitle().getPlainText());
 					MediaGroup mg = ve.getMediaGroup();
@@ -223,13 +222,13 @@ public class YouTubeConnector
 					                               ',');
 					resultItem.setTags(tags);
 					resultItem.setRank(count++);
-					resultItem.setTotalResultCount(vf.getTotalResults());
+					resultItem.setTotalResultCount(queryResult.getTotalResultCount());
 					resultItem.setViewCount(getViewCount(ve));
 					resultItem.setCommentCount(getCommentCount(ve));
 					resultItem.setEmbedded(getEmbedded(authCredentials,
 					                                   resultItem.getUrl(),
-					                                   YouTubeVideoResultItem.DEFAULT_EMBEDDED_WIDTH,
-					                                   YouTubeVideoResultItem.DEFAULT_EMBEDDED_HEIGHT));
+					                                   ResultItem.DEFAULT_EMBEDDED_WIDTH,
+					                                   ResultItem.DEFAULT_EMBEDDED_HEIGHT));
 					queryResult.addResultItem(resultItem);
 				}
 			}
@@ -336,9 +335,16 @@ public class YouTubeConnector
 	
 
 	@Override
-	public boolean isRegistrationRequired()
+	public boolean isConnectorRegistrationDataRequired()
 	{
 		return true;
+	}
+	
+
+	@Override
+	public boolean isUserRegistrationDataRequired()
+	{
+		return false;
 	}
 	
 
@@ -352,7 +358,7 @@ public class YouTubeConnector
 		notNull(data, "data");
 		notNull(contentType, "contentType");
 		notNull(params, "params");
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
