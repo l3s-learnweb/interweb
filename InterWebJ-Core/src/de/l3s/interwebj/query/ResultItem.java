@@ -7,12 +7,14 @@ import java.util.*;
 import org.apache.commons.lang.*;
 
 
-public abstract class ResultItem
+public class ResultItem
     implements Serializable
 {
 	
 	private static final int MAX_TITLE_LENGTH = 256;
 	private static final int MAX_DESCRIPTION_LENGTH = 1024;
+	public static final int DEFAULT_EMBEDDED_WIDTH = 500;
+	public static final int DEFAULT_EMBEDDED_HEIGHT = 375;
 	
 	private static final long serialVersionUID = 9111067008513145675L;
 	

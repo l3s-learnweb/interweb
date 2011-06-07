@@ -15,6 +15,7 @@ public class QueryResult
 	private List<ResultItem> resultItems;
 	private long elapsedTime;
 	private long createdTime;
+	private int totalResultCount;
 	
 
 	public QueryResult(Query query)
@@ -30,6 +31,7 @@ public class QueryResult
 		{
 			resultItems.add(resultItem);
 		}
+		totalResultCount = totalResultCount + queryResult.getTotalResultCount();
 	}
 	
 
@@ -63,6 +65,12 @@ public class QueryResult
 	}
 	
 
+	public int getTotalResultCount()
+	{
+		return totalResultCount;
+	}
+	
+
 	public void setCreatedTime(long createdTime)
 	{
 		this.createdTime = createdTime;
@@ -73,6 +81,12 @@ public class QueryResult
 	public void setElapsedTime(long elapsedTime)
 	{
 		this.elapsedTime = elapsedTime;
+	}
+	
+
+	public void setTotalResultCount(int totalResultCount)
+	{
+		this.totalResultCount = totalResultCount;
 	}
 	
 

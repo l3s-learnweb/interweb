@@ -32,13 +32,17 @@ public class QueryResultCollector
 		public QueryResult call()
 		    throws Exception
 		{
-			Environment.logger.debug("[" + connector.getName()
-			                         + "] Start querying: " + query);
+			long startTime = System.currentTimeMillis();
+			Environment.logger.info("[" + connector.getName()
+			                        + "] Start querying: " + query);
 			QueryResult queryResult = connector.get(query, authCredentials);
-			Environment.logger.debug("[" + connector.getName()
-			                         + "] Finished. ["
-			                         + queryResult.getResultItems().size()
-			                         + "] results found");
+			long endTime = System.currentTimeMillis();
+			Environment.logger.info("[" + connector.getName() + "] Finished. ["
+			                        + queryResult.getResultItems().size()
+			                        + " of total "
+			                        + queryResult.getTotalResultCount()
+			                        + "] result(s) found in ["
+			                        + (endTime - startTime) + "] ms");
 			return queryResult;
 		}
 	}
@@ -97,7 +101,7 @@ public class QueryResultCollector
 			catch (TimeoutException e)
 			{
 				e.printStackTrace();
-				throw new InterWebException(e);
+				Environment.logger.warn(e);
 			}
 		}
 		queryResult.setElapsedTime(System.currentTimeMillis() - startTime);

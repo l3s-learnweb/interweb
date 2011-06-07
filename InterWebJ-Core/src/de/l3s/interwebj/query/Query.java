@@ -65,6 +65,7 @@ public class Query
 	public static final String CT_VIDEO = "video";
 	public static final String CT_IMAGE = "image";
 	public static final String CT_AUDIO = "audio";
+	public static final String CT_PRESENTATION = "presentation";
 	public static final String CT_FRIEND = "friend";
 	
 	private String id;
