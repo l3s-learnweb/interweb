@@ -44,6 +44,14 @@
 				</h:column>
 			</h:dataTable>
 		</h:form>
+		<h:panelGroup
+			rendered="#{servicesBean.awaitingConnectorWrappers.size() > 0}">
+			<br />
+			<br />
+			<span style="border-top: 1px dotted black; padding: 10px;"> <h:outputLink
+				value="#{interwebj.contextPath}/view/awaiting_services.xhtml">Manage</h:outputLink>
+			connectors awaiting authorization manually.</span>
+		</h:panelGroup>
 	</ui:define>
 </ui:composition>
 </html>

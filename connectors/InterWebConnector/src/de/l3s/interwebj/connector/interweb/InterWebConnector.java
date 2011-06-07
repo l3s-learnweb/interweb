@@ -234,6 +234,13 @@ public class InterWebConnector
 		WebResource.Builder builder = resource.accept(MediaType.APPLICATION_XML);
 		ClientResponse response = builder.get(ClientResponse.class);
 		IWUserResponse userResponse = response.getEntity(IWUserResponse.class);
+		if (userResponse.getStat().equals(IWXMLResponse.FAILED))
+		{
+			IWErrorEntity error = userResponse.getError();
+			throw new InterWebException("InterWeb service returned respose: "
+			                            + error.getMessage() + " (error code "
+			                            + error.getCode() + ")");
+		}
 		return userResponse.getUser().getUserName();
 	}
 	

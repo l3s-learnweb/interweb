@@ -134,6 +134,7 @@ public class Engine
 	public AuthCredentials getUserAuthCredentials(ServiceConnector connector,
 	                                              Principal principal)
 	{
+		notNull(connector, "connector");
 		return (principal == null)
 		    ? null : database.readUserAuthCredentials(connector.getName(),
 		                                              principal.getName());
@@ -166,38 +167,27 @@ public class Engine
 	public Parameters processAuthenticationCallback(InterWebPrincipal principal,
 	                                                ServiceConnector connector,
 	                                                Parameters params)
+	    throws InterWebException
 	{
 		notNull(principal, "principal");
 		notNull(connector, "connector");
 		Environment.logger.debug("Finding pending authorization connector ["
 		                         + connector.getName() + "] for user ["
 		                         + principal.getName() + "]");
-		try
-		{
-			Parameters parameters = getPendingAuthorizationParameters(principal,
-			                                                          connector);
-			parameters.add(params);
-			AuthCredentials authCredentials = connector.completeAuthentication(parameters);
-			Environment.logger.debug("Connector [" + connector.getName()
-			                         + "] for user [" + principal.getName()
-			                         + "] authenticated");
-			String userId = connector.getUserId(authCredentials);
-			setUserAuthCredentials(connector.getName(),
-			                       principal,
-			                       userId,
-			                       authCredentials);
-			Environment.logger.debug("authentication data saved");
-			return parameters;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			Environment.logger.warn("Unable to continue authentication for service ["
-			                        + connector.getName()
-			                        + "]. Reason ["
-			                        + e.getMessage() + "]");
-		}
-		return null;
+		Parameters parameters = getPendingAuthorizationParameters(principal,
+		                                                          connector);
+		parameters.add(params);
+		AuthCredentials authCredentials = connector.completeAuthentication(parameters);
+		Environment.logger.debug("Connector [" + connector.getName()
+		                         + "] for user [" + principal.getName()
+		                         + "] authenticated");
+		String userId = connector.getUserId(authCredentials);
+		setUserAuthCredentials(connector.getName(),
+		                       principal,
+		                       userId,
+		                       authCredentials);
+		Environment.logger.debug("authentication data saved");
+		return parameters;
 	}
 	
 

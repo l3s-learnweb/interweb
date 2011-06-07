@@ -138,6 +138,21 @@ public class SlideShareConnector
 	public String getUserId(AuthCredentials authCredentials)
 	    throws InterWebException
 	{
+		notNull(authCredentials, "authCredentials");
+		Client client = Client.create();
+		WebResource resource = client.resource("http://www.slideshare.net/api/2/get_user_tags");
+		resource = resource.queryParam("username", authCredentials.getKey());
+		resource = resource.queryParam("password", authCredentials.getSecret());
+		System.out.println("querying URL: " + resource.toString());
+		ClientResponse response = getQuery(resource);
+		try
+		{
+			response.getEntity(TagsResponse.class);
+		}
+		catch (Exception e)
+		{
+			throw new InterWebException("User authentication failed on SlideShare");
+		}
 		return authCredentials.getKey();
 	}
 	
@@ -237,6 +252,19 @@ public class SlideShareConnector
 	}
 	
 
+	private ClientResponse getQuery(WebResource resource)
+	{
+		AuthCredentials authCredentials = getAuthCredentials();
+		long timestamp = System.currentTimeMillis() / 1000;
+		String toHash = authCredentials.getSecret() + Long.toString(timestamp);
+		resource = resource.queryParam("api_key", authCredentials.getKey());
+		resource = resource.queryParam("ts", Long.toString(timestamp));
+		resource = resource.queryParam("hash", DigestUtils.shaHex(toHash));
+		ClientResponse response = resource.get(ClientResponse.class);
+		return response;
+	}
+	
+
 	private Date parseDate(String dateString)
 	{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
@@ -255,6 +283,13 @@ public class SlideShareConnector
 	private ClientResponse postQuery(WebResource resource)
 	{
 		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+		return postQuery(resource, params);
+	}
+	
+
+	private ClientResponse postQuery(WebResource resource,
+	                                 MultivaluedMap<String, String> params)
+	{
 		AuthCredentials authCredentials = getAuthCredentials();
 		long timestamp = System.currentTimeMillis() / 1000;
 		String toHash = authCredentials.getSecret() + Long.toString(timestamp);

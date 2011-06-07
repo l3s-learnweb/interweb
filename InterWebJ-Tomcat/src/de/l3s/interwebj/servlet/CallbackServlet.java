@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
 
+import javax.faces.application.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.ws.rs.core.*;
@@ -17,6 +18,7 @@ import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.jaxb.services.*;
 import de.l3s.interwebj.rest.*;
 import de.l3s.interwebj.util.*;
+import de.l3s.interwebj.webutil.*;
 
 
 /**
@@ -39,21 +41,21 @@ public class CallbackServlet
 	
 
 	public void process(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException, InterWebException
+	    throws ServletException
 	{
 		Environment.logger.debug("query string: [" + request.getQueryString()
 		                         + "]");
 		Parameters parameters = new Parameters();
 		parameters.addMultivaluedParams(request.getParameterMap());
 		refineParameters(parameters);
-		InterWebPrincipal principal = getPrincipal(parameters);
-		ServiceConnector connector = getConnector(parameters);
-		Engine engine = Environment.getInstance().getEngine();
-		parameters = engine.processAuthenticationCallback(principal,
-		                                                  connector,
-		                                                  parameters);
 		try
 		{
+			InterWebPrincipal principal = getPrincipal(parameters);
+			ServiceConnector connector = getConnector(parameters);
+			Engine engine = Environment.getInstance().getEngine();
+			parameters = engine.processAuthenticationCallback(principal,
+			                                                  connector,
+			                                                  parameters);
 			if (parameters != null
 			    && parameters.hasParameter(Parameters.CLIENT_TYPE)
 			    && parameters.get(Parameters.CLIENT_TYPE).equals("REST"))
@@ -89,9 +91,15 @@ public class CallbackServlet
 			response.sendRedirect(request.getContextPath()
 			                      + "/view/services.xhtml");
 		}
+		catch (InterWebException e)
+		{
+			e.printStackTrace();
+			Environment.logger.error(e);
+		}
 		catch (IOException e)
 		{
-			throw new InterWebException(e);
+			e.printStackTrace();
+			Environment.logger.error(e);
 		}
 	}
 	
@@ -105,14 +113,7 @@ public class CallbackServlet
 	                     HttpServletResponse response)
 	    throws ServletException, IOException
 	{
-		try
-		{
-			process(request, response);
-		}
-		catch (InterWebException e)
-		{
-			Environment.logger.error(e);
-		}
+		process(request, response);
 	}
 	
 
@@ -125,13 +126,7 @@ public class CallbackServlet
 	                      HttpServletResponse response)
 	    throws ServletException, IOException
 	{
-		try
-		{
-			process(request, response);
-		}
-		catch (InterWebException e)
-		{
-		}
+		process(request, response);
 	}
 	
 

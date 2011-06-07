@@ -225,6 +225,7 @@ public class SearchBean
 		catch (InterWebException e)
 		{
 			e.printStackTrace();
+			Environment.logger.error(e);
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR,
 			                            e.getMessage());
 		}
