@@ -2,6 +2,7 @@ package de.l3s.interwebj.webutil;
 
 
 import java.io.*;
+import java.nio.charset.*;
 
 import javax.el.*;
 import javax.faces.*;
@@ -42,6 +43,17 @@ public class FacesUtils
 	{
 		FacesContext fc = FacesContext.getCurrentInstance();
 		fc.addMessage(id, new FacesMessage(severity, message, null));
+	}
+	
+
+	public static void addGlobalMessage(FacesMessage.Severity severity,
+	                                    Throwable e)
+	{
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(os, true);
+		e.printStackTrace(ps);
+		String message = new String(os.toByteArray(), Charset.forName("UTF8"));
+		addGlobalMessage(severity, message);
 	}
 	
 

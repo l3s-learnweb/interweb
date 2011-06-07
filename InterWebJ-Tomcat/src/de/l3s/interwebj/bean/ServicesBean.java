@@ -90,8 +90,7 @@ public class ServicesBean
 			{
 				e.printStackTrace();
 				Environment.logger.error(e);
-				FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR,
-				                            e.getMessage());
+				FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 			}
 		}
 		return "success";
@@ -171,8 +170,7 @@ public class ServicesBean
 		{
 			e.printStackTrace();
 			Environment.logger.error(e);
-			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR,
-			                            e.getMessage());
+			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 		}
 		return "success";
 	}

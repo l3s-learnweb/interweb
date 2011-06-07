@@ -226,8 +226,7 @@ public class SearchBean
 		{
 			e.printStackTrace();
 			Environment.logger.error(e);
-			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR,
-			                            e.getMessage());
+			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 		}
 		ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
 		expirableMap.put(queryResult.getQuery().getId(), queryResult);
