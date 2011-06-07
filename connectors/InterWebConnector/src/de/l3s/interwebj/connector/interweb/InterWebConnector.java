@@ -12,6 +12,8 @@ import java.util.List;
 
 import javax.ws.rs.core.*;
 
+import org.apache.commons.codec.digest.*;
+
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.config.*;
 import com.sun.jersey.core.util.*;
@@ -54,11 +56,10 @@ public class InterWebConnector
 	
 
 	@Override
-	public Parameters authenticate(PermissionLevel permissionLevel,
-	                               String callbackUrl)
+	public Parameters authenticate(String callbackUrl)
 	    throws InterWebException
 	{
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -73,17 +74,14 @@ public class InterWebConnector
 		params.add("iw_signature", iwSignature);
 		addQueryParameters(uriBuilder, params);
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("querying interweb request token: "
-		                         + resource.toString());
 		WebResource.Builder builder = resource.accept(javax.ws.rs.core.MediaType.TEXT_XML);
 		ClientResponse response = builder.get(ClientResponse.class);
-		Environment.logger.debug(response);
+		System.out.println(response);
 		if (response.getStatus() != 200)
 		{
 			throw new InterWebException(response.toString());
 		}
 		IWRequestTokenResponse requestTokenResponse = response.getEntity(IWRequestTokenResponse.class);
-		Environment.logger.debug(requestTokenResponse);
 		if (IWXMLResponse.FAILED.equals(requestTokenResponse.getStat()))
 		{
 			IWErrorEntity error = requestTokenResponse.getError();
@@ -96,13 +94,12 @@ public class InterWebConnector
 		params.add("iw_token", requestToken);
 		params.add("iw_consumer_key", consumerAuthCredentials.getKey());
 		iwSignature = generateSignature(API_AUTHORIZE_TOKEN_PATH, params);
-		Environment.logger.debug("iwSignature: [" + iwSignature + "]");
 		params.add("iw_signature", iwSignature);
 		params.add("callback", callbackUrl);
 		uriBuilder = UriBuilder.fromUri(getBaseUrl());
 		uriBuilder.path("api").path(API_AUTHORIZE_TOKEN_PATH);
 		addQueryParameters(uriBuilder, params);
-		params.add(Parameters.OAUTH_AUTHORIZATION_URL,
+		params.add(Parameters.AUTHORIZATION_URL,
 		           uriBuilder.build().toASCIIString());
 		return params;
 	}
@@ -121,12 +118,11 @@ public class InterWebConnector
 	{
 		notNull(params, "params");
 		AuthCredentials authCredentials = null;
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
 		String iwToken = params.get("iw_token");
-		Environment.logger.debug("iw_token: " + iwToken);
 		if (iwToken != null)
 		{
 			authCredentials = new AuthCredentials(iwToken);
@@ -140,7 +136,7 @@ public class InterWebConnector
 	    throws InterWebException
 	{
 		notNull(query, "query");
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -169,8 +165,6 @@ public class InterWebConnector
 		params.add("iw_signature", iwSignature);
 		addQueryParameters(uriBuilder, params);
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("querying interweb search: "
-		                         + resource.toString());
 		WebResource.Builder builder = resource.accept(javax.ws.rs.core.MediaType.TEXT_XML);
 		ClientResponse response = builder.get(ClientResponse.class);
 		if (response.getStatus() != 200)
@@ -185,15 +179,9 @@ public class InterWebConnector
 			                            + error.getMessage() + " (error code "
 			                            + error.getCode() + ")");
 		}
-		Environment.logger.debug("standing link: "
-		                         + searchResponse.getQuery().getLink());
 		parseSearchResponse(queryResult, searchResponse);
-		Environment.logger.debug("results count: ["
-		                         + searchResponse.getQuery().getResults().size()
-		                         + "]");
-		Environment.logger.debug("time elapsed: ["
-		                         + searchResponse.getQuery().getElapsedTime()
-		                         + "]");
+		System.out.println("[InterWeb] query time elapsed: ["
+		                   + searchResponse.getQuery().getElapsedTime() + "]");
 		return queryResult;
 	}
 	
@@ -216,13 +204,10 @@ public class InterWebConnector
 		params.add("iw_signature", iwSignature);
 		addQueryParameters(uriBuilder, params);
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("querying interweb embedded: "
-		                         + resource.toString());
 		WebResource.Builder builder = resource.accept(MediaType.TEXT_XML);
 		ClientResponse response = builder.get(ClientResponse.class);
-		Environment.logger.debug(response);
+		System.out.println(response);
 		IWEmbeddedResponse iwEmbeddedResponse = response.getEntity(IWEmbeddedResponse.class);
-		System.out.println(iwEmbeddedResponse);
 		if (iwEmbeddedResponse.getStat().equals(IWXMLResponse.FAILED))
 		{
 			throw new InterWebException("URL: [" + url
@@ -246,21 +231,24 @@ public class InterWebConnector
 		addQueryParameters(uriBuilder, params);
 		Client client = Client.create();
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("querying interweb resource: "
-		                         + resource.toString());
 		WebResource.Builder builder = resource.accept(MediaType.APPLICATION_XML);
 		ClientResponse response = builder.get(ClientResponse.class);
 		IWUserResponse userResponse = response.getEntity(IWUserResponse.class);
-		Environment.logger.debug("userName: ["
-		                         + userResponse.getUser().getUserName() + "]");
 		return userResponse.getUser().getUserName();
 	}
 	
 
 	@Override
-	public boolean isRegistrationRequired()
+	public boolean isConnectorRegistrationDataRequired()
 	{
 		return true;
+	}
+	
+
+	@Override
+	public boolean isUserRegistrationDataRequired()
+	{
+		return false;
 	}
 	
 
@@ -274,7 +262,7 @@ public class InterWebConnector
 		notNull(data, "data");
 		notNull(contentType, "contentType");
 		notNull(params, "params");
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -324,8 +312,7 @@ public class InterWebConnector
 		iwParams.remove("is_private");
 		addQueryParameters(uriBuilder, iwParams);
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("uploading to interweb: "
-		                         + resource.toString());
+		System.out.println("uploading to interweb: " + resource.toString());
 		File f = null;
 		if (isFileUpload(contentType))
 		{
@@ -419,8 +406,7 @@ public class InterWebConnector
 			}
 		}
 		params.remove("iw_path");
-		Environment.logger.debug("hashing string: [" + sb.toString() + "]");
-		return CoreUtils.generateMD5Hash(sb.toString().getBytes(Charset.forName("UTF-8")));
+		return DigestUtils.md5Hex(sb.toString().getBytes(Charset.forName("UTF-8")));
 	}
 	
 
@@ -439,8 +425,7 @@ public class InterWebConnector
 			}
 		}
 		params.remove("iw_path");
-		Environment.logger.debug("hashing string: [" + sb.toString() + "]");
-		return CoreUtils.generateMD5Hash(sb.toString().getBytes(Charset.forName("UTF-8")));
+		return DigestUtils.md5Hex(sb.toString().getBytes(Charset.forName("UTF-8")));
 	}
 	
 
@@ -479,7 +464,7 @@ public class InterWebConnector
 	}
 	
 
-	private String getRanking(SortOrder sortOrder)
+	private String getRanking(de.l3s.interwebj.query.Query.SortOrder sortOrder)
 	{
 		switch (sortOrder)
 		{
@@ -556,10 +541,11 @@ public class InterWebConnector
 	private void parseSearchResponse(QueryResult queryResult,
 	                                 IWSearchResponse searchResponse)
 	{
+		int totalResultCount = 0;
 		List<IWSearchResultEntity> searchResults = searchResponse.getQuery().getResults();
 		for (IWSearchResultEntity searchResult : searchResults)
 		{
-			ResultItem resultItem = new ImageResultItem(getName());
+			ResultItem resultItem = new ResultItem(getName());
 			resultItem.setServiceName(searchResult.getService() + " ("
 			                          + getName() + ")");
 			resultItem.setId(searchResult.getIdAtService());
@@ -574,11 +560,13 @@ public class InterWebConnector
 			resultItem.setDate(searchResult.getDate());
 			resultItem.setTags(searchResult.getTags());
 			resultItem.setRank(searchResult.getRankAtService());
-			resultItem.setTotalResultCount(searchResult.getTotalResultsAtService());
+			totalResultCount = searchResult.getTotalResultsAtService();
+			resultItem.setTotalResultCount(totalResultCount);
 			resultItem.setViewCount(searchResult.getNumberOfViews());
 			resultItem.setCommentCount(searchResult.getNumberOfComments());
 			queryResult.addResultItem(resultItem);
 		}
+		queryResult.setTotalResultCount(totalResultCount);
 	}
 	
 
@@ -588,10 +576,10 @@ public class InterWebConnector
 		//		testAuthenticate("Flickr");
 		//		testRevokeFromLearnWeb("Flickr");
 		//		testRevokeFromLearnWeb("YouTube");
-		//		testServices();
+		testServices();
 		//		testUserServices();
 		//		testService("Flickr");
-		//		testGet();
+		testGet();
 		testEmbedded();
 	}
 	
@@ -622,7 +610,7 @@ public class InterWebConnector
 		params.add("iw_signature", iwSignature);
 		Client client = Client.create();
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("querying interweb: " + resource.toString());
+		System.out.println("querying interweb: " + resource.toString());
 		WebResource.Builder builder = resource.accept(MediaType.WILDCARD);
 		builder = resource.type(MediaType.APPLICATION_FORM_URLENCODED);
 		System.out.println(params.toQueryString());
@@ -708,7 +696,7 @@ public class InterWebConnector
 		iwc.addQueryParameters(uriBuilder, params);
 		Client client = Client.create();
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("querying interweb: " + resource.toString());
+		System.out.println("querying interweb: " + resource.toString());
 		WebResource.Builder builder = resource.accept(MediaType.WILDCARD);
 		builder = builder.type(MediaType.APPLICATION_FORM_URLENCODED);
 		ClientResponse response = builder.delete(ClientResponse.class);
@@ -739,8 +727,7 @@ public class InterWebConnector
 		iwc.addQueryParameters(uriBuilder, params);
 		Client client = Client.create();
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("querying interweb search: "
-		                         + resource.toString());
+		System.out.println("querying interweb search: " + resource.toString());
 		WebResource.Builder builder = resource.accept(MediaType.TEXT_XML);
 		ClientResponse response = builder.get(ClientResponse.class);
 		String responseContent = response.getEntity(String.class);
@@ -770,8 +757,7 @@ public class InterWebConnector
 		iwc.addQueryParameters(uriBuilder, params);
 		Client client = Client.create();
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("querying interweb search: "
-		                         + resource.toString());
+		System.out.println("querying interweb search: " + resource.toString());
 		WebResource.Builder builder = resource.accept(MediaType.TEXT_XML);
 		ClientResponse response = builder.get(ClientResponse.class);
 		String responseContent = response.getEntity(String.class);
@@ -801,8 +787,7 @@ public class InterWebConnector
 		iwc.addQueryParameters(uriBuilder, params);
 		Client client = Client.create();
 		WebResource resource = client.resource(uriBuilder.build());
-		Environment.logger.debug("querying interweb search: "
-		                         + resource.toString());
+		System.out.println("querying interweb search: " + resource.toString());
 		WebResource.Builder builder = resource.accept(MediaType.TEXT_XML);
 		ClientResponse response = builder.get(ClientResponse.class);
 		String responseContent = response.getEntity(String.class);
