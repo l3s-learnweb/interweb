@@ -9,7 +9,9 @@ import java.util.*;
 public class Parameters
 {
 	
-	public static final String OAUTH_AUTHORIZATION_URL = "oauth_authorization_url";
+	public static final String AUTHORIZATION_URL = "authorization_url";
+	public static final String USER_KEY = "user_key";
+	public static final String USER_SECRET = "user_secret";
 	public static final String OAUTH_TOKEN = "oauth_token";
 	public static final String OAUTH_TOKEN_SECRET = "oauth_token_secret";
 	public static final String OAUTH_VERIFIER = "oauth_verifier";
@@ -24,6 +26,8 @@ public class Parameters
 	public static final String TOKEN = "token";
 	public static final String CONSUMER_KEY = "consumer_key";
 	public static final String CALLBACK = "callback";
+	public static final String IWJ_USER_ID = "iwj_user_id";
+	public static final String IWJ_CONNECTOR_ID = "iwj_connector_id";
 	
 	private Map<String, String> parameters;
 	
@@ -40,6 +44,15 @@ public class Parameters
 	}
 	
 
+	public void add(Parameters parameters)
+	{
+		for (String parameter : parameters.keySet())
+		{
+			this.parameters.put(parameter, parameters.get(parameter));
+		}
+	}
+	
+
 	public void add(String name, String value)
 	{
 		parameters.put(name, value);
@@ -53,9 +66,9 @@ public class Parameters
 			String decodedValue = URLDecoder.decode(value, "UTF-8");
 			add(name, decodedValue);
 		}
-		catch (UnsupportedEncodingException shouldNeverOccurs)
+		catch (UnsupportedEncodingException shouldNeverOccur)
 		{
-			shouldNeverOccurs.printStackTrace();
+			shouldNeverOccur.printStackTrace();
 		}
 	}
 	
@@ -150,5 +163,18 @@ public class Parameters
 			}
 		}
 		return sb.toString();
+	}
+	
+
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append("Parameters ");
+		if (parameters != null)
+		{
+			builder.append(parameters);
+		}
+		return builder.toString();
 	}
 }

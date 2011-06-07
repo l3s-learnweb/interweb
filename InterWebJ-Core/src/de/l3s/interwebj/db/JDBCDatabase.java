@@ -31,6 +31,7 @@ public class JDBCDatabase
 	
 	private static final String PSTMT_HAS_CONNECTOR = "SELECT count(*) FROM iwj_connectors WHERE name=?";
 	private static final String PSTMT_SELECT_CONNECTOR_AUTH_CREDENTIALS = "SELECT `key`, secret FROM iwj_connectors WHERE name=?";
+	private static final String PSTMT_UPDATE_CONNECTOR_AUTH_CREDENTIALS = "UPDATE iwj_connectors SET `key`=?,secret=? WHERE name=?";
 	private static final String PSTMT_INSERT_CONNECTOR = "INSERT INTO iwj_connectors (name,`key`,secret) VALUES (?,?,?)";
 	private static final String PSTMT_DELETE_CONNECTOR = "DELETE FROM iwj_connectors WHERE name=?";
 	
@@ -182,6 +183,34 @@ public class JDBCDatabase
 			logger.error(e);
 			close();
 		}
+	}
+	
+
+	@Override
+	public boolean hasConnector(String connectorName)
+	{
+		notNull(connectorName, "connectorName");
+		boolean exists = false;
+		try
+		{
+			if (openConnection())
+			{
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_HAS_CONNECTOR);
+				pstmt.setString(1, connectorName);
+				rs = pstmt.executeQuery();
+				if (rs.next())
+				{
+					exists = (rs.getInt(1) == 1);
+				}
+				silentCloseResultSet(rs);
+			}
+		}
+		catch (SQLException e)
+		{
+			logger.error(e);
+			close();
+		}
+		return exists;
 	}
 	
 
@@ -597,10 +626,7 @@ public class JDBCDatabase
 		{
 			if (openConnection())
 			{
-				PreparedStatement pstmt = preparedStatements.get(PSTMT_DELETE_PRINCIPAL);
-				pstmt.setString(1, principal.getName());
-				pstmt.executeUpdate();
-				pstmt = preparedStatements.get(PSTMT_INSERT_PRINCIPAL);
+				PreparedStatement pstmt = preparedStatements.get(PSTMT_INSERT_PRINCIPAL);
 				pstmt.setString(1, principal.getName());
 				setString(pstmt, 2, password);
 				setString(pstmt, 3, principal.getEmail());
@@ -827,6 +853,7 @@ public class JDBCDatabase
 		
 		addPreparedStatement(PSTMT_HAS_CONNECTOR);
 		addPreparedStatement(PSTMT_SELECT_CONNECTOR_AUTH_CREDENTIALS);
+		addPreparedStatement(PSTMT_UPDATE_CONNECTOR_AUTH_CREDENTIALS);
 		addPreparedStatement(PSTMT_INSERT_CONNECTOR);
 		addPreparedStatement(PSTMT_DELETE_CONNECTOR);
 		

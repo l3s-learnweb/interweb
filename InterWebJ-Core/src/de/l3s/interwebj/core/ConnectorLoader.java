@@ -4,7 +4,6 @@ package de.l3s.interwebj.core;
 import java.io.*;
 import java.util.*;
 
-import org.apache.commons.configuration.*;
 import org.xeustechnologies.jcl.*;
 
 import de.l3s.interwebj.config.Configuration;
@@ -14,20 +13,6 @@ public class ConnectorLoader
 {
 	
 	public static final String CONNECTOR_CONFIG_FILE_NAME = "connector-config.xml";
-	
-
-	private File[] getJars(File dir)
-	{
-		return dir.listFiles(new FileFilter()
-		{
-			
-			@Override
-			public boolean accept(File file)
-			{
-				return !file.isDirectory() && file.getName().endsWith(".jar");
-			}
-		});
-	}
 	
 
 	public List<ServiceConnector> load(String pluginDirPath)
@@ -63,6 +48,20 @@ public class ConnectorLoader
 			                         + "] is not a directory or doesn't exist");
 		}
 		return connectors;
+	}
+	
+
+	private File[] getJars(File dir)
+	{
+		return dir.listFiles(new FileFilter()
+		{
+			
+			@Override
+			public boolean accept(File file)
+			{
+				return !file.isDirectory() && file.getName().endsWith(".jar");
+			}
+		});
 	}
 	
 
@@ -112,11 +111,6 @@ public class ConnectorLoader
 			connector = JclUtils.cast(o, ServiceConnector.class);
 			Environment.logger.info("Connector [" + connector.getName()
 			                        + "] successfully loaded");
-		}
-		catch (ConfigurationException e)
-		{
-			e.printStackTrace();
-			Environment.logger.error(e);
 		}
 		catch (FileNotFoundException e)
 		{

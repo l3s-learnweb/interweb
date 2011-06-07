@@ -106,9 +106,18 @@ public abstract class AbstractServiceConnector
 	
 
 	@Override
-	public boolean isRegistered()
+	public boolean isConnectorRegistered()
 	{
 		return consumerAuthCredentials != null;
+	}
+	
+
+	@Override
+	public Parameters getRefinedCallbackParameters(Parameters parameters)
+	{
+		Parameters refinedParameters = new Parameters();
+		refinedParameters.add(parameters);
+		return parameters;
 	}
 	
 

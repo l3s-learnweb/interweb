@@ -10,48 +10,7 @@ import de.l3s.interwebj.query.*;
 public interface ServiceConnector
 {
 	
-	public enum PermissionLevel
-	{
-		NONE, READ, WRITE, DELETE;
-		
-		public int getCode()
-		{
-			return ordinal();
-		}
-		
-
-		public String getName()
-		{
-			return name().toLowerCase();
-		}
-		
-
-		public static PermissionLevel getPermissionLevel(int code)
-		{
-			if (code >= 0 && code < PermissionLevel.values().length)
-			{
-				return PermissionLevel.values()[code];
-			}
-			return NONE;
-		}
-		
-
-		public static PermissionLevel getPermissionLevel(String name)
-		{
-			try
-			{
-				return PermissionLevel.valueOf(name.toUpperCase());
-			}
-			catch (IllegalArgumentException e)
-			{
-				return NONE;
-			}
-		}
-	}
-	
-
-	public abstract Parameters authenticate(PermissionLevel permissionLevel,
-	                                        String callbackUrl)
+	public abstract Parameters authenticate(String callbackUrl)
 	    throws InterWebException;
 	
 
@@ -89,10 +48,13 @@ public interface ServiceConnector
 	    throws InterWebException;
 	
 
-	public abstract boolean isRegistered();
+	public abstract boolean isConnectorRegistrationDataRequired();
 	
 
-	public abstract boolean isRegistrationRequired();
+	public abstract boolean isConnectorRegistered();
+	
+
+	public abstract boolean isUserRegistrationDataRequired();
 	
 
 	public abstract void put(byte[] data,
@@ -100,6 +62,9 @@ public interface ServiceConnector
 	                         Parameters params,
 	                         AuthCredentials authCredentials)
 	    throws InterWebException;
+	
+
+	public abstract Parameters getRefinedCallbackParameters(Parameters parameters);
 	
 
 	public abstract void revokeAuthentication()

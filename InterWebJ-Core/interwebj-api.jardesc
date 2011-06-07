@@ -11,16 +11,12 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <folder path="/InterWebJ-Core/connectors"/>
         <javaElement handleIdentifier="=InterWebJ-Core/src&lt;de.l3s.interwebj"/>
+        <javaElement handleIdentifier="=InterWebJ-Core/src&lt;de.l3s.interwebj.query{Thumbnail.java"/>
         <javaElement handleIdentifier="=InterWebJ-Core/src&lt;de.l3s.interwebj.query{ResultItem.java"/>
         <javaElement handleIdentifier="=InterWebJ-Core/src&lt;de.l3s.interwebj.core{ServiceConnector.java"/>
-        <javaElement handleIdentifier="=InterWebJ-Core/config"/>
-        <javaElement handleIdentifier="=InterWebJ-Core/src&lt;de.l3s.interwebj.query{FriendResultItem.java"/>
-        <javaElement handleIdentifier="=InterWebJ-Core/src&lt;de.l3s.interwebj.query{ImageResultItem.java"/>
-        <javaElement handleIdentifier="=InterWebJ-Core/src&lt;de.l3s.interwebj.util{CoreUtils.java"/>
         <javaElement handleIdentifier="=InterWebJ-Core/src&lt;de.l3s.interwebj.query{QueryResult.java"/>
+        <javaElement handleIdentifier="=InterWebJ-Core/src&lt;de.l3s.interwebj.util{CoreUtils.java"/>
         <javaElement handleIdentifier="=InterWebJ-Core/src&lt;de.l3s.interwebj.query{Query.java"/>
-        <folder path="/InterWebJ-Core/lib"/>
     </selectedElements>
 </jardesc>

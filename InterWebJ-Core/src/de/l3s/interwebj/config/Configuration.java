@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.*;
 
 import org.apache.commons.configuration.*;
+import org.apache.commons.configuration.ConfigurationException;
 
 
 public class Configuration
@@ -14,10 +15,16 @@ public class Configuration
 	
 
 	public Configuration(InputStream is)
-	    throws ConfigurationException
 	{
 		configuration = (XMLConfiguration) new XMLConfiguration().interpolatedConfiguration();
-		configuration.load(is);
+		try
+		{
+			configuration.load(is);
+		}
+		catch (ConfigurationException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 

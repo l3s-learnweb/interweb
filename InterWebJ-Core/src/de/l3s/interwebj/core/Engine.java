@@ -1,6 +1,8 @@
 package de.l3s.interwebj.core;
 
 
+import static de.l3s.interwebj.util.Assertions.*;
+
 import java.security.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -20,7 +22,7 @@ public class Engine
 	private Set<String> contentTypes;
 	private Database database;
 	private ExpirableMap<String, Object> expirableMap;
-	private Map<ServiceConnector, Parameters> pendingAuthorizationConnectors;
+	private Map<String, Map<ServiceConnector, Parameters>> pendingAuthorizationConnectors;
 	
 
 	public Engine(Database database)
@@ -30,10 +32,28 @@ public class Engine
 	}
 	
 
-	public void addPendingAuthorizationConnector(ServiceConnector connector,
+	public void addPendingAuthorizationConnector(InterWebPrincipal principal,
+	                                             ServiceConnector connector,
 	                                             Parameters params)
 	{
-		pendingAuthorizationConnectors.put(connector, params);
+		notNull(principal, "principal");
+		notNull(connector, "connector");
+		notNull(params, "params");
+		Environment.logger.debug("Adding pending authorization connector ["
+		                         + connector.getName() + "] for user ["
+		                         + principal.getName() + "]");
+		Environment.logger.debug("params: [" + params + "]");
+		Map<ServiceConnector, Parameters> expirableMap = createExpirableMap(60);
+		if (pendingAuthorizationConnectors.containsKey(principal.getName()))
+		{
+			expirableMap = pendingAuthorizationConnectors.get(principal.getName());
+		}
+		else
+		{
+			pendingAuthorizationConnectors.put(principal.getName(),
+			                                   expirableMap);
+		}
+		expirableMap.put(connector, params);
 	}
 	
 
@@ -100,7 +120,7 @@ public class Engine
 		for (String connectorName : query.getConnectorNames())
 		{
 			ServiceConnector connector = getConnector(connectorName);
-			if (connector.isRegistered())
+			if (connector.isConnectorRegistered())
 			{
 				AuthCredentials authCredentials = getUserAuthCredentials(connector,
 				                                                         principal);
@@ -135,49 +155,47 @@ public class Engine
 		for (ServiceConnector connector : connectors)
 		{
 			addConnector(connector);
+			if (!database.hasConnector(connector.getName()))
+			{
+				database.saveConnector(connector.getName(), null);
+			}
 		}
 	}
 	
 
 	public Parameters processAuthenticationCallback(InterWebPrincipal principal,
-	                                                Map<String, String[]> params)
+	                                                ServiceConnector connector,
+	                                                Parameters params)
 	{
-		for (ServiceConnector connector : pendingAuthorizationConnectors.keySet())
+		notNull(principal, "principal");
+		notNull(connector, "connector");
+		Environment.logger.debug("Finding pending authorization connector ["
+		                         + connector.getName() + "] for user ["
+		                         + principal.getName() + "]");
+		try
 		{
-			Parameters parameters = pendingAuthorizationConnectors.get(connector);
-			if (principal == null)
-			{
-				String userToken = parameters.get(Parameters.TOKEN);
-				principal = database.readPrincipalByKey(userToken);
-			}
-			parameters.addMultivaluedParams(params);
-			try
-			{
-				AuthCredentials authCredentials = connector.completeAuthentication(parameters);
-				if (authCredentials != null)
-				{
-					parameters.add(Parameters.CONNECTOR_NAME,
-					               connector.getName());
-					pendingAuthorizationConnectors.remove(connector);
-					Environment.logger.debug(connector.getName()
-					                         + " authenticated");
-					String userId = connector.getUserId(authCredentials);
-					setUserAuthCredentials(connector.getName(),
-					                       principal,
-					                       userId,
-					                       authCredentials);
-					Environment.logger.debug("authentication data saved");
-					return parameters;
-				}
-				
-			}
-			catch (Exception e)
-			{
-				Environment.logger.warn("Unable to continue authentication for service ["
-				                        + connector.getName()
-				                        + "]. Reason ["
-				                        + e.getMessage() + "]");
-			}
+			Parameters parameters = getPendingAuthorizationParameters(principal,
+			                                                          connector);
+			parameters.add(params);
+			AuthCredentials authCredentials = connector.completeAuthentication(parameters);
+			Environment.logger.debug("Connector [" + connector.getName()
+			                         + "] for user [" + principal.getName()
+			                         + "] authenticated");
+			String userId = connector.getUserId(authCredentials);
+			setUserAuthCredentials(connector.getName(),
+			                       principal,
+			                       userId,
+			                       authCredentials);
+			Environment.logger.debug("authentication data saved");
+			return parameters;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			Environment.logger.warn("Unable to continue authentication for service ["
+			                        + connector.getName()
+			                        + "]. Reason ["
+			                        + e.getMessage() + "]");
 		}
 		return null;
 	}
@@ -218,7 +236,7 @@ public class Engine
 			Environment.logger.debug("connectorName: [" + connectorName + "]");
 			ServiceConnector connector = getConnector(connectorName);
 			if (connector != null && connector.supportContentType(contentType)
-			    && connector.isRegistered()
+			    && connector.isConnectorRegistered()
 			    && isUserAuthenticated(connector, principal))
 			{
 				Environment.logger.debug("uploading to connector: "
@@ -242,6 +260,46 @@ public class Engine
 	}
 	
 
+	private ExpirableMap<ServiceConnector, Parameters> createExpirableMap(int minutes)
+	{
+		ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
+		return new ExpirableMap<ServiceConnector, Parameters>(builder.timeToIdle(minutes,
+		                                                                         TimeUnit.MINUTES).build());
+	}
+	
+
+	private Parameters getPendingAuthorizationParameters(InterWebPrincipal principal,
+	                                                     ServiceConnector connector)
+	    throws InterWebException
+	{
+		notNull(principal, "principal");
+		notNull(connector, "connector");
+		if (!pendingAuthorizationConnectors.containsKey(principal.getName())
+		    || pendingAuthorizationConnectors.get(principal.getName()) == null)
+		{
+			pendingAuthorizationConnectors.remove(principal.getName());
+			throw new InterWebException("There are no connectors with pending authorization info for user ["
+			                            + principal.getName() + "]");
+		}
+		Map<ServiceConnector, Parameters> expirableMap = pendingAuthorizationConnectors.get(principal.getName());
+		if (!expirableMap.containsKey(connector)
+		    || expirableMap.get(connector) == null)
+		{
+			throw new InterWebException("There are no parameters with pending authorization info for user ["
+			                            + principal.getName()
+			                            + "] and connector ["
+			                            + connector.getName() + "]");
+		}
+		Parameters parameters = expirableMap.get(connector);
+		expirableMap.remove(connector);
+		if (expirableMap.isEmpty())
+		{
+			pendingAuthorizationConnectors.remove(principal.getName());
+		}
+		return parameters;
+	}
+	
+
 	private void init()
 	{
 		connectors = new TreeMap<String, ServiceConnector>();
@@ -249,8 +307,7 @@ public class Engine
 		ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
 		expirableMap = new ExpirableMap<String, Object>(builder.timeToIdle(60,
 		                                                                   TimeUnit.MINUTES).build());
-		pendingAuthorizationConnectors = new ExpirableMap<ServiceConnector, Parameters>(builder.timeToIdle(60,
-		                                                                                                   TimeUnit.MINUTES).build());
+		pendingAuthorizationConnectors = new HashMap<String, Map<ServiceConnector, Parameters>>();
 	}
 	
 

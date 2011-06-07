@@ -2,13 +2,10 @@ package de.l3s.interwebj.util;
 
 
 import java.io.*;
-import java.security.*;
 import java.text.*;
 import java.util.*;
 
 import javax.ws.rs.core.*;
-
-import org.apache.commons.codec.binary.*;
 
 import com.sun.jersey.api.client.*;
 
@@ -36,6 +33,12 @@ public class CoreUtils
 	}
 	
 
+	public static String formatDate(Date date)
+	{
+		return formatDate(DEFAULT_DATE_FORMAT, date.getTime());
+	}
+	
+
 	public static String formatDate(DateFormat df, long millis)
 	{
 		return df.format(new Date(millis));
@@ -45,24 +48,6 @@ public class CoreUtils
 	public static String formatDate(long millis)
 	{
 		return formatDate(DEFAULT_DATE_FORMAT, millis);
-	}
-	
-
-	public static String generateMD5Hash(byte[] data)
-	{
-		try
-		{
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.reset();
-			md.update(data);
-			final byte[] resultByte = md.digest();
-			return new String(Hex.encodeHex(resultByte));
-		}
-		catch (NoSuchAlgorithmException shouldNeverOccurs)
-		{
-			shouldNeverOccurs.printStackTrace();
-		}
-		return null;
 	}
 	
 

@@ -69,6 +69,9 @@ public interface Database
 	void deleteMediator(String mediator);
 	
 
+	boolean hasConnector(String connectorName);
+	
+
 	String readMediator(String userName);
 	
 
