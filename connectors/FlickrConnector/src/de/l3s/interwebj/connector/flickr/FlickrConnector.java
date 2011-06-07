@@ -54,32 +54,31 @@ public class FlickrConnector
 	
 
 	@Override
-	public Parameters authenticate(PermissionLevel permissionLevel,
-	                               String callbackUrl)
+	public Parameters authenticate(String callbackUrl)
 	    throws InterWebException
 	{
-		notNull(permissionLevel, "permissionLevel");
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
 		Parameters params = new Parameters();
 		try
 		{
+			String callbackQueryParams = URI.create(callbackUrl).getQuery();
 			AuthCredentials consumerAuthCredentials = getAuthCredentials();
 			AuthInterface authInterface = new ExtraAuthInterface(consumerAuthCredentials.getKey(),
 			                                                     consumerAuthCredentials.getSecret(),
 			                                                     new REST(),
-			                                                     callbackUrl);
+			                                                     callbackQueryParams);
 			String authId = authInterface.getFrob();
 			System.out.println("authId: [" + authId + "]");
-			Permission permission = Permission.fromString(permissionLevel.getName());
+			Permission permission = Permission.DELETE;
 			URL requestTokenUrl = authInterface.buildAuthenticationUrl(permission,
 			                                                           authId);
 			System.out.println("callbackUrl: [" + callbackUrl + "]");
 			System.out.println("requestTokenUrl: ["
 			                   + requestTokenUrl.toExternalForm() + "]");
-			params.add(Parameters.OAUTH_AUTHORIZATION_URL,
+			params.add(Parameters.AUTHORIZATION_URL,
 			           requestTokenUrl.toExternalForm());
 		}
 		catch (Exception e)
@@ -104,7 +103,7 @@ public class FlickrConnector
 	{
 		notNull(params, "params");
 		AuthCredentials authCredentials = null;
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -112,7 +111,7 @@ public class FlickrConnector
 		{
 			String frob = params.get("frob");
 			Flickr flickr = createFlickrInstance();
-			System.out.println("request token frob: " + frob);
+			Environment.logger.debug("request token frob: " + frob);
 			AuthInterface authInterface = flickr.getAuthInterface();
 			Auth auth = authInterface.getToken(frob);
 			authCredentials = new AuthCredentials(auth.getToken());
@@ -131,7 +130,7 @@ public class FlickrConnector
 	    throws InterWebException
 	{
 		notNull(query, "query");
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -200,6 +199,27 @@ public class FlickrConnector
 	
 
 	@Override
+	public Parameters getRefinedCallbackParameters(Parameters parameters)
+	{
+		Parameters refinedParameters = new Parameters();
+		for (String parameterName : parameters.keySet())
+		{
+			if (parameterName.equals("extra"))
+			{
+				String query = parameters.get(parameterName);
+				refinedParameters.addQueryParameters(query);
+			}
+			else
+			{
+				refinedParameters.add(parameterName,
+				                      parameters.get(parameterName));
+			}
+		}
+		return refinedParameters;
+	}
+	
+
+	@Override
 	public String getUserId(AuthCredentials authCredentials)
 	    throws InterWebException
 	{
@@ -230,9 +250,16 @@ public class FlickrConnector
 	
 
 	@Override
-	public boolean isRegistrationRequired()
+	public boolean isConnectorRegistrationDataRequired()
 	{
 		return true;
+	}
+	
+
+	@Override
+	public boolean isUserRegistrationDataRequired()
+	{
+		return false;
 	}
 	
 
@@ -246,7 +273,7 @@ public class FlickrConnector
 		notNull(data, "data");
 		notNull(contentType, "contentType");
 		notNull(params, "params");
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -341,7 +368,7 @@ public class FlickrConnector
 	private Flickr createFlickrInstance()
 	    throws InterWebException
 	{
-		if (!isRegistered())
+		if (!isConnectorRegistered())
 		{
 			throw new InterWebException("Unable to create Flickr instance. Service is not registered");
 		}
@@ -363,9 +390,9 @@ public class FlickrConnector
 	private ResultItem createResultItem(Photo photo,
 	                                    int rank,
 	                                    int totalResultCount)
-	    throws FlickrException
+	    throws FlickrException, InterWebException
 	{
-		ResultItem resultItem = new ImageResultItem(getName());
+		ResultItem resultItem = new ResultItem(getName());
 		resultItem.setId(photo.getId());
 		resultItem.setType(createContentType(photo.getMedia()));
 		resultItem.setTitle(photo.getTitle());
@@ -468,9 +495,9 @@ public class FlickrConnector
 				PhotoList photoList = pi.search(params,
 				                                query.getResultCount(),
 				                                1);
-				System.out.println("Total " + photoList.getTotal()
-				                   + " result(s) found");
 				int count = 0;
+				int totalResultCount = photoList.getTotal();
+				queryResult.setTotalResultCount(totalResultCount);
 				for (Object o : photoList)
 				{
 					if (o instanceof Photo)
@@ -478,7 +505,7 @@ public class FlickrConnector
 						Photo photo = (Photo) o;
 						ResultItem resultItem = createResultItem(photo,
 						                                         count,
-						                                         photoList.getTotal());
+						                                         totalResultCount);
 						queryResult.addResultItem(resultItem);
 						count++;
 					}
