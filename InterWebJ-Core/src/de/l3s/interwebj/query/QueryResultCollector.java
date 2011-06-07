@@ -100,7 +100,6 @@ public class QueryResultCollector
 			}
 			catch (TimeoutException e)
 			{
-				task.cancel(true);
 				e.printStackTrace();
 				Environment.logger.warn(e);
 			}
