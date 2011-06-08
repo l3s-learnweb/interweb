@@ -5,7 +5,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
 
-import javax.faces.application.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.ws.rs.core.*;
@@ -18,7 +17,6 @@ import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.jaxb.services.*;
 import de.l3s.interwebj.rest.*;
 import de.l3s.interwebj.util.*;
-import de.l3s.interwebj.webutil.*;
 
 
 /**

@@ -48,7 +48,7 @@ public interface ServiceConnector
 	    throws InterWebException;
 	
 
-	public abstract boolean isConnectorRegistrationDataRequired();
+	public abstract boolean isConnectorRegistrationRequired();
 	
 
 	public abstract boolean isConnectorRegistered();

@@ -246,7 +246,7 @@ public class InterWebConnector
 	
 
 	@Override
-	public boolean isConnectorRegistrationDataRequired()
+	public boolean isConnectorRegistrationRequired()
 	{
 		return true;
 	}

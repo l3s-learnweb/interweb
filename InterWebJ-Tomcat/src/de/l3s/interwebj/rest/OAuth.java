@@ -232,7 +232,7 @@ public class OAuth
 	}
 	
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("all")
 	private static void testSearch()
 	    throws Exception
 	{

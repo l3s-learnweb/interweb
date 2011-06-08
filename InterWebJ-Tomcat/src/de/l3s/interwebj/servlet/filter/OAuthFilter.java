@@ -3,8 +3,6 @@ package de.l3s.interwebj.servlet.filter;
 
 import static de.l3s.interwebj.webutil.RestUtils.*;
 
-import java.security.*;
-
 import javax.ws.rs.core.*;
 
 import com.sun.jersey.oauth.server.*;
@@ -77,7 +75,6 @@ public class OAuthFilter
 			if (principal != null && principal.getOauthCredentials() != null)
 			{
 				tokenSecret = principal.getOauthCredentials().getSecret();
-				containerRequest.setSecurityContext(createSecurityContext(principal));
 			}
 			secrets.tokenSecret(tokenSecret);
 		}
@@ -104,38 +101,4 @@ public class OAuthFilter
 		return containerRequest;
 	}
 	
-
-	private SecurityContext createSecurityContext(final InterWebPrincipal principal)
-	{
-		return new SecurityContext()
-		{
-			
-			@Override
-			public String getAuthenticationScheme()
-			{
-				return context.getAuthenticationScheme();
-			}
-			
-
-			@Override
-			public Principal getUserPrincipal()
-			{
-				return principal;
-			}
-			
-
-			@Override
-			public boolean isSecure()
-			{
-				return context.isSecure();
-			}
-			
-
-			@Override
-			public boolean isUserInRole(String role)
-			{
-				return principal.hasRole(role);
-			}
-		};
-	}
 }

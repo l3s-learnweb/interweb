@@ -160,7 +160,7 @@ public class SlideShareConnector
 	
 
 	@Override
-	public boolean isConnectorRegistrationDataRequired()
+	public boolean isConnectorRegistrationRequired()
 	{
 		return true;
 	}

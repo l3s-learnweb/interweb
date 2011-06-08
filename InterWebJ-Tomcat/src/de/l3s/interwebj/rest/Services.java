@@ -34,7 +34,6 @@ public class Services
 		                                                            getPrincipal());
 		ServicesResponse servicesResponse = new ServicesResponse();
 		servicesResponse.setServiceEntities(serviceEntities);
-		System.out.println(servicesResponse);
 		return servicesResponse;
 	}
 	
@@ -117,17 +116,16 @@ public class Services
 	                                                             ServiceConnector connector,
 	                                                             boolean isAuthenticated)
 	{
-		AuthorizationEntity authorizationEntity;
-		if (connector.isConnectorRegistrationDataRequired())
+		AuthorizationEntity authorizationEntity = new AuthorizationEntity();
+		if (connector.isUserRegistrationDataRequired())
 		{
-			authorizationEntity = new TokenAuthorizationEntity();
+			authorizationEntity.setType("login");
+			authorizationEntity.addParameter("text", "username");
+			authorizationEntity.addParameter("password", "password");
 		}
 		else
 		{
-			LoginAuthorizationEntity loginAuthorizationEntity = new LoginAuthorizationEntity();
-			loginAuthorizationEntity.addParameter("text", "username");
-			loginAuthorizationEntity.addParameter("password", "password");
-			authorizationEntity = loginAuthorizationEntity;
+			authorizationEntity.setType("token");
 		}
 		authorizationEntity.setAuthorizationLinkEntity(createAuthorizationLinkEntity(httpContext,
 		                                                                             connector,

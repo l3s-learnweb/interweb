@@ -25,7 +25,7 @@ public class RegisterServicesBean
 		Engine engine = Environment.getInstance().getEngine();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
-			if (connector.isConnectorRegistrationDataRequired())
+			if (connector.isConnectorRegistrationRequired())
 			{
 				ConnectorWrapper connectorWrapper = new ConnectorWrapper();
 				connectorWrapper.setConnector(connector);

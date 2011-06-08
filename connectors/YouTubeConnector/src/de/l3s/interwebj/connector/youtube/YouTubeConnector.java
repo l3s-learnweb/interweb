@@ -335,7 +335,7 @@ public class YouTubeConnector
 	
 
 	@Override
-	public boolean isConnectorRegistrationDataRequired()
+	public boolean isConnectorRegistrationRequired()
 	{
 		return true;
 	}

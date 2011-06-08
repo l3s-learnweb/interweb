@@ -250,7 +250,7 @@ public class FlickrConnector
 	
 
 	@Override
-	public boolean isConnectorRegistrationDataRequired()
+	public boolean isConnectorRegistrationRequired()
 	{
 		return true;
 	}

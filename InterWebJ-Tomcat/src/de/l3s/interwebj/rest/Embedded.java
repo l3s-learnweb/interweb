@@ -49,8 +49,8 @@ public class Embedded
 			{
 				try
 				{
-					System.out.println("querying connector: "
-					                   + connector.getName());
+					Environment.logger.debug("querying connector: "
+					                         + connector.getName());
 					embedded = connector.getEmbedded(authCredentials,
 					                                 url,
 					                                 maxWidth,

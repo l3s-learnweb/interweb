@@ -36,7 +36,7 @@ public class Upload
 	{
 		Engine engine = Environment.getInstance().getEngine();
 		InterWebPrincipal principal = getPrincipal();
-		System.out.println("principal: [" + principal + "]");
+		Environment.logger.debug("principal: [" + principal + "]");
 		Parameters params = new Parameters();
 		if (title != null)
 		{

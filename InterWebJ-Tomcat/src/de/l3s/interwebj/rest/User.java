@@ -123,7 +123,6 @@ public class User
 		                                                           getTargetPrincipal());
 		ServiceResponse serviceResponse = new ServiceResponse();
 		serviceResponse.setServiceEntity(serviceEntity);
-		System.out.println(serviceResponse);
 		return serviceResponse;
 	}
 	
@@ -162,7 +161,6 @@ public class User
 	@Produces(MediaType.APPLICATION_XML)
 	public XMLResponse registerUser(@FormParam("mediator_token") String mediatorToken)
 	{
-		System.out.println("set");
 		Database database = Environment.getInstance().getDatabase();
 		InterWebPrincipal mediator = database.readPrincipalByKey(mediatorToken);
 		if (mediator == null)
@@ -184,7 +182,6 @@ public class User
 	@Produces(MediaType.APPLICATION_XML)
 	public XMLResponse removeMediator()
 	{
-		System.out.println("remove");
 		Database database = Environment.getInstance().getDatabase();
 		InterWebPrincipal principal = getPrincipal();
 		if (principal == null || !principal.equals(getTargetPrincipal()))
@@ -263,6 +260,7 @@ public class User
 	public static void main(String[] args)
 	    throws Exception
 	{
+		testUserServices();
 		//				testUserService("flickr");
 		//		testRevokeService("youtube");
 		//		testAuthService("interweb");
