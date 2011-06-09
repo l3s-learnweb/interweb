@@ -95,6 +95,15 @@ public abstract class AbstractServiceConnector
 	
 
 	@Override
+	public Parameters getRefinedCallbackParameters(Parameters parameters)
+	{
+		Parameters refinedParameters = new Parameters();
+		refinedParameters.add(parameters, true);
+		return parameters;
+	}
+	
+
+	@Override
 	public int hashCode()
 	{
 		final int prime = 31;
@@ -109,15 +118,6 @@ public abstract class AbstractServiceConnector
 	public boolean isConnectorRegistered()
 	{
 		return consumerAuthCredentials != null;
-	}
-	
-
-	@Override
-	public Parameters getRefinedCallbackParameters(Parameters parameters)
-	{
-		Parameters refinedParameters = new Parameters();
-		refinedParameters.add(parameters);
-		return parameters;
 	}
 	
 

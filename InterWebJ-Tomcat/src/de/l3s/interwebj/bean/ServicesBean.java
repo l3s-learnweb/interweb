@@ -25,6 +25,7 @@ public class ServicesBean
 	private InterWebPrincipal principal;
 	private List<ConnectorWrapper> connectorWrappers;
 	private List<ConnectorWrapper> awaitingConnectorWrappers;
+	private String error;
 	
 
 	public ServicesBean()
@@ -48,6 +49,12 @@ public class ServicesBean
 				}
 			}
 		}
+		Parameters parameters = new Parameters();
+		parameters.addMultivaluedParams(FacesUtils.getRequest().getParameterMap());
+		if (parameters.hasParameter(Parameters.ERROR))
+		{
+			error = parameters.get(Parameters.ERROR);
+		}
 	}
 	
 
@@ -60,6 +67,7 @@ public class ServicesBean
 		Parameters parameters = new Parameters();
 		parameters.add(Parameters.IWJ_USER_ID, principal.getName());
 		parameters.add(Parameters.IWJ_CONNECTOR_ID, connector.getName());
+		parameters.add(Parameters.CLIENT_TYPE, "servlet");
 		String interwebjCallbackUrl = baseApiUrl + "callback?"
 		                              + parameters.toQueryString();
 		Environment.logger.debug("interwebjCallbackUrl: ["
@@ -78,7 +86,6 @@ public class ServicesBean
 		{
 			Environment.logger.debug("redirecting to service authorization url: "
 			                         + authorizationUrl);
-			parameters.add(Parameters.CLIENT_TYPE, "SERVLET");
 			engine.addPendingAuthorizationConnector(principal,
 			                                        connector,
 			                                        parameters);
@@ -108,6 +115,12 @@ public class ServicesBean
 	    throws InterWebException
 	{
 		return connectorWrappers;
+	}
+	
+
+	public String getError()
+	{
+		return error;
 	}
 	
 

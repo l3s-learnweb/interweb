@@ -63,6 +63,7 @@ public class User
 		Parameters parameters = new Parameters();
 		parameters.add(Parameters.IWJ_USER_ID, principal.getName());
 		parameters.add(Parameters.IWJ_CONNECTOR_ID, connector.getName());
+		parameters.add(Parameters.CLIENT_TYPE, "rest");
 		String interwebjCallbackUrl = baseApiUrl + "callback?"
 		                              + parameters.toQueryString();
 		Environment.logger.debug("interwebjCallbackUrl: ["
@@ -83,11 +84,9 @@ public class User
 			{
 				Environment.logger.debug("redirecting to service authorization url: "
 				                         + authorizationUrl);
-				params.add(Parameters.CLIENT_TYPE, "REST");
 				OAuthParameters oauthParameters = getOAuthParameters();
 				params.add(Parameters.CONSUMER_KEY,
 				           oauthParameters.getConsumerKey());
-				params.add(Parameters.TOKEN, oauthParameters.getToken());
 				if (callback != null)
 				{
 					params.add(Parameters.CALLBACK, callback);
@@ -263,7 +262,7 @@ public class User
 		testUserServices();
 		//				testUserService("flickr");
 		//		testRevokeService("youtube");
-		//		testAuthService("interweb");
+		testAuthService("InterWeb");
 		//		testRemoveMediator();
 		//		testSetMediator();
 		//		testUserService("flickr");
@@ -287,6 +286,7 @@ public class User
 		ClientResponse response = resource.post(ClientResponse.class);
 		CoreUtils.printClientResponse(response);
 		AuthorizationLinkResponse authorizationLinkResponse = response.getEntity(AuthorizationLinkResponse.class);
+		System.out.println(authorizationLinkResponse);
 		String location = authorizationLinkResponse.getAuthorizationLinkEntity().getLink();
 		System.out.println("redirecting to: [" + location + "]");
 		Desktop.getDesktop().browse(URI.create(location));

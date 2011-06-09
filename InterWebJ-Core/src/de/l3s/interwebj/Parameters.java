@@ -28,6 +28,7 @@ public class Parameters
 	public static final String CALLBACK = "callback";
 	public static final String IWJ_USER_ID = "iwj_user_id";
 	public static final String IWJ_CONNECTOR_ID = "iwj_connector_id";
+	public static final String ERROR = "error";
 	
 	private Map<String, String> parameters;
 	
@@ -44,11 +45,14 @@ public class Parameters
 	}
 	
 
-	public void add(Parameters parameters)
+	public void add(Parameters parameters, boolean replace)
 	{
 		for (String parameter : parameters.keySet())
 		{
-			this.parameters.put(parameter, parameters.get(parameter));
+			if (replace || !this.parameters.containsKey(parameter))
+			{
+				this.parameters.put(parameter, parameters.get(parameter));
+			}
 		}
 	}
 	

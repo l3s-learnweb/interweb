@@ -164,30 +164,31 @@ public class Engine
 	}
 	
 
-	public Parameters processAuthenticationCallback(InterWebPrincipal principal,
-	                                                ServiceConnector connector,
-	                                                Parameters params)
+	public void processAuthenticationCallback(InterWebPrincipal principal,
+	                                          ServiceConnector connector,
+	                                          Parameters params)
 	    throws InterWebException
 	{
 		notNull(principal, "principal");
 		notNull(connector, "connector");
-		Environment.logger.debug("Finding pending authorization connector ["
-		                         + connector.getName() + "] for user ["
+		Environment.logger.debug("Trying to find pending authorization connector ["
+		                         + connector.getName()
+		                         + "] for user ["
 		                         + principal.getName() + "]");
-		Parameters parameters = getPendingAuthorizationParameters(principal,
-		                                                          connector);
-		parameters.add(params);
-		AuthCredentials authCredentials = connector.completeAuthentication(parameters);
+		Parameters pendingParameters = getPendingAuthorizationParameters(principal,
+		                                                                 connector);
+		params.add(pendingParameters, false);
+		AuthCredentials authCredentials = connector.completeAuthentication(params);
+		System.out.println(authCredentials);
+		String userId = connector.getUserId(authCredentials);
 		Environment.logger.debug("Connector [" + connector.getName()
 		                         + "] for user [" + principal.getName()
 		                         + "] authenticated");
-		String userId = connector.getUserId(authCredentials);
 		setUserAuthCredentials(connector.getName(),
 		                       principal,
 		                       userId,
 		                       authCredentials);
 		Environment.logger.debug("authentication data saved");
-		return parameters;
 	}
 	
 

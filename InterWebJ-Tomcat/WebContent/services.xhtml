@@ -8,6 +8,7 @@
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
+		<h:outputLabel styleClass="error" value="#{servicesBean.error}" />
 		<h:form>
 			<h:dataTable var="connectorWrapper"
 				value="#{servicesBean.connectorWrappers}" cellpadding="10">
@@ -30,7 +31,7 @@
 						<h:inputText id="key" label="key" value="#{connectorWrapper.key}"
 							style="margin-bottom:5px" />
 						<h:outputLabel value="Secret:" style="margin-right:5px" />
-						<h:inputText id="secret" label="secret"
+						<h:inputSecret id="secret" label="secret"
 							value="#{connectorWrapper.secret}" />
 					</h:panelGrid>
 				</h:column>

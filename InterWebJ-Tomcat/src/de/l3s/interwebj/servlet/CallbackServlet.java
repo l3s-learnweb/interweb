@@ -9,11 +9,14 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.ws.rs.core.*;
 
+import org.apache.commons.lang.*;
+
 import com.sun.jersey.api.client.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.db.*;
+import de.l3s.interwebj.jaxb.*;
 import de.l3s.interwebj.jaxb.services.*;
 import de.l3s.interwebj.rest.*;
 import de.l3s.interwebj.util.*;
@@ -39,65 +42,48 @@ public class CallbackServlet
 	
 
 	public void process(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException
+	    throws ServletException, IOException
 	{
 		Environment.logger.debug("query string: [" + request.getQueryString()
 		                         + "]");
 		Parameters parameters = new Parameters();
 		parameters.addMultivaluedParams(request.getParameterMap());
 		refineParameters(parameters);
+		InterWebPrincipal principal = null;
+		ServiceConnector connector = null;
+		String clientType = null;
 		try
 		{
-			InterWebPrincipal principal = getPrincipal(parameters);
-			ServiceConnector connector = getConnector(parameters);
+			principal = getPrincipal(parameters);
+			connector = getConnector(parameters);
+			clientType = getClientType(parameters);
 			Engine engine = Environment.getInstance().getEngine();
-			parameters = engine.processAuthenticationCallback(principal,
-			                                                  connector,
-			                                                  parameters);
-			if (parameters != null
-			    && parameters.hasParameter(Parameters.CLIENT_TYPE)
-			    && parameters.get(Parameters.CLIENT_TYPE).equals("REST"))
-			{
-				String callback = parameters.get(Parameters.CALLBACK);
-				if (callback != null)
-				{
-					response.sendRedirect(callback);
-					return;
-				}
-				String userToken = parameters.get(Parameters.TOKEN);
-				String consumerKey = parameters.get(Parameters.CONSUMER_KEY);
-				Database database = Environment.getInstance().getDatabase();
-				AuthCredentials consumerAuthCredentials = database.readConsumerByKey(consumerKey).getAuthCredentials();
-				AuthCredentials userAuthCredentials = database.readPrincipalByKey(userToken).getOauthCredentials();
-				URI baseUri = URI.create(request.getRequestURL().toString()).resolve(".");
-				String serviceApiPath = baseUri.toASCIIString()
-				                        + "api/users/default/services/"
-				                        + connector.getName();
-				WebResource webResource = Endpoint.createWebResource(serviceApiPath,
-				                                                     consumerAuthCredentials,
-				                                                     userAuthCredentials);
-				ClientResponse clientResponse = webResource.accept(MediaType.APPLICATION_XML).get(ClientResponse.class);
-				CoreUtils.printClientResponse(clientResponse);
-				ServiceResponse serviceResponse = clientResponse.getEntity(ServiceResponse.class);
-				byte[] content = serviceResponse.toString().getBytes(Charset.forName("UTF8"));
-				OutputStream os = response.getOutputStream();
-				os.write(content);
-				os.close();
-				response.setContentType(MediaType.APPLICATION_XML);
-				return;
-			}
-			response.sendRedirect(request.getContextPath()
-			                      + "/view/services.xhtml");
+			engine.processAuthenticationCallback(principal,
+			                                     connector,
+			                                     parameters);
 		}
 		catch (InterWebException e)
 		{
 			e.printStackTrace();
 			Environment.logger.error(e);
+			parameters.add(Parameters.ERROR, e.getMessage());
 		}
-		catch (IOException e)
+		if ("rest".equals(clientType))
 		{
-			e.printStackTrace();
-			Environment.logger.error(e);
+			processRestRequest(request,
+			                   response,
+			                   principal,
+			                   connector,
+			                   parameters);
+		}
+		else if ("servlet".equals(clientType))
+		{
+			processServletRequest(request, response, parameters);
+		}
+		else
+		{
+			throw new ServletException("No valid client type parameter found in URL ["
+			                           + clientType + "]");
 		}
 	}
 	
@@ -141,6 +127,18 @@ public class CallbackServlet
 	}
 	
 
+	private String getClientType(Parameters parameters)
+	    throws InterWebException
+	{
+		String clientType = fetchParam(parameters, Parameters.CLIENT_TYPE);
+		if (clientType == null)
+		{
+			throw new InterWebException("Unable to fetch client type from the callback URL");
+		}
+		return clientType;
+	}
+	
+
 	private ServiceConnector getConnector(Parameters parameters)
 	    throws InterWebException
 	{
@@ -179,13 +177,80 @@ public class CallbackServlet
 	}
 	
 
+	private void processRestRequest(HttpServletRequest request,
+	                                HttpServletResponse response,
+	                                InterWebPrincipal principal,
+	                                ServiceConnector connector,
+	                                Parameters parameters)
+	    throws ServletException, IOException
+	{
+		String callback = parameters.get(Parameters.CALLBACK);
+		Environment.logger.debug("callback: [" + callback + "]");
+		if (StringUtils.isNotEmpty(callback))
+		{
+			response.sendRedirect(callback);
+			return;
+		}
+		if (parameters.hasParameter(Parameters.ERROR))
+		{
+			ErrorResponse errorResponse = new ErrorResponse(999,
+			                                                parameters.get(Parameters.ERROR));
+			writeIntoServletResponse(response, errorResponse);
+			return;
+		}
+		String consumerKey = parameters.get(Parameters.CONSUMER_KEY);
+		Database database = Environment.getInstance().getDatabase();
+		AuthCredentials consumerAuthCredentials = database.readConsumerByKey(consumerKey).getAuthCredentials();
+		AuthCredentials userAuthCredentials = principal.getOauthCredentials();
+		URI baseUri = URI.create(request.getRequestURL().toString()).resolve(".");
+		String serviceApiPath = baseUri.toASCIIString()
+		                        + "api/users/default/services/"
+		                        + connector.getName();
+		WebResource webResource = Endpoint.createWebResource(serviceApiPath,
+		                                                     consumerAuthCredentials,
+		                                                     userAuthCredentials);
+		ClientResponse clientResponse = webResource.accept(MediaType.APPLICATION_XML).get(ClientResponse.class);
+		CoreUtils.printClientResponse(clientResponse);
+		ServiceResponse serviceResponse = clientResponse.getEntity(ServiceResponse.class);
+		writeIntoServletResponse(response, serviceResponse);
+		return;
+	}
+	
+
+	private void processServletRequest(HttpServletRequest request,
+	                                   HttpServletResponse response,
+	                                   Parameters parameters)
+	    throws ServletException, IOException
+	{
+		String redirectUrl = request.getContextPath() + "/view/services.xhtml";
+		if (parameters.hasParameter(Parameters.ERROR))
+		{
+			String error = parameters.get(Parameters.ERROR);
+			redirectUrl += "?error=" + error;
+		}
+		response.sendRedirect(redirectUrl);
+	}
+	
+
 	private void refineParameters(Parameters parameters)
 	{
 		Engine engine = Environment.getInstance().getEngine();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
 			Parameters refinedParameters = connector.getRefinedCallbackParameters(parameters);
-			parameters.add(refinedParameters);
+			parameters.add(refinedParameters, true);
 		}
+	}
+	
+
+	private void writeIntoServletResponse(HttpServletResponse servletResponse,
+	                                      XMLResponse xmlResponse)
+	    throws IOException
+	{
+		byte[] content = xmlResponse.toString().getBytes(Charset.forName("UTF8"));
+		OutputStream os = servletResponse.getOutputStream();
+		os.write(content);
+		os.close();
+		servletResponse.setContentType(MediaType.APPLICATION_XML);
 	}
 }
