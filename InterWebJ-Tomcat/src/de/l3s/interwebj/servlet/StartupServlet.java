@@ -33,10 +33,11 @@ public class StartupServlet
 	public void init(ServletConfig config)
 	    throws ServletException
 	{
-		Environment environment = Environment.getInstance();
+		String contextRealPath = config.getServletContext().getRealPath("/");
+		String configPath = contextRealPath + "config/config.xml";
+		Environment environment = Environment.getInstance(configPath);
 		Environment.logger.info("Starting InterWebJ up...");
 		Engine engine = environment.getEngine();
-		String contextRealPath = config.getServletContext().getRealPath("/");
 		String connectorsDirPath = contextRealPath + "connectors";
 		engine.loadConnectors(connectorsDirPath);
 	}
