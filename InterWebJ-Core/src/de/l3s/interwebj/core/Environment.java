@@ -39,8 +39,7 @@ public class Environment
 			}
 			else
 			{
-				ClassLoader cl = this.getClass().getClassLoader();
-				is = cl.getResourceAsStream(configPath);
+				throw new Exception("Configuration file does not exist");
 			}
 			configuration = new Configuration(is);
 			logger.info("Configuration loaded");
