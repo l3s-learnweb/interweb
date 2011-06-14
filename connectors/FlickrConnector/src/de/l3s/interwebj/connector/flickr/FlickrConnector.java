@@ -29,10 +29,7 @@ import de.l3s.interwebj.util.*;
 
 public class FlickrConnector
     extends AbstractServiceConnector
-    implements Serializable
 {
-	
-	private static final long serialVersionUID = 7937357305875510798L;
 	
 	private static final String MEDIA_ALL = "all";
 	private static final String MEDIA_PHOTOS = "photos";
@@ -57,7 +54,7 @@ public class FlickrConnector
 	public Parameters authenticate(String callbackUrl)
 	    throws InterWebException
 	{
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -103,7 +100,7 @@ public class FlickrConnector
 	{
 		notNull(params, "params");
 		AuthCredentials authCredentials = null;
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -130,7 +127,7 @@ public class FlickrConnector
 	    throws InterWebException
 	{
 		notNull(query, "query");
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -250,7 +247,7 @@ public class FlickrConnector
 	
 
 	@Override
-	public boolean isConnectorRegistrationRequired()
+	public boolean isConnectorRegistrationDataRequired()
 	{
 		return true;
 	}
@@ -264,6 +261,13 @@ public class FlickrConnector
 	
 
 	@Override
+	public boolean isUserRegistrationRequired()
+	{
+		return true;
+	}
+	
+
+	@Override
 	public void put(byte[] data,
 	                String contentType,
 	                Parameters params,
@@ -273,7 +277,7 @@ public class FlickrConnector
 		notNull(data, "data");
 		notNull(contentType, "contentType");
 		notNull(params, "params");
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -368,7 +372,7 @@ public class FlickrConnector
 	private Flickr createFlickrInstance()
 	    throws InterWebException
 	{
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Unable to create Flickr instance. Service is not registered");
 		}
