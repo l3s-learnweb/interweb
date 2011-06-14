@@ -14,13 +14,15 @@
   <welcome-file-list>
     <welcome-file>view/index.xhtml</welcome-file>
   </welcome-file-list>
-  <servlet>
+  <!-- 
+    <servlet>
     <description></description>
     <display-name>StartupServlet</display-name>
     <servlet-name>StartupServlet</servlet-name>
     <servlet-class>de.l3s.interwebj.servlet.StartupServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
+  -->
   <filter>
     <display-name>EncodingFilter</display-name>
     <filter-name>EncodingFilter</filter-name>

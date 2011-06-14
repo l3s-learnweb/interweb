@@ -35,14 +35,20 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>core-src</name>
+			<name>src-core</name>
 			<type>2</type>
-			<location>/home/olex/works/ws/InterWebJ-Core/src</location>
+			<locationURI>INTERWEB_CORE/src</locationURI>
 		</link>
 		<link>
 			<name>WebContent/connectors</name>
 			<type>2</type>
-			<location>/home/olex/works/ws/InterWebJ-Core/connectors</location>
+			<location>C:/home/olex/works/ws/InterWebJ-Core/connectors</location>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>INTERWEB_CORE</name>
+			<value>$%7BWORKSPACE_LOC%7D/InterWebJ-Core</value>
+		</variable>
+	</variableList>
 </projectDescription>
