@@ -62,7 +62,7 @@ public class YouTubeConnector
 	public Parameters authenticate(String callbackUrl)
 	    throws InterWebException
 	{
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -124,7 +124,7 @@ public class YouTubeConnector
 	{
 		notNull(params, "params");
 		AuthCredentials authCredentials = null;
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -186,7 +186,7 @@ public class YouTubeConnector
 	    throws InterWebException
 	{
 		notNull(query, "query");
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -335,7 +335,7 @@ public class YouTubeConnector
 	
 
 	@Override
-	public boolean isConnectorRegistrationRequired()
+	public boolean isConnectorRegistrationDataRequired()
 	{
 		return true;
 	}
@@ -349,6 +349,13 @@ public class YouTubeConnector
 	
 
 	@Override
+	public boolean isUserRegistrationRequired()
+	{
+		return true;
+	}
+	
+
+	@Override
 	public void put(byte[] data,
 	                String contentType,
 	                Parameters params,
@@ -358,7 +365,7 @@ public class YouTubeConnector
 		notNull(data, "data");
 		notNull(contentType, "contentType");
 		notNull(params, "params");
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
