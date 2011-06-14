@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<connector-configuration>
+  <jar-name>youtube-connector.jar</jar-name>
+  <class>de.l3s.interwebj.connector.youtube.YouTubeConnector</class>
+  <name>YouTube</name>
+  <base-url>http://www.youtube.com</base-url>
+  <content-types>
+    <content-type>video</content-type>
+  </content-types>
+  <properties>
+    <property>
+      <name></name>
+      <value></value>
+    </property>
+  </properties>
+</connector-configuration>
