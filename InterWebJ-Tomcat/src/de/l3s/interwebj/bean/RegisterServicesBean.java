@@ -25,7 +25,7 @@ public class RegisterServicesBean
 		Engine engine = Environment.getInstance().getEngine();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
-			if (connector.isConnectorRegistrationRequired())
+			if (connector.isConnectorRegistrationDataRequired())
 			{
 				ConnectorWrapper connectorWrapper = new ConnectorWrapper();
 				connectorWrapper.setConnector(connector);
@@ -50,7 +50,7 @@ public class RegisterServicesBean
 	    throws InterWebException
 	{
 		ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
-		return connectorWrapper.getConnector().isConnectorRegistered();
+		return connectorWrapper.getConnector().isRegistered();
 	}
 	
 

@@ -57,7 +57,7 @@ public class SearchBean
 		Engine engine = Environment.getInstance().getEngine();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
-			if (connector.isConnectorRegistered())
+			if (connector.isRegistered())
 			{
 				SelectItem selectItem = new SelectItem(connector.getName());
 				connectorSelectItems.add(selectItem);

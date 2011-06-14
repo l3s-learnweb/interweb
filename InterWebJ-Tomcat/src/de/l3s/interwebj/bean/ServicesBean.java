@@ -38,7 +38,8 @@ public class ServicesBean
 		awaitingConnectorWrappers = new ArrayList<ConnectorWrapper>();
 		for (ServiceConnector connector : engine.getConnectors())
 		{
-			if (connector.isConnectorRegistered())
+			if (connector.isRegistered()
+			    && connector.isUserRegistrationRequired())
 			{
 				ConnectorWrapper connectorWrapper = new ConnectorWrapper();
 				connectorWrapper.setConnector(connector);

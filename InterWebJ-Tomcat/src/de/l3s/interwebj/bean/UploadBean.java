@@ -55,7 +55,7 @@ public class UploadBean
 		for (ServiceConnector connector : engine.getConnectors())
 		{
 			if (connector.supportContentType(selectedContentType)
-			    && connector.isConnectorRegistered()
+			    && connector.isRegistered()
 			    && engine.isUserAuthenticated(connector, principal))
 			{
 				SelectItem selectItem = new SelectItem(connector.getName());

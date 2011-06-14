@@ -77,7 +77,7 @@
 							src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
 							style="vertical-align: middle; margin: 3px;" /><h:outputLink
 							value="#{resultItem.url}" target="_blank">&nbsp;#{resultItem.title}</h:outputLink></h6>
-						<div><h:outputLink value="#{resultItem.url}" target="_blank">
+						<div><h:outputLink value="#{resultItem.url}" target="_blank" style="border-width: 0px;"	>
 							<img src="#{searchBean.getImageUrl(resultItem, 500, 400)}" />
 						</h:outputLink>
 						<div><span>#{resultItem.description}</span></div>

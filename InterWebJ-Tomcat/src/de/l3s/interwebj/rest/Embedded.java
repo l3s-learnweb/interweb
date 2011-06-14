@@ -45,7 +45,7 @@ public class Embedded
 		String embedded = null;
 		for (ServiceConnector connector : connectors)
 		{
-			if (connector.isConnectorRegistered())
+			if (connector.isRegistered())
 			{
 				try
 				{
@@ -55,11 +55,13 @@ public class Embedded
 					                                 url,
 					                                 maxWidth,
 					                                 maxHeight);
-					break;
+					if (embedded != null)
+					{
+						break;
+					}
 				}
 				catch (InterWebException e)
 				{
-					//				e.printStackTrace();
 					Environment.logger.warn(e);
 				}
 			}
