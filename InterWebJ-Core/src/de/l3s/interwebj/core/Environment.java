@@ -24,12 +24,6 @@ public class Environment
 	private AccessControll accessControll;
 	
 
-	private Environment()
-	{
-		this(CONFIG_PATH);
-	}
-	
-
 	private Environment(String configPath)
 	{
 		logger.info("Logger initialized");
@@ -99,7 +93,17 @@ public class Environment
 	{
 		if (singleton == null)
 		{
-			singleton = new Environment();
+			singleton = new Environment(Environment.CONFIG_PATH);
+		}
+		return singleton;
+	}
+	
+
+	public static Environment getInstance(String configPath)
+	{
+		if (singleton == null)
+		{
+			singleton = new Environment(configPath);
 		}
 		return singleton;
 	}
