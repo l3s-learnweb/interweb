@@ -105,9 +105,7 @@ public class SlideShareConnector
 			resultItem.setDescription(sre.getDescription());
 			resultItem.setUrl(sre.getUrl());
 			resultItem.setThumbnails(createThumbnails(sre));
-			// start: to correct
 			String date = CoreUtils.formatDate(parseDate(sre.getUpdated()));
-			// end:
 			resultItem.setDate(date);
 			resultItem.setRank(count++);
 			resultItem.setEmbedded(sre.getEmbed());
@@ -160,7 +158,7 @@ public class SlideShareConnector
 	
 
 	@Override
-	public boolean isConnectorRegistrationRequired()
+	public boolean isConnectorRegistrationDataRequired()
 	{
 		return true;
 	}
@@ -168,6 +166,13 @@ public class SlideShareConnector
 
 	@Override
 	public boolean isUserRegistrationDataRequired()
+	{
+		return true;
+	}
+	
+
+	@Override
+	public boolean isUserRegistrationRequired()
 	{
 		return true;
 	}
