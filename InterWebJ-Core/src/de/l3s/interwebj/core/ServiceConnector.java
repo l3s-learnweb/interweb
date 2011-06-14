@@ -44,17 +44,23 @@ public interface ServiceConnector
 	public abstract String getName();
 	
 
+	public abstract Parameters getRefinedCallbackParameters(Parameters parameters);
+	
+
 	public abstract String getUserId(AuthCredentials userAuthCredentials)
 	    throws InterWebException;
 	
 
-	public abstract boolean isConnectorRegistrationRequired();
+	public abstract boolean isConnectorRegistrationDataRequired();
 	
 
-	public abstract boolean isConnectorRegistered();
+	public abstract boolean isRegistered();
 	
 
 	public abstract boolean isUserRegistrationDataRequired();
+	
+
+	public abstract boolean isUserRegistrationRequired();
 	
 
 	public abstract void put(byte[] data,
@@ -62,9 +68,6 @@ public interface ServiceConnector
 	                         Parameters params,
 	                         AuthCredentials authCredentials)
 	    throws InterWebException;
-	
-
-	public abstract Parameters getRefinedCallbackParameters(Parameters parameters);
 	
 
 	public abstract void revokeAuthentication()

@@ -16,5 +16,6 @@
 		<copy file="./interwebj-core.jar" tofile="../YouTubeConnector/lib/interwebj-core.jar" overwrite="true" />
 		<copy file="./interwebj-core.jar" tofile="../InterWebConnector/lib/interwebj-core.jar" overwrite="true" />
 		<copy file="./interwebj-core.jar" tofile="../SlideShareConnector/lib/interwebj-core.jar" overwrite="true" />
+		<copy file="./interwebj-core.jar" tofile="../GoogleConnector/lib/interwebj-core.jar" overwrite="true" />
 	</target>
 </project>

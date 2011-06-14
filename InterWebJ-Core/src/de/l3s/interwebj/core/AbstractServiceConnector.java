@@ -115,7 +115,7 @@ public abstract class AbstractServiceConnector
 	
 
 	@Override
-	public boolean isConnectorRegistered()
+	public boolean isRegistered()
 	{
 		return consumerAuthCredentials != null;
 	}

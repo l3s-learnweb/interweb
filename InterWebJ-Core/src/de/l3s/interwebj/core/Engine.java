@@ -120,7 +120,7 @@ public class Engine
 		for (String connectorName : query.getConnectorNames())
 		{
 			ServiceConnector connector = getConnector(connectorName);
-			if (connector.isConnectorRegistered())
+			if (connector.isRegistered())
 			{
 				AuthCredentials authCredentials = getUserAuthCredentials(connector,
 				                                                         principal);
@@ -227,7 +227,7 @@ public class Engine
 			Environment.logger.debug("connectorName: [" + connectorName + "]");
 			ServiceConnector connector = getConnector(connectorName);
 			if (connector != null && connector.supportContentType(contentType)
-			    && connector.isConnectorRegistered()
+			    && connector.isRegistered()
 			    && isUserAuthenticated(connector, principal))
 			{
 				Environment.logger.debug("uploading to connector: "

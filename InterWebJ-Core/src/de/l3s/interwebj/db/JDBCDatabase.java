@@ -134,6 +134,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -158,6 +159,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -180,6 +182,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -207,6 +210,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -235,6 +239,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -270,6 +275,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -300,6 +306,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -334,6 +341,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -373,6 +381,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -401,6 +410,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -442,6 +452,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -486,6 +497,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -524,6 +536,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -555,6 +568,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -589,6 +603,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -614,6 +629,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -653,6 +669,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -691,6 +708,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -721,6 +739,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -771,6 +790,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -802,6 +822,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -822,6 +843,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread()
@@ -944,6 +966,7 @@ public class JDBCDatabase
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			logger.error(e);
 			close();
 		}
@@ -974,6 +997,7 @@ public class JDBCDatabase
 			}
 			catch (SQLException e)
 			{
+				e.printStackTrace();
 				logger.error(e.getMessage());
 			}
 		}
@@ -990,6 +1014,7 @@ public class JDBCDatabase
 			}
 			catch (SQLException e)
 			{
+				e.printStackTrace();
 				logger.error(e);
 			}
 		}
@@ -1006,6 +1031,7 @@ public class JDBCDatabase
 			}
 			catch (SQLException e)
 			{
+				e.printStackTrace();
 				logger.error(e);
 			}
 		}
