@@ -59,7 +59,7 @@ public class InterWebConnector
 	public Parameters authenticate(String callbackUrl)
 	    throws InterWebException
 	{
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -118,7 +118,7 @@ public class InterWebConnector
 	{
 		notNull(params, "params");
 		AuthCredentials authCredentials = null;
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -136,7 +136,7 @@ public class InterWebConnector
 	    throws InterWebException
 	{
 		notNull(query, "query");
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
@@ -246,7 +246,7 @@ public class InterWebConnector
 	
 
 	@Override
-	public boolean isConnectorRegistrationRequired()
+	public boolean isConnectorRegistrationDataRequired()
 	{
 		return true;
 	}
@@ -260,6 +260,13 @@ public class InterWebConnector
 	
 
 	@Override
+	public boolean isUserRegistrationRequired()
+	{
+		return true;
+	}
+	
+
+	@Override
 	public void put(byte[] data,
 	                String contentType,
 	                Parameters params,
@@ -269,7 +276,7 @@ public class InterWebConnector
 		notNull(data, "data");
 		notNull(contentType, "contentType");
 		notNull(params, "params");
-		if (!isConnectorRegistered())
+		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
