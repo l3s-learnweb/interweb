@@ -42,7 +42,7 @@
 		<link>
 			<name>WebContent/connectors</name>
 			<type>2</type>
-			<location>C:/home/olex/works/ws/InterWebJ-Core/connectors</location>
+			<location>/home/olex/C::/home/olex/works/ws/InterWebJ-Core/connectors</location>
 		</link>
 	</linkedResources>
 	<variableList>
