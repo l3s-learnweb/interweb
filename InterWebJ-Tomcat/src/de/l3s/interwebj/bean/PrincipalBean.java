@@ -21,12 +21,6 @@ public class PrincipalBean
 	{
 		SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
 		InterWebPrincipal principal = sessionBean.getPrincipal();
-		//		Environment.logger.debug("requesting role for principal "
-		//		                         + principal
-		//		                         + ": "
-		//		                         + role
-		//		                         + " - "
-		//		                         + (principal != null && principal.hasRole(role)));
 		return principal != null && principal.hasRole(role);
 	}
 	
