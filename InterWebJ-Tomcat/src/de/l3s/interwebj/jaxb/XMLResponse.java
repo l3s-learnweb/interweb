@@ -6,8 +6,6 @@ import java.io.*;
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
 
-import org.apache.commons.lang.text.*;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class XMLResponse
@@ -49,7 +47,7 @@ public class XMLResponse
 	@Override
 	public String toString()
 	{
-		StrBuilder sb = new StrBuilder();
+		StringBuilder sb = new StringBuilder();
 		try
 		{
 			JAXBContext context = JAXBContext.newInstance(getClass());

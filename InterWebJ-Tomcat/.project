@@ -35,11 +35,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src-core</name>
-			<type>2</type>
-			<locationURI>INTERWEB_CORE/src</locationURI>
-		</link>
-		<link>
 			<name>WebContent/connectors</name>
 			<type>2</type>
 			<location>/home/olex/C::/home/olex/works/ws/InterWebJ-Core/connectors</location>
