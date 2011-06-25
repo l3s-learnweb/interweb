@@ -95,7 +95,12 @@ public class SlideShareConnector
 		SearchResponse sr = response.getEntity(SearchResponse.class);
 		queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
 		int count = sr.getMeta().getResultOffset() - 1;
-		for (SearchResultEntity sre : sr.getSearchResults())
+		List<SearchResultEntity> searchResults = sr.getSearchResults();
+		if (searchResults == null)
+		{
+			return queryResult;
+		}
+		for (SearchResultEntity sre : searchResults)
 		{
 			ResultItem resultItem = new ResultItem(getName());
 			resultItem.setType(createType(sre.getSlideshowType()));
