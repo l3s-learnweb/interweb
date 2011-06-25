@@ -108,7 +108,7 @@ public class FlickrConnector
 		{
 			String frob = params.get("frob");
 			Flickr flickr = createFlickrInstance();
-			Environment.logger.debug("request token frob: " + frob);
+			Environment.logger.info("request token frob: " + frob);
 			AuthInterface authInterface = flickr.getAuthInterface();
 			Auth auth = authInterface.getToken(frob);
 			authCredentials = new AuthCredentials(auth.getToken());
