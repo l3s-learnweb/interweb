@@ -83,18 +83,18 @@ public class YouTubeConnector
 		                                                 oauthParams,
 		                                                 oauthSecrets);
 		resource.addFilter(filter);
-		Environment.logger.debug("querying youtube request token: "
-		                         + resource.toString());
+		Environment.logger.info("querying youtube request token: "
+		                        + resource.toString());
 		try
 		{
 			resource = resource.queryParam("scope", "http://gdata.youtube.com");
 			ClientResponse response = resource.get(ClientResponse.class);
 			String responseContent = CoreUtils.getClientResponseContent(response);
-			Environment.logger.debug("Content: " + responseContent);
+			Environment.logger.info("Content: " + responseContent);
 			params.addQueryParameters(responseContent);
 			String authUrl = AUTHORIZATION_PATH + "?oauth_token="
 			                 + params.get(Parameters.OAUTH_TOKEN);
-			Environment.logger.debug("requesting url: " + authUrl);
+			Environment.logger.info("requesting url: " + authUrl);
 			params.add(Parameters.AUTHORIZATION_URL, authUrl);
 		}
 		catch (UniformInterfaceException e)
@@ -131,11 +131,11 @@ public class YouTubeConnector
 		try
 		{
 			String oauthToken = params.get(Parameters.OAUTH_TOKEN);
-			Environment.logger.debug("oauth_token: " + oauthToken);
+			Environment.logger.info("oauth_token: " + oauthToken);
 			String oauthTokenSecret = params.get(Parameters.OAUTH_TOKEN_SECRET);
-			Environment.logger.debug("oauth_token_secret: " + oauthTokenSecret);
+			Environment.logger.info("oauth_token_secret: " + oauthTokenSecret);
 			String oauthVerifier = params.get(Parameters.OAUTH_VERIFIER);
-			Environment.logger.debug("oauth_verifier: " + oauthVerifier);
+			Environment.logger.info("oauth_verifier: " + oauthVerifier);
 			Client client = Client.create();
 			WebResource resource = client.resource(ACCESS_TOKEN_PATH);
 			AuthCredentials consumerAuthCredentials = getAuthCredentials();
@@ -157,11 +157,11 @@ public class YouTubeConnector
 			                                                 oauthParams,
 			                                                 oauthSecrets);
 			resource.addFilter(filter);
-			Environment.logger.debug("getting youtube access token: "
-			                         + resource.toString());
+			Environment.logger.info("getting youtube access token: "
+			                        + resource.toString());
 			ClientResponse response = resource.get(ClientResponse.class);
 			String content = CoreUtils.getClientResponseContent(response);
-			Environment.logger.debug("youtube response: " + content);
+			Environment.logger.info("youtube response: " + content);
 			params.addQueryParameters(content);
 			String key = params.get(Parameters.OAUTH_TOKEN);
 			String secret = params.get(Parameters.OAUTH_TOKEN_SECRET);
@@ -310,25 +310,25 @@ public class YouTubeConnector
 		catch (OAuthException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			throw new InterWebException(e);
 		}
 		catch (MalformedURLException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			throw new InterWebException(e);
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			throw new InterWebException(e);
 		}
 		catch (ServiceException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			throw new InterWebException(e);
 		}
 	}
