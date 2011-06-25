@@ -8,8 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/commons-configuration"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/commons-lang"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/commons-logging"/>
-	<classpathentry kind="lib" path="lib/google-ajax-apis.jar"/>
-	<classpathentry kind="lib" path="lib/gson-1.4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/InterWebJ-Core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
