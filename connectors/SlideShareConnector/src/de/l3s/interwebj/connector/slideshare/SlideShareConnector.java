@@ -91,7 +91,6 @@ public class SlideShareConnector
 		resource = resource.queryParam("file_type",
 		                               createFileType(query.getContentTypes()));
 		//		resource = resource.queryParam("detailed", "1");
-		System.out.println("querying URL: " + resource.toString());
 		ClientResponse response = postQuery(resource);
 		SearchResponse sr = response.getEntity(SearchResponse.class);
 		queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
