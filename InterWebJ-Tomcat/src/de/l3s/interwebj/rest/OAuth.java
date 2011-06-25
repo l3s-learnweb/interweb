@@ -35,7 +35,7 @@ public class OAuth
 	public XMLResponse authorizeToken(@QueryParam("oauth_token") String requestToken,
 	                                  @QueryParam("oauth_callback") String callbackUrl)
 	{
-		Environment.logger.debug("callbackUrl: [" + callbackUrl + "]");
+		Environment.logger.info("callbackUrl: [" + callbackUrl + "]");
 		HttpContext httpContext = getHttpContext();
 		URI uri = httpContext.getUriInfo().getBaseUri().resolve("../view/authorize_consumer.xhtml");
 		UriBuilder builder = UriBuilder.fromUri(uri);
@@ -123,7 +123,7 @@ public class OAuth
 		}
 		AuthCredentials accessToken = RandomGenerator.getInstance().nextOAuthCredentials();
 		principal.setOauthCredentials(accessToken);
-		Environment.logger.debug(principal);
+		Environment.logger.info(principal.toString());
 		database.savePrincipal(principal, password);
 		if (mediator != null)
 		{

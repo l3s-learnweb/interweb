@@ -39,10 +39,10 @@ public class Engine
 		notNull(principal, "principal");
 		notNull(connector, "connector");
 		notNull(params, "params");
-		Environment.logger.debug("Adding pending authorization connector ["
-		                         + connector.getName() + "] for user ["
-		                         + principal.getName() + "]");
-		Environment.logger.debug("params: [" + params + "]");
+		Environment.logger.info("Adding pending authorization connector ["
+		                        + connector.getName() + "] for user ["
+		                        + principal.getName() + "]");
+		Environment.logger.info("params: [" + params + "]");
 		Map<ServiceConnector, Parameters> expirableMap = createExpirableMap(60);
 		if (pendingAuthorizationConnectors.containsKey(principal.getName()))
 		{
@@ -112,7 +112,7 @@ public class Engine
 	                                                    QueryResultMerger merger)
 	    throws InterWebException
 	{
-		Environment.logger.debug(query);
+		Environment.logger.info(query.toString());
 		String userName = (principal == null)
 		    ? "anonymous" : principal.getName();
 		query.addParam("user", userName);
@@ -171,24 +171,24 @@ public class Engine
 	{
 		notNull(principal, "principal");
 		notNull(connector, "connector");
-		Environment.logger.debug("Trying to find pending authorization connector ["
-		                         + connector.getName()
-		                         + "] for user ["
-		                         + principal.getName() + "]");
+		Environment.logger.info("Trying to find pending authorization connector ["
+		                        + connector.getName()
+		                        + "] for user ["
+		                        + principal.getName() + "]");
 		Parameters pendingParameters = getPendingAuthorizationParameters(principal,
 		                                                                 connector);
 		params.add(pendingParameters, false);
 		AuthCredentials authCredentials = connector.completeAuthentication(params);
 		System.out.println(authCredentials);
 		String userId = connector.getUserId(authCredentials);
-		Environment.logger.debug("Connector [" + connector.getName()
-		                         + "] for user [" + principal.getName()
-		                         + "] authenticated");
+		Environment.logger.info("Connector [" + connector.getName()
+		                        + "] for user [" + principal.getName()
+		                        + "] authenticated");
 		setUserAuthCredentials(connector.getName(),
 		                       principal,
 		                       userId,
 		                       authCredentials);
-		Environment.logger.debug("authentication data saved");
+		Environment.logger.info("authentication data saved");
 	}
 	
 
@@ -220,25 +220,25 @@ public class Engine
 	                   Parameters params)
 	    throws InterWebException
 	{
-		Environment.logger.debug("start uploading ...");
+		Environment.logger.info("start uploading ...");
 		for (String connectorName : connectorNames)
 		{
 			
-			Environment.logger.debug("connectorName: [" + connectorName + "]");
+			Environment.logger.info("connectorName: [" + connectorName + "]");
 			ServiceConnector connector = getConnector(connectorName);
 			if (connector != null && connector.supportContentType(contentType)
 			    && connector.isRegistered()
 			    && isUserAuthenticated(connector, principal))
 			{
-				Environment.logger.debug("uploading to connector: "
-				                         + connectorName);
+				Environment.logger.info("uploading to connector: "
+				                        + connectorName);
 				AuthCredentials userAuthCredentials = getUserAuthCredentials(connector,
 				                                                             principal);
 				connector.put(data, contentType, params, userAuthCredentials);
-				Environment.logger.debug("done");
+				Environment.logger.info("done");
 			}
 		}
-		Environment.logger.debug("... uploading done");
+		Environment.logger.info("... uploading done");
 	}
 	
 
@@ -316,7 +316,7 @@ public class Engine
 		engine.loadConnectors("./connectors");
 		String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
 		List<String> connectorNames = engine.getConnectorNames();
-		Environment.logger.debug("Searching in connectors: " + connectorNames);
+		Environment.logger.info("Searching in connectors: " + connectorNames);
 		int retryCount = 5;
 		for (int i = 0; i < retryCount; i++)
 		{
@@ -326,7 +326,7 @@ public class Engine
 		//		{
 		//			testSearch(word, connectorNames, engine, principal);
 		//		}
-		Environment.logger.debug("finished");
+		Environment.logger.info("finished");
 		
 	}
 	

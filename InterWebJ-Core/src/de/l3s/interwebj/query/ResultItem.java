@@ -29,7 +29,7 @@ public class ResultItem
 	private Set<Thumbnail> thumbnails;
 	private String date;
 	private int rank = -1;
-	private int totalResultCount = -1;
+	private long totalResultCount = -1;
 	private int viewCount = -1;
 	private int commentCount = -1;
 	private String embedded;
@@ -99,6 +99,10 @@ public class ResultItem
 	public Thumbnail getThumbnail(int maxWidth, int maxHeight)
 	{
 		Set<Thumbnail> thumbnails = getThumbnails();
+		if (thumbnails == null)
+		{
+			return null;
+		}
 		Thumbnail thumbnail = null;
 		for (Thumbnail t : thumbnails)
 		{
@@ -124,7 +128,7 @@ public class ResultItem
 	}
 	
 
-	public int getTotalResultCount()
+	public long getTotalResultCount()
 	{
 		return totalResultCount;
 	}
@@ -238,7 +242,7 @@ public class ResultItem
 	}
 	
 
-	public void setTotalResultCount(int totalResultCount)
+	public void setTotalResultCount(long totalResultCount)
 	{
 		this.totalResultCount = totalResultCount;
 	}

@@ -36,7 +36,7 @@ public class Upload
 	{
 		Engine engine = Environment.getInstance().getEngine();
 		InterWebPrincipal principal = getPrincipal();
-		Environment.logger.debug("principal: [" + principal + "]");
+		Environment.logger.info("principal: [" + principal + "]");
 		Parameters params = new Parameters();
 		if (title != null)
 		{
@@ -89,8 +89,8 @@ public class Upload
 		WebResource resource = client.resource(uriBuilder.build());
 		WebResource.Builder builder = resource.type(MediaType.MULTIPART_FORM_DATA);
 		builder = builder.accept(MediaType.TEXT_PLAIN);
-		Environment.logger.debug("testing upload to interwebj: "
-		                         + resource.toString());
+		Environment.logger.info("testing upload to interwebj: "
+		                        + resource.toString());
 		ClientResponse response = builder.post(ClientResponse.class, multiPart);
 		try
 		{

@@ -135,11 +135,11 @@ public class UploadBean
 	{
 		UploadedFile uploadedFile = event.getUploadedFile();
 		fileName = uploadedFile.getName();
-		Environment.logger.debug("File to upload: " + uploadedFile.getName());
-		Environment.logger.debug("Content type: "
-		                         + uploadedFile.getContentType());
+		Environment.logger.info("File to upload: " + uploadedFile.getName());
+		Environment.logger.info("Content type: "
+		                        + uploadedFile.getContentType());
 		data = uploadedFile.getData();
-		Environment.logger.debug("Size: " + data.length);
+		Environment.logger.info("Size: " + data.length);
 	}
 	
 
@@ -193,7 +193,7 @@ public class UploadBean
 	public void upload()
 	    throws InterWebException
 	{
-		Environment.logger.debug("uploading binary data...");
+		Environment.logger.info("uploading binary data...");
 		if (data != null && selectedConnectors != null)
 		{
 			Engine engine = Environment.getInstance().getEngine();
@@ -228,7 +228,7 @@ public class UploadBean
 	public void uploadText()
 	    throws InterWebException
 	{
-		Environment.logger.debug("text to upload: [" + text + "]");
+		Environment.logger.info("text to upload: [" + text + "]");
 		if (text != null && selectedConnectors != null)
 		{
 			Engine engine = Environment.getInstance().getEngine();

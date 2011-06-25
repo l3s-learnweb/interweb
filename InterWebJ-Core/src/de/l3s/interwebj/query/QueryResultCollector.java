@@ -102,7 +102,7 @@ public class QueryResultCollector
 			{
 				task.cancel(true);
 				e.printStackTrace();
-				Environment.logger.warn(e);
+				Environment.logger.severe(e.getMessage());
 			}
 		}
 		queryResult.setElapsedTime(System.currentTimeMillis() - startTime);

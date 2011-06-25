@@ -56,8 +56,8 @@ public class ConsumersBean
 		                                 description,
 		                                 authCredentials);
 		database.saveConsumer(principal.getName(), consumer);
-		Environment.logger.debug("consumer: [" + consumer.getName()
-		                         + "] successfully added");
+		Environment.logger.info("consumer: [" + consumer.getName()
+		                        + "] successfully added");
 		String contextPath = FacesUtils.getContextPath();
 		FacesUtils.redirect(contextPath + "/view/consumers.xhtml");
 		return null;
@@ -87,14 +87,14 @@ public class ConsumersBean
 		oauthToken = accessToken.getKey();
 		if (!StringUtils.isEmpty(callback))
 		{
-			Environment.logger.debug("callback: [" + callback + "]");
+			Environment.logger.info("callback: [" + callback + "]");
 			UriBuilder builder = UriBuilder.fromUri(callback);
 			builder = builder.queryParam("oauth_token", accessToken.getKey());
 			builder = builder.queryParam("oauth_token_secret",
 			                             accessToken.getSecret());
 			String callbackUrl = builder.build().toASCIIString();
-			Environment.logger.debug("redirecting to callback URL: "
-			                         + callbackUrl);
+			Environment.logger.info("redirecting to callback URL: "
+			                        + callbackUrl);
 			FacesUtils.redirect(callbackUrl);
 		}
 		else
@@ -105,7 +105,7 @@ public class ConsumersBean
 			    ? builder : builder.queryParam("oauth_callback", callback);
 			builder = builder.queryParam("registered", "true");
 			String url = builder.build().toASCIIString();
-			Environment.logger.debug("forwarding to URL: " + url);
+			Environment.logger.info("forwarding to URL: " + url);
 			FacesUtils.redirect(url);
 		}
 		return null;
@@ -190,7 +190,7 @@ public class ConsumersBean
 	    throws InterWebException
 	{
 		String consumerName = ((Consumer) consumer).getName();
-		Environment.logger.debug("revoking consumer [" + consumerName + "]");
+		Environment.logger.info("revoking consumer [" + consumerName + "]");
 		Environment environment = Environment.getInstance();
 		Database database = environment.getDatabase();
 		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();

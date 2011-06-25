@@ -71,8 +71,8 @@ public class ServicesBean
 		parameters.add(Parameters.CLIENT_TYPE, "servlet");
 		String interwebjCallbackUrl = baseApiUrl + "callback?"
 		                              + parameters.toQueryString();
-		Environment.logger.debug("interwebjCallbackUrl: ["
-		                         + interwebjCallbackUrl + "]");
+		Environment.logger.info("interwebjCallbackUrl: ["
+		                        + interwebjCallbackUrl + "]");
 		parameters = connector.authenticate(interwebjCallbackUrl);
 		if (connectorWrapper.getKey() != null)
 		{
@@ -85,8 +85,8 @@ public class ServicesBean
 		String authorizationUrl = parameters.get(Parameters.AUTHORIZATION_URL);
 		if (authorizationUrl != null)
 		{
-			Environment.logger.debug("redirecting to service authorization url: "
-			                         + authorizationUrl);
+			Environment.logger.info("redirecting to service authorization url: "
+			                        + authorizationUrl);
 			engine.addPendingAuthorizationConnector(principal,
 			                                        connector,
 			                                        parameters);
@@ -97,7 +97,7 @@ public class ServicesBean
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				Environment.logger.error(e);
+				Environment.logger.severe(e.getMessage());
 				FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 			}
 		}
@@ -153,7 +153,7 @@ public class ServicesBean
 	{
 		ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
 		ServiceConnector connector = connectorWrapper.getConnector();
-		Environment.logger.debug("revoking user authentication");
+		Environment.logger.info("revoking user authentication");
 		engine.setUserAuthCredentials(connector.getName(),
 		                              principal,
 		                              null,
@@ -183,7 +183,7 @@ public class ServicesBean
 		catch (InterWebException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 		}
 		return "success";

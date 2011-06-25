@@ -5,8 +5,7 @@ import static de.l3s.interwebj.util.Assertions.*;
 
 import java.sql.*;
 import java.util.*;
-
-import org.apache.log4j.*;
+import java.util.logging.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.config.*;
@@ -82,8 +81,8 @@ public class JDBCDatabase
 	{
 		notNull(userName, "userName");
 		notNull(password, "userPassword");
-		Environment.logger.debug("authenticating InterWebJ user [" + userName
-		                         + "]");
+		Environment.logger.info("authenticating InterWebJ user [" + userName
+		                        + "]");
 		InterWebPrincipal dbPrincipal = getPrincipal(userName, password);
 		if (dbPrincipal != null)
 		{
@@ -92,8 +91,8 @@ public class JDBCDatabase
 			{
 				dbPrincipal.addRole(role);
 			}
-			Environment.logger.debug("InterWebJ user [" + userName
-			                         + "] authenticated");
+			Environment.logger.info("InterWebJ user [" + userName
+			                        + "] authenticated");
 		}
 		return dbPrincipal;
 	}
@@ -135,7 +134,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 	}
@@ -160,7 +159,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 	}
@@ -183,7 +182,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 	}
@@ -211,7 +210,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return exists;
@@ -240,7 +239,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return exists;
@@ -276,7 +275,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return authCredentials;
@@ -307,7 +306,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return userId;
@@ -342,7 +341,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return consumer;
@@ -382,7 +381,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return consumers;
@@ -411,7 +410,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return mediator;
@@ -453,7 +452,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return principal;
@@ -498,7 +497,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return principal;
@@ -537,7 +536,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return authCredentials;
@@ -569,7 +568,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 	}
@@ -604,7 +603,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 	}
@@ -630,7 +629,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 	}
@@ -670,7 +669,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 	}
@@ -709,7 +708,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 	}
@@ -740,7 +739,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 	}
@@ -791,7 +790,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return dbPrincipal;
@@ -823,7 +822,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 		return roles;
@@ -844,7 +843,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
@@ -936,8 +935,8 @@ public class JDBCDatabase
 		}
 		if (dbConnection == null)
 		{
-			logger.error("Opening connection to database " + connectionURL
-			             + " failed!");
+			logger.severe("Opening connection to database " + connectionURL
+			              + " failed!");
 		}
 		else
 		{
@@ -967,7 +966,7 @@ public class JDBCDatabase
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			logger.error(e);
+			logger.severe(e.getMessage());
 			close();
 		}
 	}
@@ -998,7 +997,7 @@ public class JDBCDatabase
 			catch (SQLException e)
 			{
 				e.printStackTrace();
-				logger.error(e.getMessage());
+				logger.severe(e.getMessage());
 			}
 		}
 	}
@@ -1015,7 +1014,7 @@ public class JDBCDatabase
 			catch (SQLException e)
 			{
 				e.printStackTrace();
-				logger.error(e);
+				logger.severe(e.getMessage());
 			}
 		}
 	}
@@ -1032,7 +1031,7 @@ public class JDBCDatabase
 			catch (SQLException e)
 			{
 				e.printStackTrace();
-				logger.error(e);
+				logger.severe(e.getMessage());
 			}
 		}
 	}

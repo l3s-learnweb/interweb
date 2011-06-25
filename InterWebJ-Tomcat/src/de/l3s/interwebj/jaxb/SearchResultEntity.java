@@ -40,7 +40,7 @@ public class SearchResultEntity
 	@XmlElement(name = "rank_at_service")
 	protected int rankAtService;
 	@XmlElement(name = "total_results_at_service")
-	protected int totalResultsAtService;
+	protected long totalResultsAtService;
 	@XmlElement(name = "views")
 	protected int numberOfViews;
 	@XmlElement(name = "number_of_comments")
@@ -154,7 +154,7 @@ public class SearchResultEntity
 	}
 	
 
-	public int getTotalResultsAtService()
+	public long getTotalResultsAtService()
 	{
 		return totalResultsAtService;
 	}
@@ -243,7 +243,7 @@ public class SearchResultEntity
 	}
 	
 
-	public void setTotalResultsAtService(int totalResultsAtService)
+	public void setTotalResultsAtService(long totalResultsAtService)
 	{
 		this.totalResultsAtService = totalResultsAtService;
 	}

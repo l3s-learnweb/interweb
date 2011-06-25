@@ -2,11 +2,11 @@ package de.l3s.interwebj.core;
 
 
 import java.io.*;
-
-import org.apache.log4j.*;
+import java.util.logging.*;
 
 import de.l3s.interwebj.config.*;
 import de.l3s.interwebj.db.*;
+import de.l3s.interwebj.util.*;
 
 
 public class Environment
@@ -15,7 +15,7 @@ public class Environment
 	private static Environment singleton;
 	
 	public static final String INTERWEBJ_SERVICE_NAME = "interwebj";
-	public static Logger logger = Logger.getLogger("interwebj");
+	public static final Logger logger = LoggerCreator.create(INTERWEBJ_SERVICE_NAME);
 	private static final String CONFIG_PATH = "config/config.xml";
 	
 	private Configuration configuration;
@@ -106,5 +106,4 @@ public class Environment
 		}
 		return singleton;
 	}
-	
 }

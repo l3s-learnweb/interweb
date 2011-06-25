@@ -44,8 +44,8 @@ public class CallbackServlet
 	public void process(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException
 	{
-		Environment.logger.debug("query string: [" + request.getQueryString()
-		                         + "]");
+		Environment.logger.info("query string: [" + request.getQueryString()
+		                        + "]");
 		Parameters parameters = new Parameters();
 		parameters.addMultivaluedParams(request.getParameterMap());
 		refineParameters(parameters);
@@ -65,7 +65,7 @@ public class CallbackServlet
 		catch (InterWebException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			parameters.add(Parameters.ERROR, e.getMessage());
 		}
 		if ("rest".equals(clientType))
@@ -185,7 +185,7 @@ public class CallbackServlet
 	    throws ServletException, IOException
 	{
 		String callback = parameters.get(Parameters.CALLBACK);
-		Environment.logger.debug("callback: [" + callback + "]");
+		Environment.logger.info("callback: [" + callback + "]");
 		if (StringUtils.isNotEmpty(callback))
 		{
 			response.sendRedirect(callback);

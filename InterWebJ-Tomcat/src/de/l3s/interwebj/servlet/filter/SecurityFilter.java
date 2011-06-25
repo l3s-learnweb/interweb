@@ -46,7 +46,7 @@ public class SecurityFilter
 		if (sessionBean == null)
 		{
 			httpRequest.getSession(true);
-			Environment.logger.debug("WARNING! SessionBean is NULL! Creating and storing new SessionBean instance");
+			Environment.logger.info("WARNING! SessionBean is NULL! Creating and storing new SessionBean instance");
 			sessionBean = new SessionBean();
 			httpRequest.getSession().setAttribute("sessionBean", sessionBean);
 		}
@@ -58,11 +58,11 @@ public class SecurityFilter
 		{
 			if (!isLoginPage(requestUrl))
 			{
-				Environment.logger.debug("Login required. User: "
-				                         + principal
-				                         + " is not authorized to access the resource: "
-				                         + requestUrl);
-				Environment.logger.debug("saving requested URL: " + requestUrl);
+				Environment.logger.info("Login required. User: "
+				                        + principal
+				                        + " is not authorized to access the resource: "
+				                        + requestUrl);
+				Environment.logger.info("saving requested URL: " + requestUrl);
 				sessionBean.setSavedRequestUrl(requestUrl);
 				httpResponse.sendRedirect(httpRequest.getContextPath()
 				                          + LOGIN_PAGE);

@@ -85,13 +85,13 @@ public class CoreUtils
 
 	public static void printClientResponse(ClientResponse response)
 	{
-		Environment.logger.debug("Status: [" + response.getStatus() + "]");
-		Environment.logger.debug("Headers:");
+		Environment.logger.info("Status: [" + response.getStatus() + "]");
+		Environment.logger.info("Headers:");
 		MultivaluedMap<String, String> headers = response.getHeaders();
 		for (String header : headers.keySet())
 		{
-			Environment.logger.debug("    " + header + ": "
-			                         + headers.get(header));
+			Environment.logger.info("    " + header + ": "
+			                        + headers.get(header));
 		}
 	}
 }

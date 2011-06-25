@@ -44,8 +44,8 @@ public class ConnectorLoader
 		}
 		else
 		{
-			Environment.logger.error("[" + pluginDirPath
-			                         + "] is not a directory or doesn't exist");
+			Environment.logger.severe("[" + pluginDirPath
+			                          + "] is not a directory or doesn't exist");
 		}
 		return connectors;
 	}
@@ -85,9 +85,9 @@ public class ConnectorLoader
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
-				Environment.logger.error("No jar file found for connector ["
-				                         + connectorName
-				                         + "]. Check configuration file");
+				Environment.logger.severe("No jar file found for connector ["
+				                          + connectorName
+				                          + "]. Check configuration file");
 				return null;
 			}
 			Environment.logger.info("connector jar file: ["
@@ -115,7 +115,7 @@ public class ConnectorLoader
 		catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 		}
 		return connector;
 	}

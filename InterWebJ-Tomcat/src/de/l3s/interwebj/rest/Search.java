@@ -84,7 +84,7 @@ public class Search
 		{
 			Engine engine = Environment.getInstance().getEngine();
 			InterWebPrincipal principal = getPrincipal();
-			Environment.logger.debug(principal);
+			Environment.logger.info(principal.toString());
 			QueryResultMerger merger = new DumbQueryResultMerger();
 			QueryResultCollector collector = engine.getQueryResultCollector(query,
 			                                                                principal,
@@ -96,16 +96,16 @@ public class Search
 			String userName = (principal == null)
 			    ? "anonymous" : principal.getName();
 			searchResponse.getQuery().setUser(userName);
-			Environment.logger.debug(searchResponse.getQuery().getResults().size()
-			                         + " results found in "
-			                         + searchResponse.getQuery().getElapsedTime()
-			                         + " ms");
+			Environment.logger.info(searchResponse.getQuery().getResults().size()
+			                        + " results found in "
+			                        + searchResponse.getQuery().getElapsedTime()
+			                        + " ms");
 			return searchResponse;
 		}
 		catch (InterWebException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			return new ErrorResponse(999, e.getMessage());
 		}
 	}
@@ -139,7 +139,7 @@ public class Search
 		}
 		catch (ParseException e)
 		{
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			return false;
 		}
 		return true;
@@ -240,7 +240,7 @@ public class Search
 		}
 		catch (NumberFormatException e)
 		{
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 		}
 		return null;
 	}

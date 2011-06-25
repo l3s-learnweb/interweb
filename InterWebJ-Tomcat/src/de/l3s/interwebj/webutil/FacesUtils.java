@@ -115,7 +115,7 @@ public class FacesUtils
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 		}
 		return null;
 	}

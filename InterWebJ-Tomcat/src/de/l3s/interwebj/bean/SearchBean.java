@@ -225,7 +225,7 @@ public class SearchBean
 		catch (InterWebException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 		}
 		ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();

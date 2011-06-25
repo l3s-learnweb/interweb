@@ -15,7 +15,7 @@ public class QueryResult
 	private List<ResultItem> resultItems;
 	private long elapsedTime;
 	private long createdTime;
-	private int totalResultCount;
+	private long totalResultCount;
 	
 
 	public QueryResult(Query query)
@@ -65,7 +65,7 @@ public class QueryResult
 	}
 	
 
-	public int getTotalResultCount()
+	public long getTotalResultCount()
 	{
 		return totalResultCount;
 	}
@@ -84,7 +84,7 @@ public class QueryResult
 	}
 	
 
-	public void setTotalResultCount(int totalResultCount)
+	public void setTotalResultCount(long totalResultCount)
 	{
 		this.totalResultCount = totalResultCount;
 	}

@@ -66,8 +66,8 @@ public class User
 		parameters.add(Parameters.CLIENT_TYPE, "rest");
 		String interwebjCallbackUrl = baseApiUrl + "callback?"
 		                              + parameters.toQueryString();
-		Environment.logger.debug("interwebjCallbackUrl: ["
-		                         + interwebjCallbackUrl + "]");
+		Environment.logger.info("interwebjCallbackUrl: ["
+		                        + interwebjCallbackUrl + "]");
 		try
 		{
 			Parameters params = connector.authenticate(interwebjCallbackUrl);
@@ -82,8 +82,8 @@ public class User
 			String authorizationUrl = params.get(Parameters.AUTHORIZATION_URL);
 			if (authorizationUrl != null)
 			{
-				Environment.logger.debug("redirecting to service authorization url: "
-				                         + authorizationUrl);
+				Environment.logger.info("redirecting to service authorization url: "
+				                        + authorizationUrl);
 				OAuthParameters oauthParameters = getOAuthParameters();
 				params.add(Parameters.CONSUMER_KEY,
 				           oauthParameters.getConsumerKey());
@@ -104,7 +104,7 @@ public class User
 		catch (InterWebException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			return new ErrorResponse(999, e.getMessage());
 		}
 		return ErrorResponse.AUTHENTICATION_FAILED;
@@ -197,7 +197,7 @@ public class User
 	@Produces(MediaType.APPLICATION_XML)
 	public XMLResponse revokeAuthorizationOnService(@PathParam("service") String serviceName)
 	{
-		Environment.logger.debug("revoking user authentication");
+		Environment.logger.info("revoking user authentication");
 		InterWebPrincipal principal = getTargetPrincipal();
 		if (principal == null)
 		{
@@ -220,7 +220,7 @@ public class User
 		catch (InterWebException e)
 		{
 			e.printStackTrace();
-			Environment.logger.error(e);
+			Environment.logger.severe(e.getMessage());
 			return new ErrorResponse(999, e.getMessage());
 		}
 		HttpContext httpContext = getHttpContext();

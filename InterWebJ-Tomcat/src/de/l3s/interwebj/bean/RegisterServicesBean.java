@@ -62,9 +62,9 @@ public class RegisterServicesBean
 			AuthCredentials authCredentials = new AuthCredentials(connectorWrapper.getKey(),
 			                                                      connectorWrapper.getSecret());
 			ServiceConnector connector = connectorWrapper.getConnector();
-			Environment.logger.debug("registering connector: ["
-			                         + connector.getName()
-			                         + "] with credentials: " + authCredentials);
+			Environment.logger.info("registering connector: ["
+			                        + connector.getName()
+			                        + "] with credentials: " + authCredentials);
 			connector.setAuthCredentials(authCredentials);
 			engine.setConsumerAuthCredentials(connector.getName(),
 			                                  authCredentials);
@@ -79,10 +79,10 @@ public class RegisterServicesBean
 
 	public String reload()
 	{
-		Environment.logger.debug("Reloading installed connectors...");
+		Environment.logger.info("Reloading installed connectors...");
 		ServletContext servletContext = (ServletContext) FacesUtils.getExternalContext().getContext();
 		String contextRealPath = servletContext.getRealPath("/");
-		String connectorsDirPath = contextRealPath + "connectors";
+		String connectorsDirPath = contextRealPath + "WEB-INF/connectors";
 		Engine engine = Environment.getInstance().getEngine();
 		engine.loadConnectors(connectorsDirPath);
 		return "success";
@@ -94,8 +94,8 @@ public class RegisterServicesBean
 		try
 		{
 			ServiceConnector connector = connectorWrapper.getConnector();
-			Environment.logger.debug("unregistering connector: ["
-			                         + connector.getName() + "]");
+			Environment.logger.info("unregistering connector: ["
+			                        + connector.getName() + "]");
 			Engine engine = Environment.getInstance().getEngine();
 			connector.setAuthCredentials(null);
 			engine.setConsumerAuthCredentials(connector.getName(), null);

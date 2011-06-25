@@ -51,7 +51,7 @@ public class PrincipalBean
 		if (savedRequestUrl != null)
 		{
 			sessionBean.setSavedRequestUrl(null);
-			Environment.logger.debug("redirecting to: " + savedRequestUrl);
+			Environment.logger.info("redirecting to: " + savedRequestUrl);
 			String contextPath = FacesUtils.getContextPath();
 			FacesUtils.redirect(contextPath + savedRequestUrl);
 		}

@@ -26,11 +26,11 @@ public class OAuthFilter
 	@Override
 	public ContainerRequest filter(ContainerRequest containerRequest)
 	{
-		Environment.logger.debug("OAuth filter processing.");
-		Environment.logger.debug("request path: [" + containerRequest.getPath()
-		                         + "]");
-		Environment.logger.debug("authorization: "
-		                         + containerRequest.getRequestHeader("authorization"));
+		Environment.logger.info("OAuth filter processing.");
+		Environment.logger.info("request path: [" + containerRequest.getPath()
+		                        + "]");
+		Environment.logger.info("authorization: "
+		                        + containerRequest.getRequestHeader("authorization"));
 		if (containerRequest.getPath().equals("oauth/OAuthAuthorizeToken"))
 		{
 			return containerRequest;
@@ -61,7 +61,7 @@ public class OAuthFilter
 			                                                                               + token);
 			if (principal != null && principal.getOauthCredentials() != null)
 			{
-				Environment.logger.debug("temporary token");
+				Environment.logger.info("temporary token");
 			}
 			else
 			{
@@ -69,7 +69,7 @@ public class OAuthFilter
 				if (principal != null
 				    && principal.getOauthCredentials() != null)
 				{
-					Environment.logger.debug("permanent token");
+					Environment.logger.info("permanent token");
 				}
 			}
 			if (principal != null && principal.getOauthCredentials() != null)
@@ -82,14 +82,14 @@ public class OAuthFilter
 		{
 			if (!OAuthSignature.verify(request, params, secrets))
 			{
-				Environment.logger.error("failed to verify signature");
-				Environment.logger.error("received signature: ["
-				                         + params.getSignature() + "]");
-				Environment.logger.error("generated signature: ["
-				                         + OAuthSignature.generate(request,
-				                                                   params,
-				                                                   secrets)
-				                         + "]");
+				Environment.logger.severe("failed to verify signature");
+				Environment.logger.severe("received signature: ["
+				                          + params.getSignature() + "]");
+				Environment.logger.severe("generated signature: ["
+				                          + OAuthSignature.generate(request,
+				                                                    params,
+				                                                    secrets)
+				                          + "]");
 				throwWebApplicationException(ErrorResponse.INVALID_SIGNATURE);
 			}
 		}

@@ -49,8 +49,8 @@ public class Embedded
 			{
 				try
 				{
-					Environment.logger.debug("querying connector: "
-					                         + connector.getName());
+					Environment.logger.info("querying connector: "
+					                        + connector.getName());
 					embedded = connector.getEmbedded(authCredentials,
 					                                 url,
 					                                 maxWidth,
@@ -62,7 +62,7 @@ public class Embedded
 				}
 				catch (InterWebException e)
 				{
-					Environment.logger.warn(e);
+					Environment.logger.severe(e.getMessage());
 				}
 			}
 		}
