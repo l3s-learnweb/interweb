@@ -590,11 +590,11 @@ public class InterWebConnector
 		//		testAuthenticate("Flickr");
 		//		testRevokeFromLearnWeb("Flickr");
 		//		testRevokeFromLearnWeb("YouTube");
-		testServices();
+		//		testServices();
 		//		testUserServices();
 		//		testService("Flickr");
 		testGet();
-		testEmbedded();
+		//		testEmbedded();
 	}
 	
 
