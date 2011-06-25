@@ -7,6 +7,8 @@
   <base-url>http://www.google.com</base-url>
   <content-types>
     <content-type>text</content-type>
+    <content-type>image</content-type>
+    <content-type>video</content-type>
   </content-types>
   <properties>
     <property>
