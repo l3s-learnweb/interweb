@@ -14,7 +14,7 @@
   <properties>
     <property>
       <name>services</name>
-      <!-- <value>Flickr\,YouTube\,SlideShare</value> -->
+      <!-- <value>SlideShare\,Flickr\,YouTube</value> -->
       <value>Delicious\,Ipernity\,LastFm\,Vimeo\,Blogger\,Facebook\,GroupMe</value>
     </property>
   </properties>
