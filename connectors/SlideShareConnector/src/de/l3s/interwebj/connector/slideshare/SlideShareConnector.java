@@ -4,6 +4,7 @@ package de.l3s.interwebj.connector.slideshare;
 import static de.l3s.interwebj.util.Assertions.*;
 
 import java.io.*;
+import java.net.*;
 import java.text.*;
 import java.util.*;
 
@@ -12,6 +13,7 @@ import javax.ws.rs.core.*;
 import org.apache.commons.codec.digest.*;
 
 import com.sun.jersey.api.client.*;
+import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.core.util.*;
 
 import de.l3s.interwebj.*;
@@ -88,8 +90,12 @@ public class SlideShareConnector
 		{
 			resource = resource.queryParam("what", searchScope);
 		}
-		resource = resource.queryParam("file_type",
-		                               createFileType(query.getContentTypes()));
+		String fileType = createFileType(query.getContentTypes());
+		if (fileType == null)
+		{
+			return queryResult;
+		}
+		resource = resource.queryParam("file_type", fileType);
 		//		resource = resource.queryParam("detailed", "1");
 		ClientResponse response = postQuery(resource);
 		SearchResponse sr = response.getEntity(SearchResponse.class);
@@ -128,13 +134,34 @@ public class SlideShareConnector
 	    throws InterWebException
 	{
 		notNull(url, "url");
+		URI uri = URI.create(url);
+		URI baseUri = URI.create(getBaseUrl());
+		if (!baseUri.getHost().endsWith(uri.getHost()))
+		{
+			throw new InterWebException("URL: [" + url
+			                            + "] doesn't belong to connector");
+		}
 		Client client = Client.create();
 		WebResource resource = client.resource("http://www.slideshare.net/api/2/get_slideshow");
 		resource = resource.queryParam("slideshow_url", url);
 		System.out.println("querying URL: " + resource.toString());
 		ClientResponse response = postQuery(resource);
+		if (response.getClientResponseStatus() != Status.OK)
+		{
+			throw new InterWebException("URL: [" + url
+			                            + "] doesn't belong to connector ["
+			                            + getName() + "]");
+		}
 		SearchResultEntity sre = response.getEntity(SearchResultEntity.class);
-		return sre.getEmbed();
+		String embedded = sre.getEmbed();
+		embedded = embedded.replaceAll("width:\\d+px", "width:" + maxWidth
+		                                               + "px");
+		embedded = embedded.replaceAll("width=\"\\d+\"", "width=\"" + maxWidth
+		                                                 + "\"");
+		embedded = embedded.replaceAll("height=\"\\d+\"", "height=\""
+		                                                  + maxHeight + "\"");
+		embedded = embedded.replaceAll("<strong.+</strong>", "");
+		return embedded;
 	}
 	
 
@@ -203,6 +230,27 @@ public class SlideShareConnector
 
 	private String createFileType(List<String> contentTypes)
 	{
+		List<String> fileTypes = new ArrayList<String>();
+		if (contentTypes.contains(Query.CT_PRESENTATION))
+		{
+			fileTypes.add("presentations");
+		}
+		if (contentTypes.contains(Query.CT_TEXT))
+		{
+			fileTypes.add("documents");
+		}
+		if (contentTypes.contains(Query.CT_VIDEO))
+		{
+			fileTypes.add("videos");
+		}
+		if (fileTypes.size() == 0)
+		{
+			return null;
+		}
+		if (fileTypes.size() == 1)
+		{
+			return fileTypes.get(0);
+		}
 		return "all";
 	}
 	
@@ -330,6 +378,8 @@ public class SlideShareConnector
 		query.addContentType(Query.CT_VIDEO);
 		query.addContentType(Query.CT_IMAGE);
 		query.addContentType(Query.CT_TEXT);
+		query.addContentType(Query.CT_PRESENTATION);
+		query.addContentType(Query.CT_AUDIO);
 		query.addSearchScope(SearchScope.TEXT);
 		query.addSearchScope(SearchScope.TAGS);
 		query.setResultCount(5);
@@ -340,10 +390,9 @@ public class SlideShareConnector
 		String id = queryResult.getQuery().getId();
 		System.out.println(id);
 		String embedded = ssc.getEmbedded(null,
-		                                  "http://www.slideshare.net/riyadisan/finding-missing-persons",
-		                                  -1,
-		                                  -1);
+		                                  "http://www.slideshare.net/pacific2000/flowers-presentation-715934",
+		                                  240,
+		                                  240);
 		System.out.println(embedded);
-		
 	}
 }

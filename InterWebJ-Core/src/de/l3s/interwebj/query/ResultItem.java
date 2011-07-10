@@ -39,6 +39,7 @@ public class ResultItem
 	{
 		this.connectorName = connectorName;
 		serviceName = connectorName;
+		thumbnails = new TreeSet<Thumbnail>();
 	}
 	
 

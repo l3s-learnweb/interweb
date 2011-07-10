@@ -152,7 +152,8 @@ public class FlickrConnector
 		if (!baseUri.getHost().endsWith(uri.getHost()))
 		{
 			throw new InterWebException("URL: [" + url
-			                            + "] doesn't belong to connector");
+			                            + "] doesn't belong to connector ["
+			                            + getName() + "]");
 		}
 		String path = uri.getPath();
 		String id = path.substring(path.lastIndexOf('/') + 1);

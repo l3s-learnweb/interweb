@@ -269,7 +269,8 @@ public class YouTubeConnector
 		if (!baseUri.getHost().endsWith(uri.getHost()))
 		{
 			throw new InterWebException("URL: [" + url
-			                            + "] doesn't belong to connector");
+			                            + "] doesn't belong to connector ["
+			                            + getName() + "]");
 		}
 		String[] queryParams = uri.getQuery().split("&");
 		String id = null;
