@@ -84,7 +84,7 @@ public class Search
 		{
 			Engine engine = Environment.getInstance().getEngine();
 			InterWebPrincipal principal = getPrincipal();
-			Environment.logger.info(""+principal);
+			Environment.logger.info("principal: [" + principal + "]");
 			QueryResultMerger merger = new DumbQueryResultMerger();
 			QueryResultCollector collector = engine.getQueryResultCollector(query,
 			                                                                principal,
