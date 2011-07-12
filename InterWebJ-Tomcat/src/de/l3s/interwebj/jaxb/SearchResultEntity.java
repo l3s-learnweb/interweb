@@ -5,6 +5,9 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
+import org.apache.commons.logging.impl.Log4JLogger;
+
+import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.query.*;
 
 
@@ -55,14 +58,22 @@ public class SearchResultEntity
 	public SearchResultEntity(ResultItem resultItem)
 	{
 		this();
+		
+		if(resultItem==null){
+			Environment.logger.severe("Result is null ");
+			return;}
 		setService(resultItem.getServiceName());
 		setIdAtService(resultItem.getId());
 		setType(resultItem.getType());
 		setTitle(resultItem.getTitle());
+		String description=resultItem.getDescription();
+		if(description==null) description="no desc";
 		setDescription(resultItem.getDescription());
+		
 		setUrl(resultItem.getUrl());
 		Set<Thumbnail> thumbnails = resultItem.getThumbnails();
 		List<ThumbnailEntity> thumbnailEntities = new ArrayList<ThumbnailEntity>();
+		if(thumbnails!=null){
 		for (Thumbnail thumbnail : thumbnails)
 		{
 			if (image == null)
@@ -70,6 +81,9 @@ public class SearchResultEntity
 				setImage(thumbnail.getUrl());
 			}
 			thumbnailEntities.add(new ThumbnailEntity(thumbnail));
+		}
+		}else{
+			Environment.logger.severe("No thumbnails found for "+resultItem.getId()+" in "+resultItem.getConnectorName());
 		}
 		setThumbnailEntities(thumbnailEntities);
 		//		setEmbedded(resultItem.getEmbedded());

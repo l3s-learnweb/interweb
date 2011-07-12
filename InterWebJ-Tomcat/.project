@@ -33,6 +33,13 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>core-src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/InterWebJ-Core/src</locationURI>
+		</link>
+	</linkedResources>
 	<variableList>
 		<variable>
 			<name>INTERWEB_CORE</name>
