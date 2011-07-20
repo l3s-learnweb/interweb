@@ -1,0 +1,81 @@
+<%bte.doc super="item.bte" %>
+<%bte.tpl name=pageTitle%>MD5<%/bte.tpl%>
+<%bte.tpl name=description%>Generate MD5 hash sums.<%/bte.tpl%>
+<%bte.tpl name=keywords%>md5, md5 hash generator, md5 checksum, md5 library, java md5, check sum md5, message digest, fingerprint md5, signature md5, md5 input stream, md5inputstream, md5 output stream, md5outputstream<%/bte.tpl%>
+<%bte.tpl name=topcontent%>
+MD5 is a cryptographic one way hash algorithm.  These classes compute MD5 for Java Strings, byte arrays, or streams.  MD5 is now considered a weak algorithm.  New applications should consider more secure one way hashes.
+<%/bte.tpl%>
+<%bte.tpl name=content%>
+
+<div class=examplecode><h3>Example</h3>
+<pre><span class=identifier>System</span><span class=separator>.</span><span class=identifier>out</span><span class=separator>.</span><span class=identifier>println</span><span class=separator>(
+    </span><span class=identifier>MD5</span><span class=separator>.</span><span class=identifier>getHashString</span><span class=separator>(
+        </span><span class=literal>&quot;Hello World&quot;
+    </span><span class=separator>)
+);</span></pre>
+</div>
+
+<div class=securityalert><h3>Security Alert</h3>
+The MD5 class had a bug in version 1.02.23 and earlier that miscalculated MD5 sums for inputs
+of certain odd byte lengths.  Please consider the implications for your application and
+upgrade to the most recent version.
+</div>
+
+
+<p>This class takes as input a message of arbitrary length and produces as output
+a 128-bit "fingerprint" or "message digest" of the input. It is conjectured that 
+it is computationally infeasible to produce two messages having the same message 
+digest, or to produce any message having a given pre-specified target message 
+digest. The MD5 algorithm is intended for digital signature applications, where 
+a large file must be "compressed" in a secure manner before being encrypted with 
+a private (secret) key under a public-key cryptosystem such as RSA.</p>
+
+<p>This class is based on work by <a href="http://www.helsinki.fi/~sjpaavol/programs/md5/">Santeri Paavolainen</a>.
+and <a href="http://www.ietf.org/rfc/rfc1321.txt">RFC1321</a>.  This implementation is several times
+faster and much more memory efficient than Santeri's implementation.</p>
+
+<br clear=all>
+
+<div class=examplecode><h3>Example</h3>
+<pre><span class=comment>// Print the MD5 hash for a line
+// read from standard input
+</span><span class=identifier>MD5InputStream in </span><span class=operator>= </span><span class=reservedWord>new </span><span class=identifier>MD5InputStream</span><span class=separator>(</span><span class=identifier>System</span><span class=separator>.</span><span class=identifier>in</span><span class=separator>);
+</span><span class=reservedWord>int </span><span class=identifier>b</span><span class=separator>;
+</span><span class=reservedWord>while </span><span class=separator>((</span><span class=identifier>b </span><span class=operator>= </span><span class=identifier>in</span><span class=separator>.</span><span class=identifier>read</span><span class=separator>()) </span><span class=operator>!= -</span><span class=literal>1 </span><span class=operator>&amp;&amp; </span><span class=identifier>b </span><span class=operator>!= </span><span class=literal>'\r' </span><span class=operator>&amp;&amp; </span><span class=identifier>b </span><span class=operator>!= </span><span class=literal>'\n'</span><span class=separator>);
+</span><span class=identifier>System</span><span class=separator>.</span><span class=identifier>out</span><span class=separator>.</span><span class=identifier>println</span><span class=separator>(</span><span class=identifier>in</span><span class=separator>.</span><span class=identifier>getHashString</span><span class=separator>());</span></pre>
+</div>
+
+<H2>Input Stream</h2>
+
+<p>A filtered input stream that computes an MD5 sum for anything read.</p>
+
+<br clear=all>
+
+<div class=examplecode><h3>Example</h3>
+<pre><span class=comment>// Write out hello world
+// and print its MD5 hash 
+</span><span class=identifier>MD5OutputStream out </span><span class=operator>= </span><span class=reservedWord>new </span><span class=identifier>MD5OutputStream</span><span class=separator>(</span><span class=identifier>System</span><span class=separator>.</span><span class=identifier>out</span><span class=separator>);
+</span><span class=identifier>out</span><span class=separator>.</span><span class=identifier>write</span><span class=separator>(</span><span class=literal>&quot;Hello World\n&quot;</span><span class=separator>.</span><span class=identifier>getBytes</span><span class=separator>());
+</span><span class=identifier>System</span><span class=separator>.</span><span class=identifier>out</span><span class=separator>.</span><span class=identifier>println</span><span class=separator>(</span><span class=identifier>out</span><span class=separator>.</span><span class=identifier>getHashString</span><span class=separator>());</span></pre>
+</div>
+
+<H2>Output Stream</h2>
+
+<p>A filtered output stream that computes an MD5 sum for anything written.</p>
+
+<br clear=all>
+<%/bte.tpl%>
+
+<%bte.tpl name=linkMD5%><b>MD5 Sums</b>
+<ul>
+<li><a href="MD5.java.html">MD5 Source</a></li>
+<li><a href="doc/com/Ostermiller/util/MD5.html">MD5 Documentation</a></li>
+<li><a href="MD5InputStream.java.html">MD5InputStream Source</a></li>
+<li><a href="doc/com/Ostermiller/util/MD5InputStream.html">MD5InputStream Documentation</a></li>
+<li><a href="MD5OutputStream.java.html">MD5OutputStream Source</a></li>
+<li><a href="doc/com/Ostermiller/util/MD5OutputStream.html">MD5OutputStream Documentation</a></li>
+<li><a href="http://bugzilla.ostermiller.com/buglist.cgi?product=JavaUtils&component=MD5&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED">Bugs/Features</a></li>
+</ul>
+<%/bte.tpl%>
+
+<%/bte.doc%>
