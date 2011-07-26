@@ -1,14 +1,73 @@
 package de.l3s.interwebj.core;
 
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.xeustechnologies.jcl.*;
+import org.xeustechnologies.jcl.JarClassLoader;
+import org.xeustechnologies.jcl.JclObjectFactory;
+import org.xeustechnologies.jcl.JclUtils;
 
 import de.l3s.interwebj.config.Configuration;
 
+class DeepURLClassLoader
+{
+	public DeepURLClassLoader(File[] libJarFiles)
+	{
+		if(true) return;
+		
+		URL[] jars = getJars(libJarFiles);
 
+	
+		int i=0;
+		for(File f:libJarFiles) 
+		{
+			try {
+				jars[i]=(new URL("jar:file://"+f.getAbsolutePath()+"!/"));
+				i++;
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		URLClassLoader classloader=new URLClassLoader(jars);
+		try {
+			classloader.getResources("com.google.code.bing.search.client.BingSearchServiceClientFactory");
+			classloader.loadClass("com.google.code.bing.search.client.BingSearchServiceClientFactory");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	 catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private  static URL[] getJars(File[] libJarFiles) {
+		URL[] jars=new URL[libJarFiles.length];
+		for(int i=0;i<libJarFiles.length;i++) 
+		{
+			try {
+				jars[i]=libJarFiles[i].toURI().toURL();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return jars;
+	}
+	
+	}
 public class ConnectorLoader
 {
 	
@@ -64,7 +123,68 @@ public class ConnectorLoader
 		});
 	}
 	
+	public ServiceConnector loadLinkedConnector(String realPath, String name) 
+	{
+		
+	//String connectorName=name+"Controller";
+	Class cl;
+	File connectorDir = new File(new File(new File(realPath,"WEB-INF"),"connectors"),name.toLowerCase());
+	try {
+		Environment.logger.info("trying load connector from folder: ["
+                + connectorDir.getAbsolutePath() + "]");
+File configFile = new File(connectorDir, CONNECTOR_CONFIG_FILE_NAME);
+Configuration configuration = new Configuration(new FileInputStream(configFile));
+String connectorName = configuration.getValue("class");
 
+		cl = Class.forName(connectorName);
+		java.lang.reflect.Constructor co=cl.getConstructor(Configuration.class);
+		
+		Environment.logger.info("connector jar file: ["
+                + connectorName
+                + "] successfully loaded");
+		
+File libDir = new File(connectorDir, "lib");
+
+File[] libJarFiles = getJars(libDir);
+
+DeepURLClassLoader jarloader = new DeepURLClassLoader(libJarFiles);
+
+		
+		
+		
+		Object ins=co.newInstance(configuration);
+		
+		
+		return (ServiceConnector) ins;
+	} catch (ClassNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IllegalArgumentException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (InstantiationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IllegalAccessException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (InvocationTargetException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (SecurityException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (NoSuchMethodException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	throw new RuntimeException();
+//	continue;
+		
+	}
 	private ServiceConnector loadConnector(File connectorDir)
 	{
 		ServiceConnector connector = null;
