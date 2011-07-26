@@ -5,6 +5,12 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/core-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bing-src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/youtube-src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/slideshare-src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/interweb-src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/google-src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/flickr-src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/fedora-src"/>
         <property name="context-root" value="InterWebJ"/>
         <property name="java-output-path" value="/InterWebJ/build/classes"/>
     </wb-module>

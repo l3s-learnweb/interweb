@@ -45,6 +45,36 @@
 			<locationURI>WORKSPACE_LOC/InterWebJ-Core/src</locationURI>
 		</link>
 		<link>
+			<name>fedora-src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/FedoraConnector/src</locationURI>
+		</link>
+		<link>
+			<name>flickr-src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/FlickrConnector/src</locationURI>
+		</link>
+		<link>
+			<name>google-src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/GoogleConnector/src</locationURI>
+		</link>
+		<link>
+			<name>interweb-src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/InterWebConnector/src</locationURI>
+		</link>
+		<link>
+			<name>slideshare-src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/SlideShareConnector/src</locationURI>
+		</link>
+		<link>
+			<name>youtube-src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/YouTubeConnector/src</locationURI>
+		</link>
+		<link>
 			<name>WebContent/WEB-INF/embeddedconnectors/bing/connector-config.xml</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/BingConnector/connector-config.xml</locationURI>
