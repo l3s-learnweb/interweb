@@ -74,6 +74,7 @@ public class Query
 	private List<String> connectorNames;
 	private List<String> contentTypes;
 	private int resultCount;
+	private int page = 1;
 	private long updated;
 	private SortOrder sortOrder;
 	private Set<SearchScope> searchScopes;
@@ -244,6 +245,19 @@ public class Query
 		this.updated = updated;
 	}
 	
+	
+
+	public int getPage() 
+	{
+		return page;
+	}
+
+
+	public void setPage(int page) 
+	{
+		this.page = page;
+	}
+
 
 	@Override
 	public String toString()
