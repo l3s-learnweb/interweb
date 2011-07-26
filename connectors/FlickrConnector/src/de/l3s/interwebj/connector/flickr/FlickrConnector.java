@@ -499,7 +499,7 @@ public class FlickrConnector
 				params.setSort(getSortOrder(query.getSortOrder()));
 				PhotoList photoList = pi.search(params,
 				                                query.getResultCount(),
-				                                1);
+				                                query.getPage());
 				int count = 0;
 				int totalResultCount = photoList.getTotal();
 				queryResult.setTotalResultCount(totalResultCount);
