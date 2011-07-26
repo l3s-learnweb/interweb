@@ -4,6 +4,7 @@
         <wb-resource deploy-path="/" source-path="/WebContent"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/core-src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/bing-src"/>
         <property name="context-root" value="InterWebJ"/>
         <property name="java-output-path" value="/InterWebJ/build/classes"/>
     </wb-module>

@@ -84,7 +84,7 @@ public class RegisterServicesBean
 		String contextRealPath = servletContext.getRealPath("/");
 		String connectorsDirPath = contextRealPath + "WEB-INF/connectors";
 		Engine engine = Environment.getInstance().getEngine();
-		engine.loadConnectors(connectorsDirPath);
+		engine.loadConnectors(contextRealPath,connectorsDirPath);
 		return "success";
 	}
 	

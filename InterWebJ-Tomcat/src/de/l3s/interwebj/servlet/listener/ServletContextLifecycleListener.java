@@ -29,7 +29,7 @@ public class ServletContextLifecycleListener
 		Environment.logger.info("Starting InterWebJ up...");
 		Engine engine = environment.getEngine();
 		String connectorsDirPath = webinfRealPath + "/connectors";
-		engine.loadConnectors(connectorsDirPath);
+		engine.loadConnectors(servletContext.getRealPath(""),connectorsDirPath);
 	}
 	
 }

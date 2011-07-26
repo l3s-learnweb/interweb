@@ -35,9 +35,19 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>bing-src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/BingConnector/src</locationURI>
+		</link>
+		<link>
 			<name>core-src</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/InterWebJ-Core/src</locationURI>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/embeddedconnectors/bing/connector-config.xml</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/BingConnector/connector-config.xml</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
