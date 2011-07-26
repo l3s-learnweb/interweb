@@ -5,6 +5,9 @@ import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.google.code.bing.search.client.BingSearchClient;
 import com.google.code.bing.search.client.BingSearchClient.SearchRequestBuilder;
@@ -13,6 +16,8 @@ import com.google.code.bing.search.schema.AdultOption;
 import com.google.code.bing.search.schema.SearchOption;
 import com.google.code.bing.search.schema.SearchResponse;
 import com.google.code.bing.search.schema.SourceType;
+import com.google.code.bing.search.schema.multimedia.ImageResult;
+import com.google.code.bing.search.schema.multimedia.VideoResult;
 import com.google.code.bing.search.schema.web.WebResult;
 import com.google.code.bing.search.schema.web.WebSearchOption;
 
@@ -26,15 +31,16 @@ import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryFactory;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.Thumbnail;
 
 
 public class BingConnector
     extends AbstractServiceConnector
 {
 	
-	private static final int MAX_RESULT_COUNT = 64;
+	private static final int MAX_RESULT_COUNT = 50;
 	
-	private static final String API_KEY = "***REMOVED***";
+	private static final String APP_ID = "E42FC069A142DB0CE26C4B3C428854F7C49DA01F";
 	
 
 	public BingConnector(Configuration configuration)
@@ -415,12 +421,67 @@ public class BingConnector
 	{
 		ResultItem resultItem = new ResultItem(getName());
 		resultItem.setType(Query.CT_TEXT);
+		if(webResult.getTitle() != null)
 		resultItem.setTitle(webResult.getTitle().replace(""+(char)57344, "<b>").replace(""+(char)57345, "</b>"));
-		resultItem.setDescription(webResult.getDescription());
+		if(webResult.getDescription() != null)
+			resultItem.setDescription(webResult.getDescription().replace(""+(char)57344, "<b>").replace(""+(char)57345, "</b>"));
 		resultItem.setUrl(webResult.getUrl());
 		resultItem.setRank(index);
 		resultItem.setTotalResultCount(totalResultCount);
 		return resultItem;
+	}
+	
+	private ResultItem convertImageResult(ImageResult imageResult,
+            int index,
+            long totalResultCount)
+	{
+		ResultItem resultItem = new ResultItem(getName());
+		resultItem.setType(Query.CT_IMAGE);
+		resultItem.setTitle(imageResult.getTitle());
+		resultItem.setUrl(imageResult.getUrl());
+		resultItem.setRank(index);
+		resultItem.setTotalResultCount(totalResultCount);
+		resultItem.setThumbnails(createThumbnails(imageResult.getThumbnail()));
+
+		return resultItem;
+	}
+	
+	private ResultItem convertVideoResult(VideoResult videoResult,
+            int index,
+            long totalResultCount)
+	{
+		ResultItem resultItem = new ResultItem(getName());
+		resultItem.setType(Query.CT_VIDEO);
+		resultItem.setTitle(videoResult.getTitle());
+		resultItem.setUrl(videoResult.getPlayUrl());
+		resultItem.setRank(index);
+		resultItem.setTotalResultCount(totalResultCount);
+		resultItem.setThumbnails(createThumbnails(videoResult.getStaticThumbnail()));
+
+		return resultItem;
+	}
+	
+
+	private Set<Thumbnail> createThumbnails(com.google.code.bing.search.schema.multimedia.StaticThumbnail tn)
+	{
+		SortedSet<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
+		
+		//com.google.code.bing.search.schema.multimedia.Thumbnail tn = imageResult.getThumbnail();
+		thumbnails.add(new Thumbnail(tn.getUrl(),
+		                             tn.getWidth().intValue(),
+		                             tn.getHeight().intValue()));
+		return thumbnails;
+	}
+	
+	private Set<Thumbnail> createThumbnails(com.google.code.bing.search.schema.multimedia.Thumbnail tn)
+	{
+		SortedSet<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
+		
+		//com.google.code.bing.search.schema.multimedia.Thumbnail tn = imageResult.getThumbnail();
+		thumbnails.add(new Thumbnail(tn.getUrl(),
+		                             tn.getWidth().intValue(),
+		                             tn.getHeight().intValue()));
+		return thumbnails;
 	}
 	
 	private QueryResult getWebResults(Query query,
@@ -433,40 +494,82 @@ public class BingConnector
 		BingSearchClient client = factory.createBingSearchClient();
 
 		SearchRequestBuilder builder = client.newSearchRequestBuilder();
-		builder.withAppId("E42FC069A142DB0CE26C4B3C428854F7C49DA01F");
+		builder.withAppId(APP_ID);
 		builder.withQuery(query.getQuery());
 		
 		builder.withVersion("2.0");
 		builder.withMarket("en-us");
 		builder.withAdultOption(AdultOption.MODERATE);
+		builder.withSearchOption(SearchOption.ENABLE_HIGHLIGHTING);
+		
 		
 		if (query.getContentTypes().contains(Query.CT_TEXT))
 			builder.withSourceType(SourceType.WEB);
-		if (query.getContentTypes().contains(Query.CT_IMAGE))
+		if (query.getContentTypes().contains(Query.CT_IMAGE)) 
 			builder.withSourceType(SourceType.IMAGE);
 		if (query.getContentTypes().contains(Query.CT_VIDEO))
-			builder.withSourceType(SourceType.VIDEO);
+			builder.withSourceType(SourceType.VIDEO);		
 		
-		builder.withSearchOption(SearchOption.ENABLE_HIGHLIGHTING);
+		long requestCount = (long) query.getResultCount();
+		long requestOffset = (query.getPage()-1)*(long) query.getResultCount();
 		
-
-		builder.withWebRequestCount(10L);
-		builder.withWebRequestOffset(0L);
+		if(requestCount > 50L)
+			requestCount = 50L;
+		
+		builder.withWebRequestCount(requestCount);
+		builder.withWebRequestOffset(requestOffset); 
+		
+		builder.withVideoRequestCount(requestCount);
+		builder.withVideoRequestOffset(requestOffset);
+		
+		builder.withImageRequestCount(requestCount);
+		builder.withImageRequestOffset(requestOffset);
+		
 		builder.withWebRequestSearchOption(WebSearchOption.DISABLE_HOST_COLLAPSING);
 		builder.withWebRequestSearchOption(WebSearchOption.DISABLE_QUERY_ALTERATIONS);
-//57344 <b>
-//57345 </b>
+
 		SearchResponse response = client.search(builder.getResult());
 
-		long totalResultCount = response.getWeb().getTotal();
-		queryResult.setTotalResultCount(totalResultCount);
+		long totalResultCount = 0;
 		int index = 0;
-		for (WebResult result : response.getWeb().getResults()) 
+		
+		if(response.getWeb() != null)
 		{
-			System.out.println((result.getTitle()));
-			queryResult.addResultItem(convertWebResult(result, index, totalResultCount));
-			index++;
+			totalResultCount = response.getWeb().getTotal();
+			queryResult.setTotalResultCount(totalResultCount);
+			
+			for (WebResult result : response.getWeb().getResults()) 
+			{
+				queryResult.addResultItem(convertWebResult(result, index, totalResultCount));
+				index++;
+			}
 		}
+		
+		if(response.getImage() != null)
+		{
+			totalResultCount += response.getImage().getTotal();
+			queryResult.setTotalResultCount(totalResultCount);
+			index = 0;
+			for (ImageResult result : response.getImage().getResults()) 
+			{
+				queryResult.addResultItem(convertImageResult(result, index, totalResultCount));
+				index++;
+			}
+		}
+		
+		if(response.getVideo() != null)
+		{
+			totalResultCount += response.getVideo().getTotal();
+			queryResult.setTotalResultCount(totalResultCount);
+			index = 0;
+			for (VideoResult result : response.getVideo().getResults()) 
+			{
+				queryResult.addResultItem(convertVideoResult(result, index, totalResultCount));
+				index++;
+			}
+		}
+		
+		
 		//GoogleSearchQueryFactory factory = GoogleSearchQueryFactory.newInstance(API_KEY);
 		//WebSearchQuery webSearchQuery = factory.newWebSearchQuery();
 		/*
