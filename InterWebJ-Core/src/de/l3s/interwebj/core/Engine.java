@@ -169,8 +169,8 @@ public class Engine
 		ConnectorLoader connectorLoader = new ConnectorLoader();
 		List<ServiceConnector> connectors = connectorLoader.load(pluginDirPath);
 		
-		HashSet<String> linkedConnectors=new HashSet<String>();
-		linkedConnectors.add("bing");
+		//HashSet<String> linkedConnectors=new HashSet<String>();
+		//linkedConnectors.add("bing");
 
 		boolean isDebug = java.lang.management.ManagementFactory
 				.getRuntimeMXBean().getInputArguments().toString()
@@ -179,7 +179,7 @@ public class Engine
 
 		for (ServiceConnector connector : connectors)
 		{
-			if(linkedConnectors.contains(connector.getName().toLowerCase()) && isDebug) 
+			if(isDebug) 
 			{
 				connector=connectorLoader.loadLinkedConnector(realPath,connector.getName());
 			}
