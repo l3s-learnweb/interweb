@@ -81,10 +81,10 @@ public class SlideShareConnector
 		Client client = Client.create();
 		WebResource resource = client.resource("http://www.slideshare.net/api/2/search_slideshows");
 		resource = resource.queryParam("q", query.getQuery());
-		resource = resource.queryParam("items_per_page",
-		                               Integer.toString(query.getResultCount()));
-		resource = resource.queryParam("sort",
-		                               createSortOrder(query.getSortOrder()));
+		resource = resource.queryParam("lang", query.getLanguage());
+		resource = resource.queryParam("page", Integer.toString(query.getPage()));
+		resource = resource.queryParam("items_per_page", Integer.toString(query.getResultCount()));
+		resource = resource.queryParam("sort", createSortOrder(query.getSortOrder()));
 		String searchScope = createSearchScope(query.getSearchScopes());
 		if (searchScope != null)
 		{
@@ -284,12 +284,8 @@ public class SlideShareConnector
 	private Set<Thumbnail> createThumbnails(SearchResultEntity searchResultEntity)
 	{
 		Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
-		thumbnails.add(new Thumbnail(searchResultEntity.getThumbnailSmallURL(),
-		                             -1,
-		                             -1));
-		thumbnails.add(new Thumbnail(searchResultEntity.getThumbnailURL(),
-		                             -1,
-		                             -1));
+		thumbnails.add(new Thumbnail(searchResultEntity.getThumbnailSmallURL(), -1, -1));
+		thumbnails.add(new Thumbnail(searchResultEntity.getThumbnailURL(), -1, -1));
 		return thumbnails;
 	}
 	
