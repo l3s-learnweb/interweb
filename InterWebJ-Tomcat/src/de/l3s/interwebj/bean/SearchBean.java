@@ -28,6 +28,8 @@ public class SearchBean
 	
 	@NotNull
 	private String query;
+	private int page = 1;
+	private String language = "en";
 	private QueryResult queryResult;
 	private List<String> selectedContentTypes;
 	private List<String> selectedConnectorNames;
@@ -211,6 +213,8 @@ public class SearchBean
 		query.addSearchScope(SearchScope.TEXT);
 		query.addSearchScope(SearchScope.TAGS);
 		query.setResultCount(resultCount);
+		query.setPage(page);
+		query.setLanguage(language);
 		QueryResult queryResult = new QueryResult(query);
 		Engine engine = Environment.getInstance().getEngine();
 		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
@@ -257,4 +261,28 @@ public class SearchBean
 	{
 		this.selectedContentTypes = selectedContentTypes;
 	}
+
+
+	public int getPage() {
+		return page;
+	}
+
+
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+
+	public String getLanguage() {
+		return language;
+	}
+
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	
+	
+	
+	
 }
