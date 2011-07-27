@@ -1,33 +1,59 @@
 package de.l3s.interwebj.connector.youtube;
 
 
-import static de.l3s.interwebj.util.Assertions.*;
+import static de.l3s.interwebj.util.Assertions.notNull;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.StringUtils;
 
-import com.google.gdata.client.authn.oauth.*;
+import com.google.gdata.client.Query.CustomParameter;
+import com.google.gdata.client.authn.oauth.OAuthException;
+import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer;
 import com.google.gdata.client.authn.oauth.OAuthParameters;
-import com.google.gdata.client.youtube.*;
-import com.google.gdata.client.youtube.YouTubeQuery.OrderBy;
-import com.google.gdata.data.media.*;
-import com.google.gdata.data.media.mediarss.*;
-import com.google.gdata.data.youtube.*;
-import com.google.gdata.util.*;
-import com.sun.jersey.api.client.*;
-import com.sun.jersey.oauth.client.*;
-import com.sun.jersey.oauth.signature.*;
+import com.google.gdata.client.youtube.YouTubeQuery;
+import com.google.gdata.client.youtube.YouTubeService;
+import com.google.gdata.data.media.MediaByteArraySource;
+import com.google.gdata.data.media.MediaSource;
+import com.google.gdata.data.media.mediarss.MediaCategory;
+import com.google.gdata.data.media.mediarss.MediaDescription;
+import com.google.gdata.data.media.mediarss.MediaGroup;
+import com.google.gdata.data.media.mediarss.MediaKeywords;
+import com.google.gdata.data.media.mediarss.MediaThumbnail;
+import com.google.gdata.data.media.mediarss.MediaTitle;
+import com.google.gdata.data.youtube.UserProfileEntry;
+import com.google.gdata.data.youtube.VideoEntry;
+import com.google.gdata.data.youtube.VideoFeed;
+import com.google.gdata.data.youtube.YouTubeMediaGroup;
+import com.google.gdata.data.youtube.YouTubeNamespace;
+import com.google.gdata.util.ServiceException;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.oauth.client.OAuthClientFilter;
+import com.sun.jersey.oauth.signature.HMAC_SHA1;
+import com.sun.jersey.oauth.signature.OAuthSecrets;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.config.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.Parameters;
+import de.l3s.interwebj.config.Configuration;
+import de.l3s.interwebj.core.AbstractServiceConnector;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SearchScope;
-import de.l3s.interwebj.query.Query.SortOrder;
-import de.l3s.interwebj.util.*;
+import de.l3s.interwebj.query.QueryResult;
+import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.Thumbnail;
+import de.l3s.interwebj.util.CoreUtils;
 
 
 public class YouTubeConnector
@@ -191,68 +217,84 @@ public class YouTubeConnector
 			throw new InterWebException("Service is not yet registered");
 		}
 		QueryResult queryResult = new QueryResult(query);
-		if (query.getContentTypes().contains(Query.CT_VIDEO))
-		{
-			try
+		
+		if (!query.getContentTypes().contains(Query.CT_VIDEO))
+			return queryResult;
+		
+		try
+		{				
+			YouTubeService service = createYouTubeService(authCredentials);
+			YouTubeQuery ytq = new YouTubeQuery(new URL(GET_VIDEO_FEED_PATH));
+			ytq.setMaxResults(Math.min(50, query.getResultCount()));
+			ytq.setStartIndex(Math.min(50, query.getResultCount()) * (query.getPage()-1)+1);				
+			
+			switch (query.getSortOrder())
 			{
-				YouTubeService service = createYouTubeService(authCredentials);
-				YouTubeQuery ytq = new YouTubeQuery(new URL(GET_VIDEO_FEED_PATH));
-				ytq.setMaxResults(Math.min(50, query.getResultCount()));
-				ytq.setOrderBy(getSortOrder(query.getSortOrder()));
-				ytq.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
-				if (query.getSearchScopes().contains(SearchScope.TEXT))
-				{
-					ytq.setFullTextQuery(query.getQuery());
-				}
-				VideoFeed vf = service.query(ytq, VideoFeed.class);
-				int count = 0;
-				queryResult.setTotalResultCount(vf.getTotalResults());
-				for (VideoEntry ve : vf.getEntries())
-				{
-					ResultItem resultItem = new ResultItem(getName());
-					resultItem.setType(Query.CT_VIDEO);
-					resultItem.setId(ve.getId());
-					resultItem.setTitle(ve.getTitle().getPlainText());
-					MediaGroup mg = ve.getMediaGroup();
-					resultItem.setDescription(mg.getDescription().getPlainTextContent());
-					resultItem.setUrl(mg.getPlayer().getUrl());
-					resultItem.setThumbnails(createThumbnails(mg));
-					resultItem.setDate(CoreUtils.formatDate(ve.getPublished().getValue()));
-					String tags = StringUtils.join(mg.getKeywords().getKeywords(),
-					                               ',');
-					resultItem.setTags(tags);
-					resultItem.setRank(count++);
-					resultItem.setTotalResultCount(queryResult.getTotalResultCount());
-					resultItem.setViewCount(getViewCount(ve));
-					resultItem.setCommentCount(getCommentCount(ve));
-					resultItem.setEmbedded(getEmbedded(authCredentials,
-					                                   resultItem.getUrl(),
-					                                   ResultItem.DEFAULT_EMBEDDED_WIDTH,
-					                                   ResultItem.DEFAULT_EMBEDDED_HEIGHT));
-					queryResult.addResultItem(resultItem);
-				}
+				case RELEVANCE:
+					ytq.addCustomParameter(new CustomParameter("orderby", "relevance_lang_"+ query.getLanguage())); break;
+				case DATE:
+					ytq.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED); break;
+				case INTERESTINGNESS:
+					ytq.setOrderBy(YouTubeQuery.OrderBy.VIEW_COUNT); break;
+				default:
+					ytq.setOrderBy(YouTubeQuery.OrderBy.RELEVANCE);
 			}
-			catch (OAuthException e)
+			
+
+			ytq.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
+			if (query.getSearchScopes().contains(SearchScope.TEXT))
 			{
-				e.printStackTrace();
-				throw new InterWebException(e);
+				ytq.setFullTextQuery(query.getQuery());
 			}
-			catch (MalformedURLException e)
+			VideoFeed vf = service.query(ytq, VideoFeed.class);
+			int rank = ytq.getStartIndex();
+			queryResult.setTotalResultCount(vf.getTotalResults());
+			for (VideoEntry ve : vf.getEntries())
 			{
-				e.printStackTrace();
-				throw new InterWebException(e);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-				throw new InterWebException(e);
-			}
-			catch (ServiceException e)
-			{
-				e.printStackTrace();
-				throw new InterWebException(e);
+				ResultItem resultItem = new ResultItem(getName());
+				resultItem.setType(Query.CT_VIDEO);
+				resultItem.setId(ve.getId());
+				resultItem.setTitle(ve.getTitle().getPlainText());
+				MediaGroup mg = ve.getMediaGroup();
+				resultItem.setDescription(mg.getDescription().getPlainTextContent());
+				resultItem.setUrl(mg.getPlayer().getUrl());
+				resultItem.setThumbnails(createThumbnails(mg));
+				resultItem.setDate(CoreUtils.formatDate(ve.getPublished().getValue()));
+				String tags = StringUtils.join(mg.getKeywords().getKeywords(),
+				                               ',');
+				resultItem.setTags(tags);
+				resultItem.setRank(rank++);
+				resultItem.setTotalResultCount(queryResult.getTotalResultCount());
+				resultItem.setViewCount(getViewCount(ve));
+				resultItem.setCommentCount(getCommentCount(ve));
+				resultItem.setEmbedded(getEmbedded(authCredentials,
+				                                   resultItem.getUrl(),
+				                                   ResultItem.DEFAULT_EMBEDDED_WIDTH,
+				                                   ResultItem.DEFAULT_EMBEDDED_HEIGHT));
+				queryResult.addResultItem(resultItem);
 			}
 		}
+		catch (OAuthException e)
+		{
+			e.printStackTrace();
+			throw new InterWebException(e);
+		}
+		catch (MalformedURLException e)
+		{
+			e.printStackTrace();
+			throw new InterWebException(e);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new InterWebException(e);
+		}
+		catch (ServiceException e)
+		{
+			e.printStackTrace();
+			throw new InterWebException(e);
+		}
+		
 		return queryResult;
 	}
 	
@@ -492,25 +534,9 @@ public class YouTubeConnector
 		}
 		googleOAuthParams.setOAuthSignatureMethod(HMAC_SHA1.NAME);
 		return googleOAuthParams;
-	}
-	
+	}	
 
-	private OrderBy getSortOrder(SortOrder sortOrder)
-	{
-		switch (sortOrder)
-		{
-			case RELEVANCE:
-				return YouTubeQuery.OrderBy.RELEVANCE;
-			case DATE:
-				return YouTubeQuery.OrderBy.PUBLISHED;
-			case INTERESTINGNESS:
-				return YouTubeQuery.OrderBy.VIEW_COUNT;
-		}
-		return YouTubeQuery.OrderBy.RELEVANCE;
-	}
-	
-
-	private int getViewCount(VideoEntry ve)
+	private static int getViewCount(VideoEntry ve)
 	{
 		if (ve.getStatistics() == null)
 		{

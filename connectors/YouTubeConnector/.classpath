@@ -5,7 +5,7 @@
 	<classpathentry kind="lib" path="lib/gdata-client-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/gdata-core-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/gdata-media-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/gdata-youtube-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-youtube-2.0.jar" sourcepath="D:/gdata-src.java-1.45.0/gdata/java"/>
 	<classpathentry kind="lib" path="lib/guava-r08.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/InterWebJ-Core"/>
 	<classpathentry kind="lib" path="/InterWebJ-Core/lib/asm-3.1.jar"/>
