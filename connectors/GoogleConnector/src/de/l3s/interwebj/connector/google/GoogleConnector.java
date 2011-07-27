@@ -179,21 +179,20 @@ public class GoogleConnector
 
 	private QueryResult convertImageResultResponse(Query query,
 	                                               PagedList<ImageResult> imageResultResponse,
-	                                               int index)
+	                                               int index, int counter)
 	{
 		QueryResult queryResult = new QueryResult(query);
 		long totalResultCount = imageResultResponse.getEstimatedResultCount();
 		queryResult.setTotalResultCount(totalResultCount);
 		for (ImageResult imageResult : imageResultResponse)
 		{
-			ResultItem resultItem = convertImageResult(imageResult,
-			                                           index,
-			                                           totalResultCount);
-			if (index < query.getResultCount())
-			{
-				queryResult.addResultItem(resultItem);
-			}
+			if (counter >= query.getResultCount())
+				break;
+			
+			queryResult.addResultItem(convertImageResult(imageResult, index, totalResultCount));
+			
 			index++;
+			counter++;
 		}
 		return queryResult;
 	}
@@ -219,20 +218,19 @@ public class GoogleConnector
 
 	private QueryResult convertVideoResultResponse(Query query,
 	                                               PagedList<VideoResult> videoResultResponse,
-	                                               int index)
+	                                               int index, int counter)
 	{
 		QueryResult queryResult = new QueryResult(query);
 		long totalResultCount = videoResultResponse.getEstimatedResultCount();
 		queryResult.setTotalResultCount(totalResultCount);
 		for (VideoResult videoResult : videoResultResponse)
 		{
-			ResultItem resultItem = convertVideoResult(videoResult,
-			                                           index,
-			                                           totalResultCount);
-			if (index < query.getResultCount())
-			{
-				queryResult.addResultItem(resultItem);
-			}
+			if (counter >= query.getResultCount())
+				break;
+			
+			queryResult.addResultItem(convertVideoResult(videoResult, index, totalResultCount));
+			
+			counter++;	
 			index++;
 		}
 		return queryResult;
@@ -256,21 +254,20 @@ public class GoogleConnector
 
 	private QueryResult convertWebResultResponse(Query query,
 	                                             PagedList<WebResult> webResultResponse,
-	                                             int index)
+	                                             int index, int counter)
 	{
 		QueryResult queryResult = new QueryResult(query);
 		long totalResultCount = webResultResponse.getEstimatedResultCount();
 		queryResult.setTotalResultCount(totalResultCount);
 		for (WebResult webResult : webResultResponse)
 		{
-			ResultItem resultItem = convertWebResult(webResult,
-			                                         index,
-			                                         totalResultCount);
-			if (index < query.getResultCount())
-			{
-				queryResult.addResultItem(resultItem);
-			}
+			if (counter >= query.getResultCount())
+				break;			
+
+			queryResult.addResultItem(convertWebResult(webResult, index, totalResultCount));
+			
 			index++;
+			counter++;
 		}
 		return queryResult;
 	}
@@ -327,20 +324,24 @@ public class GoogleConnector
 		notNull(query, "query");
 		QueryResult queryResult = new QueryResult(query);
 		GoogleSearchQueryFactory factory = GoogleSearchQueryFactory.newInstance(API_KEY);
-		int start = 0;
-		while (start < Math.min(MAX_RESULT_COUNT, query.getResultCount()))
+		
+		int start = (query.getPage()-1) * Math.min(MAX_RESULT_COUNT, query.getResultCount());
+		int end = start + Math.min(MAX_RESULT_COUNT, query.getResultCount());
+		int counter = 0;
+		while (start < end)
 		{
 			ImageSearchQuery imageSearchQuery = factory.newImageSearchQuery();
 			GoogleSearchQuery<ImageResult> googleSearchQuery = imageSearchQuery.withResultSetSize(ResultSetSize.LARGE);
 			googleSearchQuery = googleSearchQuery.withStartIndex(start);
-			googleSearchQuery = googleSearchQuery.withLocale(Locale.US);
+			googleSearchQuery = googleSearchQuery.withLocale(new Locale(query.getLanguage()));
 			googleSearchQuery = googleSearchQuery.withQuery(query.getQuery());
 			try
 			{
 				PagedList<ImageResult> imageResultResponse = googleSearchQuery.list();
 				QueryResult partialQueryResult = convertImageResultResponse(query,
 				                                                            imageResultResponse,
-				                                                            start);
+				                                                            start, 
+				                                                            counter);
 				if (imageResultResponse.size() == 0)
 				{
 					break;
@@ -348,6 +349,7 @@ public class GoogleConnector
 				queryResult.addQueryResult(partialQueryResult);
 				queryResult.setTotalResultCount(partialQueryResult.getTotalResultCount());
 				start += imageResultResponse.size();
+				counter += imageResultResponse.size();
 			}
 			catch (Exception e)
 			{
@@ -365,28 +367,33 @@ public class GoogleConnector
 		notNull(query, "query");
 		QueryResult queryResult = new QueryResult(query);
 		GoogleSearchQueryFactory factory = GoogleSearchQueryFactory.newInstance(API_KEY);
-		int start = 0;
-		while (start < Math.min(MAX_RESULT_COUNT, query.getResultCount()))
+		
+		int start = (query.getPage()-1) * Math.min(MAX_RESULT_COUNT, query.getResultCount());
+		int end = start + Math.min(MAX_RESULT_COUNT, query.getResultCount());
+		int counter = 0;
+		while (start < end)
 		{
 			VideoSearchQuery videoSearchQuery = factory.newVideoSearchQuery();
 			GoogleSearchQuery<VideoResult> googleSearchQuery = videoSearchQuery.withResultSetSize(ResultSetSize.LARGE);
-			googleSearchQuery = googleSearchQuery.withStartIndex(start);
-			googleSearchQuery = googleSearchQuery.withLocale(Locale.US);
+			googleSearchQuery = googleSearchQuery.withStartIndex(start);			
+			googleSearchQuery = googleSearchQuery.withLocale(new Locale(query.getLanguage()));		
 			googleSearchQuery = googleSearchQuery.withQuery(query.getQuery());
+			
 			try
 			{
-				PagedList<VideoResult> imageResultResponse = googleSearchQuery.list();
+				PagedList<VideoResult> videoResultResponse = googleSearchQuery.list();
 				QueryResult partialQueryResult = convertVideoResultResponse(query,
-				                                                            imageResultResponse,
-				                                                            start);
-				if (imageResultResponse.size() == 0)
+				                                                            videoResultResponse,
+				                                                            start,
+				                                                            counter);
+				if (videoResultResponse.size() == 0)
 				{
 					break;
 				}
 				queryResult.addQueryResult(partialQueryResult);
 				queryResult.setTotalResultCount(partialQueryResult.getTotalResultCount());
-				start += imageResultResponse.size();
-				
+				start += videoResultResponse.size();
+				counter += videoResultResponse.size();				
 			}
 			catch (Exception e)
 			{
@@ -404,22 +411,26 @@ public class GoogleConnector
 		notNull(query, "query");
 		QueryResult queryResult = new QueryResult(query);
 		GoogleSearchQueryFactory factory = GoogleSearchQueryFactory.newInstance(API_KEY);
-		WebSearchQuery webSearchQuery = factory.newWebSearchQuery();
-		int start = 0;
-		while (start < Math.min(MAX_RESULT_COUNT, query.getResultCount()))
+		
+		int start = (query.getPage()-1) * Math.min(MAX_RESULT_COUNT, query.getResultCount());
+		int end = start + Math.min(MAX_RESULT_COUNT, query.getResultCount());
+
+		int counter = 0;
+		while (start < end)
 		{
+			WebSearchQuery webSearchQuery = factory.newWebSearchQuery();
 			GoogleSearchQuery<WebResult> googleSearchQuery = webSearchQuery.withResultSetSize(ResultSetSize.LARGE);
 			googleSearchQuery = googleSearchQuery.withStartIndex(start);
-			googleSearchQuery = googleSearchQuery.withLocale(Locale.US);
-			googleSearchQuery = googleSearchQuery.withQuery(query.getQuery());
-			googleSearchQuery.getRequestHeaders().put("Referer",
-			                                          "http://***REMOVED***");
+			googleSearchQuery = googleSearchQuery.withLocale(new Locale(query.getLanguage()));
+			googleSearchQuery = googleSearchQuery.withQuery(query.getQuery());			
+			
 			try
 			{
 				PagedList<WebResult> webResultResponse = googleSearchQuery.list();
 				QueryResult partialQueryResult = convertWebResultResponse(query,
 				                                                          webResultResponse,
-				                                                          start);
+				                                                          start,
+				                                                          counter);
 				if (webResultResponse.size() == 0)
 				{
 					break;
@@ -427,7 +438,7 @@ public class GoogleConnector
 				queryResult.addQueryResult(partialQueryResult);
 				queryResult.setTotalResultCount(partialQueryResult.getTotalResultCount());
 				start += webResultResponse.size();
-				
+				counter += webResultResponse.size();
 			}
 			catch (Exception e)
 			{
