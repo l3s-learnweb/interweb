@@ -75,6 +75,7 @@ public class Query
 	private List<String> contentTypes;
 	private int resultCount;
 	private int page = 1;
+	private String language = "en";
 	private long updated;
 	private SortOrder sortOrder;
 	private Set<SearchScope> searchScopes;
@@ -243,19 +244,26 @@ public class Query
 	public void setUpdated(long updated)
 	{
 		this.updated = updated;
-	}
-	
-	
+	}	
 
 	public int getPage() 
 	{
 		return page;
 	}
 
-
 	public void setPage(int page) 
+	{		
+		this.page = page > 1? page : 1;
+	}	
+
+	public String getLanguage() 
 	{
-		this.page = page;
+		return language;
+	}
+
+	public void setLanguage(String language) 
+	{
+		this.language = language;
 	}
 
 

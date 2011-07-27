@@ -87,14 +87,11 @@ public class ConnectorLoader {
 
 			File[] libJarFiles = getJars(libDir);
 			if(libDir.exists()){
-JarLoader.addJarFiles(libJarFiles);
+				JarLoader.addJarFiles(libJarFiles);
 			}
 
 			cl = Class.forName(connectorName);
-			java.lang.reflect.Constructor co = cl
-					.getConstructor(Configuration.class);
-
-			
+			java.lang.reflect.Constructor co = cl.getConstructor(Configuration.class);			
 		
 			Object ins = co.newInstance(configuration);
 

@@ -6,7 +6,6 @@ import static de.l3s.interwebj.util.Assertions.notNull;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +58,7 @@ public class Engine
 		                        + principal.getName() + "]");
 		Environment.logger.info("params: [" + params + "]");
 		Map<ServiceConnector, Parameters> expirableMap = createExpirableMap(60);
+		
 		if (pendingAuthorizationConnectors.containsKey(principal.getName()))
 		{
 			expirableMap = pendingAuthorizationConnectors.get(principal.getName());
