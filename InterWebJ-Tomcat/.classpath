@@ -13,7 +13,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jakarta-oro.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/bing/lib/bing-search-java-sdk.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/bing/lib/gson-1.4.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/flickrapi-1.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/google/lib/google-ajax-apis.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/gdata-client-1.0.jar"/>
@@ -21,6 +20,8 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/gdata-media-1.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/gdata-youtube-2.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/guava-r08.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/bing/lib/gson-1.7.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/google/lib/gson-1.7.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.web"/>
