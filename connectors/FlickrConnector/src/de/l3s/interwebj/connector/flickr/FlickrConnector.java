@@ -347,7 +347,7 @@ public class FlickrConnector
 	}
 	
 
-	@SuppressWarnings({"rawtypes", "null"})
+	@SuppressWarnings({"rawtypes"})
 	private String createEmbeddedCode(Collection sizes,
 	                                  int maxWidth,
 	                                  int maxHeight)
@@ -452,7 +452,7 @@ public class FlickrConnector
 	}
 	
 
-	private Set<String> getExtras()
+	private static Set<String> getExtras()
 	{
 		Set<String> extras = new HashSet<String>();
 		extras.add("description");
@@ -500,19 +500,20 @@ public class FlickrConnector
 				PhotoList photoList = pi.search(params,
 				                                query.getResultCount(),
 				                                query.getPage());
-				int count = 0;
+				int rank = query.getResultCount() * (query.getPage()-1);
 				int totalResultCount = photoList.getTotal();
 				queryResult.setTotalResultCount(totalResultCount);
+				
 				for (Object o : photoList)
 				{
 					if (o instanceof Photo)
 					{
 						Photo photo = (Photo) o;
 						ResultItem resultItem = createResultItem(photo,
-						                                         count,
+						                                         rank,
 						                                         totalResultCount);
 						queryResult.addResultItem(resultItem);
-						count++;
+						rank++;
 					}
 				}
 			}
