@@ -93,7 +93,7 @@ public class FedoraConnector
 		Client client = Client.create();
 		WebResource resource=null;
 		try {
-			resource = client.resource("http://learnweb.l3s.uni-hannover.de/FedoraKRSM/fedora/search/terms="+URLEncoder.encode(query.getQuery(),"UTF-8")+"&maxResults="+query.getResultCount());
+			resource = client.resource("http://learnweb.l3s.uni-hannover.de/FedoraKRSM/fedora/search/terms="+URLEncoder.encode(query.getQuery(),"UTF-8")+"&maxResults="+query.getResultCount()+"&repositories=fedora+lifary");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
