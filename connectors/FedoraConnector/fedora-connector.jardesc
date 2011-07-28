@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
-    <jar path="InterWebJ-Core/connectors/slideshare/slideshare-connector.jar"/>
-    <options buildIfNeeded="true" compress="true" descriptionLocation="/SlideShareConnector/slideshare-connector.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <jar path="InterWebJ-Core/connectors/fedora/fedora-connector.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/FedoraConnector/fedora-connector.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
     <manifest generateManifest="true" manifestLocation="/PCIR/pcir.MF" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
@@ -11,6 +11,6 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=SlideShareConnector/src"/>
+        <javaElement handleIdentifier="=FedoraConnector/src"/>
     </selectedElements>
 </jardesc>

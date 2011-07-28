@@ -144,6 +144,7 @@ public class FedoraConnector
 		*/
 	
 		//		resource = resource.queryParam("detailed", "1");
+		
 		System.out.println("querying URL: " + resource.toString());
 		FedoraSearchResult response = getQuery(resource);
 		System.out.println(response);
