@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="FedoraConnector">
+    <property environment="env"/>
+    <property name="InterWebJ-Core.location" value="../InterWebJ-Core"/>
+	<property name="InterWebJ-Tomcat.location" value="../InterWebJ-Tomcat"/>
+	    
+	<property name="ECLIPSE_HOME" value="E:/eclipse"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="InterWebJ-Core.classpath">
+        <pathelement location="${InterWebJ-Core.location}/bin"/>
+        <pathelement location="${InterWebJ-Core.location}/src/log4j.properties"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/asm-3.1.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/commons-codec-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/commons-collections-3.2.1.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/commons-configuration-1.6.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/commons-lang-2.6.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/commons-logging-1.1.1.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jackson-core-asl-1.5.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jackson-jaxrs-1.5.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jackson-mapper-asl-1.5.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jackson-xc-1.5.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jcl-core-2.2.2.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jersey-client-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jersey-core-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jersey-json-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jersey-multipart-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jersey-server-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jettison-1.1.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/log4j-1.2.16.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/mail.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/mysql-connector-java-5.1.14-bin.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/oauth-client-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/oauth-server-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/oauth-signature-1.5.jar"/>
+    </path>
+    <path id="FedoraConnector.classpath">
+        <pathelement location="bin"/>
+        <path refid="InterWebJ-Core.classpath"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/commons-codec-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/commons-collections-3.2.1.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/commons-configuration-1.6.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/commons-lang-2.6.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/commons-logging-1.1.1.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/asm-3.1.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jackson-core-asl-1.5.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jackson-jaxrs-1.5.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jackson-mapper-asl-1.5.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jackson-xc-1.5.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jersey-client-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jersey-core-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jersey-json-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jersey-multipart-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jersey-server-1.5.jar"/>
+        <pathelement location="${InterWebJ-Core.location}/lib/jettison-1.1.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="build.xml" dir="${InterWebJ-Core.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project,build-jar" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="build.xml" dir="${InterWebJ-Core.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+	<target name="build-jar">
+	        <echo message="Export Jar"/>
+		<jar jarfile="fedora-connector.jar" basedir="bin">
+		     
+		    </jar>
+		<copy todir="${InterWebJ-Tomcat.location}/WebContent/WEB-INF/connectors/fedora">
+		            <fileset dir="." includes="fedora-connector.jar"/>
+		        </copy>
+	    </target>
+	
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="FedoraConnector.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="ReturnObjectTester">
+        <java classname="de.l3s.fedora.ReturnObjectTester" failonerror="true" fork="yes">
+            <classpath refid="FedoraConnector.classpath"/>
+        </java>
+    </target>
+    <target name="FedoraConnector">
+        <java classname="de.l3s.interwebj.connector.fedora.FedoraConnector" failonerror="true" fork="yes">
+            <classpath refid="FedoraConnector.classpath"/>
+        </java>
+    </target>
+</project>
