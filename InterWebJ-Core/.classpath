@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="lib/oauth-client-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/oauth-server-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/oauth-signature-1.5.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j-2.0.0-ALPHA-2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

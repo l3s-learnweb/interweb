@@ -33,6 +33,8 @@ public class ResultItem
 	private int viewCount = -1;
 	private int commentCount = -1;
 	private String embedded;
+	private double privacy;
+	private int privacyConfidence;
 	
 
 	public ResultItem(String connectorName)
@@ -266,6 +268,26 @@ public class ResultItem
 		this.viewCount = viewCount;
 	}
 	
+	
+	public double getPrivacy() {
+		return privacy;
+	}
+
+
+	public void setPrivacy(double privacy) {
+		this.privacy = privacy;
+	}
+
+
+	public int getPrivacyConfidence() {
+		return privacyConfidence;
+	}
+
+
+	public void setPrivacyConfidence(int privacyConfidence) {
+		this.privacyConfidence = privacyConfidence;
+	}
+
 
 	private String unescape(String encoded)
 	{

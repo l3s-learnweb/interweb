@@ -7,6 +7,8 @@ import java.util.logging.*;
 import de.l3s.interwebj.config.*;
 import de.l3s.interwebj.db.*;
 import de.l3s.interwebj.util.*;
+import de.l3s.privacyClassifier.OldClassifier;
+import de.l3s.privacyClassifier.PrivacyClassifier;
 
 
 public class Environment
@@ -55,9 +57,13 @@ public class Environment
 			e.printStackTrace();
 			System.exit(-1);
 		}
+	}	
+
+	public PrivacyClassifier getPrivacyClassifier()
+	{
+		return new OldClassifier();
 	}
 	
-
 	public AccessControll getAccessControll()
 	{
 		return accessControll;
