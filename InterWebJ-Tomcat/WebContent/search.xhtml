@@ -94,13 +94,14 @@
 						<div><h:outputLink value="#{resultItem.url}" target="_blank" style="border-width: 0px;"	rendered="#{not empty searchBean.getImageUrl(resultItem, 500, 400)}">
 							<img src="#{searchBean.getImageUrl(resultItem, 500, 400)}" alt="#{resultItem.title}" />
 						</h:outputLink>
-						<div><span><h:outputText value="#{resultItem.description}" escape="false" /></span></div>
-						<div><span
-							style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;"><span
-							style="background-color: #D0EFEF;">Added</span>:
-						#{resultItem.date} &ndash; <span
-							style="background-color: #D0EFEF;">Tags</span>:
-						#{searchBean.getTags(resultItem)}</span></div>
+						<div><span><h:outputText value="#{resultItem.description}" escape="true" /></span></div>
+						<div>
+						<span style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;">
+							<span style="background-color: #D0EFEF;">Added</span>: #{resultItem.date} &ndash; 
+							<span style="background-color: #D0EFEF;">Tags</span>: #{searchBean.getTags(resultItem)} &ndash; 
+							<span style="background-color: #D0EFEF;">Privacy</span>: #{resultItem.privacy} (#{resultItem.privacyConfidence}) 
+						</span>
+						</div>
 						</div>
 						</div>
 					</rich:column>

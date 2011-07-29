@@ -1,22 +1,38 @@
 package de.l3s.interwebj.rest;
 
 
-import java.text.*;
-import java.util.*;
+import java.text.ParseException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import javax.servlet.http.*;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.api.client.*;
-
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.jaxb.*;
-import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.jaxb.ErrorResponse;
+import de.l3s.interwebj.jaxb.SearchResponse;
+import de.l3s.interwebj.jaxb.XMLResponse;
+import de.l3s.interwebj.query.DumbQueryResultMerger;
+import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.Query.SortOrder;
-import de.l3s.interwebj.util.*;
+import de.l3s.interwebj.query.QueryFactory;
+import de.l3s.interwebj.query.QueryResult;
+import de.l3s.interwebj.query.QueryResultCollector;
+import de.l3s.interwebj.query.QueryResultMerger;
+import de.l3s.interwebj.util.CoreUtils;
+import de.l3s.interwebj.util.ExpirableMap;
 
 
 @Path("/search")
@@ -90,6 +106,7 @@ public class Search
 			                                                                principal,
 			                                                                merger);
 			QueryResult queryResult = collector.retrieve();
+			
 			ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
 			expirableMap.put(queryResult.getQuery().getId(), queryResult);
 			SearchResponse searchResponse = new SearchResponse(queryResult);
@@ -131,7 +148,7 @@ public class Search
 	}
 	
 
-	private boolean checkDate(String date)
+	private static boolean checkDate(String date)
 	{
 		try
 		{
@@ -146,7 +163,7 @@ public class Search
 	}
 	
 
-	private ErrorResponse checkDates(Query query,
+	private static ErrorResponse checkDates(Query query,
 	                                 String dateFrom,
 	                                 String dateTill)
 	{
@@ -176,7 +193,7 @@ public class Search
 	}
 	
 
-	private ErrorResponse checkMediaTypes(Query query, String mediaTypes)
+	private static ErrorResponse checkMediaTypes(Query query, String mediaTypes)
 	{
 		if (mediaTypes == null || mediaTypes.trim().length() == 0)
 		{
@@ -197,7 +214,7 @@ public class Search
 	}
 	
 
-	private ErrorResponse checkQueryString(String queryString)
+	private static ErrorResponse checkQueryString(String queryString)
 	{
 		if (queryString == null || queryString.trim().length() == 0)
 		{
@@ -207,7 +224,7 @@ public class Search
 	}
 	
 
-	private ErrorResponse checkRanking(Query query, String ranking)
+	private static ErrorResponse checkRanking(Query query, String ranking)
 	{
 		if (ranking == null || ranking.trim().length() == 0)
 		{
@@ -225,7 +242,7 @@ public class Search
 	}
 	
 
-	private ErrorResponse checkResultCount(Query query, String resultCount)
+	private static ErrorResponse checkResultCount(Query query, String resultCount)
 	{
 		if (resultCount == null || resultCount.trim().length() == 0)
 		{
@@ -244,9 +261,29 @@ public class Search
 		}
 		return null;
 	}
+	/*
+	private static ErrorResponse checkPage(Query query, String page)
+	{
+		if (page == null || page.trim().length() == 0)
+		{
+			return null;
+		}
+		try
+		{
+			int i = Integer.parseInt(page);
+			i = Math.max(1, i);
+			i = Math.min(100, i);
+			query.setPage(i);
+		}
+		catch (NumberFormatException e)
+		{
+			Environment.logger.severe(e.getMessage());
+		}
+		return null;
+	}*/
 	
 
-	private ErrorResponse checkSearchIn(Query query, String searchIn)
+	private static ErrorResponse checkSearchIn(Query query, String searchIn)
 	{
 		if (searchIn == null || searchIn.trim().length() == 0)
 		{
@@ -269,7 +306,7 @@ public class Search
 	}
 	
 
-	private ErrorResponse checkServices(Query query, String services)
+	private static ErrorResponse checkServices(Query query, String services)
 	{
 		Engine engine = Environment.getInstance().getEngine();
 		if (services == null || services.trim().length() == 0)
@@ -291,27 +328,5 @@ public class Search
 			}
 		}
 		return null;
-	}
-	
-
-	public static void main(String[] args)
-	{
-		AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***",
-		                                                          "***REMOVED***");
-		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
-		                                                      "***REMOVED***");
-		//		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
-		//		                                                      "***REMOVED***");
-		WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/search",
-		                                         consumerCredentials,
-		                                         userCredentials);
-		resource = resource.queryParam("q", "people");
-		resource = resource.queryParam("media_types", "image,video,text,audio");
-		resource = resource.queryParam("services", "Flickr");
-		resource = resource.queryParam("number_of_results", "50");
-		System.out.println("querying InterWebJ URL: " + resource.toString());
-		ClientResponse response = resource.get(ClientResponse.class);
-		SearchResponse searchResponse = response.getEntity(SearchResponse.class);
-		System.out.println(searchResponse);
 	}
 }

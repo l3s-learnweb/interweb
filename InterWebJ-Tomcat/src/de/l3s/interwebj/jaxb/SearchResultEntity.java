@@ -1,14 +1,19 @@
 package de.l3s.interwebj.jaxb;
 
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-import javax.xml.bind.annotation.*;
-
-import org.apache.commons.logging.impl.Log4JLogger;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import de.l3s.interwebj.core.Environment;
-import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.Thumbnail;
 
 
 @XmlRootElement(name = "result")
@@ -61,7 +66,8 @@ public class SearchResultEntity
 		
 		if(resultItem==null){
 			Environment.logger.severe("Result is null ");
-			return;}
+			return;
+		}
 		setService(resultItem.getServiceName());
 		setIdAtService(resultItem.getId());
 		setType(resultItem.getType());
