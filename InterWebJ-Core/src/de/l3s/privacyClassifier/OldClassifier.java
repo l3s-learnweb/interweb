@@ -63,7 +63,7 @@ public class OldClassifier implements PrivacyClassifier {
 		
 		// für wahlfreien Zugriff in Array kopieren
 		ArrayList<ResultItem> resultItems = new ArrayList<ResultItem>(queryResult.getResultItems());
-		
+	
 		for(Element result : el.getRootElement().elements())
 		{
 			Element value = result.element("value");

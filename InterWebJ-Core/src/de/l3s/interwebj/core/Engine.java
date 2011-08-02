@@ -131,6 +131,22 @@ public class Engine
 		String userName = (principal == null)
 		    ? "anonymous" : principal.getName();
 		query.addParam("user", userName);
+		
+		/*
+		if(query.getp != -1) // increase the number of results, to fetch enough public and private results
+		{
+			$params['use_cache'] = 0;
+			if($params['private'] < 0) $params['private'] = 0;
+			if($params['private'] > 1) $params['private'] = 1;
+				
+			$estimated_private_results = round($params['number_of_results'] * $params['private']);
+			$estimated_public_results = $params['number_of_results'] - $estimated_private_results;
+				
+			$tmp_number_of_results = $estimated_private_results*5 + ceil($estimated_public_results*1.25);#max($estimated_private_results*5, ceil($estimated_public_results*1.25));
+				
+			$saved_query->setNumberOfResults($tmp_number_of_results);
+		}*/
+		
 		QueryResultCollector collector = new QueryResultCollector(query, merger);
 		for (String connectorName : query.getConnectorNames())
 		{
