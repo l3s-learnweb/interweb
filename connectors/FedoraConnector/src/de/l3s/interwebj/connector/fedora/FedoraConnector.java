@@ -154,7 +154,11 @@ public class FedoraConnector
 		for (FedoraResource sre : response.getResource())
 		{
 			ResultItem resultItem = new ResultItem(getName());
-			resultItem.setType(sre.getCanonical().getDc().getType());
+			resultItem.setType(sre.getCanonical().getDc().getType().toLowerCase());
+			
+			if(!query.getContentTypes().contains(resultItem.getType()))
+				continue;
+			
 			resultItem.setId(sre.getCanonical().getDc().getIdentifier());
 			resultItem.setTitle(sre.getCanonical().getDc().getTitle());
 			resultItem.setDescription(sre.getCanonical().getDc().getDescription());

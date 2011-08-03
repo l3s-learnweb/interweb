@@ -135,7 +135,8 @@ public class FlickrConnector
 		//		queryResult.addQueryResult(getFriends(query, authCredentials));
 		queryResult.addQueryResult(getMedia(query, authCredentials));
 		
-		queryResult = Environment.getInstance().getPrivacyClassifier().classify(queryResult);
+		if(query.getPrivacy() != -1f)
+			queryResult = Environment.getInstance().getPrivacyClassifier().classify(queryResult);
 		
 		return queryResult;
 	}
