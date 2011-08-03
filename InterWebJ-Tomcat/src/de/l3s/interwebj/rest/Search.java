@@ -23,14 +23,12 @@ import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.jaxb.ErrorResponse;
 import de.l3s.interwebj.jaxb.SearchResponse;
 import de.l3s.interwebj.jaxb.XMLResponse;
-import de.l3s.interwebj.query.DumbQueryResultMerger;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.Query.SortOrder;
 import de.l3s.interwebj.query.QueryFactory;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.QueryResultCollector;
-import de.l3s.interwebj.query.QueryResultMerger;
 import de.l3s.interwebj.util.CoreUtils;
 import de.l3s.interwebj.util.ExpirableMap;
 
@@ -55,7 +53,10 @@ public class Search
 	                                  @QueryParam("date_till") String dateTill,
 	                                  @QueryParam("ranking") String ranking,
 	                                  @QueryParam("number_of_results") String resultCount,
-	                                  @QueryParam("services") String services)
+	                                  @QueryParam("services") String services,
+	                                  @QueryParam("page") String page,
+	                                  @QueryParam("language") String language,
+	                                  @QueryParam("privacy") String privacy)
 	{
 		QueryFactory queryFactory = new QueryFactory();
 		ErrorResponse errorResponse;
@@ -96,15 +97,21 @@ public class Search
 		{
 			return errorResponse;
 		}
+		checkPage(query, page);
+		
+		if(null != privacy)
+			query.setPrivacy(Float.parseFloat(privacy));
+		
+		if(null != language)
+			query.setLanguage(language);
+		
 		try
 		{
 			Engine engine = Environment.getInstance().getEngine();
 			InterWebPrincipal principal = getPrincipal();
 			Environment.logger.info("principal: [" + principal + "]");
-			QueryResultMerger merger = new DumbQueryResultMerger();
-			QueryResultCollector collector = engine.getQueryResultCollector(query,
-			                                                                principal,
-			                                                                merger);
+			
+			QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
 			QueryResult queryResult = collector.retrieve();
 			
 			ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
@@ -261,7 +268,7 @@ public class Search
 		}
 		return null;
 	}
-	/*
+	
 	private static ErrorResponse checkPage(Query query, String page)
 	{
 		if (page == null || page.trim().length() == 0)
@@ -280,7 +287,7 @@ public class Search
 			Environment.logger.severe(e.getMessage());
 		}
 		return null;
-	}*/
+	}
 	
 
 	private static ErrorResponse checkSearchIn(Query query, String searchIn)

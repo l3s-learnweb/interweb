@@ -35,6 +35,5 @@
 			<attribute name="owner.project.facets" value="jst.jaxrs"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/BingConnector"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

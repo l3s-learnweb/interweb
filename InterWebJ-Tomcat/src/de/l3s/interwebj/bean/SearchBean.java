@@ -215,15 +215,13 @@ public class SearchBean
 		query.setResultCount(resultCount);
 		query.setPage(page);
 		query.setLanguage(language);
+		query.setPrivacy(0.8f);
 		QueryResult queryResult = new QueryResult(query);
 		Engine engine = Environment.getInstance().getEngine();
 		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		try
 		{
-			QueryResultMerger merger = new DumbQueryResultMerger();
-			QueryResultCollector collector = engine.getQueryResultCollector(query,
-			                                                                principal,
-			                                                                merger);
+			QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
 			queryResult = collector.retrieve();
 		}
 		catch (InterWebException e)
