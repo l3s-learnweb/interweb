@@ -18,6 +18,7 @@ import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.query.DumbQueryResultMerger;
+import de.l3s.interwebj.query.PrivacyQueryResultMerger;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.Query.SortOrder;
@@ -122,30 +123,30 @@ public class Engine
 	}
 	
 
-	public QueryResultCollector getQueryResultCollector(Query query,
-	                                                    InterWebPrincipal principal,
-	                                                    QueryResultMerger merger)
+	public QueryResultCollector getQueryResultCollector(Query query, InterWebPrincipal principal)
 	    throws InterWebException
 	{
 		Environment.logger.info(query.toString());
-		String userName = (principal == null)
-		    ? "anonymous" : principal.getName();
-		query.addParam("user", userName);
+		String userName = (principal == null)? "anonymous" : principal.getName();
+		query.addParam("user", userName);		
 		
-		/*
-		if(query.getp != -1) // increase the number of results, to fetch enough public and private results
+		QueryResultMerger merger = new DumbQueryResultMerger();
+		
+		if(query.getPrivacy() != -1) // increase the number of results, to fetch enough public and private results
 		{
-			$params['use_cache'] = 0;
-			if($params['private'] < 0) $params['private'] = 0;
-			if($params['private'] > 1) $params['private'] = 1;
+			if(query.getPrivacy() < 0f) query.setPrivacy(0f);
+			if(query.getPrivacy() > 1f) query.setPrivacy(1f);
 				
-			$estimated_private_results = round($params['number_of_results'] * $params['private']);
-			$estimated_public_results = $params['number_of_results'] - $estimated_private_results;
+			int estimatedPrivateResults = Math.round(query.getResultCount() * query.getConnectorNames().size() * query.getPrivacy());
+			int estimatedPublicResults = query.getResultCount() * query.getConnectorNames().size() - estimatedPrivateResults;
 				
-			$tmp_number_of_results = $estimated_private_results*5 + ceil($estimated_public_results*1.25);#max($estimated_private_results*5, ceil($estimated_public_results*1.25));
-				
-			$saved_query->setNumberOfResults($tmp_number_of_results);
-		}*/
+			merger = new PrivacyQueryResultMerger(query.getResultCount(), estimatedPrivateResults, estimatedPublicResults);
+			
+			int tmp_number_of_results =  estimatedPrivateResults*5 + (int)Math.ceil(estimatedPublicResults*1.25);		
+			
+			query.setResultCount(tmp_number_of_results);
+			
+		}
 		
 		QueryResultCollector collector = new QueryResultCollector(query, merger);
 		for (String connectorName : query.getConnectorNames())
@@ -350,7 +351,6 @@ public class Engine
 	}
 	
 
-	@SuppressWarnings("unused")
 	public static void main(String[] args)
 	    throws InterWebException
 	{
@@ -362,13 +362,13 @@ public class Engine
 		System.out.println(authCredentials);
 		Engine engine = new Engine(database);
 		engine.loadConnectors("","./connectors");
-		String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
+		//String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
 		List<String> connectorNames = engine.getConnectorNames();
 		Environment.logger.info("Searching in connectors: " + connectorNames);
 		int retryCount = 5;
 		for (int i = 0; i < retryCount; i++)
 		{
-			testSearch("people", connectorNames, engine, principal);
+			testSearch("london", connectorNames, engine, principal);
 		}
 		//		for (String word : words)
 		//		{
@@ -392,15 +392,14 @@ public class Engine
 		query.addSearchScope(SearchScope.TEXT);
 		query.addSearchScope(SearchScope.TAGS);
 		query.setResultCount(10);
+		query.setPrivacy(0.5f);
 		query.setSortOrder(SortOrder.RELEVANCE);
 		for (String connectorName : connectorNames)
 		{
 			query.addConnectorName(connectorName);
 		}
-		QueryResultMerger merger = new DumbQueryResultMerger();
-		QueryResultCollector collector = engine.getQueryResultCollector(query,
-		                                                                principal,
-		                                                                merger);
+		QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
+		
 		QueryResult queryResult = collector.retrieve();
 		System.out.println("query: [" + query + "]");
 		System.out.println("elapsed time : [" + queryResult.getElapsedTime()

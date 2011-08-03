@@ -4,18 +4,13 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.xeustechnologies.jcl.JarClassLoader;
 import org.xeustechnologies.jcl.JclObjectFactory;
 import org.xeustechnologies.jcl.JclUtils;
-
 
 import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.util.JarLoader;
@@ -63,6 +58,7 @@ public class ConnectorLoader {
 		});
 	}
 
+	@SuppressWarnings("rawtypes")
 	public ServiceConnector loadLinkedConnector(String realPath, String name) {
 
 		// String connectorName=name+"Controller";
@@ -91,6 +87,7 @@ public class ConnectorLoader {
 			}
 
 			cl = Class.forName(connectorName);
+			@SuppressWarnings("unchecked")
 			java.lang.reflect.Constructor co = cl.getConstructor(Configuration.class);			
 		
 			Object ins = co.newInstance(configuration);

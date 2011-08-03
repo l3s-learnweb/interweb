@@ -76,6 +76,7 @@ public class Query
 	private int resultCount;
 	private int page = 1;
 	private String language = "en";
+	private float privacy = -1f;
 	private long updated;
 	private SortOrder sortOrder;
 	private Set<SearchScope> searchScopes;
@@ -264,6 +265,14 @@ public class Query
 	public void setLanguage(String language) 
 	{
 		this.language = language;
+	}
+
+	public float getPrivacy() {
+		return privacy;
+	}
+
+	public void setPrivacy(float privacy) {
+		this.privacy = privacy;
 	}
 
 

@@ -48,7 +48,7 @@ public class JarLoader {
 				return;
 			}
 		}
-		Class sysclass = URLClassLoader.class;
+		Class<URLClassLoader> sysclass = URLClassLoader.class;
 		try {
 			Method method = sysclass.getDeclaredMethod("addURL", URL.class);
 			method.setAccessible(true);
