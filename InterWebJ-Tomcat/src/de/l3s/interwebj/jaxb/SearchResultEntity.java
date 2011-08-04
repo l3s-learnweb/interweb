@@ -53,6 +53,10 @@ public class SearchResultEntity
 	protected int numberOfViews;
 	@XmlElement(name = "number_of_comments")
 	protected int numberOfComments;
+	@XmlElement(name = "privacy")
+	protected double privacy;
+	@XmlElement(name = "privacy_confidence")
+	protected double privacyConfidence;
 	
 
 	public SearchResultEntity()
@@ -80,12 +84,14 @@ public class SearchResultEntity
 		Set<Thumbnail> thumbnails = resultItem.getThumbnails();
 		List<ThumbnailEntity> thumbnailEntities = new ArrayList<ThumbnailEntity>();
 		if(thumbnails!=null){
+			int i=0;
 		for (Thumbnail thumbnail : thumbnails)
 		{
-			if (image == null)
+			if (i == 1)
 			{
 				setImage(thumbnail.getUrl());
 			}
+			i++;
 			thumbnailEntities.add(new ThumbnailEntity(thumbnail));
 		}
 		}else{
@@ -100,6 +106,9 @@ public class SearchResultEntity
 		setViews(resultItem.getViewCount());
 		setNumberOfComments(resultItem.getCommentCount());
 		setNumberOfViews(resultItem.getViewCount());
+		
+		this.privacy = resultItem.getPrivacy();
+		this.privacyConfidence = resultItem.getPrivacyConfidence();
 	}
 	
 
