@@ -10,6 +10,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -306,6 +308,7 @@ public class YouTubeConnector
 	                          int maxHeight)
 	    throws InterWebException
 	{
+		/*
 		URI uri = URI.create(url);
 		URI baseUri = URI.create(getBaseUrl());
 		if (!baseUri.getHost().endsWith(uri.getHost()))
@@ -323,19 +326,33 @@ public class YouTubeConnector
 			{
 				id = param[1];
 			}
-		}
-		if (id == null)
+		}*/
+		if(url.toLowerCase().contains("youtube.com"))
 		{
-			throw new InterWebException("No id found in URL: [" + url + "]");
+			Pattern pattern = Pattern.compile("v[/=]([^&]+)"); 
+			Matcher matcher = pattern.matcher(url); 
+			
+		    if(matcher.find()) 
+		    {
+		        String id = matcher.group(1);
+		        
+				if (id == null)
+				{
+					throw new InterWebException("No id found in URL: [" + url + "]");
+				}
+				String embeddedCode = "<embed pluginspage=\"http://www.adobe.com/go/getflashplayer\" src=\"http://www.youtube.com/v/"
+				                      + id
+				                      + "\" type=\"application/x-shockwave-flash\" width=\""
+				                      + maxWidth
+				                      + "\" height=\""
+				                      + maxHeight
+				                      + "\"></embed>";
+				return embeddedCode;
+		    }
 		}
-		String embeddedCode = "<embed pluginspage=\"http://www.adobe.com/go/getflashplayer\" src=\"http://www.youtube.com/v/"
-		                      + id
-		                      + "\" type=\"application/x-shockwave-flash\" width=\""
-		                      + maxWidth
-		                      + "\" height=\""
-		                      + maxHeight
-		                      + "\"></embed>";
-		return embeddedCode;
+		throw new InterWebException("URL: [" + url
+                + "] doesn't belong to connector ["
+                + getName() + "]");
 	}
 	
 
