@@ -6,6 +6,8 @@ import static de.l3s.interwebj.util.Assertions.*;
 import java.io.*;
 import java.util.*;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import com.googleapis.ajax.common.*;
 import com.googleapis.ajax.schema.*;
 import com.googleapis.ajax.services.*;
@@ -449,7 +451,19 @@ public class GoogleConnector
 		return queryResult;
 	}
 	
+	@Override
+	public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
 
+
+	@Override
+	public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
+	
 	public static void main(String[] args)
 	    throws Exception
 	{

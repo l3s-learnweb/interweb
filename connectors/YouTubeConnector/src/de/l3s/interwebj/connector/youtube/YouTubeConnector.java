@@ -5,14 +5,15 @@ import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.gdata.client.Query.CustomParameter;
@@ -68,10 +69,14 @@ public class YouTubeConnector
 	private static final String GET_VIDEO_FEED_PATH = "http://gdata.youtube.com/feeds/api/videos";
 	private static final String UPLOAD_VIDEO_PATH = "http://uploads.gdata.youtube.com/feeds/api/users/default/uploads";
 	private static final String USER_PROFILE_PATH = "http://gdata.youtube.com/feeds/api/users/default";
+	private static final String USER_FEED_PREFIX = "http://gdata.youtube.com/feeds/api/users/";	
+	private static final String STANDARD_FEED_PREFIX = "http://gdata.youtube.com/feeds/api/standardfeeds/";
 	private static final String CLIENT_ID = "InterWebJ";
 	private static final String DEVELOPER_KEY = "***REMOVED***";
 	
-
+	
+	
+	
 	public YouTubeConnector(Configuration configuration)
 	{
 		this(configuration, null);
@@ -363,8 +368,7 @@ public class YouTubeConnector
 		try
 		{
 			YouTubeService service = createYouTubeService(authCredentials);
-			UserProfileEntry profileEntry = service.getEntry(new URL(USER_PROFILE_PATH),
-			                                                 UserProfileEntry.class);
+			UserProfileEntry profileEntry = service.getEntry(new URL(USER_PROFILE_PATH), UserProfileEntry.class);
 			return profileEntry.getUsername();
 		}
 		catch (OAuthException e)
@@ -560,6 +564,87 @@ public class YouTubeConnector
 			return -1;
 		}
 		return (int) ve.getStatistics().getViewCount();
+	}
+
+
+	@Override
+	public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException
+	{
+		if(maxCount < 1)
+			return null;
+		
+		HashSet<String> tags = new HashSet<String>();
+		YouTubeService service;
+		try {
+			service = createYouTubeService(null);
+		}
+		catch (OAuthException e) { // should never happen
+			throw new RuntimeException(e);
+		}
+	    
+	    UserProfileEntry userProfileEntry = null;
+	    VideoFeed videoFeed;
+		try { 
+			userProfileEntry = service.getEntry(new URL(USER_FEED_PREFIX + username), UserProfileEntry.class);
+			videoFeed = service.getFeed(new URL(userProfileEntry.getUploadsFeedLink().getHref()), VideoFeed.class);
+		}
+		catch (MalformedURLException e) { // should never happen
+			throw new RuntimeException(e);
+		}
+		catch (ServiceException e) {
+			if(e.getMessage().equals("User not found"))
+				throw new IllegalArgumentException("User not found");
+			throw new RuntimeException(e);
+		}
+
+		for (VideoEntry videoEntry : videoFeed.getEntries()) 
+		{
+			YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
+			MediaKeywords keywords = mediaGroup.getKeywords();
+
+			if (null != keywords) {
+				for (String keyword : keywords.getKeywords()) 
+				{
+					tags.add(keyword);
+					
+					if(tags.size() == maxCount)
+						return tags;
+				}
+			}
+		}
+		
+		// not enough tags found, get more:
+		try {
+			videoFeed = service.getFeed(new URL(STANDARD_FEED_PREFIX + "top_rated"), VideoFeed.class);
+		}
+		catch (ServiceException e) {
+			throw new RuntimeException(e);
+		}
+		
+		for (VideoEntry videoEntry : videoFeed.getEntries()) 
+		{
+			YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
+			MediaKeywords keywords = mediaGroup.getKeywords();
+
+			if (null != keywords) {
+				for (String keyword : keywords.getKeywords()) 
+				{
+					tags.add(keyword);
+					
+					if(tags.size() == maxCount)
+						return tags;
+				}
+			}
+		}
+		
+		return tags;
+	}
+
+	@Override
+	public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException 
+	{
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
 	}
 	
 }

@@ -3,9 +3,12 @@ package de.l3s.interwebj.connector.bing;
 
 import static de.l3s.interwebj.util.Assertions.notNull;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.apache.commons.lang.NotImplementedException;
 
 import com.google.code.bing.search.client.BingSearchClient;
 import com.google.code.bing.search.client.BingSearchClient.SearchRequestBuilder;
@@ -346,5 +349,19 @@ public class BingConnector
 		if(language.equalsIgnoreCase("uk")) return "uk-UA";
 		if(language.equalsIgnoreCase("zh")) return "zh-CN";		
 		return "en-US";				
+	}
+
+
+	@Override
+	public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
+
+
+	@Override
+	public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
 	}
 }

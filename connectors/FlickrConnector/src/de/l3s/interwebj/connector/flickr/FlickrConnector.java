@@ -9,6 +9,7 @@ import java.util.*;
 
 import javax.xml.parsers.*;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.xml.sax.*;
 
 import com.aetrion.flickr.*;
@@ -591,5 +592,70 @@ public class FlickrConnector
 		String path = uri.getPath();
 		String id = path.substring(path.lastIndexOf('/') + 1);
 		System.out.println(id);
+	}
+
+
+	@Override
+	public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
+		
+	}
+
+
+	@Override
+	public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException 
+	{
+		SearchParameters params = new SearchParameters();
+		{
+			HashSet<String> temp = new HashSet<String>();
+			temp.add("owner_name");		
+			params.setExtras(temp);
+		}
+		HashSet<String> users = new HashSet<String>();
+		
+		for(int page=1; users.size() < maxCount; page++)
+		{
+			for(String tag : tags)
+			{				
+				String[] temp = {tag};
+				params.setTags(temp);
+	
+				Flickr flickr = createFlickrInstance();
+				PhotoList result;
+				try {
+					result = flickr.getPhotosInterface().search(params, 500, page);
+				}
+				catch (SAXException e) {
+					throw new RuntimeException(e);
+				}
+				catch (FlickrException e) {
+					throw new RuntimeException(e);
+				}
+				
+				if(result.size() == 0)
+					return users;
+				
+				@SuppressWarnings("unchecked")
+				Iterator<Photo> iterator = result.iterator();
+				
+				//int counter = 0;
+				while(iterator.hasNext())
+				{
+					Photo f = iterator.next();
+					users.add(f.getOwner().getUsername());
+					/*
+					if(users.add(f.getOwner().getUsername())) // the user might be added before
+						counter++;
+					*/
+					if(users.size() == maxCount)
+						return users;
+				}			
+				//System.out.println("user: "+counter +"\t tag: "+tag);
+			}
+		}
+		
+		return users;
 	}
 }

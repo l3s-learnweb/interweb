@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="lib/google-ajax-apis.jar"/>
 	<classpathentry kind="lib" path="lib/gson-1.7.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/InterWebJ-Core"/>
+	<classpathentry kind="lib" path="/InterWebJ-Core/lib/commons-lang-2.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

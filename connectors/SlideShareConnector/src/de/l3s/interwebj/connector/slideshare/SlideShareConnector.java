@@ -11,6 +11,7 @@ import java.util.*;
 import javax.ws.rs.core.*;
 
 import org.apache.commons.codec.digest.*;
+import org.apache.commons.lang.NotImplementedException;
 
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.ClientResponse.Status;
@@ -359,7 +360,19 @@ public class SlideShareConnector
 		return response;
 	}
 	
+	@Override
+	public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
 
+
+	@Override
+	public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
+	
 	public static void main(String[] args)
 	    throws Exception
 	{
