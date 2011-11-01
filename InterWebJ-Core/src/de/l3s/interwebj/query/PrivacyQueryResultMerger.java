@@ -5,6 +5,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * 
+ * @author Philipp
+ *
+ */
 public class PrivacyQueryResultMerger implements QueryResultMerger 
 {
 	private int originalResultSize;
@@ -57,7 +62,7 @@ public class PrivacyQueryResultMerger implements QueryResultMerger
 					}						
 					System.out.println($estimated_private_results+" - "+$estimated_public_results);
 										
-System.out.println($private_results+" - "+$public_results);
+//System.out.println($private_results+" - "+$public_results);
 				
 			// if we don't get as much {public,private} results as estimated, take more of the other kind
 					if($private_results < $estimated_private_results || $public_results < $estimated_public_results &&
@@ -80,7 +85,7 @@ System.out.println($private_results+" - "+$public_results);
 						$estimated_private_results = $private_results;
 						$estimated_public_results = $public_results;
 					}
-					System.out.println($estimated_private_results+" - "+$estimated_public_results);
+					//System.out.println($estimated_private_results+" - "+$estimated_public_results);
 				
 					Iterator<ResultItem> iterator = resultItems.iterator();
 					int i=0;
@@ -92,9 +97,9 @@ System.out.println($private_results+" - "+$public_results);
 						if(i >= $estimated_public_results  && i < rightBoundary)
 						{
 							iterator.remove();
-							System.out.print(" | removed");
+							//System.out.print(" | removed");
 						}
-						System.out.println();
+						//System.out.println();
 						i++;
 					}
 					

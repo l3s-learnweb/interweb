@@ -35,5 +35,6 @@
 			<attribute name="owner.project.facets" value="jst.jaxrs"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/InterWebJ-Core/lib/secondstring-20060615.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

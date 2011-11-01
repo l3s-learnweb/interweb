@@ -1,6 +1,7 @@
 package de.l3s.interwebj.core;
 
 
+import java.io.IOException;
 import java.util.*;
 
 import de.l3s.interwebj.*;
@@ -78,4 +79,27 @@ public interface ServiceConnector
 	
 
 	public abstract boolean supportContentType(String contentType);
+	
+	/**
+	 * Returns a set of tags. The tags have to belong <i>somehow</i> to the  user.
+	 * (Tags that the user has used or the users favorite resources are tagged with ... depends on service)
+	 *
+	 * @param username the function throws an IllegalArgumentException if the username is not valid at the service
+	 * @param maxCount the maximal result count
+	 * @return
+	 * @throws IllegalArgumentException
+	 * @throws IOException 
+	 */
+	public abstract Set<String> getTags(String username, int maxCount) 
+		throws IllegalArgumentException, IOException;
+	
+	
+	/**
+	 * Returns a set of usernames that belong <i>somehow</i> to the specified tags
+	 * @param tags
+	 * @param maxCount the maximal result count
+	 * @return
+	 * @throws InterWebException 
+	 */
+	public abstract Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException;
 }
