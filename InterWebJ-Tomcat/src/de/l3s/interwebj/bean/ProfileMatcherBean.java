@@ -39,6 +39,8 @@ public class ProfileMatcherBean implements Serializable
 	private List<String> selectAbleConnectorNames = new LinkedList<String>();
 	private String selectedConnectorName;
 	
+	private Set<String> result;
+	
 	/*
 	@NotNull
 	private int resultCount;
@@ -191,6 +193,12 @@ public class ProfileMatcherBean implements Serializable
 						break;
 				}
 				
+				result = orderedUsers;
+				
+				for(String idf : result)
+				{
+					
+				}
 				/*
 				orderedUsers = new TreeSet<String>(new TagComperator(new JaccardDistance(username)));
 				orderedUsers.addAll(users);	
@@ -271,7 +279,10 @@ public class ProfileMatcherBean implements Serializable
 
 	public void setUsername(String username) {
 		this.username = username;
-	}	
-	
-	
+	}
+
+
+	public Set<String> getResult() {
+		return result;
+	}
 }
