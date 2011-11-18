@@ -9,7 +9,7 @@ public class Test {
 		HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
 		
 		//imageGenerator.loadHtml("<b>Hello World!</b> Please goto <a title=\"Goto Google\" href=\"http://www.google.com\">Google</a>.");
-		imageGenerator.loadUrl("http://vingrad.ru");
+		imageGenerator.loadUrl("http://ebay.de");
 		BufferedImage img = imageGenerator.getBufferedImage();
 		int with = img.getWidth();
 		/*
@@ -22,7 +22,7 @@ public class Test {
 			graphics2D.drawImage(image, xform, null);
 			graphics2D.dispose();
 			*/
-		imageGenerator.saveAsImage("hello-world.png");
+		imageGenerator.saveAsImage("ebay.png");
 		imageGenerator.saveAsHtmlWithMap("hello-world.html", "hello-world.png");
 	}
 }

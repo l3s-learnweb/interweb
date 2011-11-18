@@ -352,6 +352,7 @@ public class BingConnector
 	}
 
 
+
 	@Override
 	public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException {
 		// TODO Auto-generated method stub
