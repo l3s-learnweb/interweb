@@ -137,9 +137,9 @@ public class ProfileMatcherBean implements Serializable
 	{
 		//String username = "sergejzr"; // appmodo
 		//String serviceName = "Youtube";
-		final int MAX_TAG_COUNT = 50;
-		final int MAX_USERS_COUNT = 50; // 500
-		
+		final int MAX_TAG_COUNT = 500;
+		final int MAX_USERS_COUNT = 500; // 500
+		System.out.println("username:"+username);
 		// get tags for user
 		Set<String> tags = null;
 		Engine engine = Environment.getInstance().getEngine();
@@ -149,10 +149,11 @@ public class ProfileMatcherBean implements Serializable
 		}
 		catch (IllegalArgumentException e) {
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Unknown username");
+			return "";
 		}
 		
 		if(null == tags)
-			throw new RuntimeException("should not happen");
+			throw new RuntimeException("no tags for user found");
 		
 		/*
 		for(String tag : tags)
