@@ -34,17 +34,15 @@ public class ProfileMatcherBean implements Serializable
 	
 	@NotNull
 	private String username;
-	@NotNull
-	private Integer maxCount;
 	private List<String> selectAbleConnectorNames = new LinkedList<String>();
-	private String selectedConnectorName;
-	
+	private String selectedConnectorName;	
 	private Set<String> result;
-	
-	/*
 	@NotNull
-	private int resultCount;
-*/
+	private int maxTagCount = 50;
+	@NotNull
+	private int maxUserCount = 800; 
+
+	
 	
 
 	public ProfileMatcherBean()
@@ -57,7 +55,6 @@ public class ProfileMatcherBean implements Serializable
 				try {
 					connector.getTags("test", 0); // test if this function is implemented
 					selectAbleConnectorNames.add(connector.getName());
-					System.out.println(connector.getName());
 				}
 				catch (NotImplementedException e) {} // do nothing
 				catch (Exception e) {
@@ -77,38 +74,12 @@ public class ProfileMatcherBean implements Serializable
 	}
 	
 
-	
 
-/*
-	public QueryResult getQueryResult()
-	{
-		return queryResult;
-	}
-	
-
-	public int getResultCount()
-	{
-		return resultCount;
-	}
-	
-/*
-	public int getResultIndex(Object resultItem)
-	{
-		return queryResult.getResultItems().indexOf(resultItem);
-	}
-
-	public boolean hasResults()
-	{
-		return queryResult != null;
-	}*/
-	
-
-
-	public static class TagComperator implements Comparator<String> 
+	public static class UserComperator implements Comparator<String> 
 	{
 		private StringDistance stringDistance;
 
-		public TagComperator(StringDistance stringDistance)
+		public UserComperator(StringDistance stringDistance)
 		{
 			this.stringDistance = stringDistance;
 		}
@@ -117,9 +88,9 @@ public class ProfileMatcherBean implements Serializable
 		{			
 			double distance1 = stringDistance.getDistance(o1); // distance from o1 to username
 			double distance2 = stringDistance.getDistance(o2); // distance from o2 to username
-//System.out.println(distance1+":"+distance2);
-			if(distance1 == distance2) { //System.out.print("g");
-				return o1.compareTo(o2);}
+
+			if(distance1 == distance2) 
+				return o1.compareTo(o2);
 			else if(distance1 < distance2)
 				return -1;
 			else
@@ -127,48 +98,46 @@ public class ProfileMatcherBean implements Serializable
 		}
 
 	}
-	public static void main(String[] args) throws IllegalArgumentException, IOException  
-	{
-
-	}
 
 
 	public String search() throws IOException
 	{
-		//String username = "sergejzr"; // appmodo
-		//String serviceName = "Youtube";
-		final int MAX_TAG_COUNT = 500;
-		final int MAX_USERS_COUNT = 500; // 500
-		System.out.println("username:"+username);
+		if(maxTagCount < 1)
+			maxTagCount = 50;
+		if(maxUserCount < 1)
+			maxUserCount = 100;
+		
 		// get tags for user
 		Set<String> tags = null;
 		Engine engine = Environment.getInstance().getEngine();
 		ServiceConnector sourceConnector = engine.getConnector(selectedConnectorName);
 		try {
-			tags = sourceConnector.getTags(username, MAX_TAG_COUNT);
+			tags = sourceConnector.getTags(username, maxTagCount);
 		}
 		catch (IllegalArgumentException e) {
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Unknown username");
 			return "";
 		}
 		
-		if(null == tags)
-			throw new RuntimeException("no tags for user found");
+		if(null == tags) {
+			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, "No tags for user found");
+			return "";
+		}
 		
-		/*
+		System.out.println("tags "+tags.size());
 		for(String tag : tags)
-			System.out.println(tag);		
-		System.out.println("anzahl "+tags.size());
-		*/
+			System.out.print(tag+", ");		
+		
+		System.out.println("tags ende");
 
-		// get users at the other services for tags
+		// get users by tags at the other services
 		for (ServiceConnector connector : engine.getConnectors())
 		{
 			if (connector.isRegistered() && !connector.getName().equals(selectedConnectorName))
 			{
 				Set<String> users = null;
 				try {
-					users = connector.getUsers(tags, MAX_USERS_COUNT);
+					users = connector.getUsers(tags, maxUserCount);
 				}
 				catch (NotImplementedException e) 
 				{
@@ -181,69 +150,22 @@ public class ProfileMatcherBean implements Serializable
 				if(null == users || users.size() == 0)
 					continue;
 				
-				// sort users 
-				TreeSet<String> orderedUsers = new TreeSet<String>(new TagComperator(new LevenshteinDistance(username)));
+				// sort users 														new JaccardDistance(username);
+				TreeSet<String> orderedUsers = new TreeSet<String>(new UserComperator(new LevenshteinDistance(username)));
 				orderedUsers.addAll(users);				
 			
-				System.out.println("\nBeste Treffer (Levenshtein):");
-				int i=0;
-				for(String user : orderedUsers)
-				{
-					System.out.println(user);
-					if(i++ == 15)
-						break;
-				}
 				
 				result = orderedUsers;
 				
+				/*
 				for(String idf : result)
 				{
 					
-				}
-				/*
-				orderedUsers = new TreeSet<String>(new TagComperator(new JaccardDistance(username)));
-				orderedUsers.addAll(users);	
-				System.out.println("\nBeste Treffer (Jaccard):");
-				i=0;
-				for(String user : orderedUsers)
-				{
-					System.out.println(user);
-					if(i++ == 50)
-						break;
-				}
-					*/
+				}*/
+
 			}				
 		}
-		/*
-		QueryFactory queryFactory = new QueryFactory();
-		Query query = queryFactory.createQuery(this.query, selectedContentTypes);
-		query.setConnectorNames(selectAbleConnectorNames);
-		String link = FacesUtils.getInterWebJBean().getBaseUrl()
-		              + "api/search/" + query.getId() + ".xml";
-		query.setLink(link);
-		query.addSearchScope(SearchScope.TEXT);
-		query.addSearchScope(SearchScope.TAGS);
-		query.setResultCount(resultCount);
-		query.setPage(page);
-		query.setLanguage(language);
-		query.setPrivacy(0.8f);
-		QueryResult queryResult = new QueryResult(query);
-		Engine engine = Environment.getInstance().getEngine();
-		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
-		try
-		{
-			QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
-			queryResult = collector.retrieve();
-		}
-		catch (InterWebException e)
-		{
-			e.printStackTrace();
-			Environment.logger.severe(e.getMessage());
-			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
-		}
-		ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-		expirableMap.put(queryResult.getQuery().getId(), queryResult);
-		this.queryResult = queryResult;*/
+		
 		return "success";
 	}	
 	
@@ -262,17 +184,6 @@ public class ProfileMatcherBean implements Serializable
 		return selectAbleConnectorNames;
 	}
 
-
-	public Integer getMaxCount() {
-		return maxCount;
-	}
-
-
-	public void setMaxCount(Integer maxCount) {
-		this.maxCount = maxCount;
-	}
-
-
 	public String getUsername() {
 		return username;
 	}
@@ -286,4 +197,26 @@ public class ProfileMatcherBean implements Serializable
 	public Set<String> getResult() {
 		return result;
 	}
+
+
+	public int getMaxTagCount() {
+		return maxTagCount;
+	}
+
+
+	public void setMaxTagCount(int maxTagCount) {
+		this.maxTagCount = maxTagCount;
+	}
+
+
+	public int getMaxUserCount() {
+		return maxUserCount;
+	}
+
+
+	public void setMaxUserCount(int maxUserCount) {
+		this.maxUserCount = maxUserCount;
+	}
+	
+	
 }

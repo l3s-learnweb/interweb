@@ -11,7 +11,7 @@
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
 		<h:form>
-			<h:panelGrid columns="2" columnClasses="top,top">
+			<h:panelGrid columns="1" columnClasses="top,top">
 				<rich:panel styleClass="richpanel">
 					<h:outputLabel for="query" value="User: " />
 					<h:inputText id="query" label="query" required="true" value="#{profileMatcherBean.username}" size="30" />
@@ -21,16 +21,18 @@
 						<f:selectItems value="#{profileMatcherBean.selectAbleConnectorNames}"></f:selectItems>							
 					</h:selectOneListbox>
 						
-					<h:commandButton action="#{profileMatcherBean.search()}" value="Search similar users at other services"
-						id="search_button" style="margin-left:5px" />
+					<h:commandButton action="#{profileMatcherBean.search()}" value="Search similar users at other services" id="search_button" style="margin-left:5px" />
+					<input type="submit" name="options" value="Options" style="margin-left:5px" onclick="document.getElementById('options').style.display='block'; return false;" />
 				</rich:panel>
-				<h:panelGrid columns="3" columnClasses="top,top,top">
-					<h:panelGroup>
-						
-						<br/>	
-						
-					</h:panelGroup>
-				</h:panelGrid>
+				
+				<h:panelGroup>
+					<div id="options" style="display:none;">
+						<h:outputLabel value="Tags: " for="tags"/>
+						<h:inputText id="tags" label="tags" required="true" value="#{profileMatcherBean.maxTagCount}" size="3" />
+						<h:outputLabel value=" &nbsp; User: " escape="false" for="users"/>
+						<h:inputText id="users" label="user" required="true" value="#{profileMatcherBean.maxUserCount}" size="4" />	
+					</div>					
+				</h:panelGroup>
 			</h:panelGrid>
 		</h:form>
 		<h:outputText value="No results found" rendered="#{profileMatcherBean.result.size()==0}" />
