@@ -612,7 +612,7 @@ public class YouTubeConnector
 				}
 			}
 		}
-		System.out.println("nicht genug tags: "+tags.size());
+		
 		// not enough tags found, get more:
 		try {
 			videoFeed = service.getFeed(new URL(STANDARD_FEED_PREFIX + "top_rated"), VideoFeed.class);
@@ -636,7 +636,7 @@ public class YouTubeConnector
 				}
 			}
 		}
-		System.out.println("nicht genug tags2: "+tags.size());
+		
 		return tags;
 	}
 
