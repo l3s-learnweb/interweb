@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="youtube-src"/>
 	<classpathentry kind="src" path="slideshare-src"/>
-	<classpathentry kind="src" path="interweb-src"/>
 	<classpathentry kind="src" path="google-src"/>
 	<classpathentry kind="src" path="flickr-src"/>
 	<classpathentry kind="src" path="fedora-src"/>

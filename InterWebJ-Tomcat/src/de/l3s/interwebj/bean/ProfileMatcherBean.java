@@ -40,10 +40,7 @@ public class ProfileMatcherBean implements Serializable
 	@NotNull
 	private int maxTagCount = 50;
 	@NotNull
-	private int maxUserCount = 800; 
-
-	
-	
+	private int maxUserCount = 600; 	
 
 	public ProfileMatcherBean()
 	{
@@ -52,12 +49,12 @@ public class ProfileMatcherBean implements Serializable
 		{
 			if (connector.isRegistered())
 			{
-				try {
+				try {				
 					connector.getTags("test", 0); // test if this function is implemented
 					selectAbleConnectorNames.add(connector.getName());
 				}
 				catch (NotImplementedException e) {} // do nothing
-				catch (Exception e) {
+				catch (Exception e) {					
 					e.printStackTrace();
 				}
 			}
@@ -123,13 +120,14 @@ public class ProfileMatcherBean implements Serializable
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, "No tags for user found");
 			return "";
 		}
-		
+	/*	
 		System.out.println("tags "+tags.size());
 		for(String tag : tags)
 			System.out.print(tag+", ");		
 		
 		System.out.println("tags ende");
-
+*/
+		
 		// get users by tags at the other services
 		for (ServiceConnector connector : engine.getConnectors())
 		{
