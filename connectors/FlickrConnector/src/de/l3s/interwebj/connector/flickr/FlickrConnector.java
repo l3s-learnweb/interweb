@@ -615,10 +615,14 @@ public class FlickrConnector
 		}
 		HashSet<String> users = new HashSet<String>();
 		
-		for(int page=1; users.size() < maxCount; page++)
+		int errorCounter = 0;
+		for(int page=1; page < 8 && errorCounter < 80; page++)
 		{
 			for(String tag : tags)
-			{				
+			{		
+				if(tag.trim().length() < 3) // don't use very short tags
+					continue;
+				
 				String[] temp = {tag};
 				params.setTags(temp);
 	
@@ -635,24 +639,19 @@ public class FlickrConnector
 				}
 				
 				if(result.size() == 0)
-					return users;
+					errorCounter++;
 				
 				@SuppressWarnings("unchecked")
 				Iterator<Photo> iterator = result.iterator();
 				
-				//int counter = 0;
 				while(iterator.hasNext())
 				{
 					Photo f = iterator.next();
 					users.add(f.getOwner().getUsername());
-					/*
-					if(users.add(f.getOwner().getUsername())) // the user might be added before
-						counter++;
-					*/
+
 					if(users.size() == maxCount)
 						return users;
-				}			
-				//System.out.println("user: "+counter +"\t tag: "+tag);
+				}	
 			}
 		}
 		
