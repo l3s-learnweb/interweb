@@ -45,7 +45,7 @@ public class OldClassifier implements PrivacyClassifier {
 		// query privacy classifier service
 		Client client = Client.create();
 		WebResource resource = client.resource("http://out.l3s.uni-hannover.de:9080/privateweb/classify");
-	
+		;
 		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
 		params.add("multiple", sb.toString());
 
@@ -61,7 +61,7 @@ public class OldClassifier implements PrivacyClassifier {
 			return queryResult;
 		}
 		
-		// für wahlfreien Zugriff in Array kopieren
+		// fÃ¼r wahlfreien Zugriff in Array kopieren
 		ArrayList<ResultItem> resultItems = new ArrayList<ResultItem>(queryResult.getResultItems());
 	
 		for(Element result : el.getRootElement().elements())

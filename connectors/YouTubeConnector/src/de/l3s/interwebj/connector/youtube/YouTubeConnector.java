@@ -265,20 +265,45 @@ public class YouTubeConnector
 				MediaGroup mg = ve.getMediaGroup();
 				resultItem.setDescription(mg.getDescription().getPlainTextContent());
 				resultItem.setUrl(mg.getPlayer().getUrl());
-				resultItem.setThumbnails(createThumbnails(mg));
 				resultItem.setDate(CoreUtils.formatDate(ve.getPublished().getValue()));
-				String tags = StringUtils.join(mg.getKeywords().getKeywords(),
-				                               ',');
-				resultItem.setTags(tags);
+				resultItem.setTags(StringUtils.join(mg.getKeywords().getKeywords(), ','));
 				resultItem.setRank(rank++);
 				resultItem.setTotalResultCount(queryResult.getTotalResultCount());
 				resultItem.setViewCount(getViewCount(ve));
 				resultItem.setCommentCount(getCommentCount(ve));
-				resultItem.setEmbedded(getEmbedded(authCredentials,
-				                                   resultItem.getUrl(),
-				                                   ResultItem.DEFAULT_EMBEDDED_WIDTH,
-				                                   ResultItem.DEFAULT_EMBEDDED_HEIGHT));
+	
+				// load thumbnails
+				Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
+				List<MediaThumbnail> mediaThumbnails = mg.getThumbnails();
+				for (MediaThumbnail mt : mediaThumbnails)
+				{
+					Thumbnail thumbnail = new Thumbnail(mt.getUrl(), mt.getWidth(),  mt.getHeight());
+					thumbnails.add(thumbnail);
+					
+					if(thumbnail.getUrl().contains("/default.jpg"))
+						resultItem.setEmbeddedSize1(CoreUtils.createImageCode(thumbnail, 100, 100));
+					else if(thumbnail.getUrl().contains("/hqdefault.jpg"))
+					{
+						resultItem.setEmbeddedSize2(CoreUtils.createImageCode(thumbnail, 240, 240));
+						resultItem.setImageUrl(thumbnail.getUrl());
+					}
+				}
+				resultItem.setThumbnails(thumbnails);
+				
+				Pattern pattern = Pattern.compile("v[/=]([^&]+)"); 
+				Matcher matcher = pattern.matcher(mg.getPlayer().getUrl()); 
+				
+			    if(matcher.find()) 
+			    {
+			        String id = matcher.group(1);
+			        
+					//create embedded flash video player
+					String embeddedCode = "<embed pluginspage=\"http://www.adobe.com/go/getflashplayer\" src=\"http://www.youtube.com/v/"+
+											id +"\" type=\"application/x-shockwave-flash\" width=\"500\" height=\"400\"></embed>";
+					resultItem.setEmbeddedSize3(embeddedCode);				
+			    }
 				queryResult.addResultItem(resultItem);
+				
 			}
 		}
 		catch (OAuthException e)
@@ -491,21 +516,6 @@ public class YouTubeConnector
 	    throws InterWebException
 	{
 		// YouTube doesn't provide api for token revokation
-	}
-	
-
-	private Set<Thumbnail> createThumbnails(MediaGroup mg)
-	{
-		Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
-		List<MediaThumbnail> mediaThumbnails = mg.getThumbnails();
-		for (MediaThumbnail mt : mediaThumbnails)
-		{
-			Thumbnail thumbnail = new Thumbnail(mt.getUrl(),
-			                                    mt.getWidth(),
-			                                    mt.getHeight());
-			thumbnails.add(thumbnail);
-		}
-		return thumbnails;
 	}
 	
 

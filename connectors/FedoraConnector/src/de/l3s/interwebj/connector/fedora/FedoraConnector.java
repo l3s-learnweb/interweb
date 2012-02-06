@@ -168,7 +168,7 @@ public class FedoraConnector
 			String date = CoreUtils.formatDate(parseDate(sre.getCanonical().getDc().getDate()));
 			resultItem.setDate(date);
 			resultItem.setRank(count++);
-			resultItem.setEmbedded(sre.getCanonical().getLink().getHref());
+			resultItem.setEmbeddedSize3(sre.getCanonical().getLink().getHref());
 			resultItem.setTotalResultCount(100);
 			resultItem.setTags(getTags(sre));
 			queryResult.addResultItem(resultItem);

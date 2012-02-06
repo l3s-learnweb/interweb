@@ -1,15 +1,25 @@
 package de.l3s.interwebj.util;
 
 
-import java.io.*;
-import java.text.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.MultivaluedMap;
 
-import com.sun.jersey.api.client.*;
+import com.sun.jersey.api.client.ClientResponse;
 
-import de.l3s.interwebj.core.*;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.query.Thumbnail;
 
 
 public class CoreUtils
@@ -93,5 +103,43 @@ public class CoreUtils
 			Environment.logger.info("    " + header + ": "
 			                        + headers.get(header));
 		}
+	}
+	
+	public static String createImageCode(Thumbnail tn, int maxWidth, int maxHeight)
+	{
+		return createImageCode(tn.getUrl(), tn.getWidth(), tn.getHeight(), maxWidth, maxHeight);
+	}
+	
+	public static String createImageCode(String url, int imageWidth, int imageHeight, int maxWidth, int maxHeight) 
+	{
+		if(null == url || url.length() < 7 || imageWidth < 2 || imageHeight < 2)
+			return null;
+		/* read size from url
+		Image image;
+		try {
+			image = ImageIO.read(new URL(resource.getUrl()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return resource.getUrl();
+		}
+		int width = image.getWidth(null);
+		int height = image.getHeight(null);
+		*/
+		int width = imageWidth;
+		int height = imageHeight;
+		
+		if(width > maxWidth) {
+			double ratio = (double)maxWidth / (double)width;
+			height = (int) (height * ratio);
+			width = maxWidth;
+		}
+		
+		if(height > maxHeight) {
+			double ratio = (double)maxHeight / (double)height;
+			width = (int) (width * ratio);
+			height = maxHeight;
+		}
+
+		return "<img src=\""+ url +"\" width=\""+ width +"\" height=\""+ height +"\" alt=\"\" />";		
 	}
 }

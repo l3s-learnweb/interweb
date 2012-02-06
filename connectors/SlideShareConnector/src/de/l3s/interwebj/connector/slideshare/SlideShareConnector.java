@@ -7,6 +7,8 @@ import java.io.*;
 import java.net.*;
 import java.text.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.core.*;
 
@@ -99,7 +101,21 @@ public class SlideShareConnector
 		resource = resource.queryParam("file_type", fileType);
 		//		resource = resource.queryParam("detailed", "1");
 		ClientResponse response = postQuery(resource);
-		SearchResponse sr = response.getEntity(SearchResponse.class);
+
+		SearchResponse sr;
+		try { // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
+			sr = response.getEntity(SearchResponse.class);
+		}
+		catch(Exception e) {
+			/*
+			try {
+				System.out.println("response:"+CoreUtils.getClientResponseContent(response));
+			}
+			catch (IOException e1) {
+				e1.printStackTrace();
+			}*/
+			return queryResult;
+		}
 		queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
 		int count = sr.getMeta().getResultOffset() - 1;
 		List<SearchResultEntity> searchResults = sr.getSearchResults();
@@ -114,13 +130,29 @@ public class SlideShareConnector
 			resultItem.setId(Integer.toString(sre.getId()));
 			resultItem.setTitle(sre.getTitle());
 			resultItem.setDescription(sre.getDescription());
-			resultItem.setUrl(sre.getUrl());
-			resultItem.setThumbnails(createThumbnails(sre));
-			String date = CoreUtils.formatDate(parseDate(sre.getUpdated()));
-			resultItem.setDate(date);
-			resultItem.setRank(count++);
-			resultItem.setEmbedded(sre.getEmbed());
+			resultItem.setUrl(sre.getUrl());			
+			resultItem.setDate(CoreUtils.formatDate(parseDate(sre.getUpdated())));
+			resultItem.setRank(count++);			
 			resultItem.setTotalResultCount(sr.getMeta().getTotalResults());
+			
+			Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
+			thumbnails.add(new Thumbnail(sre.getThumbnailSmallURL(), 120, 90));
+			thumbnails.add(new Thumbnail(sre.getThumbnailURL(), 170, 128));			
+			resultItem.setThumbnails(thumbnails);
+			
+			resultItem.setEmbeddedSize1(CoreUtils.createImageCode(sre.getThumbnailSmallURL(), 120, 90, 100, 100));
+			resultItem.setEmbeddedSize2("<img src=\""+ sre.getThumbnailURL() +"\" width=\"170\" height=\"128\" />");
+			resultItem.setImageUrl(sre.getThumbnailURL());
+			
+			// remove spam from the embedded code
+			Pattern pattern = Pattern.compile("(<object.*</object>)"); 
+			Matcher matcher = pattern.matcher(sre.getEmbed()); 
+			
+		    if(matcher.find()) 
+		    	resultItem.setEmbeddedSize3(matcher.group(0));				
+		    else
+		    	resultItem.setEmbeddedSize3(sre.getEmbed());	
+			
 			queryResult.addResultItem(resultItem);
 		}
 		return queryResult;
@@ -281,16 +313,6 @@ public class SlideShareConnector
 		}
 	}
 	
-
-	private Set<Thumbnail> createThumbnails(SearchResultEntity searchResultEntity)
-	{
-		Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
-		thumbnails.add(new Thumbnail(searchResultEntity.getThumbnailSmallURL(), -1, -1));
-		thumbnails.add(new Thumbnail(searchResultEntity.getThumbnailURL(), -1, -1));
-		return thumbnails;
-	}
-	
-
 	private String createType(int slideshowType)
 	{
 		switch (slideshowType)

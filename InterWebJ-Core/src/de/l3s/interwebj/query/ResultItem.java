@@ -32,10 +32,15 @@ public class ResultItem
 	private long totalResultCount = -1;
 	private int viewCount = -1;
 	private int commentCount = -1;
-	private String embedded;
 	private double privacy;
 	private int privacyConfidence;
 	
+	private String embeddedSize1;
+	private String embeddedSize2;
+	private String embeddedSize3;
+	private String embeddedSize4;
+	
+	private String imageUrl;
 
 	public ResultItem(String connectorName)
 	{
@@ -69,9 +74,14 @@ public class ResultItem
 	}
 	
 
-	public String getEmbedded()
+	/**
+	 * html code, could be flash
+	 * max width and max height 500px
+	 * @return
+	 */
+	public String getEmbeddedSize3()
 	{
-		return embedded;
+		return embeddedSize3;
 	}
 	
 
@@ -188,11 +198,82 @@ public class ResultItem
 	}
 	
 
-	public void setEmbedded(String embedded)
+	/**
+	 * html code, could be flash
+	 * max width and max height 500px
+	 * @param embedded
+	 */
+	public void setEmbeddedSize3(String embedded)
 	{
-		this.embedded = embedded;
+		this.embeddedSize3 = embedded;
+	}	
+
+	/**
+	 * html code, only image or text
+	 * max width and max height 100px
+	 * @return
+	 */
+	public String getEmbeddedSize1() {
+		return embeddedSize1;
 	}
-	
+
+	/**
+	 * html code, only image or text
+	 * max width and max height 100px
+	 */
+	public void setEmbeddedSize1(String embeddedSize1) {
+		this.embeddedSize1 = embeddedSize1;
+	}
+
+	/**
+	 * html code, only image or text
+	 * max width and max height 240px
+	 */
+	public String getEmbeddedSize2() {
+		return embeddedSize2;
+	}
+
+	/**
+	 * html code, only image or text
+	 * max width and max height 240px
+	 */
+	public void setEmbeddedSize2(String embeddedSize2) {
+		this.embeddedSize2 = embeddedSize2;
+	}
+
+	/**
+	 * html code, could be flash
+	 * max width and max height 100%
+	 */
+	public String getEmbeddedSize4() {
+		return embeddedSize4;
+	}
+
+	/**
+	 * html code, could be flash
+	 * max width and max height 100%
+	 */
+	public void setEmbeddedSize4(String embeddedSize4) {
+		this.embeddedSize4 = embeddedSize4;
+	}
+
+
+	/**
+	 * Url to the best (high resolution) available preview image
+	 * @return
+	 */
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	/**
+	 * Url to the best (high resolution) available preview image
+	 * @param imageUrl
+	 */
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
 
 	public void setId(String id)
 	{

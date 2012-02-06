@@ -418,6 +418,17 @@ public class FlickrConnector
 		resultItem.setRank(rank);
 		resultItem.setTotalResultCount(totalResultCount);
 		resultItem.setCommentCount(photo.getComments());
+		
+		resultItem.setEmbeddedSize1("<img src=\""+ photo.getThumbnailUrl() +"\" />");
+		resultItem.setEmbeddedSize2("<img src=\""+ photo.getSmallUrl() +"\" />");
+		resultItem.setEmbeddedSize3("<img src=\""+ photo.getMediumUrl() +"\" />");
+		resultItem.setEmbeddedSize4("<img src=\""+ photo.getLargeUrl() +"\" />");
+		
+		if(photo.getLargeUrl() != null && photo.getLargeUrl().length() > 7)
+			resultItem.setImageUrl(photo.getLargeUrl());
+		else
+			resultItem.setImageUrl(photo.getMediumUrl());
+		
 		return resultItem;
 	}
 	
@@ -447,9 +458,9 @@ public class FlickrConnector
 
 	private Set<Thumbnail> createThumbnails(Photo photo)
 	    throws FlickrException
-	{
+	{		
 		SortedSet<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
-		thumbnails.add(new Thumbnail(photo.getSmallSquareUrl(), 75, 75));
+		thumbnails.add(new Thumbnail(photo.getSmallSquareUrl(), 75, 75)); // das sind nur die maximalen breiten/höhen und somit fast nutzlos
 		thumbnails.add(new Thumbnail(photo.getThumbnailUrl(), 100, 100));
 		thumbnails.add(new Thumbnail(photo.getSmallUrl(), 240, 240));
 		thumbnails.add(new Thumbnail(photo.getMediumUrl(), 500, 500));
@@ -465,6 +476,7 @@ public class FlickrConnector
 		extras.add("date_upload");
 		extras.add("views");
 		extras.add("media");
+		
 		return extras;
 	}
 	
