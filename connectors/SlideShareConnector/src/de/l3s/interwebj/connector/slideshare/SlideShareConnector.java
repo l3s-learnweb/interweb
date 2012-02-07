@@ -114,6 +114,7 @@ public class SlideShareConnector
 			catch (IOException e1) {
 				e1.printStackTrace();
 			}*/
+			e.printStackTrace();
 			return queryResult;
 		}
 		queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
