@@ -39,8 +39,6 @@ public class SearchResultEntity
 	@XmlElementWrapper(name = "thumbnails")
 	@XmlElement(name = "thumbnail")
 	protected List<ThumbnailEntity> thumbnailEntities;
-	//	@XmlElement(name = "embedded")
-	//	protected String embedded;
 	@XmlElement(name = "date")
 	protected String date;
 	@XmlElement(name = "tags")
@@ -57,6 +55,16 @@ public class SearchResultEntity
 	protected double privacy;
 	@XmlElement(name = "privacy_confidence")
 	protected double privacyConfidence;
+	@XmlElement(name = "embedded_size1")
+	private String embeddedSize1;
+	@XmlElement(name = "embedded_size2")
+	private String embeddedSize2;
+	@XmlElement(name = "embedded_size3")
+	private String embeddedSize3;
+	@XmlElement(name = "embedded_size4")
+	private String embeddedSize4;
+	@XmlElement(name = "max_image_url")
+	private String imageUrl;
 	
 
 	public SearchResultEntity()
@@ -106,7 +114,11 @@ public class SearchResultEntity
 		setViews(resultItem.getViewCount());
 		setNumberOfComments(resultItem.getCommentCount());
 		setNumberOfViews(resultItem.getViewCount());
-		
+		setEmbeddedSize1(resultItem.getEmbeddedSize1());
+		setEmbeddedSize2(resultItem.getEmbeddedSize2());
+		setEmbeddedSize3(resultItem.getEmbeddedSize3());
+		setEmbeddedSize4(resultItem.getEmbeddedSize4());
+		setImageUrl(resultItem.getImageUrl());
 		this.privacy = resultItem.getPrivacy();
 		this.privacyConfidence = resultItem.getPrivacyConfidence();
 	}
@@ -293,5 +305,91 @@ public class SearchResultEntity
 	public void setViews(int numberOfViews)
 	{
 		this.numberOfViews = numberOfViews;
+	}
+	
+	/**
+	 * html code, could be flash
+	 * max width and max height 500px
+	 * @param embedded
+	 */
+	public void setEmbeddedSize3(String embedded)
+	{
+		this.embeddedSize3 = embedded;
+	}	
+	
+	/**
+	 * html code, could be flash
+	 * max width and max height 500px
+	 * @return
+	 */
+	public String getEmbeddedSize3()
+	{
+		return embeddedSize3;
+	}
+
+	/**
+	 * html code, only image or text
+	 * max width and max height 100px
+	 * @return
+	 */
+	public String getEmbeddedSize1() {
+		return embeddedSize1;
+	}
+
+	/**
+	 * html code, only image or text
+	 * max width and max height 100px
+	 */
+	public void setEmbeddedSize1(String embeddedSize1) {
+		this.embeddedSize1 = embeddedSize1;
+	}
+
+	/**
+	 * html code, only image or text
+	 * max width and max height 240px
+	 */
+	public String getEmbeddedSize2() {
+		return embeddedSize2;
+	}
+
+	/**
+	 * html code, only image or text
+	 * max width and max height 240px
+	 */
+	public void setEmbeddedSize2(String embeddedSize2) {
+		this.embeddedSize2 = embeddedSize2;
+	}
+
+	/**
+	 * html code, could be flash
+	 * max width and max height 100%
+	 */
+	public String getEmbeddedSize4() {
+		return embeddedSize4;
+	}
+
+	/**
+	 * html code, could be flash
+	 * max width and max height 100%
+	 */
+	public void setEmbeddedSize4(String embeddedSize4) {
+		this.embeddedSize4 = embeddedSize4;
+	}
+
+
+	/**
+	 * Url to the best (high resolution) available preview image
+	 * @return
+	 */
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	/**
+	 * Url to the best (high resolution) available preview image
+	 * @param imageUrl
+	 */
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 }

@@ -73,18 +73,6 @@ public class ResultItem
 		return description;
 	}
 	
-
-	/**
-	 * html code, could be flash
-	 * max width and max height 500px
-	 * @return
-	 */
-	public String getEmbeddedSize3()
-	{
-		return embeddedSize3;
-	}
-	
-
 	public String getId()
 	{
 		return id;
@@ -243,6 +231,16 @@ public class ResultItem
 
 	/**
 	 * html code, could be flash
+	 * max width and max height 500px
+	 * @return
+	 */
+	public String getEmbeddedSize3()
+	{
+		return embeddedSize3;
+	}
+	
+	/**
+	 * html code, could be flash
 	 * max width and max height 100%
 	 */
 	public String getEmbeddedSize4() {
@@ -312,7 +310,7 @@ public class ResultItem
 			return;
 		}
 		title = title.trim();
-		description = unescape(description);
+		title = unescape(title);
 		if (title.length() > MAX_TITLE_LENGTH)
 		{
 			int cutIndex = title.lastIndexOf(' ', MAX_TITLE_LENGTH);
