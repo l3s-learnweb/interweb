@@ -107,14 +107,7 @@ public class SlideShareConnector
 			sr = response.getEntity(SearchResponse.class);
 		}
 		catch(Exception e) {
-			/*
-			try {
-				System.out.println("response:"+CoreUtils.getClientResponseContent(response));
-			}
-			catch (IOException e1) {
-				e1.printStackTrace();
-			}*/
-			e.printStackTrace();
+			e.printStackTrace();			
 			return queryResult;
 		}
 		queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
