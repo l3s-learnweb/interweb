@@ -70,23 +70,28 @@ public class Upload
 
 	public static void main(String[] args)
 	{
+		
+		AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***",
+        "***REMOVED***");
+		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
+        "***REMOVED***");
+
 		ClientConfig config = new DefaultClientConfig();
 		Client client = Client.create(config);
-		UriBuilder uriBuilder = UriBuilder.fromUri("http://***REMOVED***:8181/InterWebJ/api/users/default/uploads");
+		
+		UriBuilder uriBuilder = UriBuilder.fromUri("***REMOVED***/api/users/default/uploads");
 		MultiPart multiPart = new MultiPart();
 		String title = "the title 1";
 		String description = "the description 2";
 		multiPart = multiPart.bodyPart(new FormDataBodyPart("title", title));
-		multiPart = multiPart.bodyPart(new FormDataBodyPart("description",
-		                                                    description));
-		multiPart = multiPart.bodyPart(new FormDataBodyPart("content_type",
-		                                                    "image"));
-		File f = new File("/home/olex/temp/header.jpg");
+		multiPart = multiPart.bodyPart(new FormDataBodyPart("description", description));
+		multiPart = multiPart.bodyPart(new FormDataBodyPart("content_type", "image"));
+		File f = new File("C:\\Programmieren\\bild.jpg");
 		multiPart = multiPart.bodyPart(new FileDataBodyPart("data",
 		                                                    f,
 		                                                    MediaType.MULTIPART_FORM_DATA_TYPE));
 		multiPart = multiPart.bodyPart(new FormDataBodyPart("data", "the data"));
-		WebResource resource = client.resource(uriBuilder.build());
+		WebResource resource = createWebResource("***REMOVED***/api/users/default/uploads", consumerCredentials, userCredentials);
 		WebResource.Builder builder = resource.type(MediaType.MULTIPART_FORM_DATA);
 		builder = builder.accept(MediaType.TEXT_PLAIN);
 		Environment.logger.info("testing upload to interwebj: "
