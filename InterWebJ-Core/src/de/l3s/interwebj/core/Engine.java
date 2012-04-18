@@ -26,6 +26,7 @@ import de.l3s.interwebj.query.QueryFactory;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.QueryResultCollector;
 import de.l3s.interwebj.query.QueryResultMerger;
+import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.util.ExpirableMap;
 import de.l3s.interwebj.util.ExpirationPolicy;
 
@@ -262,7 +263,7 @@ public class Engine
 	}
 	
 
-	public void upload(byte[] data,
+	public ResultItem upload(byte[] data,
 	                   Principal principal,
 	                   List<String> connectorNames,
 	                   String contentType,
@@ -271,8 +272,7 @@ public class Engine
 	{
 		Environment.logger.info("start uploading ...");
 		for (String connectorName : connectorNames)
-		{
-			
+		{			
 			Environment.logger.info("connectorName: [" + connectorName + "]");
 			ServiceConnector connector = getConnector(connectorName);
 			if (connector != null && connector.supportContentType(contentType)
@@ -283,11 +283,14 @@ public class Engine
 				                        + connectorName);
 				AuthCredentials userAuthCredentials = getUserAuthCredentials(connector,
 				                                                             principal);
-				connector.put(data, contentType, params, userAuthCredentials);
+				ResultItem result = connector.put(data, contentType, params, userAuthCredentials);
 				Environment.logger.info("done");
+				if(null != result)
+					return result;					
 			}
 		}
 		Environment.logger.info("... uploading done");
+		return null;
 	}
 	
 

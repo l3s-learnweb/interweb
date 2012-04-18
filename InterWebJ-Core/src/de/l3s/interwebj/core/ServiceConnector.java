@@ -64,7 +64,7 @@ public interface ServiceConnector
 	public abstract boolean isUserRegistrationRequired();
 	
 
-	public abstract void put(byte[] data,
+	public abstract ResultItem put(byte[] data,
 	                         String contentType,
 	                         Parameters params,
 	                         AuthCredentials authCredentials)
