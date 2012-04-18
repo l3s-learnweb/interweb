@@ -213,7 +213,57 @@ public class YouTubeConnector
 		return authCredentials;
 	}
 	
+	private ResultItem createResultItem(VideoEntry ve,
+            int rank,
+            int totalResultCount)
+	{
+		ResultItem resultItem = new ResultItem(getName());
+		resultItem.setType(Query.CT_VIDEO);
+		resultItem.setId(ve.getId());
+		resultItem.setTitle(ve.getTitle().getPlainText());
+		MediaGroup mg = ve.getMediaGroup();
+		resultItem.setDescription(mg.getDescription().getPlainTextContent());
+		resultItem.setUrl(mg.getPlayer().getUrl());
+		resultItem.setDate(CoreUtils.formatDate(ve.getPublished().getValue()));
+		resultItem.setTags(StringUtils.join(mg.getKeywords().getKeywords(), ','));
+		resultItem.setRank(rank++);
+		resultItem.setTotalResultCount(totalResultCount);
+		resultItem.setViewCount(getViewCount(ve));
+		resultItem.setCommentCount(getCommentCount(ve));
 
+		// load thumbnails
+		Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
+		List<MediaThumbnail> mediaThumbnails = mg.getThumbnails();
+		for (MediaThumbnail mt : mediaThumbnails)
+		{
+			Thumbnail thumbnail = new Thumbnail(mt.getUrl(), mt.getWidth(),  mt.getHeight());
+			thumbnails.add(thumbnail);
+			
+			if(thumbnail.getUrl().contains("/default.jpg"))
+				resultItem.setEmbeddedSize1(CoreUtils.createImageCode(thumbnail, 100, 100));
+			else if(thumbnail.getUrl().contains("/hqdefault.jpg"))
+			{
+				resultItem.setEmbeddedSize2(CoreUtils.createImageCode(thumbnail, 240, 240));
+				resultItem.setImageUrl(thumbnail.getUrl());
+			}
+		}
+		resultItem.setThumbnails(thumbnails);
+		
+		Pattern pattern = Pattern.compile("v[/=]([^&]+)"); 
+		Matcher matcher = pattern.matcher(mg.getPlayer().getUrl()); 
+		
+	    if(matcher.find()) 
+	    {
+	        String id = matcher.group(1);
+	        
+			//create embedded flash video player
+			String embeddedCode = "<embed pluginspage=\"http://www.adobe.com/go/getflashplayer\" src=\"http://www.youtube.com/v/"+
+									id +"\" type=\"application/x-shockwave-flash\" width=\"500\" height=\"400\"></embed>";
+			resultItem.setEmbeddedSize3(embeddedCode);				
+	    }
+	    return resultItem;
+	}
+	
 	@Override
 	public QueryResult get(Query query, AuthCredentials authCredentials)
 	    throws InterWebException
@@ -256,52 +306,12 @@ public class YouTubeConnector
 			VideoFeed vf = service.query(ytq, VideoFeed.class);
 			int rank = ytq.getStartIndex();
 			queryResult.setTotalResultCount(vf.getTotalResults());
+			
+			int resultCount = (int) queryResult.getTotalResultCount();
 			for (VideoEntry ve : vf.getEntries())
 			{
-				ResultItem resultItem = new ResultItem(getName());
-				resultItem.setType(Query.CT_VIDEO);
-				resultItem.setId(ve.getId());
-				resultItem.setTitle(ve.getTitle().getPlainText());
-				MediaGroup mg = ve.getMediaGroup();
-				resultItem.setDescription(mg.getDescription().getPlainTextContent());
-				resultItem.setUrl(mg.getPlayer().getUrl());
-				resultItem.setDate(CoreUtils.formatDate(ve.getPublished().getValue()));
-				resultItem.setTags(StringUtils.join(mg.getKeywords().getKeywords(), ','));
-				resultItem.setRank(rank++);
-				resultItem.setTotalResultCount(queryResult.getTotalResultCount());
-				resultItem.setViewCount(getViewCount(ve));
-				resultItem.setCommentCount(getCommentCount(ve));
-	
-				// load thumbnails
-				Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
-				List<MediaThumbnail> mediaThumbnails = mg.getThumbnails();
-				for (MediaThumbnail mt : mediaThumbnails)
-				{
-					Thumbnail thumbnail = new Thumbnail(mt.getUrl(), mt.getWidth(),  mt.getHeight());
-					thumbnails.add(thumbnail);
-					
-					if(thumbnail.getUrl().contains("/default.jpg"))
-						resultItem.setEmbeddedSize1(CoreUtils.createImageCode(thumbnail, 100, 100));
-					else if(thumbnail.getUrl().contains("/hqdefault.jpg"))
-					{
-						resultItem.setEmbeddedSize2(CoreUtils.createImageCode(thumbnail, 240, 240));
-						resultItem.setImageUrl(thumbnail.getUrl());
-					}
-				}
-				resultItem.setThumbnails(thumbnails);
+				ResultItem resultItem = createResultItem(ve, rank++, resultCount);
 				
-				Pattern pattern = Pattern.compile("v[/=]([^&]+)"); 
-				Matcher matcher = pattern.matcher(mg.getPlayer().getUrl()); 
-				
-			    if(matcher.find()) 
-			    {
-			        String id = matcher.group(1);
-			        
-					//create embedded flash video player
-					String embeddedCode = "<embed pluginspage=\"http://www.adobe.com/go/getflashplayer\" src=\"http://www.youtube.com/v/"+
-											id +"\" type=\"application/x-shockwave-flash\" width=\"500\" height=\"400\"></embed>";
-					resultItem.setEmbeddedSize3(embeddedCode);				
-			    }
 				queryResult.addResultItem(resultItem);
 				
 			}
@@ -445,7 +455,7 @@ public class YouTubeConnector
 	
 
 	@Override
-	public void put(byte[] data,
+	public ResultItem put(byte[] data,
 	                String contentType,
 	                Parameters params,
 	                AuthCredentials authCredentials)
@@ -482,11 +492,14 @@ public class YouTubeConnector
 		mg.setPrivate(privacy > 0);
 		MediaSource ms = new MediaByteArraySource(data, "video/*");
 		ve.setMediaSource(ms);
+		ResultItem resultItem = null;
 		try
 		{
 			YouTubeService service = createYouTubeService(authCredentials);
 			service.getRequestFactory().setHeader("Slug", "no_name.mp4");
-			service.insert(new URL(UPLOAD_VIDEO_PATH), ve);
+			ve = service.insert(new URL(UPLOAD_VIDEO_PATH), ve);
+			
+			resultItem = createResultItem(ve, 0, 0);
 		}
 		catch (ServiceException e)
 		{
@@ -508,6 +521,7 @@ public class YouTubeConnector
 			e.printStackTrace();
 			throw new InterWebException(e);
 		}
+		return resultItem;
 	}
 	
 
