@@ -237,13 +237,14 @@ public class SlideShareConnector
 	
 
 	@Override
-	public void put(byte[] data,
+	public ResultItem put(byte[] data,
 	                String contentType,
 	                Parameters params,
 	                AuthCredentials authCredentials)
 	    throws InterWebException
 	{
 		// TODO: to implement
+		return null;
 	}
 	
 
