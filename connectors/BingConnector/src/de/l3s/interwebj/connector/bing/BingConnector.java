@@ -231,13 +231,14 @@ public class BingConnector
 	
 
 	@Override
-	public void put(byte[] data,
+	public ResultItem put(byte[] data,
 	                String contentType,
 	                Parameters params,
 	                AuthCredentials authCredentials)
 	    throws InterWebException
 	{
 		// not supported. do nothing
+		return null;
 	}
 	
 
