@@ -274,7 +274,7 @@ public class FlickrConnector
 	
 
 	@Override
-	public void put(byte[] data,
+	public ResultItem put(byte[] data,
 	                String contentType,
 	                Parameters params,
 	                AuthCredentials authCredentials)
@@ -312,8 +312,11 @@ public class FlickrConnector
 				                                          "0"));
 				metaData.setPublicFlag(privacy == 0);
 				String id = uploader.upload(data, metaData);
-				System.out.println(flickr.getPhotosInterface().getPhoto(id).getSmallUrl());
+				Photo photo = flickr.getPhotosInterface().getPhoto(id);
+				System.out.println(photo.getSmallUrl());
 				System.out.println("data successfully uploaded");
+				
+				return createResultItem(photo, 0, 0);
 			}
 			catch (FlickrException e)
 			{
@@ -331,6 +334,7 @@ public class FlickrConnector
 				throw new InterWebException(e);
 			}
 		}
+		return null;
 	}
 	
 
