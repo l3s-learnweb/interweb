@@ -1,20 +1,35 @@
 package de.l3s.interwebj.rest;
 
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import com.sun.jersey.api.client.*;
-import com.sun.jersey.api.client.config.*;
-import com.sun.jersey.core.header.*;
-import com.sun.jersey.multipart.*;
-import com.sun.jersey.multipart.file.*;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
+import com.sun.jersey.multipart.MultiPart;
+import com.sun.jersey.multipart.file.FileDataBodyPart;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.util.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.Parameters;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.jaxb.ErrorResponse;
+import de.l3s.interwebj.jaxb.SearchResultEntity;
+import de.l3s.interwebj.jaxb.UploadResponse;
+import de.l3s.interwebj.jaxb.XMLResponse;
+import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.util.CoreUtils;
 
 
 @Path("/users/default/uploads")
@@ -23,9 +38,9 @@ public class Upload
 {
 	
 	@POST
-	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public String getQueryResult(@FormDataParam("title") String title,
+	@Produces(MediaType.APPLICATION_XML)
+	public XMLResponse getQueryResult(@FormDataParam("title") String title,
 	                             @FormDataParam("description") String description,
 	                             @FormDataParam("tags") String tags,
 	                             @FormDataParam("is_private") String privacy,
@@ -59,12 +74,17 @@ public class Upload
 		{
 			params.add(Parameters.FILENAME, fileName);
 		}
-		engine.upload(data,
+		
+		ResultItem result = engine.upload(data,
 		              principal,
 		              engine.getConnectorNames(),
 		              contentType,
-		              params);
-		return "hello";
+		              params);	
+		
+		if(null == result)
+			return ErrorResponse.FILE_NOT_ACCEPTED;
+		else
+			return new UploadResponse(new SearchResultEntity(result));
 	}
 	
 
@@ -76,10 +96,6 @@ public class Upload
 		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
         "***REMOVED***");
 
-		ClientConfig config = new DefaultClientConfig();
-		Client client = Client.create(config);
-		
-		UriBuilder uriBuilder = UriBuilder.fromUri("***REMOVED***/api/users/default/uploads");
 		MultiPart multiPart = new MultiPart();
 		String title = "the title 1";
 		String description = "the description 2";
@@ -91,9 +107,11 @@ public class Upload
 		                                                    f,
 		                                                    MediaType.MULTIPART_FORM_DATA_TYPE));
 		multiPart = multiPart.bodyPart(new FormDataBodyPart("data", "the data"));
-		WebResource resource = createWebResource("***REMOVED***/api/users/default/uploads", consumerCredentials, userCredentials);
+		
+		WebResource resource = createWebResource("http://localhost:8080/InterWebJ/api/users/default/uploads", consumerCredentials, userCredentials);
+		//WebResource resource = createWebResource("***REMOVED***/api/users/default/uploads", consumerCredentials, userCredentials);
 		WebResource.Builder builder = resource.type(MediaType.MULTIPART_FORM_DATA);
-		builder = builder.accept(MediaType.TEXT_PLAIN);
+		builder = builder.accept(MediaType.APPLICATION_XML);
 		Environment.logger.info("testing upload to interwebj: "
 		                        + resource.toString());
 		ClientResponse response = builder.post(ClientResponse.class, multiPart);

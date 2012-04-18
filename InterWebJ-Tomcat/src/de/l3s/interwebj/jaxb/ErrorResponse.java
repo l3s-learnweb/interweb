@@ -61,6 +61,8 @@ public class ErrorResponse
 	public static final ErrorResponse SERVICE_UNAVAILABLE = new ErrorResponse(307,
 	                                                                          "Service currently unavailable");
 	
+	public static final ErrorResponse FILE_NOT_ACCEPTED = new ErrorResponse(401, "The services did not accept the file");
+	public static final ErrorResponse NO_SERVICE_FOR_FILE = new ErrorResponse(402, "No service of the user can process the file");
 
 	public ErrorResponse()
 	{
