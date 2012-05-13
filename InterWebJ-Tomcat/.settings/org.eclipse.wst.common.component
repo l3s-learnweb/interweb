@@ -10,6 +10,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/google-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/flickr-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/fedora-src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/vimeo-src"/>
         <property name="context-root" value="InterWebJ"/>
         <property name="java-output-path" value="/InterWebJ/build/classes"/>
     </wb-module>

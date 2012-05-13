@@ -8,6 +8,7 @@
 	<classpathentry kind="src" path="fedora-src"/>
 	<classpathentry kind="src" path="bing-src"/>
 	<classpathentry kind="src" path="core-src"/>
+	<classpathentry kind="src" path="vimeo-src"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jakarta-oro.jar"/>
