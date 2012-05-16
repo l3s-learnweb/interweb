@@ -4,7 +4,9 @@ package de.l3s.interwebj.connector.vimeo;
 import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,18 +18,22 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.oauth.client.OAuthClientFilter;
 import com.sun.jersey.oauth.signature.HMAC_SHA1;
+import com.sun.jersey.oauth.signature.OAuthParameters;
 import com.sun.jersey.oauth.signature.OAuthSecrets;
 
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.config.Configuration;
+import de.l3s.interwebj.connector.slideshare.SearchResponse;
+import de.l3s.interwebj.connector.slideshare.SearchResultEntity;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.util.CoreUtils;
 
 
@@ -90,6 +96,76 @@ public class VimeoConnector extends AbstractServiceConnector
 		
 		if (!query.getContentTypes().contains(Query.CT_VIDEO))
 			return queryResult;
+		
+		 Client client = Client.create();
+		WebResource resource = client.resource("http://www.slideshare.net/api/2/search_slideshows");
+		resource = resource.queryParam("q", query.getQuery());
+		resource = resource.queryParam("lang", query.getLanguage());
+		resource = resource.queryParam("page", Integer.toString(query.getPage()));
+		resource = resource.queryParam("items_per_page", Integer.toString(query.getResultCount()));
+		resource = resource.queryParam("sort", createSortOrder(query.getSortOrder()));
+		String searchScope = createSearchScope(query.getSearchScopes());
+		if (searchScope != null)
+		{
+			resource = resource.queryParam("what", searchScope);
+		}
+		String fileType = createFileType(query.getContentTypes());
+		if (fileType == null)
+		{
+			return queryResult;
+		}
+		resource = resource.queryParam("file_type", fileType);
+		//		resource = resource.queryParam("detailed", "1");
+		ClientResponse response = postQuery(resource);
+
+		SearchResponse sr;
+		try { // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
+			sr = response.getEntity(SearchResponse.class);
+		}
+		catch(Exception e) {
+			e.printStackTrace();			
+			return queryResult;
+		}
+		queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
+		int count = sr.getMeta().getResultOffset() - 1;
+		List<SearchResultEntity> searchResults = sr.getSearchResults();
+		if (searchResults == null)
+		{
+			return queryResult;
+		}
+		for (SearchResultEntity sre : searchResults)
+		{
+			ResultItem resultItem = new ResultItem(getName());
+			resultItem.setType(createType(sre.getSlideshowType()));
+			resultItem.setId(Integer.toString(sre.getId()));
+			resultItem.setTitle(sre.getTitle());
+			resultItem.setDescription(sre.getDescription());
+			resultItem.setUrl(sre.getUrl());			
+			resultItem.setDate(CoreUtils.formatDate(parseDate(sre.getUpdated())));
+			resultItem.setRank(count++);			
+			resultItem.setTotalResultCount(sr.getMeta().getTotalResults());
+			
+			Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
+			thumbnails.add(new Thumbnail(sre.getThumbnailSmallURL(), 120, 90));
+			thumbnails.add(new Thumbnail(sre.getThumbnailURL(), 170, 128));			
+			resultItem.setThumbnails(thumbnails);
+			
+			resultItem.setEmbeddedSize1(CoreUtils.createImageCode(sre.getThumbnailSmallURL(), 120, 90, 100, 100));
+			resultItem.setEmbeddedSize2("<img src=\""+ sre.getThumbnailURL() +"\" width=\"170\" height=\"128\" />");
+			resultItem.setImageUrl(sre.getThumbnailURL());
+			
+			// remove spam from the embedded code
+			Pattern pattern = Pattern.compile("(<object.*</object>)"); 
+			Matcher matcher = pattern.matcher(sre.getEmbed()); 
+			
+		    if(matcher.find()) 
+		    	resultItem.setEmbeddedSize3(matcher.group(0));				
+		    else
+		    	resultItem.setEmbeddedSize3(sre.getEmbed());	
+			
+			queryResult.addResultItem(resultItem);
+		}
+		return queryResult;
 		/*
 		try
 		{		
@@ -520,7 +596,7 @@ public class VimeoConnector extends AbstractServiceConnector
 		// YouTube doesn't provide api for token revokation
 	}
 	
-/*
+
 	private YouTubeService createYouTubeService(AuthCredentials authCredentials)
 	    throws OAuthException
 	{
@@ -533,7 +609,7 @@ public class VimeoConnector extends AbstractServiceConnector
 		return service;
 	}
 	
-
+	/*
 	private int getCommentCount(VideoEntry ve)
 	{
 		if (ve.getComments() == null)
