@@ -55,11 +55,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Rsp }
+     * Create an instance of {@link SearchResponse }
      * 
      */
-    public Rsp createRsp() {
-        return new Rsp();
+    public SearchResponse createRsp() {
+        return new SearchResponse();
     }
 
     /**

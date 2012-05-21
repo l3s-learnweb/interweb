@@ -10,13 +10,19 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.NotImplementedException;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.oauth.client.OAuthClientFilter;
+import com.sun.jersey.oauth.server.OAuthException;
 import com.sun.jersey.oauth.signature.HMAC_SHA1;
 import com.sun.jersey.oauth.signature.OAuthParameters;
 import com.sun.jersey.oauth.signature.OAuthSecrets;
@@ -25,8 +31,7 @@ import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.config.Configuration;
-import de.l3s.interwebj.connector.slideshare.SearchResponse;
-import de.l3s.interwebj.connector.slideshare.SearchResultEntity;
+import de.l3s.interwebj.connector.vimeo.jaxb.SearchResponse;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
@@ -42,6 +47,7 @@ public class VimeoConnector extends AbstractServiceConnector
 	private static final String REQUEST_TOKEN_PATH = "https://vimeo.com/oauth/request_token";
 	private static final String AUTHORIZATION_PATH = "https://vimeo.com/oauth/authorize";
 	private static final String ACCESS_TOKEN_PATH = "https://vimeo.com/oauth/access_token";
+	private static final String VIMEO_BASE = "http://vimeo.com/api/rest/v2?format=xml&method=";
 	/*
 	private static final String GET_VIDEO_FEED_PATH = "http://gdata.youtube.com/feeds/api/videos";
 	private static final String UPLOAD_VIDEO_PATH = "http://uploads.gdata.youtube.com/feeds/api/users/default/uploads";
@@ -82,6 +88,25 @@ public class VimeoConnector extends AbstractServiceConnector
 	}
 	
 // alles hier drunter muss noch überarbeitet werden
+	private ClientResponse postQuery(WebResource resource)
+	{
+		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+		return postQuery(resource, params);
+	}
+	
+	private ClientResponse postQuery(WebResource resource,
+            MultivaluedMap<String, String> params)
+{
+AuthCredentials authCredentials = getAuthCredentials();
+long timestamp = System.currentTimeMillis() / 1000;
+String toHash = authCredentials.getSecret() + Long.toString(timestamp);
+params.add("api_key", authCredentials.getKey());
+params.add("ts", Long.toString(timestamp));
+params.add("hash", DigestUtils.shaHex(toHash));
+ClientResponse response = resource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class,
+                                                                   params);
+return response;
+}
 	
 	@Override
 	public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException
@@ -98,11 +123,14 @@ public class VimeoConnector extends AbstractServiceConnector
 			return queryResult;
 		
 		 Client client = Client.create();
-		WebResource resource = client.resource("http://www.slideshare.net/api/2/search_slideshows");
-		resource = resource.queryParam("q", query.getQuery());
-		resource = resource.queryParam("lang", query.getLanguage());
+		WebResource resource = client.resource(VIMEO_BASE+ "");
+		resource = resource.queryParam("query", query.getQuery());
+		//resource = resource.queryParam("lang", query.getLanguage());
 		resource = resource.queryParam("page", Integer.toString(query.getPage()));
-		resource = resource.queryParam("items_per_page", Integer.toString(query.getResultCount()));
+		resource = resource.queryParam("per_page", Integer.toString(query.getResultCount()));
+		resource = resource.queryParam("full_response", "1");
+		
+		/*
 		resource = resource.queryParam("sort", createSortOrder(query.getSortOrder()));
 		String searchScope = createSearchScope(query.getSearchScopes());
 		if (searchScope != null)
@@ -116,6 +144,8 @@ public class VimeoConnector extends AbstractServiceConnector
 		}
 		resource = resource.queryParam("file_type", fileType);
 		//		resource = resource.queryParam("detailed", "1");
+		 * */
+		 
 		ClientResponse response = postQuery(resource);
 
 		SearchResponse sr;

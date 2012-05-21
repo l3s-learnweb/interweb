@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "videos"
 })
 @XmlRootElement(name = "rsp")
-public class Rsp {
+public class SearchResponse {
 
     @XmlElement(required = true)
     protected Videos videos;
