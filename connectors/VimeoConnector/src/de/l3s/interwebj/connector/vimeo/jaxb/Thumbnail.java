@@ -8,7 +8,6 @@
 
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
-import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -47,9 +46,9 @@ public class Thumbnail {
     @XmlSchemaType(name = "anyURI")
     protected String value;
     @XmlAttribute(name = "height", required = true)
-    protected BigInteger height;
+    protected int height;
     @XmlAttribute(name = "width", required = true)
-    protected BigInteger width;
+    protected int width;
 
     /**
      * Gets the value of the value property.
@@ -80,10 +79,10 @@ public class Thumbnail {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public BigInteger getHeight() {
+    public int getHeight() {
         return height;
     }
 
@@ -92,10 +91,10 @@ public class Thumbnail {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public void setHeight(BigInteger value) {
+    public void setHeight(int value) {
         this.height = value;
     }
 
@@ -104,10 +103,10 @@ public class Thumbnail {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public BigInteger getWidth() {
+    public int getWidth() {
         return width;
     }
 
@@ -116,10 +115,10 @@ public class Thumbnail {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public void setWidth(BigInteger value) {
+    public void setWidth(int value) {
         this.width = value;
     }
 

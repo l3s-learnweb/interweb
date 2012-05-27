@@ -8,7 +8,6 @@
 
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
-import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -54,31 +53,35 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "title",
+    "description",
     "uploadDate",
     "modifiedDate",
     "numberOfLikes",
     "numberOfPlays",
     "numberOfComments",
-    "owner",
     "thumbnails"
 })
 @XmlRootElement(name = "video")
 public class Video {
-
+	
     @XmlElement(required = true)
     protected String title;
-    @XmlElement(name = "upload_date", required = true)
+	@XmlElement(name = "description", required = true)
+    protected String description;
+	@XmlElement(name = "upload_date", required = true)
     protected String uploadDate;
     @XmlElement(name = "modified_date", required = true)
     protected String modifiedDate;
     @XmlElement(name = "number_of_likes", required = true)
-    protected BigInteger numberOfLikes;
+    protected int numberOfLikes;
     @XmlElement(name = "number_of_plays", required = true)
-    protected BigInteger numberOfPlays;
+    protected int numberOfPlays;
     @XmlElement(name = "number_of_comments", required = true)
-    protected BigInteger numberOfComments;
+    protected int numberOfComments;
+    /*
     @XmlElement(required = true)
     protected Owner owner;
+    */
     @XmlElement(required = true)
     protected Thumbnails thumbnails;
     @XmlAttribute(name = "embed_privacy", required = true)
@@ -86,11 +89,11 @@ public class Video {
     @XmlSchemaType(name = "NCName")
     protected String embedPrivacy;
     @XmlAttribute(name = "id", required = true)
-    protected BigInteger id;
+    protected long id;
     @XmlAttribute(name = "is_hd", required = true)
-    protected BigInteger isHd;
+    protected int isHd;
     @XmlAttribute(name = "is_transcoding", required = true)
-    protected BigInteger isTranscoding;
+    protected int isTranscoding;
     @XmlAttribute(name = "privacy", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
@@ -173,10 +176,10 @@ public class Video {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public BigInteger getNumberOfLikes() {
+    public long getNumberOfLikes() {
         return numberOfLikes;
     }
 
@@ -185,10 +188,10 @@ public class Video {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public void setNumberOfLikes(BigInteger value) {
+    public void setNumberOfLikes(int value) {
         this.numberOfLikes = value;
     }
 
@@ -197,10 +200,10 @@ public class Video {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public BigInteger getNumberOfPlays() {
+    public int getNumberOfPlays() {
         return numberOfPlays;
     }
 
@@ -209,10 +212,10 @@ public class Video {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public void setNumberOfPlays(BigInteger value) {
+    public void setNumberOfPlays(int value) {
         this.numberOfPlays = value;
     }
 
@@ -221,10 +224,10 @@ public class Video {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public BigInteger getNumberOfComments() {
+    public int getNumberOfComments() {
         return numberOfComments;
     }
 
@@ -233,10 +236,10 @@ public class Video {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public void setNumberOfComments(BigInteger value) {
+    public void setNumberOfComments(int value) {
         this.numberOfComments = value;
     }
 
@@ -247,7 +250,7 @@ public class Video {
      *     possible object is
      *     {@link Owner }
      *     
-     */
+     * /
     public Owner getOwner() {
         return owner;
     }
@@ -259,10 +262,10 @@ public class Video {
      *     allowed object is
      *     {@link Owner }
      *     
-     */
+     * /
     public void setOwner(Owner value) {
         this.owner = value;
-    }
+    }*/
 
     /**
      * Gets the value of the thumbnails property.
@@ -317,10 +320,10 @@ public class Video {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public BigInteger getId() {
+    public long getId() {
         return id;
     }
 
@@ -329,10 +332,10 @@ public class Video {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public void setId(BigInteger value) {
+    public void setId(long value) {
         this.id = value;
     }
 
@@ -341,10 +344,10 @@ public class Video {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public BigInteger getIsHd() {
+    public long getIsHd() {
         return isHd;
     }
 
@@ -353,10 +356,10 @@ public class Video {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public void setIsHd(BigInteger value) {
+    public void setIsHd(int value) {
         this.isHd = value;
     }
 
@@ -365,10 +368,10 @@ public class Video {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public BigInteger getIsTranscoding() {
+    public long getIsTranscoding() {
         return isTranscoding;
     }
 
@@ -377,10 +380,10 @@ public class Video {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public void setIsTranscoding(BigInteger value) {
+    public void setIsTranscoding(int value) {
         this.isTranscoding = value;
     }
 
@@ -408,4 +411,11 @@ public class Video {
         this.privacy = value;
     }
 
+    public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

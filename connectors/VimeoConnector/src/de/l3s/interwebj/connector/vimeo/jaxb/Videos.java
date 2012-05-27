@@ -8,9 +8,9 @@
 
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -52,13 +52,13 @@ public class Videos {
     @XmlElement(required = true)
     protected List<Video> video;
     @XmlAttribute(name = "on_this_page", required = true)
-    protected BigInteger onThisPage;
+    protected int onThisPage;
     @XmlAttribute(name = "page", required = true)
-    protected BigInteger page;
+    protected int page;
     @XmlAttribute(name = "perpage", required = true)
-    protected BigInteger perpage;
+    protected int perpage;
     @XmlAttribute(name = "total", required = true)
-    protected BigInteger total;
+    protected long total;
 
     /**
      * Gets the value of the video property.
@@ -94,10 +94,10 @@ public class Videos {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public BigInteger getOnThisPage() {
+    public int getOnThisPage() {
         return onThisPage;
     }
 
@@ -106,10 +106,10 @@ public class Videos {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public void setOnThisPage(BigInteger value) {
+    public void setOnThisPage(int value) {
         this.onThisPage = value;
     }
 
@@ -118,10 +118,10 @@ public class Videos {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public BigInteger getPage() {
+    public int getPage() {
         return page;
     }
 
@@ -130,10 +130,10 @@ public class Videos {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public void setPage(BigInteger value) {
+    public void setPage(int value) {
         this.page = value;
     }
 
@@ -142,10 +142,10 @@ public class Videos {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public BigInteger getPerpage() {
+    public int getPerpage() {
         return perpage;
     }
 
@@ -154,10 +154,10 @@ public class Videos {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public void setPerpage(BigInteger value) {
+    public void setPerpage(int value) {
         this.perpage = value;
     }
 
@@ -166,10 +166,10 @@ public class Videos {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public BigInteger getTotal() {
+    public long getTotal() {
         return total;
     }
 
@@ -178,10 +178,10 @@ public class Videos {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link long }
      *     
      */
-    public void setTotal(BigInteger value) {
+    public void setTotal(long value) {
         this.total = value;
     }
 

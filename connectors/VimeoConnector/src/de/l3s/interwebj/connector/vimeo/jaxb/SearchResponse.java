@@ -8,7 +8,6 @@
 
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
-import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -50,8 +49,6 @@ public class SearchResponse {
 
     @XmlElement(required = true)
     protected Videos videos;
-    @XmlAttribute(name = "generated_in", required = true)
-    protected BigDecimal generatedIn;
     @XmlAttribute(name = "stat", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
@@ -81,29 +78,6 @@ public class SearchResponse {
         this.videos = value;
     }
 
-    /**
-     * Gets the value of the generatedIn property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getGeneratedIn() {
-        return generatedIn;
-    }
-
-    /**
-     * Sets the value of the generatedIn property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setGeneratedIn(BigDecimal value) {
-        this.generatedIn = value;
-    }
 
     /**
      * Gets the value of the stat property.

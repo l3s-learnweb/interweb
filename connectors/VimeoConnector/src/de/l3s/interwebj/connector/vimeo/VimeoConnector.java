@@ -4,25 +4,21 @@ package de.l3s.interwebj.connector.vimeo;
 import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.NotImplementedException;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.oauth.client.OAuthClientFilter;
-import com.sun.jersey.oauth.server.OAuthException;
 import com.sun.jersey.oauth.signature.HMAC_SHA1;
 import com.sun.jersey.oauth.signature.OAuthParameters;
 import com.sun.jersey.oauth.signature.OAuthSecrets;
@@ -32,10 +28,12 @@ import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.connector.vimeo.jaxb.SearchResponse;
+import de.l3s.interwebj.connector.vimeo.jaxb.Video;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
+import de.l3s.interwebj.query.Query.SortOrder;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
@@ -87,31 +85,41 @@ public class VimeoConnector extends AbstractServiceConnector
 		throw new NotImplementedException();
 	}
 	
-// alles hier drunter muss noch überarbeitet werden
-	private ClientResponse postQuery(WebResource resource)
+	private static String createSortOrder(SortOrder sortOrder)
 	{
-		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-		return postQuery(resource, params);
+		/*
+		 * Method to sort by: relevant, newest, oldest, most_played, most_commented, or most_liked.
+		 */
+		switch (sortOrder)
+		{
+			case RELEVANCE:
+				return "relevant";
+			case DATE:
+				return "newest";
+			case INTERESTINGNESS:
+				return "most_played";
+			default:
+				return "relevant";
+		}
 	}
 	
-	private ClientResponse postQuery(WebResource resource,
-            MultivaluedMap<String, String> params)
-{
-AuthCredentials authCredentials = getAuthCredentials();
-long timestamp = System.currentTimeMillis() / 1000;
-String toHash = authCredentials.getSecret() + Long.toString(timestamp);
-params.add("api_key", authCredentials.getKey());
-params.add("ts", Long.toString(timestamp));
-params.add("hash", DigestUtils.shaHex(toHash));
-ClientResponse response = resource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class,
-                                                                   params);
-return response;
-}
+	private static Date parseDate(String dateString) throws InterWebException
+	{
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+		try
+		{
+			return dateFormat.parse(dateString);
+		}
+		catch (ParseException e)
+		{
+			e.printStackTrace();
+			throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
+		}
+	}
 	
 	@Override
 	public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException
 	{
-		System.out.println("vimeo get");
 		notNull(query, "query");
 		if (!isRegistered())
 		{
@@ -122,147 +130,86 @@ return response;
 		if (!query.getContentTypes().contains(Query.CT_VIDEO))
 			return queryResult;
 		
-		 Client client = Client.create();
-		WebResource resource = client.resource(VIMEO_BASE+ "");
+		WebResource resource = createWebResource(VIMEO_BASE +"vimeo.videos.search", getAuthCredentials(), null);
+		
 		resource = resource.queryParam("query", query.getQuery());
-		//resource = resource.queryParam("lang", query.getLanguage());
 		resource = resource.queryParam("page", Integer.toString(query.getPage()));
 		resource = resource.queryParam("per_page", Integer.toString(query.getResultCount()));
-		resource = resource.queryParam("full_response", "1");
-		
-		/*
+		resource = resource.queryParam("full_response", "1"); // summary_response		
 		resource = resource.queryParam("sort", createSortOrder(query.getSortOrder()));
-		String searchScope = createSearchScope(query.getSearchScopes());
-		if (searchScope != null)
-		{
-			resource = resource.queryParam("what", searchScope);
-		}
-		String fileType = createFileType(query.getContentTypes());
-		if (fileType == null)
-		{
-			return queryResult;
-		}
-		resource = resource.queryParam("file_type", fileType);
-		//		resource = resource.queryParam("detailed", "1");
-		 * */
-		 
-		ClientResponse response = postQuery(resource);
 
-		SearchResponse sr;
-		try { // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
-			sr = response.getEntity(SearchResponse.class);
-		}
-		catch(Exception e) {
-			e.printStackTrace();			
-			return queryResult;
-		}
-		queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
-		int count = sr.getMeta().getResultOffset() - 1;
-		List<SearchResultEntity> searchResults = sr.getSearchResults();
-		if (searchResults == null)
+		SearchResponse sr = resource.get(SearchResponse.class);	
+		
+		if (sr.getVideos() == null)
 		{
 			return queryResult;
 		}
-		for (SearchResultEntity sre : searchResults)
+		List<Video> videos = sr.getVideos().getVideo();
+		
+		long totalResultCount = sr.getVideos().getTotal();
+		queryResult.setTotalResultCount(totalResultCount);
+		int count = (sr.getVideos().getPage()-1)*sr.getVideos().getPerpage();		
+		
+		for (Video video : videos)
 		{
 			ResultItem resultItem = new ResultItem(getName());
-			resultItem.setType(createType(sre.getSlideshowType()));
-			resultItem.setId(Integer.toString(sre.getId()));
-			resultItem.setTitle(sre.getTitle());
-			resultItem.setDescription(sre.getDescription());
-			resultItem.setUrl(sre.getUrl());			
-			resultItem.setDate(CoreUtils.formatDate(parseDate(sre.getUpdated())));
+			resultItem.setType(Query.CT_VIDEO);
+			resultItem.setId(Long.toString(video.getId()));
+			resultItem.setTitle(video.getTitle());			
+			resultItem.setDescription(video.getDescription());
+			resultItem.setUrl("http://vimeo.com/"+ video.getId());			
+			resultItem.setDate(CoreUtils.formatDate(parseDate(video.getUploadDate())));
 			resultItem.setRank(count++);			
-			resultItem.setTotalResultCount(sr.getMeta().getTotalResults());
+			resultItem.setTotalResultCount(totalResultCount);
+			resultItem.setCommentCount(video.getNumberOfComments());
+			resultItem.setViewCount(video.getNumberOfPlays());
 			
-			Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
-			thumbnails.add(new Thumbnail(sre.getThumbnailSmallURL(), 120, 90));
-			thumbnails.add(new Thumbnail(sre.getThumbnailURL(), 170, 128));			
+			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
+			for(de.l3s.interwebj.connector.vimeo.jaxb.Thumbnail vimeoThumbnail : video.getThumbnails().getThumbnail())
+			{
+				thumbnails.add(new Thumbnail(vimeoThumbnail.getValue(), vimeoThumbnail.getWidth(), vimeoThumbnail.getHeight()));
+				
+				resultItem.setImageUrl(vimeoThumbnail.getValue()); // thumbnails are orderd by size. so the last assigned image is the largest
+				
+				if(vimeoThumbnail.getWidth() <= 100)
+					resultItem.setEmbeddedSize1(CoreUtils.createImageCode(vimeoThumbnail.getValue(), vimeoThumbnail.getWidth(), vimeoThumbnail.getHeight(), 100, 100));
+				else if(vimeoThumbnail.getWidth() <= 240)
+					resultItem.setEmbeddedSize2("<img src=\""+ vimeoThumbnail.getValue() +"\" width=\""+ vimeoThumbnail.getWidth() +"\" height=\""+ vimeoThumbnail.getHeight() +"\" />");
+			}			
 			resultItem.setThumbnails(thumbnails);
 			
-			resultItem.setEmbeddedSize1(CoreUtils.createImageCode(sre.getThumbnailSmallURL(), 120, 90, 100, 100));
-			resultItem.setEmbeddedSize2("<img src=\""+ sre.getThumbnailURL() +"\" width=\"170\" height=\"128\" />");
-			resultItem.setImageUrl(sre.getThumbnailURL());
-			
-			// remove spam from the embedded code
-			Pattern pattern = Pattern.compile("(<object.*</object>)"); 
-			Matcher matcher = pattern.matcher(sre.getEmbed()); 
-			
-		    if(matcher.find()) 
-		    	resultItem.setEmbeddedSize3(matcher.group(0));				
-		    else
-		    	resultItem.setEmbeddedSize3(sre.getEmbed());	
+			resultItem.setEmbeddedSize3("<iframe src=\"http://player.vimeo.com/video/"+ video.getId() +"\" width=\"500\" height=\"282\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
+			resultItem.setEmbeddedSize4("<iframe src=\"http://player.vimeo.com/video/"+ video.getId() +"\" width=\"100%\" height=\"100%\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
 			
 			queryResult.addResultItem(resultItem);
 		}
 		return queryResult;
-		/*
-		try
-		{		
-			
-			YouTubeService service = createYouTubeService(authCredentials);
-			YouTubeQuery ytq = new YouTubeQuery(new URL(GET_VIDEO_FEED_PATH));
-			ytq.setMaxResults(Math.min(50, query.getResultCount()));
-			ytq.setStartIndex(Math.min(50, query.getResultCount()) * (query.getPage()-1)+1);				
-			
-			switch (query.getSortOrder())
-			{
-				case RELEVANCE:
-					ytq.addCustomParameter(new CustomParameter("orderby", "relevance_lang_"+ query.getLanguage())); break;
-				case DATE:
-					ytq.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED); break;
-				case INTERESTINGNESS:
-					ytq.setOrderBy(YouTubeQuery.OrderBy.VIEW_COUNT); break;
-				default:
-					ytq.setOrderBy(YouTubeQuery.OrderBy.RELEVANCE);
-			}
-			
+	}	
+	
+	public static WebResource createWebResource(String apiUrl, AuthCredentials consumerAuthCredentials, AuthCredentials userAuthCredentials) 
+	{
+		Client client = Client.create();
+		WebResource resource = client.resource(apiUrl);
+		OAuthParameters oauthParams = new OAuthParameters();
+		oauthParams.consumerKey(consumerAuthCredentials.getKey());
+		if (userAuthCredentials != null) {
+			oauthParams.token(userAuthCredentials.getKey());
+		}
+		oauthParams.signatureMethod(HMAC_SHA1.NAME);
+		oauthParams.timestamp();
+		oauthParams.nonce();
+		oauthParams.version();
+		OAuthSecrets oauthSecrets = new OAuthSecrets();
+		oauthSecrets.consumerSecret(consumerAuthCredentials.getSecret());
+		if (userAuthCredentials != null && userAuthCredentials.getSecret() != null) {
+			oauthSecrets.tokenSecret(userAuthCredentials.getSecret());
+		}
+		OAuthClientFilter filter = new OAuthClientFilter(client.getProviders(), oauthParams, oauthSecrets);
+		resource.addFilter(filter);
 
-			ytq.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
-			if (query.getSearchScopes().contains(SearchScope.TEXT))
-			{
-				ytq.setFullTextQuery(query.getQuery());
-			}
-			VideoFeed vf = service.query(ytq, VideoFeed.class);
-			int rank = ytq.getStartIndex();
-			queryResult.setTotalResultCount(vf.getTotalResults());
-			
-			int resultCount = (int) queryResult.getTotalResultCount();
-			for (VideoEntry ve : vf.getEntries())
-			{
-				ResultItem resultItem = createResultItem(ve, rank++, resultCount);
-				
-				queryResult.addResultItem(resultItem);
-				
-			}
-			
-		}
-		catch (OAuthException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (MalformedURLException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (ServiceException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}*/
-		
-		return queryResult;
+		// System.out.println("requesting filter url: " + filter.toString());
+		return resource;
 	}
-	
-	
-	
 
 	@Override
 	public Parameters authenticate(String callbackUrl) throws InterWebException
@@ -288,11 +235,10 @@ return response;
 		                                                 oauthParams,
 		                                                 oauthSecrets);
 		resource.addFilter(filter);
-		Environment.logger.info("querying youtube request token: "
-		                        + resource.toString());
+		Environment.logger.info("querying vimeo request token: "+ resource.toString());
 		try
 		{
-			resource = resource.queryParam("scope", "http://gdata.youtube.com");
+			//resource = resource.queryParam("scope", "http://gdata.youtube.com");
 			ClientResponse response = resource.get(ClientResponse.class);
 			String responseContent = CoreUtils.getClientResponseContent(response);
 			Environment.logger.info("Content: " + responseContent);
@@ -354,11 +300,10 @@ return response;
 			                                                 oauthParams,
 			                                                 oauthSecrets);
 			resource.addFilter(filter);
-			Environment.logger.info("getting youtube access token: "
-			                        + resource.toString());
+			Environment.logger.info("getting vimeo access token: "+ resource.toString());
 			ClientResponse response = resource.get(ClientResponse.class);
 			String content = CoreUtils.getClientResponseContent(response);
-			Environment.logger.info("youtube response: " + content);
+			Environment.logger.info("vimeo response: " + content);
 			params.addQueryParameters(content);
 			String key = params.get(Parameters.OAUTH_TOKEN);
 			String secret = params.get(Parameters.OAUTH_TOKEN_SECRET);
@@ -376,6 +321,10 @@ return response;
 		}
 		return authCredentials;
 	}
+	
+	
+	// alles hier drunter muss noch überarbeitet werden
+
 	/*
 	private ResultItem createResultItem(VideoEntry ve,
             int rank,
@@ -438,24 +387,8 @@ return response;
 	    throws InterWebException
 	{
 		/*
-		URI uri = URI.create(url);
-		URI baseUri = URI.create(getBaseUrl());
-		if (!baseUri.getHost().endsWith(uri.getHost()))
-		{
-			throw new InterWebException("URL: [" + url
-			                            + "] doesn't belong to connector ["
-			                            + getName() + "]");
-		}
-		String[] queryParams = uri.getQuery().split("&");
-		String id = null;
-		for (String queryParam : queryParams)
-		{
-			String[] param = queryParam.split("=");
-			if (param.length == 2 && param[0].equals("v"))
-			{
-				id = param[1];
-			}
-		}*/
+}
+		
 		if(url.toLowerCase().contains("youtube.com"))
 		{
 			Pattern pattern = Pattern.compile("v[/=]([^&]+)"); 
@@ -478,10 +411,11 @@ return response;
 				                      + "\"></embed>";
 				return embeddedCode;
 		    }
-		}
+		} */
 		throw new InterWebException("URL: [" + url
                 + "] doesn't belong to connector ["
                 + getName() + "]");
+              
 	}
 	
 
@@ -623,67 +557,8 @@ return response;
 	public void revokeAuthentication()
 	    throws InterWebException
 	{
-		// YouTube doesn't provide api for token revokation
-	}
-	
-
-	private YouTubeService createYouTubeService(AuthCredentials authCredentials)
-	    throws OAuthException
-	{
-		YouTubeService service = new YouTubeService(CLIENT_ID, DEVELOPER_KEY);
-		if (authCredentials != null)
-		{
-			OAuthParameters oauthParams = getOAuthParameters(authCredentials);
-			service.setOAuthCredentials(oauthParams, new OAuthHmacSha1Signer());
-		}
-		return service;
-	}
-	
-	/*
-	private int getCommentCount(VideoEntry ve)
-	{
-		if (ve.getComments() == null)
-		{
-			return -1;
-		}
-		if (ve.getComments().getFeedLink() == null)
-		{
-			return -1;
-		}
-		if (ve.getComments().getFeedLink().getCountHint() == null)
-		{
-			return -1;
-		}
-		return ve.getComments().getFeedLink().getCountHint().intValue();
-	}
-* /	
-
-	private OAuthParameters getOAuthParameters(AuthCredentials userAuthCredentials)
-	{
-		com.sun.jersey.oauth.signature.OAuthParameters jerseyOAuthParams = new com.sun.jersey.oauth.signature.OAuthParameters().nonce().timestamp();
-		OAuthParameters googleOAuthParams = new OAuthParameters();
-		googleOAuthParams.setOAuthNonce(jerseyOAuthParams.getNonce());
-		googleOAuthParams.setOAuthTimestamp(jerseyOAuthParams.getTimestamp());
-		googleOAuthParams.setOAuthConsumerKey(getAuthCredentials().getKey());
-		googleOAuthParams.setOAuthConsumerSecret(getAuthCredentials().getSecret());
-		if (userAuthCredentials != null)
-		{
-			googleOAuthParams.setOAuthToken(userAuthCredentials.getKey());
-			googleOAuthParams.setOAuthTokenSecret(userAuthCredentials.getSecret());
-		}
-		googleOAuthParams.setOAuthSignatureMethod(HMAC_SHA1.NAME);
-		return googleOAuthParams;
+		// keine möglichkeit gefunden bei vimeo
 	}	
-/*
-	private static int getViewCount(VideoEntry ve)
-	{
-		if (ve.getStatistics() == null)
-		{
-			return -1;
-		}
-		return (int) ve.getStatistics().getViewCount();
-	}
-*/
 
 	
 }
