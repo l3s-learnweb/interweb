@@ -12,8 +12,7 @@ public class QueryResultCollector
 
 {
 	
-	private class QueryResultRetriever
-	    implements Callable<QueryResult>
+	private class QueryResultRetriever implements Callable<QueryResult>
 	{
 		
 		private ServiceConnector connector;
@@ -29,8 +28,7 @@ public class QueryResultCollector
 		
 
 		@Override
-		public QueryResult call()
-		    throws Exception
+		public QueryResult call() throws Exception
 		{
 			long startTime = System.currentTimeMillis();
 			Environment.logger.info("[" + connector.getName()
@@ -87,7 +85,7 @@ public class QueryResultCollector
 		{
 			try
 			{
-				queryResult.addQueryResult(task.get(30, TimeUnit.SECONDS));
+				queryResult.addQueryResult(task.get(query.getTimeout(), TimeUnit.SECONDS));
 			}
 			catch (InterruptedException e)
 			{

@@ -56,7 +56,9 @@ public class Search
 	                                  @QueryParam("services") String services,
 	                                  @QueryParam("page") String page,
 	                                  @QueryParam("language") String language,
-	                                  @QueryParam("privacy") String privacy)
+	                                  @QueryParam("privacy") String privacy,
+	                                  @QueryParam("privacy_image_feature") String privacyUseImageFeature,
+	                                  @QueryParam("timeout") String timeout)
 	{
 		QueryFactory queryFactory = new QueryFactory();
 		ErrorResponse errorResponse;
@@ -102,8 +104,14 @@ public class Search
 		if(null != privacy)
 			query.setPrivacy(Float.parseFloat(privacy));
 		
+		if(null != privacyUseImageFeature && (privacyUseImageFeature.equals("1") || privacyUseImageFeature.equalsIgnoreCase("true")))
+			query.setPrivacyUseImageFeatures(true);
+		
 		if(null != language)
 			query.setLanguage(language);
+		
+		if(null != timeout)
+			query.setTimeout(Integer.parseInt(timeout));
 		
 		try
 		{

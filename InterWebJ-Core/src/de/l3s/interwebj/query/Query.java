@@ -77,10 +77,13 @@ public class Query
 	private int page = 1;
 	private String language = "en";
 	private float privacy = -1f;
+	private boolean privacyUseImageFeatures = false;
 	private long updated;
 	private SortOrder sortOrder;
 	private Set<SearchScope> searchScopes;
 	private Map<String, String> params;
+	private int timeout = 30;
+	
 	
 
 	Query(String id,
@@ -273,6 +276,22 @@ public class Query
 
 	public void setPrivacy(float privacy) {
 		this.privacy = privacy;
+	}
+
+	public boolean isPrivacyUseImageFeatures() {
+		return privacyUseImageFeatures;
+	}
+
+	public void setPrivacyUseImageFeatures(boolean privacyUseImageFeatures) {
+		this.privacyUseImageFeatures = privacyUseImageFeatures;
+	}
+
+	public int getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
 	}
 
 

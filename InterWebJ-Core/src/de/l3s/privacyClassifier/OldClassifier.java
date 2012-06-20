@@ -15,6 +15,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 
@@ -24,7 +25,7 @@ public class OldClassifier implements PrivacyClassifier {
 	 * @see de.l3s.privacyClassifier.PrivacyClassifier#classify(de.l3s.interwebj.query.QueryResult)
 	 */
 	@Override
-	public QueryResult classify(QueryResult queryResult)
+	public QueryResult classify(QueryResult queryResult, Query query)
 	{
 		// build xml query
 		StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");

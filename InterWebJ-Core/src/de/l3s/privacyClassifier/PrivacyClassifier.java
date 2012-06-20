@@ -1,5 +1,6 @@
 package de.l3s.privacyClassifier;
 
+import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
 
 public interface PrivacyClassifier {
@@ -9,6 +10,6 @@ public interface PrivacyClassifier {
 	 * @param queryResult
 	 * @return
 	 */
-	public abstract QueryResult classify(QueryResult queryResult);
+	public abstract QueryResult classify(QueryResult queryResult, Query query);
 
 }
