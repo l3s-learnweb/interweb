@@ -215,8 +215,8 @@ public class SearchBean
 		query.setResultCount(resultCount);
 		query.setPage(page);
 		query.setLanguage(language);
-		query.setPrivacy(0.6f); // disable privacy classifier 
-		query.setTimeout(300);
+		query.setPrivacy(-1.0f); // disable privacy classifier 
+		//query.setTimeout(300);
 		query.setPrivacyUseImageFeatures(true);
 		QueryResult queryResult = new QueryResult(query);
 		Engine engine = Environment.getInstance().getEngine();
