@@ -59,9 +59,10 @@ public class NewClassifier implements PrivacyClassifier {
 				// set privacy value for each resultItem that was classified by the service
 				ResultItem item = resultItems.get(id);			
 				item.setPrivacy(privacy.getNormedAsProcent(2));
+				//System.out.println("privacy: "+ privacy.getValue() + " % "+ privacy.getNormedAsProcent(2));
 				
-				if(privacy.getValue() == 0.0)
-					item.setPrivacyConfidence(0);
+				if(privacy.getValue() == 0.0){
+					item.setPrivacyConfidence(0);System.out.println("nullllllllll");}
 				else
 					item.setPrivacyConfidence(1);
 			}

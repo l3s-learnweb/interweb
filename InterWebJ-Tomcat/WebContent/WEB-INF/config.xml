@@ -7,7 +7,7 @@
       <url>jdbc:mysql://localhost:3333/interwebj</url>
       <url>jdbc:mysql://mysql.l3s.uni-hannover.de/interwebj</url>   
       -->
-      <url>jdbc:mysql://mysql.l3s.uni-hannover.de/interwebj</url>               
+      <url>jdbc:mysql://mysql.l3s.uni-hannover.de/interwebj</url>         
       <user-name>interwebj</user-name> 
       <user-password>IckNu5boc=</user-password> 
      </connection>

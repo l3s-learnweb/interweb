@@ -218,7 +218,7 @@ public class SearchBean
 		
 		query.setPrivacy(0.6f); // enable privacy classifier 
 		//query.setTimeout(300);
-		query.setPrivacyUseImageFeatures(true);
+		//query.setPrivacyUseImageFeatures(true);
 		QueryResult queryResult = new QueryResult(query);
 		Engine engine = Environment.getInstance().getEngine();
 		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
