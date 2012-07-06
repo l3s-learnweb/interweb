@@ -10,7 +10,7 @@ import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.db.JDBCDatabase;
 import de.l3s.interwebj.util.LoggerCreator;
-import de.l3s.privacyClassifier.OldClassifier;
+import de.l3s.privacyClassifier.NewClassifier;
 import de.l3s.privacyClassifier.PrivacyClassifier;
 
 
@@ -64,7 +64,7 @@ public class Environment
 
 	public PrivacyClassifier getPrivacyClassifier()
 	{
-		return new OldClassifier();
+		return new NewClassifier();
 	}
 	
 	public AccessControll getAccessControll()
