@@ -35,7 +35,9 @@ public class SearchBean
 	private List<String> selectedConnectorNames;
 	@NotNull
 	private int resultCount;
-	
+	private int timeout = 60;
+	private boolean privacyUseImageFeatures = false;
+	private boolean usePrivacy = false;	
 
 	public SearchBean()
 	{
@@ -216,9 +218,9 @@ public class SearchBean
 		query.setPage(page);
 		query.setLanguage(language);
 		
-		query.setPrivacy(0.6f); // enable privacy classifier 
-		//query.setTimeout(300);
-		//query.setPrivacyUseImageFeatures(true);
+		query.setPrivacy(usePrivacy? 1f : -1f);
+		query.setTimeout(timeout);
+		query.setPrivacyUseImageFeatures(privacyUseImageFeatures);
 		QueryResult queryResult = new QueryResult(query);
 		Engine engine = Environment.getInstance().getEngine();
 		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
@@ -282,8 +284,34 @@ public class SearchBean
 	public void setLanguage(String language) {
 		this.language = language;
 	}
-	
-	
-	
-	
+
+
+	public int getTimeout() {
+		return timeout;
+	}
+
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+
+
+	public boolean isPrivacyUseImageFeatures() {
+		return privacyUseImageFeatures;
+	}
+
+
+	public void setPrivacyUseImageFeatures(boolean privacyUseImageFeatures) {
+		this.privacyUseImageFeatures = privacyUseImageFeatures;
+	}
+
+
+	public boolean isUsePrivacy() {
+		return usePrivacy;
+	}
+
+
+	public void setUsePrivacy(boolean usePrivacy) {
+		this.usePrivacy = usePrivacy;
+	}	
 }
