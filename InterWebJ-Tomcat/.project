@@ -35,9 +35,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>bing-src</name>
+			<name>bing-azure-src</name>
 			<type>2</type>
-			<locationURI>WORKSPACE_LOC/BingConnector/src</locationURI>
+			<locationURI>WORKSPACE_LOC/BingAzureConnector/src</locationURI>
 		</link>
 		<link>
 			<name>core-src</name>

@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project-modules id="moduleCoreId" project-version="1.5.0">
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="InterWebJ">
         <wb-resource deploy-path="/" source-path="/WebContent"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/core-src"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/bing-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/youtube-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/slideshare-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/google-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/flickr-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/fedora-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/vimeo-src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/bing-azure-src"/>
         <property name="context-root" value="InterWebJ"/>
         <property name="java-output-path" value="/InterWebJ/build/classes"/>
     </wb-module>
