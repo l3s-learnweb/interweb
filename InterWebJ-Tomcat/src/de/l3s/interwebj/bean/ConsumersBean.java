@@ -1,28 +1,33 @@
 package de.l3s.interwebj.bean;
 
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
 
-import javax.faces.bean.*;
-import javax.servlet.http.*;
-import javax.ws.rs.core.*;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.StringUtils;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
-import de.l3s.interwebj.util.*;
-import de.l3s.interwebj.webutil.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.core.Consumer;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.db.Database;
+import de.l3s.interwebj.util.ExpirableMap;
+import de.l3s.interwebj.util.RandomGenerator;
+import de.l3s.interwebj.webutil.FacesUtils;
 
 
 @ManagedBean
 @RequestScoped
-public class ConsumersBean
-    implements Serializable
-{
-	
+public class ConsumersBean implements Serializable
+{	
 	private static final long serialVersionUID = -2226768983834482837L;
 	
 	private String name;
@@ -30,8 +35,7 @@ public class ConsumersBean
 	private String description;
 	private AuthCredentials accessToken;
 	private String oauthToken;
-	private String callback;
-	
+	private String callback;	
 
 	public ConsumersBean()
 	{
@@ -40,10 +44,8 @@ public class ConsumersBean
 		callback = request.getParameter("oauth_callback");
 		Engine engine = Environment.getInstance().getEngine();
 		ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-		accessToken = (AuthCredentials) expirableMap.get("access_token:"
-		                                                 + oauthToken);
-	}
-	
+		accessToken = (AuthCredentials) expirableMap.get("access_token:"+ oauthToken);
+	}	
 
 	public String addConsumer()
 	    throws IOException
