@@ -83,6 +83,10 @@ public class ConsumersBean
 		expirableMap.put("consumer_token:" + accessToken.getKey(), consumerKey);
 		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 		principal.setOauthCredentials(accessToken);
+		
+		Database database = Environment.getInstance().getDatabase();
+		database.updatePrincipal(principal);		
+		
 		expirableMap.put("principal:" + accessToken.getKey(), principal);
 		oauthToken = accessToken.getKey();
 		if (!StringUtils.isEmpty(callback))
