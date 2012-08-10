@@ -27,6 +27,7 @@ import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.config.Configuration;
+import de.l3s.interwebj.connector.vimeo.jaxb.LoginResponse;
 import de.l3s.interwebj.connector.vimeo.jaxb.SearchResponse;
 import de.l3s.interwebj.connector.vimeo.jaxb.Video;
 import de.l3s.interwebj.core.AbstractServiceConnector;
@@ -46,15 +47,6 @@ public class VimeoConnector extends AbstractServiceConnector
 	private static final String AUTHORIZATION_PATH = "https://vimeo.com/oauth/authorize";
 	private static final String ACCESS_TOKEN_PATH = "https://vimeo.com/oauth/access_token";
 	private static final String VIMEO_BASE = "http://vimeo.com/api/rest/v2?format=xml&method=";
-	/*
-	private static final String GET_VIDEO_FEED_PATH = "http://gdata.youtube.com/feeds/api/videos";
-	private static final String UPLOAD_VIDEO_PATH = "http://uploads.gdata.youtube.com/feeds/api/users/default/uploads";
-	private static final String USER_PROFILE_PATH = "http://gdata.youtube.com/feeds/api/users/default";
-	private static final String USER_FEED_PREFIX = "http://gdata.youtube.com/feeds/api/users/";	
-	private static final String STANDARD_FEED_PREFIX = "http://gdata.youtube.com/feeds/api/standardfeeds/";
-	private static final String CLIENT_ID = "InterWebJ";
-	private static final String DEVELOPER_KEY = "***REMOVED***";
-	*/
 	
 	public VimeoConnector(Configuration configuration)
 	{
@@ -420,41 +412,13 @@ public class VimeoConnector extends AbstractServiceConnector
 	
 
 	@Override
-	public String getUserId(AuthCredentials authCredentials)
-	    throws InterWebException
+	public String getUserId(AuthCredentials authCredentials) throws InterWebException
 	{
-		return "not implemented";
-		/*
-		try
-		{
-			YouTubeService service = createYouTubeService(authCredentials);
-			UserProfileEntry profileEntry = service.getEntry(new URL(USER_PROFILE_PATH), UserProfileEntry.class);
-			return profileEntry.getUsername();
-		}
-		catch (OAuthException e)
-		{
-			e.printStackTrace();
-			Environment.logger.severe(e.getMessage());
-			throw new InterWebException(e);
-		}
-		catch (MalformedURLException e)
-		{
-			e.printStackTrace();
-			Environment.logger.severe(e.getMessage());
-			throw new InterWebException(e);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			Environment.logger.severe(e.getMessage());
-			throw new InterWebException(e);
-		}
-		catch (ServiceException e)
-		{
-			e.printStackTrace();
-			Environment.logger.severe(e.getMessage());
-			throw new InterWebException(e);
-		}*/
+		WebResource resource = createWebResource(VIMEO_BASE +"vimeo.test.login", getAuthCredentials(), authCredentials);
+		
+		LoginResponse response = resource.get(LoginResponse.class);
+		
+		return Integer.toString(response.getUser().getId());
 	}
 	
 
