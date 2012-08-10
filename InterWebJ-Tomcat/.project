@@ -45,11 +45,6 @@
 			<locationURI>WORKSPACE_LOC/InterWebJ-Core/src</locationURI>
 		</link>
 		<link>
-			<name>fedora-src</name>
-			<type>2</type>
-			<locationURI>WORKSPACE_LOC/FedoraConnector/src</locationURI>
-		</link>
-		<link>
 			<name>flickr-src</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/FlickrConnector/src</locationURI>

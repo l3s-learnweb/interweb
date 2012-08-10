@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="slideshare-src"/>
 	<classpathentry kind="src" path="google-src"/>
 	<classpathentry kind="src" path="flickr-src"/>
-	<classpathentry kind="src" path="fedora-src"/>
 	<classpathentry kind="src" path="core-src"/>
 	<classpathentry kind="src" path="vimeo-src"/>
 	<classpathentry kind="src" path="bing-azure-src"/>

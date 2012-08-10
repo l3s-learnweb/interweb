@@ -7,7 +7,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/slideshare-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/google-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/flickr-src"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/fedora-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/vimeo-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bing-azure-src"/>
         <property name="context-root" value="InterWebJ"/>
