@@ -9,15 +9,12 @@ import com.aetrion.flickr.auth.*;
 import com.aetrion.flickr.util.*;
 
 
-public class ExtraAuthInterface
-    extends AuthInterface
-{
-	
+public class ExtraAuthInterface extends AuthInterface
+{	
 	private String extraApiKey;
 	private String extraSharedSecret;
 	private Transport extraTransportAPI;
-	private String extraParameter;
-	
+	private String extraParameter;	
 
 	public ExtraAuthInterface(String apiKey,
 	                          String sharedSecret,
@@ -29,8 +26,7 @@ public class ExtraAuthInterface
 		extraSharedSecret = sharedSecret;
 		extraTransportAPI = transport;
 		this.extraParameter = extraParameter;
-	}
-	
+	}	
 
 	@Override
 	public URL buildAuthenticationUrl(Permission permission, String frob)
