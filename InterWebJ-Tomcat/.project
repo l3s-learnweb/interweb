@@ -55,6 +55,11 @@
 			<locationURI>WORKSPACE_LOC/GoogleConnector/src</locationURI>
 		</link>
 		<link>
+			<name>ipernity-src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/IpernityConnector/src</locationURI>
+		</link>
+		<link>
 			<name>slideshare-src</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/SlideShareConnector/src</locationURI>
