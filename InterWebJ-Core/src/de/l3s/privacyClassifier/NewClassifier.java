@@ -30,6 +30,9 @@ public class NewClassifier implements PrivacyClassifier {
 		int i=0;
 		for(ResultItem item : queryResult.getResultItems())
 		{
+			if(item.getType() != Query.CT_IMAGE)
+				continue;
+			
 			String imageUrl = null;
 			if(query.isPrivacyUseImageFeatures())
 			{

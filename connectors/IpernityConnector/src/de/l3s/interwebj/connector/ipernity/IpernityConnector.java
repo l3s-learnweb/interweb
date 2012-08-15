@@ -4,11 +4,8 @@ package de.l3s.interwebj.connector.ipernity;
 import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -36,6 +33,7 @@ import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SortOrder;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.util.CoreUtils;
 
 
@@ -93,20 +91,6 @@ public class IpernityConnector extends AbstractServiceConnector
 		}
 	}
 	
-	private static Date parseDate(String dateString) throws InterWebException
-	{
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-		try
-		{
-			return dateFormat.parse(dateString);
-		}
-		catch (ParseException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
-		}
-	}
-	
 	@Override
 	public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException
 	{
@@ -122,6 +106,13 @@ public class IpernityConnector extends AbstractServiceConnector
 				!query.getContentTypes().contains(Query.CT_AUDIO))
 			return queryResult;
 		
+		if(query.getQuery().startsWith("user::"))
+		{
+			//String username = query.getQuery().substring(6).trim();
+			
+			return queryResult;
+		}
+		
 		WebResource resource = createWebResource(IPERNITY_BASE +"doc.search/xml", getAuthCredentials(), null);
 		
 		resource = resource.queryParam("text", query.getQuery());
@@ -130,7 +121,7 @@ public class IpernityConnector extends AbstractServiceConnector
 		resource = resource.queryParam("per_page", Integer.toString(query.getResultCount()));
 		resource = resource.queryParam("sort", createSortOrder(query.getSortOrder()));
 		resource = resource.queryParam("thumbsize", "500");
-		resource = resource.queryParam("extra", "medias,original,count,dates");
+		resource = resource.queryParam("extra", "medias,count"); //,dates,original
 		
 		
 		/*
@@ -139,7 +130,6 @@ public class IpernityConnector extends AbstractServiceConnector
 			String responseContent = CoreUtils.getClientResponseContent(response);
 			System.out.println("search response;:"+ responseContent);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		*/		
@@ -151,42 +141,41 @@ public class IpernityConnector extends AbstractServiceConnector
 		int count = (sr.getDocs().getPage() -1)*sr.getDocs().getPerPage();	
 		
 		List<Doc> docs = sr.getDocs().getDoc();		
-		System.out.println("total result count:"+totalResultCount);
 		for (Doc video : docs)
-		{System.out.println("title:"+video.getTitle());
+		{
 			ResultItem resultItem = new ResultItem(getName());
 			resultItem.setType(Query.CT_IMAGE);
 			resultItem.setId(Integer.toString(video.getDocId()));
 			resultItem.setTitle(video.getTitle());			
 			//resultItem.setDescription(video.getDescription());
-			resultItem.setUrl("http://ipernity.com/doc"+ video.getOwner().getUserId() +"/"+ video.getDocId());			
-			//resultItem.setDate(CoreUtils.formatDate(parseDate(video.getUploadDate())));
+			resultItem.setUrl("http://ipernity.com/doc/"+ video.getOwner().getUserId() +"/"+ video.getDocId());			
+			//resultItem.setDate(CoreUtils.formatDate(new Date(video.getDates().getCreated().getMillisecond())));
 			resultItem.setRank(count++);			
 			resultItem.setTotalResultCount(totalResultCount);
 			resultItem.setCommentCount(video.getCount().getComments());
 			resultItem.setViewCount(video.getCount().getVisits());
 			
+			String url = video.getThumb().getUrl();
+			int height = video.getThumb().getH();
+			int width = video.getThumb().getW();
 			
-			/*
+			resultItem.setImageUrl(url); // todo parse original-tag and use it when available
+			resultItem.setEmbeddedSize3("<img src=\"" + url + "\" width=\""+ width + "\" height=\""+ height + "\" />");
+			resultItem.setEmbeddedSize2(CoreUtils.createImageCode(url.replace(".500.", ".240."), width, height, 240, 240));
+			resultItem.setEmbeddedSize1(CoreUtils.createImageCode(url.replace(".500.", ".100."), width, height, 100, 100));
+			
 			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-			for(de.l3s.interwebj.connector.ipernity.jaxb.Thumbnail vimeoThumbnail : video.getThumbnails().getThumbnail())
-			{
-				thumbnails.add(new Thumbnail(vimeoThumbnail.getValue(), vimeoThumbnail.getWidth(), vimeoThumbnail.getHeight()));
-				
-				resultItem.setImageUrl(vimeoThumbnail.getValue()); // thumbnails are orderd by size. so the last assigned image is the largest
-				
-				if(vimeoThumbnail.getWidth() <= 100)
-					resultItem.setEmbeddedSize1(CoreUtils.createImageCode(vimeoThumbnail.getValue(), vimeoThumbnail.getWidth(), vimeoThumbnail.getHeight(), 100, 100));
-				else if(vimeoThumbnail.getWidth() <= 240)
-					resultItem.setEmbeddedSize2("<img src=\""+ vimeoThumbnail.getValue() +"\" width=\""+ vimeoThumbnail.getWidth() +"\" height=\""+ vimeoThumbnail.getHeight() +"\" />");
-			}			
-			resultItem.setThumbnails(thumbnails);
+			thumbnails.add(new Thumbnail(url.replace(".500.", ".100."), 100, 100));
+			thumbnails.add(new Thumbnail(url.replace(".500.", ".240."), 240, 240));	
+			thumbnails.add(new Thumbnail(url, width, height));				
+			resultItem.setThumbnails(thumbnails);			
 			
-			resultItem.setEmbeddedSize3("<iframe src=\"http://player.vimeo.com/video/"+ video.getId() +"\" width=\"500\" height=\"282\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
-			resultItem.setEmbeddedSize4("<iframe src=\"http://player.vimeo.com/video/"+ video.getId() +"\" width=\"100%\" height=\"100%\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
-			*/
-			queryResult.addResultItem(resultItem);
+			queryResult.addResultItem(resultItem);			
 		}
+		
+		if(query.getPrivacy() != -1f)
+			queryResult = Environment.getInstance().getPrivacyClassifier().classify(queryResult, query);
+	
 		return queryResult;
 	}	
 	
@@ -211,7 +200,6 @@ public class IpernityConnector extends AbstractServiceConnector
 		OAuthClientFilter filter = new OAuthClientFilter(client.getProviders(), oauthParams, oauthSecrets);
 		resource.addFilter(filter);
 
-		// System.out.println("requesting filter url: " + filter.toString());
 		return resource;
 	}
 

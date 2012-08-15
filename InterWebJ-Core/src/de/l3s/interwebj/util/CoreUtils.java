@@ -130,7 +130,7 @@ public class CoreUtils
 		
 		if(width > maxWidth) {
 			double ratio = (double)maxWidth / (double)width;
-			height = (int) (height * ratio);
+			height = (int) Math.ceil(height * ratio);
 			width = maxWidth;
 		}
 		

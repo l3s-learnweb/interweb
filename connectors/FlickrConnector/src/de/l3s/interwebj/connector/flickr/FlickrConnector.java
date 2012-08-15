@@ -505,14 +505,26 @@ public class FlickrConnector
 				PhotosInterface pi = flickr.getPhotosInterface();
 				SearchParameters params = new SearchParameters();
 				params.setExtras(getExtras());
-				if (query.getSearchScopes().contains(SearchScope.TEXT))
+				
+				if(query.getQuery().startsWith("user::"))
 				{
-					params.setText(query.getQuery());
+					String username = query.getQuery().substring(6).trim();					
+					User user = flickr.getPeopleInterface().findByUsername(username);
+					
+					params.setUserId(user.getId());
 				}
-				if (query.getSearchScopes().contains(SearchScope.TAGS))
+				else 
 				{
-					String[] tags = createTags(query.getQuery());
-					params.setTags(tags);
+					if (query.getSearchScopes().contains(SearchScope.TEXT))
+					{
+						params.setText(query.getQuery());
+						
+					}
+					if (query.getSearchScopes().contains(SearchScope.TAGS))
+					{
+						String[] tags = createTags(query.getQuery());
+						params.setTags(tags);
+					}
 				}
 				params.setMedia(getMediaType(query));
 				params.setMinUploadDate(null);
@@ -540,8 +552,13 @@ public class FlickrConnector
 			}
 			catch (FlickrException e)
 			{
-				e.printStackTrace();
-				throw new InterWebException(e);
+				if(e.getErrorMessage().equals("User not found"))
+					System.err.println("Unknown user");
+				else 
+				{
+					e.printStackTrace();					
+					throw new InterWebException(e);
+				}
 			}
 			catch (IOException e)
 			{
