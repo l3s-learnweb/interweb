@@ -165,6 +165,7 @@ public class IpernityConnector extends AbstractServiceConnector
 			resultItem.setEmbeddedSize1(CoreUtils.createImageCode(url.replace(".500.", ".100."), width, height, 100, 100));
 			
 			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
+			thumbnails.add(new Thumbnail(url.replace(".500.", ".75x."), 75, 75));
 			thumbnails.add(new Thumbnail(url.replace(".500.", ".100."), 100, 100));
 			thumbnails.add(new Thumbnail(url.replace(".500.", ".240."), 240, 240));	
 			thumbnails.add(new Thumbnail(url, width, height));				
