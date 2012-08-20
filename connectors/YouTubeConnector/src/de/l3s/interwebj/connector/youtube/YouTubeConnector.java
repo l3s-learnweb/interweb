@@ -6,6 +6,7 @@ import static de.l3s.interwebj.util.Assertions.notNull;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +57,7 @@ import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
+import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.util.CoreUtils;
 
 
@@ -128,6 +130,7 @@ public class YouTubeConnector
 			String authUrl = AUTHORIZATION_PATH + "?oauth_token="
 			                 + params.get(Parameters.OAUTH_TOKEN);
 			Environment.logger.info("requesting url: " + authUrl);
+			
 			params.add(Parameters.AUTHORIZATION_URL, authUrl);
 		}
 		catch (UniformInterfaceException e)
@@ -669,6 +672,14 @@ public class YouTubeConnector
 	{
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
+	}
+
+
+	@Override
+	public UserSocialNetworkResult getUserSocialNetwork(String userid,
+			AuthCredentials authCredentials) throws InterWebException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
