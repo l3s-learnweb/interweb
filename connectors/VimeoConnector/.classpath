@@ -23,5 +23,9 @@
 	<classpathentry kind="lib" path="/InterWebJ-Core/lib/jersey-core-1.5.jar"/>
 	<classpathentry kind="lib" path="/InterWebJ-Core/lib/jersey-json-1.5.jar"/>
 	<classpathentry kind="lib" path="/InterWebJ-Core/lib/jersey-multipart-1.5.jar"/>
+	<classpathentry kind="lib" path="jersey-core-1.5.jar"/>
+	<classpathentry kind="lib" path="jersey-json-1.5.jar"/>
+	<classpathentry kind="lib" path="jersey-client-1.5.jar"/>
+	<classpathentry kind="lib" path="jersey-multipart-1.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
