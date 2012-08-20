@@ -1,25 +1,44 @@
 package de.l3s.interwebj.servlet;
 
 
-import java.io.*;
-import java.net.*;
-import java.nio.charset.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.ws.rs.core.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.StringUtils;
 
-import com.sun.jersey.api.client.*;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
-import de.l3s.interwebj.jaxb.*;
-import de.l3s.interwebj.jaxb.services.*;
-import de.l3s.interwebj.rest.*;
-import de.l3s.interwebj.util.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.Parameters;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.db.Database;
+import de.l3s.interwebj.jaxb.ErrorResponse;
+import de.l3s.interwebj.jaxb.XMLResponse;
+import de.l3s.interwebj.jaxb.services.ServiceResponse;
+import de.l3s.interwebj.rest.Endpoint;
+import de.l3s.interwebj.util.CoreUtils;
 
 
 /**
@@ -40,12 +59,23 @@ public class CallbackServlet
 		super();
 	}
 	
+	private  void print(InputStream xmlstream) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(xmlstream));
+		String line;
+		while ((line = br.readLine()) != null) {
+			System.out.println(line);
+		}
+
+	}
 
 	public void process(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException
 	{
+		
 		Environment.logger.info("query string: [" + request.getQueryString()
 		                        + "]");
+		
+	
 		Parameters parameters = new Parameters();
 		parameters.addMultivaluedParams(request.getParameterMap());
 		refineParameters(parameters);
@@ -54,9 +84,11 @@ public class CallbackServlet
 		String clientType = null;
 		try
 		{
-			principal = getPrincipal(parameters);
 			connector = getConnector(parameters);
 			clientType = getClientType(parameters);
+			principal = getPrincipal(parameters);
+			
+			
 			Engine engine = Environment.getInstance().getEngine();
 			engine.processAuthenticationCallback(principal,
 			                                     connector,

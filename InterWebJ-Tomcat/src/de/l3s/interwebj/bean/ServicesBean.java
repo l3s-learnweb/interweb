@@ -65,6 +65,8 @@ public class ServicesBean
 		String baseApiUrl = FacesUtils.getInterWebJBean().getBaseUrl();
 		ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
 		ServiceConnector connector = connectorWrapper.getConnector();
+		connectorWrapper.setKey(connector.getAuthCredentials().getKey());
+		connectorWrapper.setSecret(connector.getAuthCredentials().getSecret());
 		Parameters parameters = new Parameters();
 		parameters.add(Parameters.IWJ_USER_ID, principal.getName());
 		parameters.add(Parameters.IWJ_CONNECTOR_ID, connector.getName());

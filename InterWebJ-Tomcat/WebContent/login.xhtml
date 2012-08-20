@@ -24,6 +24,10 @@
 				<h:commandButton action="#{principalBean.login(loginBean.username, loginBean.password)}" value="Login" id="login_button" />
 			</h:panelGrid>
 		</h:form>
+		<h:form>
+		
+		<h:commandButton action="#{socialNetworkBean.search()}" value="sn" />
+		</h:form>
 	</ui:define>
 </ui:composition>
 </html>
