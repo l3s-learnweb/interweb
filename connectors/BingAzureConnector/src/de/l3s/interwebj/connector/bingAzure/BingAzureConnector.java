@@ -27,6 +27,7 @@ import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.UserSocialNetworkResult;
 
 
 public class BingAzureConnector extends AbstractServiceConnector
@@ -270,5 +271,12 @@ public class BingAzureConnector extends AbstractServiceConnector
 	@Override
 	public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException {
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public UserSocialNetworkResult getUserSocialNetwork(String userid,
+			AuthCredentials authCredentials) throws InterWebException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
