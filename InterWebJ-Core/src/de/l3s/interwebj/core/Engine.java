@@ -27,6 +27,8 @@ import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.QueryResultCollector;
 import de.l3s.interwebj.query.QueryResultMerger;
 import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.UserSocialNetworkCollector;
+import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.util.ExpirableMap;
 import de.l3s.interwebj.util.ExpirationPolicy;
 
@@ -103,10 +105,15 @@ public class Engine
 	public List<ServiceConnector> getConnectors()
 	{
 		List<ServiceConnector> connectorList = new ArrayList<ServiceConnector>();
+		
 		Set<String> connectorNames = connectors.keySet();
 		for (String connectorName : connectorNames)
 		{
-			connectorList.add(getConnector(connectorName));
+			System.out.println("getconnector:"+connectorName);
+			ServiceConnector connector = getConnector(connectorName);
+			if(connector == null)
+				System.out.println("waaaaaaaa");
+			connectorList.add(connector);
 		}
 		return connectorList;
 	}
@@ -282,7 +289,7 @@ public class Engine
 				Environment.logger.info("uploading to connector: "
 				                        + connectorName);
 				AuthCredentials userAuthCredentials = getUserAuthCredentials(connector,
-				                                                             principal);
+				                                                     principal);
 				ResultItem result = connector.put(data, contentType, params, userAuthCredentials);
 				Environment.logger.info("done");
 				if(null != result)
@@ -291,6 +298,39 @@ public class Engine
 		}
 		Environment.logger.info("... uploading done");
 		return null;
+	}
+	public UserSocialNetworkCollector getSocialNetworkOf(String userid,Principal principal, String connectorName) {
+		UserSocialNetworkCollector col= new UserSocialNetworkCollector(userid, null);
+			Environment.logger.info("connectorName: [" + connectorName + "]");
+			ServiceConnector connector = getConnector(connectorName);
+			if (connector != null && connector.isRegistered()
+			    && isUserAuthenticated(connector, principal))
+			{
+				Environment.logger.info("authorizing: "
+				                        + connectorName);
+				AuthCredentials userAuthCredentials = getUserAuthCredentials(connector,
+				                                                     principal);
+				UserSocialNetworkResult result= null;
+				
+				
+				try {
+					result = connector.getUserSocialNetwork("ramitmalhotra",userAuthCredentials);
+					System.out.println(result.toString()+ "size ="+ result.getResultItems().size());
+				} catch (InterWebException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				col.addSocialNetworkRetriever(connector, userAuthCredentials);
+				Environment.logger.info("done");
+								
+			}
+		
+		Environment.logger.info("... got social network");
+		
+		return col;
+		
+		
 	}
 	
 

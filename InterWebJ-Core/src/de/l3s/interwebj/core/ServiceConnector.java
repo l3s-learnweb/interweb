@@ -25,6 +25,8 @@ public interface ServiceConnector
 	public abstract QueryResult get(Query query, AuthCredentials authCredentials)
 	    throws InterWebException;
 	
+	public abstract UserSocialNetworkResult getUserSocialNetwork(String userid, AuthCredentials authCredentials)
+		    throws InterWebException;
 
 	public abstract AuthCredentials getAuthCredentials();
 	

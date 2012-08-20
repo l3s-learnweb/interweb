@@ -53,6 +53,7 @@ public class PicalertClient
 		AuthCredentials consumerAuthCredentials = new AuthCredentials(consumerKey, consumerSecret);
 		WebResource resource = createWebResource(interwebApiURL + "getprivacy", consumerAuthCredentials);	
 
+	
 		XMLPictureSet response = null;
 		try {				
 			FormDataMultiPart fdmp = new FormDataMultiPart();

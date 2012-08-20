@@ -1,10 +1,15 @@
 package de.l3s.interwebj.core;
 
 
+import java.io.IOException;
 import java.util.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.config.*;
+import de.l3s.interwebj.query.Query;
+import de.l3s.interwebj.query.QueryResult;
+import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.UserSocialNetworkResult;
 
 
 public abstract class AbstractServiceConnector
@@ -16,7 +21,9 @@ public abstract class AbstractServiceConnector
 	private AuthCredentials consumerAuthCredentials;
 	private Set<String> contentTypes;
 	private Configuration configuration;
-	
+	public AbstractServiceConnector() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public AbstractServiceConnector(Configuration configuration)
 	{
@@ -142,3 +149,4 @@ public abstract class AbstractServiceConnector
 		contentTypes = new TreeSet<String>(configuration.getValues("content-types.content-type"));
 	}
 }
+
