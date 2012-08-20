@@ -483,4 +483,12 @@ public class GoogleConnector
 		System.out.println(queryResult.getResultItems().size());
 		System.out.println(System.currentTimeMillis() - time);
 	}
+
+
+	@Override
+	public UserSocialNetworkResult getUserSocialNetwork(String userid,
+			AuthCredentials authCredentials) throws InterWebException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
