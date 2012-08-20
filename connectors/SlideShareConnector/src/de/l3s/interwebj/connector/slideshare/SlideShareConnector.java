@@ -421,4 +421,12 @@ public class SlideShareConnector
 		                                  240);
 		System.out.println(embedded);
 	}
+
+
+	@Override
+	public UserSocialNetworkResult getUserSocialNetwork(String userid,
+			AuthCredentials authCredentials) throws InterWebException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
