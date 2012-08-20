@@ -40,19 +40,9 @@
 			<locationURI>WORKSPACE_LOC/BingAzureConnector/src</locationURI>
 		</link>
 		<link>
-			<name>bing-src</name>
-			<type>2</type>
-			<locationURI>WORKSPACE/BingAzureConnector/src</locationURI>
-		</link>
-		<link>
 			<name>core-src</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/InterWebJ-Core/src</locationURI>
-		</link>
-		<link>
-			<name>facebook-src</name>
-			<type>2</type>
-			<locationURI>WORKSPACE/FacebookConnector/src</locationURI>
 		</link>
 		<link>
 			<name>fb-src</name>

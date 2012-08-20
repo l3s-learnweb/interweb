@@ -9,7 +9,6 @@
 	<classpathentry kind="src" path="flickr-src"/>
 	<classpathentry kind="src" path="core-src"/>
 	<classpathentry kind="src" path="vimeo-src"/>
-	<classpathentry kind="src" path="bing-src"/>
 	<classpathentry kind="src" path="fb-src"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>

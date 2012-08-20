@@ -9,7 +9,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/google-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/flickr-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/vimeo-src"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/bing-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/fb-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bing-azure-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/ipernity-src"/>
