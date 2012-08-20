@@ -14,6 +14,8 @@ import org.xml.sax.*;
 
 import com.aetrion.flickr.*;
 import com.aetrion.flickr.auth.*;
+import com.aetrion.flickr.contacts.Contact;
+import com.aetrion.flickr.contacts.ContactsInterface;
 import com.aetrion.flickr.people.*;
 import com.aetrion.flickr.photos.*;
 import com.aetrion.flickr.tags.*;
@@ -689,5 +691,50 @@ public class FlickrConnector
 		}
 		
 		return users;
+	}
+
+
+	@Override
+	public UserSocialNetworkResult getUserSocialNetwork(String userid,
+			AuthCredentials authCredentials) throws InterWebException {
+		
+		Flickr flickr = createFlickrInstance();
+		
+		UserSocialNetworkResult socialnetwork= new UserSocialNetworkResult(userid);
+		try {
+			if(authCredentials==null)
+			flickr.getContactsInterface().getPublicList(userid);
+			else
+			{
+				RequestContext requestContext = RequestContext.getRequestContext();
+				Auth auth = new Auth();
+				requestContext.setAuth(auth);
+				auth.setToken(authCredentials.getKey());
+				auth.setPermission(Permission.READ);
+				flickr = createFlickrInstance();
+				ArrayList<Contact> contactlist= new ArrayList<Contact>(flickr.getContactsInterface().getList());
+				for (Contact contact : contactlist) {
+					ContactFromSocialNetwork person = new ContactFromSocialNetwork(contact.getUsername(),contact.getId(),1,"Flickr");
+					socialnetwork.getResultItems().put(contact.getId(), person );
+				}
+				
+			}
+			 
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FlickrException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	
+		
+		
+		
+		return socialnetwork;
 	}
 }
