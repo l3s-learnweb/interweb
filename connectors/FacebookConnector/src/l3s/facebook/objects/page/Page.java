@@ -497,6 +497,9 @@ public class Page {
      *     
      */
     public BigInteger getTalkingAboutCount() {
+    	if(talkingAboutCount== null)
+    		return BigInteger.ZERO;
+
         return talkingAboutCount;
     }
 

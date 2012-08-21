@@ -96,6 +96,8 @@ public class Data {
      *     
      */
     public String getName() {
+    	if(name== null)
+    		return "unknown";
         return name;
     }
 

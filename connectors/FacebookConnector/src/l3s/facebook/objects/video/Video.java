@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}from"/>
  *         &lt;element ref="{}tags"/>
  *         &lt;element ref="{}name"/>
+ *          &lt;element ref="{}description"/>
  *         &lt;element ref="{}picture"/>
  *         &lt;element ref="{}embed_html"/>
  *         &lt;element ref="{}icon"/>
@@ -56,6 +57,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "from",
     "tags",
     "name",
+    "description",
     "picture",
     "embedHtml",
     "icon",
@@ -79,6 +81,8 @@ public class Video {
     @XmlElement(required = true)
     protected String name;
     @XmlElement(required = true)
+    protected String description;
+	@XmlElement(required = true)
     @XmlSchemaType(name = "anyURI")
     protected String picture;
     @XmlElement(name = "embed_html", required = true)
@@ -410,6 +414,16 @@ public class Video {
     public void setComments(Comments value) {
         this.comments = value;
     }
+    public String getDescription() {
+    	if(description== null)
+    		return "unknown";
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 
     @Override
 	public String toString() {

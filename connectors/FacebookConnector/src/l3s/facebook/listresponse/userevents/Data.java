@@ -88,6 +88,8 @@ public class Data {
      *     
      */
     public String getName() {
+    	if(name== null)
+    		return "unknown";
         return name;
     }
 
@@ -112,6 +114,8 @@ public class Data {
      *     
      */
     public String getStartTime() {
+    	if(startTime==null)
+    		return "unknown";
         return startTime;
     }
 
@@ -136,6 +140,8 @@ public class Data {
      *     
      */
     public String getEndTime() {
+    	if(endTime==null)
+    		return "unknown";
         return endTime;
     }
 

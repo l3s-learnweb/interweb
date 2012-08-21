@@ -125,6 +125,8 @@ public class Event {
      *     
      */
     public Owner getOwner() {
+    	if(owner==null)
+    		return new Owner();
         return owner;
     }
 

@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 
 import l3s.facebook.listresponse.books.Books;
 import l3s.facebook.listresponse.books.Data;
+import l3s.facebook.listresponse.friends.Friends;
 import l3s.facebook.listresponse.likes.Likes;
 import l3s.facebook.listresponse.movies.Movies;
 import l3s.facebook.listresponse.music.Music;
@@ -43,7 +44,6 @@ import l3s.facebook.objects.page.Page;
 import l3s.facebook.objects.photo.Images;
 import l3s.facebook.objects.photo.Photo;
 import l3s.facebook.objects.photoalbum.Photoalbum;
-import l3s.facebook.objects.status.Comments;
 import l3s.facebook.objects.status.Statusupdate;
 import l3s.facebook.objects.user.Education;
 import l3s.facebook.objects.user.FavoriteAthletes;
@@ -54,6 +54,7 @@ import l3s.facebook.objects.user.Sports;
 import l3s.facebook.objects.user.User;
 import l3s.facebook.objects.user.Work;
 import l3s.facebook.objects.video.Video;
+import l3s.facebook.search.publicposts.Publicpostresults;
 import l3s.facebook.search.response.Results;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -61,7 +62,6 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.util.Version;
@@ -81,6 +81,7 @@ import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.query.ContactFromSocialNetwork;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SortOrder;
 import de.l3s.interwebj.query.QueryResult;
@@ -184,89 +185,161 @@ public class FacebookConnector2 extends AbstractServiceConnector
 			throw new InterWebException("Service is not yet registered");
 		}
 		QueryResult queryResult = new QueryResult(query);
-		
-		Facebook fbapi= new Facebook(authCredentials.getKey());
-		Results resultlist = fbapi.searchPublicPosts(query.getQuery(),query.getResultCount());
-		
-		for(l3s.facebook.search.response.Data data: resultlist.getData())
-		{
-			
-			System.out.println(data.getObjectId()+data.getType());
-			
-			Photo photo= null;
-			Statusupdate status= null;
-			Sharedlink link = null;
-			Number commentcount =  0;
-			int likes=0;
-			ResultItem resultItem = new ResultItem(getName());
-			if(data.getType().equalsIgnoreCase("photo") && data.getObjectId()!=null && query.getContentTypes().contains("image"))
+		Facebook fbapi= null;
+		if(authCredentials==null)
 			{
-				resultItem.setType(Query.CT_IMAGE);
-				photo=fbapi.getEntity(""+data.getObjectId(), Photo.class);
-				if(photo.getComments()!=null)
-					commentcount=photo.getComments().getData().size();
-				if(photo.getLikes()!=null)
-					likes=photo.getLikes().getContent().size();
-			}
-				
-			else if(data.getType().equalsIgnoreCase("status") && data.getObjectId()!=null && query.getContentTypes().contains("text"))
-			{
-				resultItem.setType(Query.CT_TEXT);
-				status=fbapi.getEntity(""+data.getObjectId(), Statusupdate.class);
-				if(status.getComments()!=null)
-					commentcount= status.getComments().getCount();
-				if(status.getLikes()!=null)
-					status.getLikes().getContent().size();
-			}
-			else if(data.getType().equalsIgnoreCase("link") && query.getContentTypes().contains("text"))
-			{
-				resultItem.setType(Query.CT_TEXT);
-			}
-			else
-			{
-				continue;
-			}
-			resultItem.setId(data.getId());
-			resultItem.setTitle(data.getName());			
-			resultItem.setDescription(data.getCaption()+"Message:"+data.getMessage());
-			resultItem.setUrl(data.getLink());			
-			resultItem.setDate(CoreUtils.formatDate(GetLocalDateFromUTCString(data.getUpdatedTime())));
-			resultItem.setRank(1);			
-			resultItem.setTotalResultCount(25);
-			int num=0;
-			
-			resultItem.setCommentCount(num+commentcount.intValue());
-			
-			resultItem.setViewCount(likes);
-			if(photo!=null)
-			{
-				Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-				for(Images image: photo.getImages())
+				fbapi= new Facebook(null);
+				Publicpostresults results = fbapi.searchPublicPostsWithoutAuth(query.getQuery(), query.getResultCount());
+				for(l3s.facebook.search.publicposts.Data data: results.getData())
 				{
+					ResultItem resultItem = new ResultItem(getName());
+					if(data.getType().equalsIgnoreCase("photo") && query.getContentTypes().contains("image"))
+					{
+						resultItem.setType(Query.CT_IMAGE);
+						
+					}
+						
+					else if(data.getType().equalsIgnoreCase("status") && query.getContentTypes().contains("text"))
+					{
+						resultItem.setType(Query.CT_TEXT);
+						
+					}
+					else if(data.getType().equalsIgnoreCase("link") && query.getContentTypes().contains("text"))
+					{
+						resultItem.setType(Query.CT_TEXT);
+					}
+					else
+					{
+						continue;
+					}
+					resultItem.setId(data.getId());
+					resultItem.setTitle(data.getName());			
+					resultItem.setDescription(data.getCaption()+"Message:"+data.getMessage());
+					resultItem.setUrl(data.getLink());			
+					resultItem.setDate(CoreUtils.formatDate(GetLocalDateFromUTCString(data.getCreatedTime())));
+					resultItem.setRank(1);			
+					resultItem.setTotalResultCount(25);
+					int num=0;
 					
-					thumbnails.add(new Thumbnail(image.getSource(), image.getWidth().intValue(), image.getHeight().intValue()));
+					resultItem.setCommentCount(num);
 					
-					resultItem.setImageUrl(image.getSource()); // thumbnails are orderd by size. so the last assigned image is the largest
+					resultItem.setViewCount(0);
 					
-					if(image.getWidth().intValue() <= 100)
-						resultItem.setEmbeddedSize1(CoreUtils.createImageCode(image.getSource(), image.getWidth().intValue(), image.getHeight().intValue(), 100, 100));
+//					if(resultItem.getType()==Query.CT_IMAGE)
+//					{
+//						Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
+//						
+//							
+//							thumbnails.add(new Thumbnail(data.getPicture(), 100, 100));
+//							
+//							resultItem.setImageUrl(data.getPicture()); // thumbnails are orderd by size. so the last assigned image is the largest
+//							
+//							resultItem.setEmbeddedSize1(CoreUtils.createImageCode(data.getPicture(), image.getWidth().intValue(), image.getHeight().intValue(), 100, 100));
+//							
+//							else if(image.getWidth().intValue() <= 240)
+//								resultItem.setEmbeddedSize2("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
+//							
+//							else if(image.getWidth().intValue() <= 500)
+//								resultItem.setEmbeddedSize3("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
+//							
+//							else if(image.getWidth().intValue() > 500)
+//								resultItem.setEmbeddedSize4("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
+//						}	
+//
+//						resultItem.setThumbnails(thumbnails);
+//					}
 					
-					else if(image.getWidth().intValue() <= 240)
-						resultItem.setEmbeddedSize2("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
 					
-					else if(image.getWidth().intValue() <= 500)
-						resultItem.setEmbeddedSize3("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
-					
-					else if(image.getWidth().intValue() > 500)
-						resultItem.setEmbeddedSize4("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
-				}	
-
-				resultItem.setThumbnails(thumbnails);
+					queryResult.addResultItem(resultItem);
+				}
+				
 			}
+		else
+		{
+			fbapi= new Facebook(authCredentials.getKey());
 			
+			Results resultlist = fbapi.searchPublicPosts(query.getQuery(),query.getResultCount());
 			
-			queryResult.addResultItem(resultItem);
-		}
+			for(l3s.facebook.search.response.Data data: resultlist.getData())
+			{
+				
+				System.out.println(data.getObjectId()+data.getType());
+				
+				Photo photo= null;
+				Statusupdate status= null;
+				Sharedlink link = null;
+				Number commentcount =  0;
+				int likes=0;
+				ResultItem resultItem = new ResultItem(getName());
+				if(data.getType().equalsIgnoreCase("photo") && data.getObjectId()!=null && query.getContentTypes().contains("image"))
+				{
+					resultItem.setType(Query.CT_IMAGE);
+					photo=fbapi.getEntity(""+data.getObjectId(), Photo.class);
+					/*if(photo.getComments()!=null)
+						commentcount=photo.getComments().getData().size();
+					if(photo.getLikes()!=null)
+						likes=photo.getLikes().getContent().size();*/
+				}
+					
+				else if(data.getType().equalsIgnoreCase("status") && data.getObjectId()!=null && query.getContentTypes().contains("text"))
+				{
+					resultItem.setType(Query.CT_TEXT);
+					status=fbapi.getEntity(""+data.getObjectId(), Statusupdate.class);
+					/*if(status.getComments()!=null)
+						commentcount= status.getComments().getCount();
+					if(status.getLikes()!=null)
+						status.getLikes().getContent().size();*/
+				}
+				else if(data.getType().equalsIgnoreCase("link") && query.getContentTypes().contains("text"))
+				{
+					resultItem.setType(Query.CT_TEXT);
+				}
+				else
+				{
+					continue;
+				}
+				resultItem.setId(data.getId());
+				resultItem.setTitle(data.getName());			
+				resultItem.setDescription(data.getCaption()+"Message:"+data.getMessage());
+				resultItem.setUrl(data.getLink());			
+				resultItem.setDate(CoreUtils.formatDate(GetLocalDateFromUTCString(data.getUpdatedTime())));
+				resultItem.setRank(1);			
+				resultItem.setTotalResultCount(25);
+				int num=0;
+				
+				resultItem.setCommentCount(num+commentcount.intValue());
+				
+				resultItem.setViewCount(likes);
+				if(photo!=null)
+				{
+					Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
+					for(Images image: photo.getImages())
+					{
+						
+						thumbnails.add(new Thumbnail(image.getSource(), image.getWidth().intValue(), image.getHeight().intValue()));
+						
+						resultItem.setImageUrl(image.getSource()); // thumbnails are orderd by size. so the last assigned image is the largest
+						
+						if(image.getWidth().intValue() <= 100)
+							resultItem.setEmbeddedSize1(CoreUtils.createImageCode(image.getSource(), image.getWidth().intValue(), image.getHeight().intValue(), 100, 100));
+						
+						else if(image.getWidth().intValue() <= 240)
+							resultItem.setEmbeddedSize2("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
+						
+						else if(image.getWidth().intValue() <= 500)
+							resultItem.setEmbeddedSize3("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
+						
+						else if(image.getWidth().intValue() > 500)
+							resultItem.setEmbeddedSize4("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
+					}	
+
+					resultItem.setThumbnails(thumbnails);
+				}
+				
+				
+				queryResult.addResultItem(resultItem);
+			}
+		}	
 		
 		/*	
 		WebResource resource = createWebResource("vimeo.videos.search", getAuthCredentials(), null);
@@ -735,104 +808,136 @@ for(String key:accessparams.keySet())
 	public UserSocialNetworkResult getUserSocialNetwork(String userid,
 			AuthCredentials authCredentials) throws InterWebException {
 		Facebook fb = new Facebook(authCredentials.getKey());
-		/*Friends friends = fb.getFriendsof(userid);
-		UserSocialNetworkResult socialnetwork = new UserSocialNetworkResult(userid);
-		for(Data friend: friends.getData())
-		{
-			ContactFromSocialNetwork contact= new ContactFromSocialNetwork(friend.getName(), friend.getId().toString(), 1, "facebook");
-			socialnetwork.getSocialnetwork().put(friend.getId().toString(), contact);
-		}*/
-		storeFriend(userid, authCredentials);
-		UserSocialNetworkResult socialnetwork=null;
-		return socialnetwork;
-	}	
-	
-	public void storeFriend(String userid, AuthCredentials authCredentials)
-	{
+		Friends friends = fb.getFriendsof(userid);
+		
 		Facebook fbapi= new Facebook(authCredentials.getKey());
-		User friend = fbapi.getEntity(userid, User.class);
+		//User user = fbapi.getEntity(userid, User.class);
+		String path= "C:\\Users\\singh\\workspaceinterweb\\FacebookConnector\\FacebookIndex\\"+getUserId(authCredentials);
+
 		
-//		Photoalbums photoalbums = fbapi.getAlbumsOfUser(userid);
-//		 Books books = fbapi.getBooksUserIsInterestedIn(userid);
-//		Events events = fbapi.getEventsUserIsInvolvedIn(userid);
-//		Groups groups = fbapi.getGroupsUserIsMemberOf(userid);
-//		Movies movies = fbapi.getMoviesUserIsInterestedIn(userid);
-//		Music music = fbapi.getMusicUserIsInterestedIn(userid);
-//		Notes notes = fbapi.getNotesOfUser(userid);
-//		
-//		Videolist videostaggedin = fbapi.getVideosUserIsTaggedIn(userid);
-		Photos photostaggedin = fbapi.getPhotosOfUser(userid);
-//		UserLocationObjects locations = fbapi.getUserLocationObjects(userid);
-//		ProfileFeed profilefeed = fbapi.getUserProfileFeed(userid);
-//		Videolist videosuploaded = fbapi.getVideosUserHasUploaded(userid);
-//		Likes likes = fbapi.getUserLikes(userid);
+
+		Lucene groupsbase= new Lucene(false, new File(path+"\\groupbase"));
+		Lucene notesbase= new Lucene(false, new File(path+"\\notesbase"));
+		Lucene albumbase = new Lucene(false, new File(path+"\\albumsbase"));
+		Lucene locationsbase= new Lucene(false, new File(path+"\\locationsbase"));
+		Lucene videosuploadedbase= new Lucene(false, new File(path+"\\videosuploadedbase"));
+		Lucene likesbase= new Lucene(false, new File(path+"\\likesbase"));
+		Lucene personalitybase= new Lucene(false, new File(path+"\\personalitybase"));
+		Lucene profilefeedbase= new Lucene(false, new File(path+"\\profilefeedbase"));
+		Lucene videostaggedinbase= new Lucene(false, new File(path+"\\videostaggedinbase"));
+		Lucene phototaggedbase= new Lucene(false, new File(path+"\\photostaggedinbase"));
+		Lucene eventsbase= new Lucene(false, new File(path+"\\eventsbase"));
 		
 		
-		Lucene phototaggedbase= new Lucene(false, new File("/FacebookConnector/fbindex/photostaggedin.txt"));
-		Lucene eventsbase= new Lucene(false, new File("/FacebookConnector/fbindex/eventsbase.txt"));
-//		Lucene musicbase= new Lucene(false, new File("/musicbase.txt"));
-//		Lucene groupsbase= new Lucene(false, new File("/groupsbase.txt"));
-//		Lucene moviesbase= new Lucene(false, new File("/moviesbase.txt"));
-//		Lucene notesbase= new Lucene(false, new File("/notesbase.txt"));
-//		Lucene videostaggedinbase= new Lucene(false, new File("/videostaggedinbase.txt"));
-//		Lucene locationsbase= new Lucene(false, new File("/locationsbase.txt"));
-//		Lucene videosuploadedbase= new Lucene(false, new File("/videosuploadedbase.txt"));
-//		Lucene likesbase= new Lucene(false, new File("/likesbase.txt"));
-//		Lucene friendbase= new Lucene(false, new File("/friendbase.txt"));
+		HashMap<String, IndexWriter> writers= new HashMap<String, IndexWriter>();
 		
-		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
-		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
 		IndexWriter noteswriter= null;
 		IndexWriter photoalbumwriter =null;
-		IndexWriter bookswriter = null;
 		IndexWriter eventswriter = null;
 		IndexWriter groupswriter =null;
-		IndexWriter movieswriter =null;
-		IndexWriter musicwriter =null;
 		IndexWriter taggedphotoswriter= null;
 		IndexWriter likeswriter = null;
 		IndexWriter feedwriter =null;
 		IndexWriter videosuploadedwriter =null;
 		IndexWriter videostaggedinwriter =null;
 		IndexWriter userwriter=null;
+		IndexWriter locationwriter=null;
 		try {
-			 taggedphotoswriter = new IndexWriter(phototaggedbase.getIndex(), config);
-			 /*photoalbumwriter = new IndexWriter(friendbase.getIndex(), config);
-			 bookswriter = new IndexWriter(friendbase.getIndex(), config);
-			 eventswriter = new IndexWriter(friendbase.getIndex(), config);
-			 groupswriter = new IndexWriter(friendbase.getIndex(), config);
-			 movieswriter = new IndexWriter(friendbase.getIndex(), config);
-			 musicwriter = new IndexWriter(friendbase.getIndex(), config);
-			 taggedphotoswriter = new IndexWriter(friendbase.getIndex(), config);
-			 likeswriter = new IndexWriter(friendbase.getIndex(), config);
-			 feedwriter = new IndexWriter(friendbase.getIndex(), config);
-			 videosuploadedwriter = new IndexWriter(friendbase.getIndex(), config);
-			 videostaggedinwriter = new IndexWriter(friendbase.getIndex(), config);
-			 userwriter= new IndexWriter(friendbase.getIndex(), config);*/
+			videostaggedinwriter = videostaggedinbase.getWriter();
+			writers.put("videostaggedin", videostaggedinwriter);
+			likeswriter = likesbase.getWriter();
+			writers.put("likeswriter", likeswriter);
+			noteswriter=  notesbase.getWriter();
+			writers.put("noteswriter", noteswriter);
+			videosuploadedwriter= videosuploadedbase.getWriter();
+			writers.put("videosuploadedwriter", videosuploadedwriter);
+			groupswriter= groupsbase.getWriter();
+			writers.put("groupswriter", groupswriter);
+			photoalbumwriter=albumbase.getWriter();
+			writers.put("photoalbumwriter", photoalbumwriter);
+			locationwriter=locationsbase.getWriter();
+			writers.put("locationwriter", locationwriter);
+			userwriter=personalitybase.getWriter();
+			writers.put("userwriter", userwriter);
+			feedwriter=profilefeedbase.getWriter();
+			writers.put("feedwriter", feedwriter);
+			taggedphotoswriter= phototaggedbase.getWriter();
+			writers.put("taggedphotoswriter", taggedphotoswriter);
+			eventswriter= eventsbase.getWriter();
+			writers.put("eventswriter", eventswriter);
+			
+			 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			try {
+				likeswriter.close();
+				noteswriter.close();
+				photoalbumwriter.close();
+				eventswriter.close();
+				groupswriter.close();
+				taggedphotoswriter.close();
+				feedwriter.close();
+				videosuploadedwriter.close();
+				videostaggedinwriter.close();
+				userwriter.close();
+				locationwriter.close();
+			} catch (CorruptIndexException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
-		/*storeNotes(userid,notes,noteswriter, fbapi);
-		storeTaggedPhotosOfUser(userid,photostaggedin,taggedphotoswriter, fbapi);
-		storeBooks(userid,books,bookswriter, fbapi);
-		storeEvents(userid,events,eventswriter, fbapi);
-		storeGroups(userid,groups,groupswriter, fbapi);
-		storeMovies(userid,movies,movieswriter, fbapi);
-		storeMusic(userid,music,musicwriter, fbapi);
-		storeTaggedPhotosOfUser(userid,photostaggedin,taggedphotoswriter, fbapi);
-		storeLikes(userid,likes,likeswriter, fbapi);
-		storePhotoAlbums(userid,photoalbums,photoalbumwriter, fbapi);
-		storeVideosUploaded(userid,videosuploaded,videosuploadedwriter, fbapi);
-		storeVideosTaggedIn(userid,videostaggedin,videostaggedinwriter, fbapi);*/
-		//storeUserProfile(userid,friend,userwriter, fbapi);
-		//storeUserPlaces(userid,locations,userwriter, fbapi);
-		//storeProfileFeed(userid,profilefeed,feedwriter, fbapi);
-		//storeLikes(userid, likes, likeswriter, fbapi);
-		storeTaggedPhotosOfUser(userid,photostaggedin,taggedphotoswriter, fbapi);
+	
+		
+//		new VideosTaggedInThread(userid+ " videos", userid, fbapi, videostaggedinwriter).run();
+//		new NotesThread(userid +" notes",userid, fbapi, noteswriter).run();
+//		new PhotosTaggedInThread(userid+" photos tagged in", userid, fbapi, taggedphotoswriter).run();
+//		new UserEventsThread(userid+" events", userid, fbapi, eventswriter).run();
+//		new UserGroupsThread(userid+" groups", userid, fbapi, groupswriter).run();
+//		new LikesThread(userid+" likes", userid, fbapi, likeswriter).run();
+//		new PhotoAlbumsThread(userid+" albums", userid, fbapi, photoalbumwriter).run();
+//		new VideosUploadedThread(userid+" videos uploaded", userid, fbapi, videosuploadedwriter).run();
+//		//new ProfileFeedThread(userid+" feed", userid, fbapi, feedwriter).run();
+//		new UserLocationsThread(userid+" locations", userid, fbapi, locationwriter).run();
+//		new PersonalityThread(userid+" personality", userid, fbapi, userwriter).run();
+
+		
+		
+		
+		UserSocialNetworkResult socialnetwork = new UserSocialNetworkResult(userid);
+		for(l3s.facebook.listresponse.friends.Data friend: friends.getData())
+		{
+			ContactFromSocialNetwork contact= new ContactFromSocialNetwork(friend.getName(), friend.getId().toString(), 1, "facebook");
+			socialnetwork.getSocialnetwork().put(friend.getId().toString(), contact);
+			
+			new StoreFriendThread(userid+" storage thread", friend.getId().toString(), fbapi, writers).run();
+		}
 		try {
-			IndexReader r= IndexReader.open(phototaggedbase.getIndex());
-			r.document(0);
+			likeswriter.forceMerge(10);
+			noteswriter.forceMerge(10);
+			photoalbumwriter.forceMerge(10);
+			eventswriter.forceMerge(10);
+			groupswriter.forceMerge(10);
+			taggedphotoswriter.forceMerge(10);
+			feedwriter.forceMerge(10);
+			videosuploadedwriter.forceMerge(10);
+			videostaggedinwriter.forceMerge(10);
+			userwriter.forceMerge(10);
+			locationwriter.forceMerge(10);
+			likeswriter.close(true);
+			noteswriter.close(true);
+			photoalbumwriter.close(true);
+			eventswriter.close(true);
+			groupswriter.close(true);
+			taggedphotoswriter.close(true);
+			feedwriter.close(true);
+			videosuploadedwriter.close(true);
+			videostaggedinwriter.close(true);
+			userwriter.close(true);
+			locationwriter.close(true);
+			
 		} catch (CorruptIndexException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -840,9 +945,14 @@ for(String key:accessparams.keySet())
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//Luke luke = new Luke();
-		//System.out.println(luke.getIndexFileNames(index));
 		
+		return socialnetwork;
+	}	
+	
+	public void storeFriend(String userid, AuthCredentials authCredentials, String belongsToSocialNetworkOf)
+	{
+		
+		System.out.println("done"+userid);
 		
 	}
 
@@ -1091,8 +1201,19 @@ for(String key:accessparams.keySet())
 
 	private String convertToCommaSeperatedList(
 			l3s.facebook.objects.video.Comments comments) {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder nameBuilder = new StringBuilder();
+
+		   for( l3s.facebook.objects.video.Data d: comments.getData())
+		   {
+			   nameBuilder.append("'").append(d.getMessage()).append("',");
+		   }
+		       
+		    
+
+		    nameBuilder.deleteCharAt(nameBuilder.length() - 1);
+
+		    return nameBuilder.toString();
+			
 	}
 
 	
@@ -1383,7 +1504,7 @@ for(String key:accessparams.keySet())
 	private void storeGroups(String userid, Groups groups, IndexWriter writer,Facebook fbapi) {
 		Groups page0 = groups;
 		//severe performance degrade
-		while(page0.getPaging().getNext()!=null)
+		while(page0.getPaging()!=null)
 		{
 			page0=fbapi.getNextPage(page0.getPaging().getNext(), Groups.class);
 			groups.getData().addAll(page0.getData());

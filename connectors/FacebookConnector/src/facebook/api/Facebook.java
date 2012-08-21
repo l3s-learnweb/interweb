@@ -19,6 +19,7 @@ import l3s.facebook.listresponse.usergroups.Groups;
 import l3s.facebook.listresponse.userlocations.UserLocationObjects;
 import l3s.facebook.listresponse.userphotoalbums.Photoalbums;
 import l3s.facebook.listresponse.videosuploadedandtagged.Videolist;
+import l3s.facebook.search.publicposts.Publicpostresults;
 import l3s.facebook.search.response.Results;
 
 import com.sun.jersey.api.client.Client;
@@ -267,8 +268,18 @@ public class Facebook implements SocialNetworkInterface {
 
 	@Override
 	public Groups getGroupsUserIsMemberOf(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		WebResource resource = FacebookClient.resource(graphAPI+id+"/groups"+accesstokenString);
+
+		TreeMap<String, String> params = new TreeMap<String, String>();
+
+		for (String key : params.keySet()) {
+			String value = params.get(key);
+			resource = resource.queryParam(key, value);
+		}
+	
+		
+		Groups objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Groups.class);
+		return objectResponse;
 	}
 
 	@Override
@@ -343,7 +354,9 @@ public class Facebook implements SocialNetworkInterface {
 		WebResource resource = FacebookClient.resource(graphAPI+"search?");
 		resource = resource.queryParam("q", encodedquery);
 		resource = resource.queryParam("limit", ""+limit);
+		if(accesstoken!=null)
 		resource = resource.queryParam("access_token", accesstoken);
+		
 		TreeMap<String, String> params = new TreeMap<String, String>();
 
 		for (String key : params.keySet()) {
@@ -353,6 +366,33 @@ public class Facebook implements SocialNetworkInterface {
 	
 		
 		Results objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Results.class);
+		return objectResponse;
+	}
+	
+	public Publicpostresults searchPublicPostsWithoutAuth(String query,Integer limit) {
+		String encodedquery=null;
+		try {
+			encodedquery = new String(query.getBytes(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+			
+		}
+		WebResource resource = FacebookClient.resource(graphAPI+"search?");
+		resource = resource.queryParam("q", encodedquery);
+		resource = resource.queryParam("limit", ""+limit);
+		resource = resource.queryParam("fields", "message,picture,link,name,type,caption");
+		
+		TreeMap<String, String> params = new TreeMap<String, String>();
+
+		for (String key : params.keySet()) {
+			String value = params.get(key);
+			resource = resource.queryParam(key, value);
+		}
+	
+		
+		Publicpostresults objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Publicpostresults.class);
 		return objectResponse;
 	}
 

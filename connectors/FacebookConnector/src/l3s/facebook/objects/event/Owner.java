@@ -58,6 +58,8 @@ public class Owner {
      *     
      */
     public String getName() {
+    	if(name== null)
+    		return "unknown";
         return name;
     }
 

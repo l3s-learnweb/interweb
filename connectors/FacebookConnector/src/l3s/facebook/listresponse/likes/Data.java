@@ -66,6 +66,8 @@ public class Data {
      *     
      */
     public String getName() {
+    	if(name== null)
+    		return "unknown";
         return name;
     }
 
@@ -90,6 +92,8 @@ public class Data {
      *     
      */
     public String getCategory() {
+    	if(category== null)
+    		return "unknown";
         return category;
     }
 
@@ -114,6 +118,8 @@ public class Data {
      *     
      */
     public BigInteger getId() {
+    	if(id== null)
+    		return BigInteger.ZERO;
         return id;
     }
 
@@ -138,6 +144,8 @@ public class Data {
      *     
      */
     public String getCreatedTime() {
+    	if(createdTime== null)
+    		return "unknown";
         return createdTime;
     }
 

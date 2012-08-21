@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -16,23 +18,34 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Version;
 
 public class Lucene {
 	
-	Directory index;
+	private Directory index;
+	public IndexWriter getWriter() {
+		return writer;
+	}
+	public void setWriter(IndexWriter writer) {
+		this.writer = writer;
+	}
+	private IndexWriter writer;
 	
 	public Lucene(Boolean RAM, File path) {
 		
 		
 		try {
 			index = (RAM)? new RAMDirectory(): FSDirectory.open(path);
+			StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
+			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+			writer= new IndexWriter(index, config);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
 	}
-	public void addDocToIndex(Document doc,IndexWriter writer)
+	public void addDocToIndex(Document doc)
 	{
 		try {
 			writer.addDocument(doc);
@@ -45,7 +58,7 @@ public class Lucene {
 		}
 		//clase the index writer after return
 	}
-	public void addDocsToIndex(List<Document> docs,IndexWriter writer)
+	public void addDocsToIndex(List<Document> docs)
 	{
 		for(Document doc: docs)
 			{
