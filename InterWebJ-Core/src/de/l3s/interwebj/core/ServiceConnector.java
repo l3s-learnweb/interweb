@@ -6,6 +6,7 @@ import java.util.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 
 
 public interface ServiceConnector
@@ -104,4 +105,8 @@ public interface ServiceConnector
 	 * @throws InterWebException 
 	 */
 	public abstract Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException;
+
+
+	public abstract de.l3s.interwebj.socialsearch.SocialSearchResult get(
+			SocialSearchQuery query, AuthCredentials authCredentials);
 }

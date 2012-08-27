@@ -29,6 +29,8 @@ import de.l3s.interwebj.query.QueryResultMerger;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.UserSocialNetworkCollector;
 import de.l3s.interwebj.query.UserSocialNetworkResult;
+import de.l3s.interwebj.socialsearch.SocialSearchQuery;
+import de.l3s.interwebj.socialsearch.SocialSearchResultCollector;
 import de.l3s.interwebj.util.ExpirableMap;
 import de.l3s.interwebj.util.ExpirationPolicy;
 
@@ -314,7 +316,7 @@ public class Engine
 				
 				
 				try {
-					result = connector.getUserSocialNetwork("ramitmalhotra",userAuthCredentials);
+					result = connector.getUserSocialNetwork("me",userAuthCredentials);
 					System.out.println(result.toString()+ "size ="+ result.getResultItems().size());
 				} catch (InterWebException e) {
 					// TODO Auto-generated catch block
@@ -332,6 +334,31 @@ public class Engine
 		
 		
 	}
+	
+	public SocialSearchResultCollector getSocialSearchResultsOf(String query,Principal principal) {
+		
+		String connectorName = "Facebook";
+
+		Environment.logger.info(query.toString());
+		
+		
+		
+		SocialSearchResultCollector collector = new SocialSearchResultCollector(query);
+		
+			ServiceConnector connector = getConnector(connectorName);
+			if (connector.isRegistered())
+			{
+				AuthCredentials authCredentials = getUserAuthCredentials(connector,
+				                                                         principal);
+				collector.addSocialSearchResultRetriever(connector, authCredentials);
+			}
+		
+		return collector;
+		
+		
+	}
+	
+	
 	
 
 	private void addConnector(ServiceConnector connector)

@@ -27,5 +27,7 @@
 	<classpathentry kind="lib" path="lib/oauth-signature-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-2.0.0-ALPHA-2.jar"/>
 	<classpathentry kind="lib" path="lib/secondstring-20060615.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-analyzers-3.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-core-3.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
