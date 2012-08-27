@@ -39,6 +39,8 @@ import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.query.UserSocialNetworkResult;
+import de.l3s.interwebj.socialsearch.SocialSearchQuery;
+import de.l3s.interwebj.socialsearch.SocialSearchResult;
 import de.l3s.interwebj.util.CoreUtils;
 
 
@@ -528,6 +530,13 @@ public class VimeoConnector extends AbstractServiceConnector
 	@Override
 	public UserSocialNetworkResult getUserSocialNetwork(String userid,
 			AuthCredentials authCredentials) throws InterWebException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SocialSearchResult get(SocialSearchQuery query,
+			AuthCredentials authCredentials) {
 		// TODO Auto-generated method stub
 		return null;
 	}	
