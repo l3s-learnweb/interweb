@@ -25,6 +25,8 @@ import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.query.*;
 import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.Query.SortOrder;
+import de.l3s.interwebj.socialsearch.SocialSearchQuery;
+import de.l3s.interwebj.socialsearch.SocialSearchResult;
 import de.l3s.interwebj.util.*;
 
 
@@ -426,6 +428,14 @@ public class SlideShareConnector
 	@Override
 	public UserSocialNetworkResult getUserSocialNetwork(String userid,
 			AuthCredentials authCredentials) throws InterWebException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public SocialSearchResult get(SocialSearchQuery query,
+			AuthCredentials authCredentials) {
 		// TODO Auto-generated method stub
 		return null;
 	}
