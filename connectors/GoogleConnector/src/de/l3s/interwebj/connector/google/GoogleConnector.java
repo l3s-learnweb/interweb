@@ -17,6 +17,8 @@ import de.l3s.interwebj.*;
 import de.l3s.interwebj.config.*;
 import de.l3s.interwebj.core.*;
 import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.socialsearch.SocialSearchQuery;
+import de.l3s.interwebj.socialsearch.SocialSearchResult;
 import de.l3s.interwebj.util.*;
 
 
@@ -488,6 +490,14 @@ public class GoogleConnector
 	@Override
 	public UserSocialNetworkResult getUserSocialNetwork(String userid,
 			AuthCredentials authCredentials) throws InterWebException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public SocialSearchResult get(SocialSearchQuery query,
+			AuthCredentials authCredentials) {
 		// TODO Auto-generated method stub
 		return null;
 	}
