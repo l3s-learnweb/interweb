@@ -18,14 +18,14 @@ public class SocialSearchQueryEntity
 {
 	
 	@XmlAttribute(name = "id")
-	protected String id;
-	public String getId() {
-		return id;
+	protected String userid;
+	public String getUserId() {
+		return userid;
 	}
 
 
-	public void setId(String id) {
-		this.id = id;
+	public void setUserId(String id) {
+		this.userid = id;
 	}
 
 
@@ -65,7 +65,7 @@ public class SocialSearchQueryEntity
 	public SocialSearchQueryEntity(SocialSearchQuery q)
 	{
 		this();
-		id="me";
+		userid="me";
 		query=q.getQuery();
 		
 	}

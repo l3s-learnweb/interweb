@@ -1,15 +1,9 @@
 package de.l3s.interwebj.rest;
 
 
-import java.text.ParseException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -21,21 +15,11 @@ import de.l3s.interwebj.core.Engine;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.jaxb.ErrorResponse;
-import de.l3s.interwebj.jaxb.SearchResponse;
-import de.l3s.interwebj.jaxb.SocialNetworkResponse;
+import de.l3s.interwebj.jaxb.SocialSearchResponse;
 import de.l3s.interwebj.jaxb.XMLResponse;
-import de.l3s.interwebj.query.Query;
-import de.l3s.interwebj.query.Query.SearchScope;
-import de.l3s.interwebj.query.Query.SortOrder;
-import de.l3s.interwebj.query.QueryFactory;
-import de.l3s.interwebj.query.QueryResult;
-import de.l3s.interwebj.query.QueryResultCollector;
-import de.l3s.interwebj.query.UserSocialNetworkCollector;
-import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 import de.l3s.interwebj.socialsearch.SocialSearchResult;
 import de.l3s.interwebj.socialsearch.SocialSearchResultCollector;
-import de.l3s.interwebj.util.CoreUtils;
 import de.l3s.interwebj.util.ExpirableMap;
 
 
@@ -76,15 +60,15 @@ public class SocialSearch
 			SocialSearchResult queryResult = collector.retrieve();
 			
 			ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-			expirableMap.put(queryResult.getQuery(), queryResult);
-			SearchResponse searchResponse = new SearchResponse(queryResult);
+			expirableMap.put(queryResult.getQuery().getQuery(), queryResult);
+			SocialSearchResponse searchResponse= new SocialSearchResponse(queryResult);
+			//SearchResponse searchResponse = new SearchResponse(queryResult);
 			String userName = (principal == null)
 			    ? "anonymous" : principal.getName();
-			searchResponse.getQuery().setUser(userName);
+			searchResponse.getQuery().setUserId(userName);
 			Environment.logger.info(searchResponse.getQuery().getResults().size()
 			                        + " results found in "
-			                        + searchResponse.getQuery().getElapsedTime()
-			                        + " ms");
+			                       );
 			return searchResponse;
 		}
 		catch (InterWebException e)
@@ -97,27 +81,4 @@ public class SocialSearch
 	
 
 	
-	private static ErrorResponse checkServices(Query query, String services)
-	{
-		Engine engine = Environment.getInstance().getEngine();
-		if (services == null || services.trim().length() == 0)
-		{
-			List<String> connectorNames = engine.getConnectorNames();
-			for (String connectorName : connectorNames)
-			{
-				query.addConnectorName(connectorName);
-			}
-			return null;
-		}
-		String[] serviceArray = services.split(",");
-		List<String> connectorNames = engine.getConnectorNames();
-		for (String service : serviceArray)
-		{
-			if (connectorNames.contains(service))
-			{
-				query.addConnectorName(service);
-			}
-		}
-		return null;
-	}
 }

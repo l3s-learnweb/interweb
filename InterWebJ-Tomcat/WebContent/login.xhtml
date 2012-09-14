@@ -25,8 +25,12 @@
 			</h:panelGrid>
 		</h:form>
 		<h:form>
-		
-		<h:commandButton action="#{socialNetworkBean.search()}" value="sn" />
+		<h:commandButton action="#{socialNetworkBean.search()}" value="social network store" />
+		</h:form>
+		<h:form>
+		<h:inputText id="query" label="query" required="true"
+					value="#{copyOfSocialNetworkBean.query}" />
+		<h:commandButton action="#{copyOfSocialNetworkBean.search()}" value="social search" />
 		</h:form>
 	</ui:define>
 </ui:composition>

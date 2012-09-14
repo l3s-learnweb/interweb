@@ -16,12 +16,15 @@ import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.query.ContactFromSocialNetwork;
 import de.l3s.interwebj.query.UserSocialNetworkCollector;
 import de.l3s.interwebj.query.UserSocialNetworkResult;
+import de.l3s.interwebj.socialsearch.SocialSearchResult;
+import de.l3s.interwebj.socialsearch.SocialSearchResultCollector;
+import de.l3s.interwebj.socialsearch.SocialSearchResultItem;
 import de.l3s.interwebj.webutil.FacesUtils;
 
 
 @ManagedBean
 @ViewScoped
-public class SocialNetworkBean
+public class CopyOfSocialNetworkBean
     
 {
 	
@@ -30,9 +33,26 @@ public class SocialNetworkBean
 	@NotNull
 	private String userid;
 	
-	UserSocialNetworkResult result;
+	SocialSearchResult result;
+	String query;
 	
-	public UserSocialNetworkResult getResult() {
+	public String getQuery() {
+		return query;
+	}
+
+
+
+
+
+	public void setQuery(String query) {
+		this.query = query;
+	}
+
+
+
+
+
+	public SocialSearchResult getResult() {
 		return result;
 	}
 
@@ -40,7 +60,7 @@ public class SocialNetworkBean
 
 
 
-	public void setResult(UserSocialNetworkResult result) {
+	public void setResult(SocialSearchResult result) {
 		this.result = result;
 	}
 
@@ -64,7 +84,7 @@ public class SocialNetworkBean
 
 
 
-	public SocialNetworkBean()
+	public CopyOfSocialNetworkBean()
 	{
 		init();
 	}
@@ -93,17 +113,27 @@ public class SocialNetworkBean
 		
 		try
 		{
-			UserSocialNetworkCollector collector = engine.getSocialNetworkOf("me", principal, "Facebook");
-			//result = collector.retrieve();
+			SocialSearchResultCollector collector = engine.getSocialSearchResultsOf(query, principal);
+			result = collector.retrieve();
 		}
-		catch (Exception e)
+		catch (InterWebException e)
 		{
 			e.printStackTrace();
 			Environment.logger.severe(e.getMessage());
 			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 		}
+		ArrayList<SocialSearchResultItem> resitems=new ArrayList<SocialSearchResultItem>(result.getResultItems());
 		
-		
+		for(SocialSearchResultItem item: resitems)
+		{
+			System.out.println(item.getUserid());
+			System.out.println(item.getReason());
+			System.out.println(item.getStory());
+			for(String s: item.getEmbedhtmlofphotos())
+			{
+				System.out.println(s);
+			}
+		}
 		return "success";
 	}
 	
