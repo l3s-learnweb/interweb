@@ -34,7 +34,7 @@ public class QueryResultCollector
 			Environment.logger.info("[" + connector.getName()
 			                        + "] Start querying: " + query);
 			QueryResult queryResult = connector.get(query, authCredentials);
-			//queryResult = Environment.getInstance().getPrivacyClassifier().classify(queryResult);
+			
 			long endTime = System.currentTimeMillis();
 			Environment.logger.info("[" + connector.getName() + "] Finished. ["
 			                        + queryResult.getResultItems().size()
