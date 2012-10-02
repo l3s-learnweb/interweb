@@ -18,7 +18,6 @@ import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.query.DumbQueryResultMerger;
-import de.l3s.interwebj.query.PrivacyQueryResultMerger;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.Query.SortOrder;
@@ -29,7 +28,6 @@ import de.l3s.interwebj.query.QueryResultMerger;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.UserSocialNetworkCollector;
 import de.l3s.interwebj.query.UserSocialNetworkResult;
-import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 import de.l3s.interwebj.socialsearch.SocialSearchResultCollector;
 import de.l3s.interwebj.util.ExpirableMap;
 import de.l3s.interwebj.util.ExpirationPolicy;
@@ -111,10 +109,7 @@ public class Engine
 		Set<String> connectorNames = connectors.keySet();
 		for (String connectorName : connectorNames)
 		{
-			System.out.println("getconnector:"+connectorName);
 			ServiceConnector connector = getConnector(connectorName);
-			if(connector == null)
-				System.out.println("waaaaaaaa");
 			connectorList.add(connector);
 		}
 		return connectorList;
@@ -141,7 +136,7 @@ public class Engine
 		query.addParam("user", userName);		
 		
 		QueryResultMerger merger = new DumbQueryResultMerger();
-		
+		/*
 		if(query.getPrivacy() != -1) // increase the number of results, to fetch enough public and private results
 		{
 			if(query.getPrivacy() < 0f) query.setPrivacy(0f);
@@ -156,7 +151,7 @@ public class Engine
 			
 			query.setResultCount(tmp_number_of_results);
 			
-		}
+		}*/
 		
 		QueryResultCollector collector = new QueryResultCollector(query, merger);
 		for (String connectorName : query.getConnectorNames())
@@ -164,8 +159,7 @@ public class Engine
 			ServiceConnector connector = getConnector(connectorName);
 			if (connector.isRegistered())
 			{
-				AuthCredentials authCredentials = getUserAuthCredentials(connector,
-				                                                         principal);
+				AuthCredentials authCredentials = getUserAuthCredentials(connector, principal);
 				collector.addQueryResultRetriever(connector, authCredentials);
 			}
 		}
