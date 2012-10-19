@@ -151,6 +151,8 @@ public class Event {
      *     
      */
     public String getName() {
+    	if(name== null)
+    		return "unknown";
         return name;
     }
 
@@ -305,6 +307,8 @@ public class Event {
      *     
      */
     public String getPrivacy() {
+    	if(privacy==null)
+    		return "unknown";
         return privacy;
     }
 
@@ -329,6 +333,8 @@ public class Event {
      *     
      */
     public String getUpdatedTime() {
+    	if(updatedTime== null)
+    		return "unknown";
         return updatedTime;
     }
 

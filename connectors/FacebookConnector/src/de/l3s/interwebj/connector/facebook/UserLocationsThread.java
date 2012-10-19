@@ -38,6 +38,10 @@ class UserLocationsThread extends Thread {
     				break;
     			page0=fbapi.getNextPage(page0.getPaging().getNext(), UserLocationObjects.class);
     			locations.getData().addAll(page0.getData());
+    			if (locations.getData().size()>300)
+    			{
+					break;
+				}
     		}
     	
         	for(Objectwithlocation location : locations.getData())

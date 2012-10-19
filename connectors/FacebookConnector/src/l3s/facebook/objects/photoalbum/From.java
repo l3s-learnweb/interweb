@@ -62,6 +62,8 @@ public class From {
      *     
      */
     public String getName() {
+    	if(name== null)
+    		return "unknown";
         return name;
     }
 
@@ -86,6 +88,8 @@ public class From {
      *     
      */
     public String getId() {
+    	if(id== null)
+    		return "0";
         return id;
     }
 

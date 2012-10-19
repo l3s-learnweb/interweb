@@ -23,7 +23,7 @@ class UserEventsThread extends Thread {
     {
     	super(threadname);
     	 this.userid= userid;
-    	 this.events= fbapi.getEventsUserIsInvolvedIn(userid);
+    	 this.events=fbapi.getEventsUserIsInvolvedIn(userid);
     	 this.fbapi=fbapi;
     	 this.writer=writer;
     }
@@ -64,7 +64,7 @@ class UserEventsThread extends Thread {
     			Event eventpage = fbapi.getEntity(event.getId().toString(), Event.class);
     			
     			
-    			field= new Field("description", eventpage.getDescription().toString(), Field.Store.YES, Field.Index.ANALYZED);
+    			field= new Field("description", new String(eventpage.getDescription().clone()), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("privacy", eventpage.getPrivacy(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);

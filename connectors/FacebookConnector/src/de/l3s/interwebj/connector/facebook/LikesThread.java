@@ -37,7 +37,7 @@ class LikesThread extends Thread {
     	{
     		Likes page0 = likes;
     		
-    		while(page0.getPaging().getNext()!=null)
+    		while(page0.getPaging()!=null)
     		{
     			if(page0.getPaging().getNext()==null)
     				break;

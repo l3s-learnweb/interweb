@@ -22,7 +22,7 @@ class VideosUploadedThread extends Thread {
     {
     	super(threadname);
     	 this.userid= userid;
-    	 this.videosuploaded= fbapi.getVideosUserIsTaggedIn(userid);
+    	 this.videosuploaded= fbapi.getVideosUserHasUploaded(userid);
     	 this.fbapi=fbapi;
     	 this.writer=writer;
     }

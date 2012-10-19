@@ -586,6 +586,8 @@ public class User {
      *     
      */
     public String getGender() {
+    	if(gender== null)
+    		return "unknown";
         return gender;
     }
 
@@ -770,6 +772,8 @@ public class User {
      *     
      */
     public String getUpdatedTime() {
+    	if(updatedTime== null)
+    		return "unknown";
         return updatedTime;
     }
 

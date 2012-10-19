@@ -51,7 +51,7 @@ class NotesThread extends Thread {
     			Document doc= new Document();
     			Field field= new Field("id", n.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
-    			
+ 
     			field= new Field("message", n.getMessage(), Field.Store.NO, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("title", n.getSubject(), Field.Store.YES, Field.Index.ANALYZED);

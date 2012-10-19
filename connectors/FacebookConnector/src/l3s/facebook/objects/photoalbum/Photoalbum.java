@@ -9,6 +9,7 @@
 package l3s.facebook.objects.photoalbum;
 
 import java.math.BigInteger;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -120,6 +121,8 @@ public class Photoalbum {
      *     
      */
     public String getId() {
+    	if(id== null)
+    		return "0";
         return id;
     }
 
@@ -144,6 +147,8 @@ public class Photoalbum {
      *     
      */
     public From getFrom() {
+    	if(from== null)
+    		return new From();
         return from;
     }
 
@@ -168,6 +173,8 @@ public class Photoalbum {
      *     
      */
     public String getName() {
+    	if(name== null)
+    		return "unknown";
         return name;
     }
 
@@ -180,6 +187,7 @@ public class Photoalbum {
      *     
      */
     public void setName(String value) {
+    	
         this.name = value;
     }
 
@@ -192,6 +200,8 @@ public class Photoalbum {
      *     
      */
     public String getDescription() {
+    	if(description== null)
+    		return "unknown";
         return description;
     }
 
@@ -216,6 +226,8 @@ public class Photoalbum {
      *     
      */
     public String getLocation() {
+    	if(location== null)
+    		return "unknown";
         return location;
     }
 
@@ -240,6 +252,8 @@ public class Photoalbum {
      *     
      */
     public String getLink() {
+    	if(link== null)
+    		return "unknown";
         return link;
     }
 
@@ -264,6 +278,8 @@ public class Photoalbum {
      *     
      */
     public BigInteger getCoverPhoto() {
+    	if(coverPhoto== null)
+    		return BigInteger.ZERO;
         return coverPhoto;
     }
 
@@ -288,6 +304,8 @@ public class Photoalbum {
      *     
      */
     public String getPrivacy() {
+    	if(privacy== null)
+    		return "unknown";
         return privacy;
     }
 
@@ -312,6 +330,9 @@ public class Photoalbum {
      *     
      */
     public BigInteger getCount() {
+    	if(count== null)
+    		return BigInteger.ZERO;
+
         return count;
     }
 
@@ -336,6 +357,8 @@ public class Photoalbum {
      *     
      */
     public String getType() {
+    	if(type== null)
+    		return "unknown";
         return type;
     }
 
@@ -360,6 +383,8 @@ public class Photoalbum {
      *     
      */
     public String getCreatedTime() {
+    	if(createdTime== null)
+    		return "unknown";
         return createdTime;
     }
 
@@ -384,6 +409,8 @@ public class Photoalbum {
      *     
      */
     public String getUpdatedTime() {
+    	if(updatedTime== null)
+    		return "unknown";
         return updatedTime;
     }
 
@@ -424,6 +451,8 @@ public class Photoalbum {
      *     
      */
     public Likes getLikes() {
+    	if(likes== null)
+    		return new Likes();
         return likes;
     }
 
@@ -448,6 +477,8 @@ public class Photoalbum {
      *     
      */
     public Comments getComments() {
+    	if(comments==null)
+    		return new Comments();
         return comments;
     }
 

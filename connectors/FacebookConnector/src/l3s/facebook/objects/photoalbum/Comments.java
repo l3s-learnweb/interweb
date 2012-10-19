@@ -57,6 +57,8 @@ public class Comments {
      *     
      */
     public Data getData() {
+    	if(data==null)
+    		return new Data();
         return data;
     }
 

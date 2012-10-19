@@ -21,7 +21,7 @@ class PhotoAlbumsThread extends Thread {
     {
     	super(threadname);
     	 this.userid= userid;
-    	 this.photoalbums= fbapi.getAlbumsOfUser(userid);
+    	 this.photoalbums=fbapi.getAlbumsOfUser(userid);
     	 this.fbapi=fbapi;
     	 this.writer=writer;
     }
@@ -65,8 +65,8 @@ class PhotoAlbumsThread extends Thread {
     			doc.add(field);
     			field= new Field("from name", album.getFrom().getName(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
-    			field= new Field("number of photos", album.getCount().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-    			doc.add(field);if(album.getLikes()!=null)
+    			
+    			if(album.getLikes()!=null)
     			{
     				field= new Field("likes", ""+album.getLikes().getData().size(), Field.Store.YES, Field.Index.NOT_ANALYZED);
         			doc.add(field);

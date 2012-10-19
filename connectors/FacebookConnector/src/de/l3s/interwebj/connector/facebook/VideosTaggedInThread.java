@@ -18,11 +18,11 @@ class VideosTaggedInThread extends Thread {
     public VideosTaggedInThread(String str) {
 	super(str);
     }
-    public VideosTaggedInThread(String threadname, String userid, Facebook fbapi, IndexWriter writer)
+    public VideosTaggedInThread(String threadname, String userid, Facebook fbapi, IndexWriter writer )
     {
     	super(threadname);
     	 this.userid= userid;
-    	 this.videostaggedin= fbapi.getVideosUserHasUploaded(userid);
+    	 this.videostaggedin= fbapi.getVideosUserIsTaggedIn(userid);
     	 this.fbapi=fbapi;
     	 this.writer=writer;
     }
