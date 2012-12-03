@@ -13,6 +13,8 @@ import de.l3s.l3sws.jaxb.picalert.XMLPictureSet;
 
 public class NewClassifier implements PrivacyClassifier {
 
+//	private final static String SERVICE_URL = "http://picalertservice.l3s.uni-hannover.de/sweb/api/";
+
 	private final static String SERVICE_URL = "http://godzilla.kbs.uni-hannover.de:9111/l3sws/api/";
 	private final static String SERVICE_KEY = "***REMOVED***";
 	private final static String SERVICE_SECRET = "***REMOVED***";

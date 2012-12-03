@@ -3,10 +3,13 @@ package de.l3s.interwebj;
 
 import static de.l3s.interwebj.util.Assertions.*;
 
+import java.io.Serializable;
 
-public class AuthCredentials
+
+public class AuthCredentials implements Serializable
 {
-	
+	private static final long serialVersionUID = 1411969017572131214L;
+
 	private String key;
 	private String secret;
 	
