@@ -47,7 +47,7 @@
 		<link>
 			<name>fb-src</name>
 			<type>2</type>
-			<location>C:/Users/singh/workspaceinterweb/FacebookConnector/src</location>
+			<locationURI>WORKSPACE_LOC/FacebookConnector/src</locationURI>
 		</link>
 		<link>
 			<name>flickr-src</name>

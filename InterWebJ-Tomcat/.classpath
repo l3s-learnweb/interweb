@@ -21,10 +21,9 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/gdata-youtube-2.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/guava-r08.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/activation.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/bing/bing-azure-connector.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/lucene-analyzers-3.6.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/lucene-core-3.6.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/google/lib/gson-1.7.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/lucene-analyzers-3.6.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/lucene-core-3.6.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.web"/>
