@@ -6,7 +6,6 @@ import static de.l3s.interwebj.util.Assertions.notNull;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -288,7 +287,8 @@ public class YouTubeConnector
 			YouTubeService service = createYouTubeService(authCredentials);
 			YouTubeQuery ytq = new YouTubeQuery(new URL(GET_VIDEO_FEED_PATH));
 			ytq.setMaxResults(Math.min(50, query.getResultCount()));
-			ytq.setStartIndex(Math.min(50, query.getResultCount()) * (query.getPage()-1)+1);				
+			ytq.setStartIndex(Math.min(50, query.getResultCount()) * (query.getPage()-1)+1);		
+			ytq.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
 			
 			switch (query.getSortOrder())
 			{
@@ -302,12 +302,17 @@ public class YouTubeConnector
 					ytq.setOrderBy(YouTubeQuery.OrderBy.RELEVANCE);
 			}
 			
-
-			ytq.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
-			if (query.getSearchScopes().contains(SearchScope.TEXT))
+			if(query.getQuery().startsWith("user::"))
+			{
+				String username = query.getQuery().substring(6).trim();					
+				
+				ytq.setAuthor(username);
+			}
+			else if (query.getSearchScopes().contains(SearchScope.TEXT))
 			{
 				ytq.setFullTextQuery(query.getQuery());
 			}
+			
 			VideoFeed vf = service.query(ytq, VideoFeed.class);
 			int rank = ytq.getStartIndex();
 			queryResult.setTotalResultCount(vf.getTotalResults());
