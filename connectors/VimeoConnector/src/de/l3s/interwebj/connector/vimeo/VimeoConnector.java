@@ -125,6 +125,15 @@ public class VimeoConnector extends AbstractServiceConnector
 		if (!query.getContentTypes().contains(Query.CT_VIDEO))
 			return queryResult;
 		
+		if(query.getQuery().startsWith("user::"))
+		{
+			//String username = query.getQuery().substring(6).trim();	
+			
+			//TODO implement search by username
+			
+			return queryResult;
+		}
+		
 		WebResource resource = createWebResource(VIMEO_BASE +"vimeo.videos.search", getAuthCredentials(), null);
 		
 		resource = resource.queryParam("query", query.getQuery());
