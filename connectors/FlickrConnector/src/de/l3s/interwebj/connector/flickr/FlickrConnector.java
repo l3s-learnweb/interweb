@@ -1,45 +1,69 @@
 package de.l3s.interwebj.connector.flickr;
 
 
-import static de.l3s.interwebj.util.Assertions.*;
+import static de.l3s.interwebj.util.Assertions.notNull;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import javax.xml.parsers.*;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.xml.sax.*;
+import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.*;
-import com.aetrion.flickr.auth.*;
+import com.aetrion.flickr.Flickr;
+import com.aetrion.flickr.FlickrException;
+import com.aetrion.flickr.REST;
+import com.aetrion.flickr.RequestContext;
+import com.aetrion.flickr.auth.Auth;
+import com.aetrion.flickr.auth.AuthInterface;
+import com.aetrion.flickr.auth.Permission;
 import com.aetrion.flickr.contacts.Contact;
-import com.aetrion.flickr.contacts.ContactsInterface;
-import com.aetrion.flickr.people.*;
-import com.aetrion.flickr.photos.*;
-import com.aetrion.flickr.tags.*;
-import com.aetrion.flickr.uploader.*;
+import com.aetrion.flickr.people.User;
+import com.aetrion.flickr.photos.Photo;
+import com.aetrion.flickr.photos.PhotoList;
+import com.aetrion.flickr.photos.PhotosInterface;
+import com.aetrion.flickr.photos.SearchParameters;
+import com.aetrion.flickr.photos.Size;
+import com.aetrion.flickr.tags.Tag;
+import com.aetrion.flickr.uploader.UploadMetaData;
+import com.aetrion.flickr.uploader.Uploader;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.config.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.Parameters;
+import de.l3s.interwebj.config.Configuration;
+import de.l3s.interwebj.core.AbstractServiceConnector;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.query.ContactFromSocialNetwork;
+import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.Query.SortOrder;
+import de.l3s.interwebj.query.QueryResult;
+import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.Thumbnail;
+import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 import de.l3s.interwebj.socialsearch.SocialSearchResult;
-import de.l3s.interwebj.util.*;
+import de.l3s.interwebj.util.CoreUtils;
 
 
-public class FlickrConnector
-    extends AbstractServiceConnector
-{
-	
+public class FlickrConnector extends AbstractServiceConnector
+{	
 	private static final String MEDIA_ALL = "all";
 	private static final String MEDIA_PHOTOS = "photos";
 	private static final String MEDIA_VIDEOS = "videos";
-	
 
 	public FlickrConnector(Configuration configuration)
 	{
@@ -507,8 +531,16 @@ public class FlickrConnector
 				}
 				Flickr flickr = createFlickrInstance();
 				PhotosInterface pi = flickr.getPhotosInterface();
+				// 
+				
 				SearchParameters params = new SearchParameters();
 				params.setExtras(getExtras());
+				params.setMedia(getMediaType(query));
+				params.setMinUploadDate(null);
+				params.setMaxUploadDate(null);
+				params.setSort(getSortOrder(query.getSortOrder()));
+				
+				PhotoList photoList = null;
 				
 				if(query.getQuery().startsWith("user::"))
 				{
@@ -516,6 +548,10 @@ public class FlickrConnector
 					User user = flickr.getPeopleInterface().findByUsername(username);
 					
 					params.setUserId(user.getId());
+				}
+				else if(query.getQuery().startsWith("recent::"))
+				{
+					photoList = pi.getRecent(query.getResultCount(), query.getPage());
 				}
 				else 
 				{
@@ -530,11 +566,9 @@ public class FlickrConnector
 						params.setTags(tags);
 					}
 				}
-				params.setMedia(getMediaType(query));
-				params.setMinUploadDate(null);
-				params.setMaxUploadDate(null);
-				params.setSort(getSortOrder(query.getSortOrder()));
-				PhotoList photoList = pi.search(params,
+
+				if(null == photoList)
+					photoList = pi.search(params,
 				                                query.getResultCount(),
 				                                query.getPage());
 				int rank = query.getResultCount() * (query.getPage()-1);
