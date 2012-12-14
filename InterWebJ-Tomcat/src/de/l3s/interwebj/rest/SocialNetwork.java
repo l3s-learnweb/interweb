@@ -49,7 +49,7 @@ public class SocialNetwork
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
-	public XMLResponse getSocialNetworkResult(@QueryParam("userid") String userid)
+	public XMLResponse getSocialNetworkResult(@QueryParam("userid") String userid,@QueryParam("connector") String connectorName)
 	                                  
 	{
 		
@@ -60,7 +60,7 @@ public class SocialNetwork
 			InterWebPrincipal principal = getPrincipal();
 			Environment.logger.info("principal: [" + principal + "]");
 			
-			UserSocialNetworkCollector collector = engine.getSocialNetworkOf(userid, principal, "Flickr");
+			UserSocialNetworkCollector collector = engine.getSocialNetworkOf(userid, principal, connectorName);
 			UserSocialNetworkResult userSocialNetwork = collector.retrieve();
 			
 			ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
