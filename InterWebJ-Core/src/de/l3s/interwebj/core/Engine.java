@@ -28,6 +28,7 @@ import de.l3s.interwebj.query.QueryResultMerger;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.UserSocialNetworkCollector;
 import de.l3s.interwebj.query.UserSocialNetworkResult;
+import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 import de.l3s.interwebj.socialsearch.SocialSearchResultCollector;
 import de.l3s.interwebj.util.ExpirableMap;
 import de.l3s.interwebj.util.ExpirationPolicy;
@@ -306,16 +307,16 @@ public class Engine
 				                        + connectorName);
 				AuthCredentials userAuthCredentials = getUserAuthCredentials(connector,
 				                                                     principal);
-				UserSocialNetworkResult result= null;
 				
 				
-				try {
-					result = connector.getUserSocialNetwork("me",userAuthCredentials);
-					System.out.println(result.toString()+ "size ="+ result.getResultItems().size());
-				} catch (InterWebException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
+//storing sn from interweb interface				try {
+//					result = connector.getUserSocialNetwork(userid,userAuthCredentials);
+//					System.out.println(result.toString()+ "size ="+ result.getResultItems().size());
+//				} catch (InterWebException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 				
 				col.addSocialNetworkRetriever(connector, userAuthCredentials);
 				Environment.logger.info("done");
@@ -336,8 +337,8 @@ public class Engine
 		Environment.logger.info(query.toString());
 		
 		
-		
-		SocialSearchResultCollector collector = new SocialSearchResultCollector(query);
+		SocialSearchQuery squery= new SocialSearchQuery(query);
+		SocialSearchResultCollector collector = new SocialSearchResultCollector(squery);
 		
 			ServiceConnector connector = getConnector(connectorName);
 			if (connector.isRegistered())

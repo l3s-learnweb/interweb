@@ -14,7 +14,7 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.lucene.document.Document;
 
 
-public class SocialSearchResultItem
+public class SocialSearchResultItem 
     implements Serializable
 {
 	private String username;
@@ -57,10 +57,9 @@ public class SocialSearchResultItem
 			if(doc.get("document type").equalsIgnoreCase("photos")||doc.get("document type").equalsIgnoreCase("photo albums"))
 			{
 				
-				
-				String embedphoto_2="<img src=\""+ doc.get("image 2 source") +"\" width=\""+  doc.get("image 2 width") +"\" height=\""+  doc.get("image 2 height") +"\" />";
-				embedhtmlofphotos.add(embedphoto_2);
-				//String embedphoto_5="<img src=\""+ doc.get("image 5 source") +"\" width=\""+  doc.get("image 5 width") +"\" height=\""+  doc.get("image 5 height") +"\" />";
+				String embedphoto_5="<img src=\""+ doc.get("image 5 source") +"\" width=\""+  doc.get("image 5 width") +"\" height=\""+  doc.get("image 5 height") +"\" />";
+
+				embedhtmlofphotos.add(embedphoto_5);
 				continue;
 			}
 			if(doc.get("document type").equalsIgnoreCase("videos")||doc.get("document type").equalsIgnoreCase("videos uploaded"))
@@ -71,7 +70,7 @@ public class SocialSearchResultItem
 			}
 			if(doc.get("document type").equalsIgnoreCase("likes"))
 			{
-				String res= username+ " likes "+ doc.get("title");
+				String res= username+ " likes "+ doc.get("title")+"("+doc.get("category")+")";
 				reason+=res+". ";
 				continue;
 			}
@@ -228,7 +227,7 @@ public class SocialSearchResultItem
 
 	
 	public String GetLocalDateStringFromUTCString(String utcLongDateTime) {
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss+SSSS");
 	    String localDateString = null;
 
 	    long when = 0;
