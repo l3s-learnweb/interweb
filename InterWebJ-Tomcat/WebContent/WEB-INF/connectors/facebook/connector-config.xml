@@ -2,7 +2,7 @@
 
 <connector-configuration>
   <jar-name>facebook-connector.jar</jar-name>
-  <class>de.l3s.interwebj.connector.facebook.FacebookConnector</class>
+  <class>de.l3s.interwebj.connector.facebook.FacebookConnector2</class>
   <name>Facebook</name>
   <base-url>http://www.facebook.com</base-url>
   <content-types>
