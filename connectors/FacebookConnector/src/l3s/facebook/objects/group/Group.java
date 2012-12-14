@@ -266,6 +266,8 @@ public class Group {
      *     
      */
     public String getUpdatedTime() {
+    	if(updatedTime==null)
+    		return "";
         return updatedTime;
     }
 

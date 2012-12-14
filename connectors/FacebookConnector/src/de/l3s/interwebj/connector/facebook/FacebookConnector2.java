@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -34,6 +35,8 @@ import l3s.facebook.listresponse.notes.Notes;
 import l3s.facebook.listresponse.photos.Photos;
 import l3s.facebook.listresponse.profilefeed.Feedobject;
 import l3s.facebook.listresponse.profilefeed.ProfileFeed;
+import l3s.facebook.listresponse.status.Statuses;
+
 import l3s.facebook.listresponse.userevents.Events;
 import l3s.facebook.listresponse.usergroups.Groups;
 import l3s.facebook.listresponse.userlocations.Objectwithlocation;
@@ -48,6 +51,7 @@ import l3s.facebook.objects.photo.Comments;
 import l3s.facebook.objects.photo.Images;
 import l3s.facebook.objects.photo.Photo;
 import l3s.facebook.objects.photoalbum.Photoalbum;
+import l3s.facebook.objects.status.Statusupdate;
 import l3s.facebook.objects.user.Education;
 import l3s.facebook.objects.user.FavoriteAthletes;
 import l3s.facebook.objects.user.FavoriteTeams;
@@ -59,10 +63,16 @@ import l3s.facebook.objects.user.Work;
 import l3s.facebook.objects.video.Video;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.util.Version;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -215,100 +225,7 @@ public class FacebookConnector2 extends AbstractServiceConnector
 		
 		notNull(query, "query");
 		return socialSearch(query, authCredentials);
-//		if (!isRegistered())
-//		{
-//			throw new InterWebException("Service is not yet registered");
-//		}
-//		QueryResult queryResult = new QueryResult(query);
-//		Facebook fbapi= null;
-//		
-//			fbapi= new Facebook(authCredentials.getKey());
-//			
-//			Results resultlist = fbapi.searchPublicPosts(query.getQuery(),query.getResultCount());
-//			
-//			for(l3s.facebook.search.response.Data data: resultlist.getData())
-//			{
-//				
-//				System.out.println(data.getObjectId()+data.getType());
-//				
-//				Photo photo= null;
-//				Statusupdate status= null;
-//				Sharedlink link = null;
-//				Number commentcount =  0;
-//				int likes=0;
-//				ResultItem resultItem = new ResultItem(getName());
-//				if(data.getType().equalsIgnoreCase("photo") && data.getObjectId()!=null && query.getContentTypes().contains("image"))
-//				{
-//					resultItem.setType(Query.CT_IMAGE);
-//					photo=fbapi.getEntity(""+data.getObjectId(), Photo.class);
-//					/*if(photo.getComments()!=null)
-//						commentcount=photo.getComments().getData().size();
-//					if(photo.getLikes()!=null)
-//						likes=photo.getLikes().getContent().size();*/
-//				}
-//					
-//				else if(data.getType().equalsIgnoreCase("status") && data.getObjectId()!=null && query.getContentTypes().contains("text"))
-//				{
-//					resultItem.setType(Query.CT_TEXT);
-//					status=fbapi.getEntity(""+data.getObjectId(), Statusupdate.class);
-//					/*if(status.getComments()!=null)
-//						commentcount= status.getComments().getCount();
-//					if(status.getLikes()!=null)
-//						status.getLikes().getContent().size();*/
-//				}
-//				else if(data.getType().equalsIgnoreCase("link") && query.getContentTypes().contains("text"))
-//				{
-//					resultItem.setType(Query.CT_TEXT);
-//				}
-//				else
-//				{
-//					continue;
-//				}
-//				resultItem.setId(data.getId());
-//				resultItem.setTitle(data.getName());			
-//				resultItem.setDescription(data.getCaption()+"Message:"+data.getMessage());
-//				resultItem.setUrl(data.getLink());			
-//				resultItem.setDate(CoreUtils.formatDate(GetLocalDateFromUTCString(data.getUpdatedTime())));
-//				resultItem.setRank(1);			
-//				resultItem.setTotalResultCount(25);
-//				int num=0;
-//				
-//				resultItem.setCommentCount(num+commentcount.intValue());
-//				
-//				resultItem.setViewCount(likes);
-//				if(photo!=null)
-//				{
-//					Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-//					for(Images image: photo.getImages())
-//					{
-//						
-//						thumbnails.add(new Thumbnail(image.getSource(), image.getWidth().intValue(), image.getHeight().intValue()));
-//						
-//						resultItem.setImageUrl(image.getSource()); // thumbnails are orderd by size. so the last assigned image is the largest
-//						
-//						if(image.getWidth().intValue() <= 100)
-//							resultItem.setEmbeddedSize1(CoreUtils.createImageCode(image.getSource(), image.getWidth().intValue(), image.getHeight().intValue(), 100, 100));
-//						
-//						else if(image.getWidth().intValue() <= 240)
-//							resultItem.setEmbeddedSize2("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
-//						
-//						else if(image.getWidth().intValue() <= 500)
-//							resultItem.setEmbeddedSize3("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
-//						
-//						else if(image.getWidth().intValue() > 500)
-//							resultItem.setEmbeddedSize4("<img src=\""+ image.getSource() +"\" width=\""+ image.getWidth() +"\" height=\""+ image.getHeight() +"\" />");
-//					}	
-//
-//					resultItem.setThumbnails(thumbnails);
-//				}
-//				
-//				
-//				queryResult.addResultItem(resultItem);
-//			}
-//			
-//		
-//	
-//		return queryResult;
+
 	}	
 	
 	public static WebResource createWebResource(String apiUrl, AuthCredentials consumerAuthCredentials, AuthCredentials userAuthCredentials) 
@@ -655,58 +572,7 @@ for(String key:accessparams.keySet())
 			throw new InterWebException("Upload is forbidden for non-authorized users");
 		}
 		throw new NotImplementedException();
-		/*
-		VideoEntry ve = new VideoEntry();
-		YouTubeMediaGroup mg = ve.getOrCreateMediaGroup();
-		String category = params.get("category", "Film");
-		mg.addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME,
-		                                 category));
-		mg.setTitle(new MediaTitle());
-		String title = params.get(Parameters.TITLE, "No Title");
-		mg.getTitle().setPlainTextContent(title);
-		mg.setKeywords(new MediaKeywords());
-		String tags = params.get(Parameters.TAGS, "");
-		List<String> keywords = CoreUtils.convertToUniqueList(tags);
-		mg.getKeywords().addKeywords(keywords);
-		mg.setDescription(new MediaDescription());
-		String description = params.get(Parameters.DESCRIPTION,
-		                                "No Description");
-		mg.getDescription().setPlainTextContent(description);
-		int privacy = Integer.parseInt(params.get(Parameters.PRIVACY, "0"));
-		mg.setPrivate(privacy > 0);
-		MediaSource ms = new MediaByteArraySource(data, "video/*");
-		ve.setMediaSource(ms);
-		ResultItem resultItem = null;
-		try
-		{
-			YouTubeService service = createYouTubeService(authCredentials);
-			service.getRequestFactory().setHeader("Slug", "no_name.mp4");
-			ve = service.insert(new URL(UPLOAD_VIDEO_PATH), ve);
-			
-			resultItem = createResultItem(ve, 0, 0);
-		}
-		catch (ServiceException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (OAuthException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (MalformedURLException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
 		
-		return resultItem;*/
 	}
 	
 
@@ -721,43 +587,20 @@ for(String key:accessparams.keySet())
 	public UserSocialNetworkResult getUserSocialNetwork(String userid,
 			AuthCredentials authCredentials) throws InterWebException {
 		Facebook fb = new Facebook(authCredentials.getKey());
-		Friends friends = fb.getFriendsof(userid);
+		Friends friends = fb.getFriendsof("me");
 		
 		Facebook fbapi= new Facebook(authCredentials.getKey());
-		//User user = fbapi.getEntity(userid, User.class);
-		
-		//String path= "C:\\Users\\singh\\workspaceinterweb\\FacebookConnector\\FacebookIndex\\"+"test";
-		String path= "/home/singh/learnweb/FacebookIndex/index";
-		
-		Lucene base= new Lucene(false, new File(path));
-		
-		
-		/*Lucene groupsbase= new Lucene(false, new File(path+"\\groupbase"));
-		Lucene notesbase= new Lucene(false, new File(path+"\\notesbase"));
-		Lucene albumbase = new Lucene(false, new File(path+"\\albumsbase"));
-		Lucene locationsbase= new Lucene(false, new File(path+"\\locationsbase"));
-		Lucene videosuploadedbase= new Lucene(false, new File(path+"\\videosuploadedbase"));
-		Lucene likesbase= new Lucene(false, new File(path+"\\likesbase"));
-		Lucene personalitybase= new Lucene(false, new File(path+"\\personalitybase"));
-		Lucene profilefeedbase= new Lucene(false, new File(path+"\\profilefeedbase"));
-		Lucene videostaggedinbase= new Lucene(false, new File(path+"\\videostaggedinbase"));
-		Lucene phototaggedbase= new Lucene(false, new File(path+"\\photostaggedinbase"));
-		Lucene eventsbase= new Lucene(false, new File(path+"\\eventsbase"));
+		User user = fbapi.getEntity("me", User.class);
+		System.out.println("user:"+userid+"->"+user.getId());
+		//String path= "C:\\Users\\singh\\FacebookIndex\\"+userid;
+		String path= "/home/singh/learnweb/FacebookIndex/"+user.getId()+"indexfolder1";
+		File file= new File(path);
+		file.setExecutable(true, false);
+		file.setReadable(true, false);
+		file.setWritable(true, false);
+		Lucene base= new Lucene(false, file );
 		
 		
-		HashMap<String, IndexWriter> writers= new HashMap<String, IndexWriter>();
-		
-		IndexWriter noteswriter= null;
-		IndexWriter photoalbumwriter =null;
-		IndexWriter eventswriter = null;
-		IndexWriter groupswriter =null;
-		IndexWriter taggedphotoswriter= null;
-		IndexWriter likeswriter = null;
-		IndexWriter feedwriter =null;
-		IndexWriter videosuploadedwriter =null;
-		IndexWriter videostaggedinwriter =null;
-		IndexWriter userwriter=null;
-		IndexWriter locationwriter=null;*/
 		
 		IndexWriter writer=null;
 		
@@ -766,44 +609,11 @@ for(String key:accessparams.keySet())
 			
 			writer= base.getWriter();
 			
-			/*videostaggedinwriter = videostaggedinbase.getWriter();
-			writers.put("videostaggedin", videostaggedinwriter);
-			likeswriter = likesbase.getWriter();
-			writers.put("likeswriter", likeswriter);
-			noteswriter=  notesbase.getWriter();
-			writers.put("noteswriter", noteswriter);
-			videosuploadedwriter= videosuploadedbase.getWriter();
-			writers.put("videosuploadedwriter", videosuploadedwriter);
-			groupswriter= groupsbase.getWriter();
-			writers.put("groupswriter", groupswriter);
-			photoalbumwriter=albumbase.getWriter();
-			writers.put("photoalbumwriter", photoalbumwriter);
-			locationwriter=locationsbase.getWriter();
-			writers.put("locationwriter", locationwriter);
-			userwriter=personalitybase.getWriter();
-			writers.put("userwriter", userwriter);
-			feedwriter=profilefeedbase.getWriter();
-			writers.put("feedwriter", feedwriter);
-			taggedphotoswriter= phototaggedbase.getWriter();
-			writers.put("taggedphotoswriter", taggedphotoswriter);
-			eventswriter= eventsbase.getWriter();
-			writers.put("eventswriter", eventswriter);
-			*/
-			 
+			
 		} catch (Exception e) {
 			try {
 				writer.close(true);
-				/*likeswriter.close();
-				noteswriter.close();
-				photoalbumwriter.close();
-				eventswriter.close();
-				groupswriter.close();
-				taggedphotoswriter.close();
-				feedwriter.close();
-				videosuploadedwriter.close();
-				videostaggedinwriter.close();
-				userwriter.close();
-				locationwriter.close();*/
+				
 			} catch (CorruptIndexException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -814,28 +624,14 @@ for(String key:accessparams.keySet())
 			e.printStackTrace();
 		}
 	
-		
-//		new VideosTaggedInThread(userid+ " videos", userid, fbapi, videostaggedinwriter).run();
-//		new NotesThread(userid +" notes",userid, fbapi, noteswriter).run();
-//		new PhotosTaggedInThread(userid+" photos tagged in", userid, fbapi, taggedphotoswriter).run();
-//		new UserEventsThread(userid+" events", userid, fbapi, eventswriter).run();
-//		new UserGroupsThread(userid+" groups", userid, fbapi, groupswriter).run();
-//		new LikesThread(userid+" likes", userid, fbapi, likeswriter).run();
-//		new PhotoAlbumsThread(userid+" albums", userid, fbapi, photoalbumwriter).run();
-//		new VideosUploadedThread(userid+" videos uploaded", userid, fbapi, videosuploadedwriter).run();
-//		//new ProfileFeedThread(userid+" feed", userid, fbapi, feedwriter).run();
-//		new UserLocationsThread(userid+" locations", userid, fbapi, locationwriter).run();
-//		new PersonalityThread(userid+" personality", userid, fbapi, userwriter).run();
 
-		
-		
-		
 		UserSocialNetworkResult socialnetwork = new UserSocialNetworkResult(userid);
 		int i=0;
+		int j=0;
 		for(l3s.facebook.listresponse.friends.Data friend: friends.getData())
 		{
 			i++;
-			
+	
 			ContactFromSocialNetwork contact= new ContactFromSocialNetwork(friend.getName(), friend.getId().toString(), 1, "facebook");
 			socialnetwork.getSocialnetwork().put(friend.getId().toString(), contact);
 			System.out.println("storing:"+contact.getUsername()+"     "+i);
@@ -864,40 +660,34 @@ for(String key:accessparams.keySet())
 		    	storeVideosTaggedIn(friend.getId().toString(),friend.getName(), writer, fbapi);
 		    	System.out.println("storeVideosUploaded");
 		    	storeVideosUploaded(friend.getId().toString(),friend.getName(), writer, fbapi);
+		    	System.out.println("storeStatusUpdates");
+		    	storeStatusUpdates(friend.getId().toString(),friend.getName(), writer, fbapi);
 			} catch (Exception e) {
 				e.printStackTrace();
+				j++;
+				if(j<25)
+				{
+					try {
+						wait(100000);
+						
+						continue;
+						
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				
 				break;
 				
 			}
-			if(i>10)
-				break;
+//			if(i>50)
+//				break;
 			
 			
 		}
 		try {
 			writer.close(true);
-			/*likeswriter.forceMerge(10);
-			noteswriter.forceMerge(10);
-			photoalbumwriter.forceMerge(10);
-			eventswriter.forceMerge(10);
-			groupswriter.forceMerge(10);
-			taggedphotoswriter.forceMerge(10);
-			feedwriter.forceMerge(10);
-			videosuploadedwriter.forceMerge(10);
-			videostaggedinwriter.forceMerge(10);
-			userwriter.forceMerge(10);
-			locationwriter.forceMerge(10);
-			likeswriter.close(true);
-			noteswriter.close(true);
-			photoalbumwriter.close(true);
-			eventswriter.close(true);
-			groupswriter.close(true);
-			taggedphotoswriter.close(true);
-			feedwriter.close(true);
-			videosuploadedwriter.close(true);
-			videostaggedinwriter.close(true);
-			userwriter.close(true);
-			locationwriter.close(true);*/
 			
 		} catch (CorruptIndexException e) {
 			// TODO Auto-generated catch block
@@ -941,17 +731,23 @@ for(String key:accessparams.keySet())
     		{
         		
     			Document doc= new Document();
+    			String content= new String();
     			Field field= new Field("id", location.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("type", location.getType(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
+    			field= new Field("link", "http://www.facebook.com/"+location.getId(), Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
     			field= new Field("title", location.getPlace().getName(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("city", location.getPlace().getLocation().getCity(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("country", location.getPlace().getLocation().getCountry(), Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			content+=" "+location.getPlace().getName()+" "+location.getPlace().getLocation().getCity()+" "+location.getPlace().getLocation().getCountry();
+    			field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("application", location.getApplication().getName(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
@@ -982,175 +778,203 @@ for(String key:accessparams.keySet())
 			 {
 	
 		User friend=fbapi.getEntity(userid, User.class);
-		System.out.println(friend.getName()+" personality");
-    	Document doc= new Document();
-		Field field= new Field("user", userid, Field.Store.YES, Field.Index.NOT_ANALYZED);
-		doc.add(field);
-		field= new Field("user name", friend.getName(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("gender", friend.getGender(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("link", friend.getLink(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("locale", friend.getLocale(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("birthday", friend.getBirthday(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("political",friend.getPolitical() , Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("relationship status", friend.getRelationshipStatus(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("updated time", friend.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-		doc.add(field);
-		
-		
-			
-		int i=1;
-		for(Education edu: friend.getEducation())
+		if(friend!=null)
 		{
-			Document docedu= new Document();
-			doc.setBoost(5);
-			field= new Field("type", edu.getType(), Field.Store.YES, Field.Index.ANALYZED);
-			docedu.add(field);
+			System.out.println(friend.getName()+" personality");
+	    	Document doc= new Document();
+	    	String content= null;
+			Field field= new Field("user", userid, Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			String contentpro= new String();
+			field= new Field("id", friend.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
 			field= new Field("user name", friend.getName(), Field.Store.YES, Field.Index.ANALYZED);
-			docedu.add(field);
-			field= new Field("title", edu.getSchool().getName(), Field.Store.YES, Field.Index.ANALYZED);
-			docedu.add(field);
-			field= new Field("concentration", edu.getConcentration().getName(), Field.Store.YES, Field.Index.ANALYZED);
-			docedu.add(field);
-			field= new Field("year", edu.getYear().getName(), Field.Store.YES, Field.Index.ANALYZED);
-			docedu.add(field);
+			doc.add(field);
+			field= new Field("gender", friend.getGender(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("link", friend.getLink(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("locale", friend.getLocale(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("birthday", friend.getBirthday(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("political",friend.getPolitical() , Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("relationship status", friend.getRelationshipStatus(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("updated time", friend.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			contentpro+= friend.getPolitical()+" "+friend.getName();
 			
-			Page schoolpage = fbapi.getEntity(edu.getSchool().getId().toString(), Page.class);
+				
+			int i=1;
+			for(Education edu: friend.getEducation())
+			{
+				Document docedu= new Document();
+				content= new String();
+				
+				field= new Field("type", edu.getType(), Field.Store.YES, Field.Index.ANALYZED);
+				docedu.add(field);
+				field= new Field("user name", friend.getName(), Field.Store.YES, Field.Index.ANALYZED);
+				docedu.add(field);
+				field= new Field("title", edu.getSchool().getName(), Field.Store.YES, Field.Index.ANALYZED);
+				docedu.add(field);
+				field= new Field("concentration", edu.getConcentration().getName(), Field.Store.YES, Field.Index.ANALYZED);
+				docedu.add(field);
+				field= new Field("year", edu.getYear().getName(), Field.Store.YES, Field.Index.ANALYZED);
+				docedu.add(field);
+				
+				Page schoolpage = fbapi.getEntity(edu.getSchool().getId().toString(), Page.class);
+				if(schoolpage!=null)
+				{
+					content+=" "+edu.getSchool().getName()+" "+edu.getConcentration().getName()+" "+schoolpage.getDescription()+" "+schoolpage.getAbout();
+					field= new Field("content", schoolpage.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
+					docedu.add(field);
+					
+					field= new Field("description", schoolpage.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
+					docedu.add(field);
+					field= new Field("about", schoolpage.getAbout(), Field.Store.YES, Field.Index.ANALYZED);
+					docedu.add(field);
+					field= new Field("link", schoolpage.getLink(), Field.Store.YES, Field.Index.ANALYZED);
+					docedu.add(field);
+					field= new Field("id", schoolpage.getId().toString(), Field.Store.YES, Field.Index.ANALYZED);
+					docedu.add(field);
+					i++;
+					
+				}
+				
+				field= new Field("document type", "education", Field.Store.YES, Field.Index.ANALYZED);
+				docedu.add(field);
+				try {
+					writer.addDocument(docedu);
+				} catch (CorruptIndexException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			i=1;
+			for(Work work:friend.getWork())
+			{
+				Document workdoc= new Document();
+				content= new String();
+				field= new Field("location", work.getLocation().getName(), Field.Store.YES, Field.Index.ANALYZED);
+				workdoc.add(field);
+				field= new Field("position", work.getPosition().getName(), Field.Store.YES, Field.Index.ANALYZED);
+				workdoc.add(field);
+				field= new Field("title", work.getEmployer().getName(), Field.Store.YES, Field.Index.ANALYZED);
+				workdoc.add(field);
+				field= new Field("start date", work.getStartDate(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+				workdoc.add(field);
+				field= new Field("end date", work.getEndDate(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+				workdoc.add(field);
+				field= new Field("from", work.getFrom().getName(), Field.Store.YES, Field.Index.ANALYZED);
+				workdoc.add(field);
+				content+= work.getLocation().getName()+" "+work.getPosition().getName()+" "+work.getEmployer().getName();
+				int j=1;
+				for(Projects project: work.getProjects())
+				{
+					field= new Field("project"+j+" name", project.getName(), Field.Store.YES, Field.Index.ANALYZED);
+					workdoc.add(field);
+					field= new Field("project"+j+" description", project.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
+					workdoc.add(field);
+					content+=" "+project.getName()+" "+project.getDescription();
+				}
+				
+				Page workpage = fbapi.getEntity(work.getEmployer().getId().toString(), Page.class);
+				
+				field= new Field("description", workpage.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
+				workdoc.add(field);
+				field= new Field("about", workpage.getAbout(), Field.Store.YES, Field.Index.ANALYZED);
+				workdoc.add(field);
+				content+=" "+workpage.getDescription()+" "+workpage.getAbout();
+				field= new Field("link", workpage.getLink(), Field.Store.YES, Field.Index.ANALYZED);
+				workdoc.add(field);
+				field= new Field("document type", "work", Field.Store.YES, Field.Index.ANALYZED);
+				workdoc.add(field);
+				field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
+				workdoc.add(field);
+				field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
+				workdoc.add(field);
+				i++;
+				try {
+					writer.addDocument(workdoc);
+				} catch (CorruptIndexException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			List<Languages> languages = friend.getLanguages();
+			String languagelist="";
+				for(Languages lang: languages)
+				{
+					languagelist+=lang.getName()+" ";
+				}
+			field= new Field("languages", languagelist, Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);	
+			contentpro+=" "+languagelist;
+			String athletes="";
+			for(FavoriteAthletes athlete :friend.getFavoriteAthletes())
+			{
+				athletes+= athlete.getName()+ " ";
+			}	
+			String teams="";
+			for(FavoriteTeams team:friend.getFavoriteTeams())
+			{
+				teams+=team.getName()+" ";
+			}
+			String sports= "";
+			for(Sports sport:friend.getSports())
+			{
+				sports+=sport.getName()+" ";
+			}
 			
-			field= new Field("description", schoolpage.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
-			docedu.add(field);
-			field= new Field("about", schoolpage.getAbout(), Field.Store.YES, Field.Index.ANALYZED);
-			docedu.add(field);
-			field= new Field("link", schoolpage.getLink(), Field.Store.YES, Field.Index.ANALYZED);
-			docedu.add(field);
-			field= new Field("id", schoolpage.getId().toString(), Field.Store.YES, Field.Index.ANALYZED);
-			docedu.add(field);
-			i++;
-			field= new Field("document type", "education", Field.Store.YES, Field.Index.ANALYZED);
-			docedu.add(field);
+			field= new Field("sports", sports, Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			contentpro+=" "+sports;
+			field= new Field("favourite athletes", athletes, Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			contentpro+=" "+athletes;
+			field= new Field("favourite teams", teams, Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			contentpro+=" "+teams;
+			field= new Field("bio", friend.getBio(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			contentpro+=" "+friend.getBio();
+			field= new Field("website", friend.getWebsite(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("hometown", friend.getHometown().getName(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			contentpro+=" "+friend.getHometown().getName();
+			field= new Field("current location", friend.getLocation().getName(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			contentpro+=" "+friend.getLocation().getName();
+			field= new Field("timezone", friend.getTimezone().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			field= new Field("quotes", friend.getQuotes(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			contentpro+=" "+friend.getQuotes();
+			field= new Field("document type", "personality", Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("content", contentpro, Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			
 			
 			try {
-				writer.addDocument(docedu);
-			} catch (CorruptIndexException e) {
+				writer.addDocument(doc);
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		i=1;
-		for(Work work:friend.getWork())
-		{
-			Document workdoc= new Document();
-			field= new Field("location", work.getLocation().getName(), Field.Store.YES, Field.Index.ANALYZED);
-			workdoc.add(field);
-			field= new Field("position", work.getPosition().getName(), Field.Store.YES, Field.Index.ANALYZED);
-			workdoc.add(field);
-			field= new Field("title", work.getEmployer().getName(), Field.Store.YES, Field.Index.ANALYZED);
-			workdoc.add(field);
-			field= new Field("start date", work.getStartDate(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-			workdoc.add(field);
-			field= new Field("end date", work.getEndDate(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-			workdoc.add(field);
-			field= new Field("from", work.getFrom().getName(), Field.Store.YES, Field.Index.ANALYZED);
-			workdoc.add(field);
-			int j=1;
-			for(Projects project: work.getProjects())
-			{
-				field= new Field("project"+j+" name", project.getName(), Field.Store.YES, Field.Index.ANALYZED);
-				workdoc.add(field);
-				field= new Field("project"+j+" description", project.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
-				workdoc.add(field);
-			}
+			} 
 			
-			Page workpage = fbapi.getEntity(work.getEmployer().getId().toString(), Page.class);
-			
-			field= new Field("description", workpage.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
-			workdoc.add(field);
-			field= new Field("about", workpage.getAbout(), Field.Store.YES, Field.Index.ANALYZED);
-			workdoc.add(field);
-			field= new Field("link", workpage.getLink(), Field.Store.YES, Field.Index.ANALYZED);
-			workdoc.add(field);
-			field= new Field("document type", "work", Field.Store.YES, Field.Index.ANALYZED);
-			workdoc.add(field);
-			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
-			workdoc.add(field);
-			
-			i++;
-			try {
-				writer.addDocument(workdoc);
-			} catch (CorruptIndexException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		List<Languages> languages = friend.getLanguages();
-		String languagelist="";
-			for(Languages lang: languages)
-			{
-				languagelist+=lang.getName()+" ";
-			}
-		field= new Field("languages", languagelist, Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);	
 		
-		String athletes="";
-		for(FavoriteAthletes athlete :friend.getFavoriteAthletes())
-		{
-			athletes+= athlete.getName()+ " ";
-		}	
-		String teams="";
-		for(FavoriteTeams team:friend.getFavoriteTeams())
-		{
-			teams+=team.getName()+" ";
-		}
-		String sports= "";
-		for(Sports sport:friend.getSports())
-		{
-			sports+=sport.getName()+" ";
 		}
 		
-		field= new Field("sports", sports, Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("favourite athletes", athletes, Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("favourite teams", teams, Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("bio", friend.getBio(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("website", friend.getWebsite(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("hometown", friend.getHometown().getName(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("current location", friend.getLocation().getName(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		field= new Field("timezone", friend.getTimezone().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-		doc.add(field);
-		field= new Field("quotes", friend.getQuotes().toString(), Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		
-		field= new Field("document type", "personality", Field.Store.YES, Field.Index.ANALYZED);
-		doc.add(field);
-		
-		
-		
-		try {
-			writer.addDocument(doc);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		
-	
 		
 	}
 
@@ -1178,13 +1002,14 @@ for(String key:accessparams.keySet())
 				}
         		System.out.println(video.getName());
     			Document doc= new Document();
-    			doc.setBoost(5);
+    			String content= new String();
     			Field field= new Field("id", video.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("title", video.getName(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
+    			content+=video.getName();
     			field= new Field("embed html", video.getEmbedHtml(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("thumbnail", video.getPicture(), Field.Store.YES, Field.Index.NOT_ANALYZED);
@@ -1193,8 +1018,10 @@ for(String key:accessparams.keySet())
     			doc.add(field);
     			field= new Field("source", video.getSource(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
+    			content+=""+video.getSource();
     			field= new Field("description", video.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
+    			content+=""+video.getDescription();
     			l3s.facebook.objects.video.Comments comments = video.getComments();
     			String commentsinstring= "unknown";
     			if(comments.getData().size()>0)
@@ -1208,7 +1035,7 @@ for(String key:accessparams.keySet())
     				}
     				commentsinstring = convertToCommaSeperatedList(comments);
     			}
-    				
+    			content+=" "+commentsinstring;	
     			field= new Field("comments",commentsinstring , Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("updated time", video.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
@@ -1221,7 +1048,8 @@ for(String key:accessparams.keySet())
     			doc.add(field);
     			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
-    			
+    			field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
     			field= new Field("document type", "videos", Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			try {
@@ -1238,6 +1066,110 @@ for(String key:accessparams.keySet())
 		
 		
 	}
+	
+	
+	
+	
+	private void storeStatusUpdates(String userid, 
+			String name, IndexWriter writer,Facebook fbapi) {
+		Statuses statuslistholder=fbapi.getStatusUpdateList(userid);
+		System.out.println(userid+statuslistholder.getData().size());
+		if(statuslistholder.getData().size()>0)
+    	{
+			Statuses page0 = statuslistholder;
+        	while( page0.getPaging()!=null)
+    		{
+        		if(page0.getData().size()>300)
+        			break;
+        		if(page0.getPaging().getNext()==null)
+    				break;
+    			page0=fbapi.getNextPage(page0.getPaging().getNext(), Statuses.class);
+    			statuslistholder.getData().addAll(page0.getData());
+    			
+    		}
+    		for(Statusupdate status:statuslistholder.getData())
+    		{
+    			if (status.getId()==null) {
+					continue;
+				}
+        		System.out.println(status.getMessage());
+    			Document doc= new Document();
+    			
+    			Field field= new Field("id", status.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+    			doc.add(field);
+    			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			Date d = GetLocalDateStringFromUTCString(status.getUpdatedTime());
+    			String date = timeAgoInWords(d);
+    			field= new Field("title",  date, Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			field= new Field("link", "http://www.facebook.com/"+status.getId(), Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			
+    			field= new Field("description", status.getMessage(), Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			String content=new String();
+    			content+=status.getMessage();
+    			if(status.getPlace()!=null)
+    			{
+    				field= new Field("location", status.getPlace().getName(), Field.Store.YES, Field.Index.ANALYZED);
+        			doc.add(field);
+        			content+=" "+status.getPlace().getName();
+        			if(status.getPlace().getLocation()!=null)
+        			{
+        				field= new Field("city", status.getPlace().getLocation().getCity(), Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			content+=" "+status.getPlace().getLocation().getCity();
+            			field= new Field("country", status.getPlace().getLocation().getCountry(), Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			content+=" "+status.getPlace().getLocation().getCountry();
+        			}
+    				
+        			
+    			}
+    			
+				field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			
+    			field= new Field("updated time", status.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+    			doc.add(field);
+    			
+    			field= new Field("from name", status.getFrom().getName(), Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			field= new Field("from id", status.getFrom().getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+    			doc.add(field);
+    			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			
+    			field= new Field("document type", "status", Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			try {
+    				writer.addDocument(doc);
+    			} catch (Exception e) {
+    				// TODO Auto-generated catch block
+    				e.printStackTrace();
+    			} 
+    			
+    		}
+    		
+    	}
+    	
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	private String convertToCommaSeperatedList(
 			l3s.facebook.objects.video.Comments comments) {
@@ -1245,7 +1177,7 @@ for(String key:accessparams.keySet())
 
 		   for( l3s.facebook.objects.video.Data d: comments.getData())
 		   {
-			   nameBuilder.append("'").append(d.getMessage()).append("',");
+			   nameBuilder.append("'").append(d.getMessage()).append("'").append("\n");
 		   }
 		       
 		    
@@ -1283,11 +1215,12 @@ for(String key:accessparams.keySet())
 				}
         		System.out.println(video.getName());
     			Document doc= new Document();
-    			doc.setBoost(5);
+    			String content=new String();
     			Field field= new Field("id", video.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("title", video.getName(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
+    			content+=video.getName();
     			field= new Field("embed html", video.getEmbedHtml(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("thumbnail", video.getPicture(), Field.Store.YES, Field.Index.NOT_ANALYZED);
@@ -1296,6 +1229,7 @@ for(String key:accessparams.keySet())
     			doc.add(field);
     			field= new Field("source", video.getSource(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
+    			content+=" "+video.getSource()+" "+video.getDescription();
     			field= new Field("description", video.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
@@ -1313,7 +1247,7 @@ for(String key:accessparams.keySet())
     				}
     				commentsinstring = convertToCommaSeperatedList(comments);
     			}
-    				
+    			content+=" "+commentsinstring;
     			field= new Field("comments",commentsinstring , Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("updated time", video.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
@@ -1325,6 +1259,8 @@ for(String key:accessparams.keySet())
     			field= new Field("from id", video.getFrom().getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("document type", "videos uploaded", Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
@@ -1438,7 +1374,7 @@ for(String key:accessparams.keySet())
     				if(likedpage.getId()==BigInteger.ZERO)
     					continue;
     				Document doc= new Document();
-    				
+    				String content= new String();
     				Field field= new Field("id", likedpage.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     				doc.add(field);
     				field= new Field("created time", likedpage.getCreatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
@@ -1447,6 +1383,7 @@ for(String key:accessparams.keySet())
     				doc.add(field);
     				field= new Field("title", likedpage.getName(), Field.Store.YES, Field.Index.ANALYZED);
     				doc.add(field);
+    				content+=likedpage.getName();
     				field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
         			doc.add(field);
     				Page page = fbapi.getEntity(likedpage.getId().toString(), Page.class);
@@ -1456,6 +1393,7 @@ for(String key:accessparams.keySet())
         				doc.add(field);
         				field= new Field("description", page.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
         				doc.add(field);
+        				content+=" "+page.getAbout()+" "+page.getDescription();
         				field= new Field("cover", page.getCover().getSource(), Field.Store.YES, Field.Index.NOT_ANALYZED);
         				doc.add(field);
         				field= new Field("likes", page.getLikes().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
@@ -1467,6 +1405,8 @@ for(String key:accessparams.keySet())
         				field= new Field("website", page.getWebsite(), Field.Store.YES, Field.Index.ANALYZED);
         				doc.add(field);
         				field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
+        				doc.add(field);
+        				field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
         				doc.add(field);
     				}
     				
@@ -1503,7 +1443,7 @@ for(String key:accessparams.keySet())
     				break;
     			page0=fbapi.getNextPage(page0.getPaging().getNext(), Photos.class);
     			photostaggedin.getData().addAll(page0.getData());
-			if(photostaggedin.getData().size()>100)
+			if(photostaggedin.getData().size()>200)
     				break;
     			
     		}
@@ -1517,7 +1457,7 @@ for(String key:accessparams.keySet())
     			else
     			{
     				Document doc= new Document();
-    				doc.setBoost(5);
+    				String content= new String();
     				if(photo.getId().equalsIgnoreCase("0"))
     					continue;
     				Field field= new Field("id", photo.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
@@ -1551,15 +1491,23 @@ for(String key:accessparams.keySet())
     					{
     						if(compage0.getPaging().getNext()==null)
     							break;
-    						compage0=fbapi.getNextPage(compage0.getPaging().getNext(), Comments.class);
-    						comments.getData().addAll(compage0.getData());
+    						try{
+    							compage0=fbapi.getNextPage(compage0.getPaging().getNext(), Comments.class);
+        						comments.getData().addAll(compage0.getData());
+    						}
+    						catch (Exception e) {
+								// TODO: handle exception
+							}
+    						
     						
     					}
     					commentsinstring = convertToCommaSeperatedList(comments);
     				}
     				
-    				
+    				content+=comments+" "+ photo.getName();
     				field= new Field("comments",commentsinstring , Field.Store.YES, Field.Index.ANALYZED);
+    				doc.add(field);
+    				field= new Field("content",content , Field.Store.YES, Field.Index.ANALYZED);
     				doc.add(field);
     				field= new Field("updated time", photo.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     				doc.add(field);
@@ -1639,13 +1587,9 @@ for(String key:accessparams.keySet())
 
 	   for(l3s.facebook.objects.photo.Data d: comments.getData())
 	   {
-		   nameBuilder.append("'").append(d.getMessage()).append("',");
+		   nameBuilder.append(d.getFrom().getName()).append(": ").append("'").append(d.getMessage()).append("'").append("\n");
 	   }
-	       
-	    
-
 	    nameBuilder.deleteCharAt(nameBuilder.length() - 1);
-
 	    return nameBuilder.toString();
 		
 	}
@@ -1672,28 +1616,39 @@ for(String key:accessparams.keySet())
     			if(group.getId()==null)
     				continue;
     			Document doc= new Document();
+    			String content= new String();
     			Field field= new Field("id", group.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("title", group.getName(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
-    			
+    			content+=group.getName();
     			Group usergroup = fbapi.getEntity(group.getId().toString(), Group.class);
+    			if(usergroup!=null)
+    			{	
+    				
+    				content+=" "+usergroup.getDescription();
+        			field= new Field("link", "www.facebook.com/"+group.getId().toString(), Field.Store.YES, Field.Index.ANALYZED);
+        			doc.add(field);
+        			field= new Field("description", usergroup.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
+        			doc.add(field);
+        			field= new Field("email", usergroup.getEmail(), Field.Store.YES, Field.Index.ANALYZED);
+        			doc.add(field);
+        			field= new Field("icon", usergroup.getIcon(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+        			doc.add(field);
+        			field= new Field("privacy", usergroup.getPrivacy(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+        			doc.add(field);
+        			field= new Field("updated time", usergroup.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+        			doc.add(field);
+        			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
+        			doc.add(field);
+        			field= new Field("document type", "group", Field.Store.YES, Field.Index.ANALYZED);
+        			doc.add(field);
+        			
+    			}
     			
-    			field= new Field("description", usergroup.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
-    			doc.add(field);
-    			field= new Field("email", usergroup.getEmail(), Field.Store.YES, Field.Index.ANALYZED);
-    			doc.add(field);
-    			field= new Field("icon", usergroup.getIcon(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-    			doc.add(field);
-    			field= new Field("privacy", usergroup.getPrivacy(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-    			doc.add(field);
-    			field= new Field("updated time", usergroup.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-    			doc.add(field);
-    			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
-    			doc.add(field);
-    			field= new Field("document type", "group", Field.Store.YES, Field.Index.ANALYZED);
+    			field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			
     			try {
@@ -1759,6 +1714,7 @@ for(String key:accessparams.keySet())
 
 	private void storeEvents(String userid,  String name, IndexWriter writer,Facebook fbapi) {
 		Events events=fbapi.getEventsUserIsInvolvedIn(userid);
+		
 		System.out.println(userid+events.getData().size());
 		if(events.getData().size()>0)
     	{
@@ -1776,6 +1732,7 @@ for(String key:accessparams.keySet())
     			if(event.getId()==null)
     				continue;
     			Document doc= new Document();
+    			String content= new String();
     			Field field= new Field("id", event.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("title", event.getName(), Field.Store.YES, Field.Index.ANALYZED);
@@ -1786,18 +1743,20 @@ for(String key:accessparams.keySet())
     			doc.add(field);
     			field= new Field("start time", event.getStartTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
-    			
+    			content+=event.getName()+" . "+event.getLocation()+" . ";
     			
     			field= new Field("status", event.getRsvpStatus(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("timezone", event.getTimezone(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+    			doc.add(field);
+    			field= new Field("document type", "event", Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			
     			Event eventpage = fbapi.getEntity(event.getId().toString(), Event.class);
     			
     			if(eventpage!=null)
     			{
-    				field= new Field("description", new String(eventpage.getDescription().clone()), Field.Store.YES, Field.Index.ANALYZED);
+    				field= new Field("description", new String(eventpage.getDescription()), Field.Store.YES, Field.Index.ANALYZED);
         			doc.add(field);
         			field= new Field("privacy", eventpage.getPrivacy(), Field.Store.YES, Field.Index.NOT_ANALYZED);
         			doc.add(field);
@@ -1809,10 +1768,11 @@ for(String key:accessparams.keySet())
         			doc.add(field);
         			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
         			doc.add(field);
-        			field= new Field("document type", "event", Field.Store.YES, Field.Index.ANALYZED);
-        			doc.add(field);
+        			
+        			content+=" "+eventpage.getDescription();
     			}
-    			
+    			field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
     			
     			try {
     				writer.addDocument(doc);
@@ -1887,7 +1847,7 @@ for(String key:accessparams.keySet())
 			if(album.getId()==null)
 				continue;
 			Document doc= new Document();
-			doc.setBoost(5);
+			
 			Field field= new Field("id", album.getId(), Field.Store.YES, Field.Index.ANALYZED);
 			doc.add(field);
 			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
@@ -1904,9 +1864,33 @@ for(String key:accessparams.keySet())
 			doc.add(field);
 			field= new Field("Cover Photo id", album.getCoverPhoto().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
 			doc.add(field);
-		
 			
-			Photo photo= fbapi.getEntity(album.getCoverPhoto().toString(), Photo.class);
+			field= new Field("content", album.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			field= new Field("from id", album.getFrom().getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			field= new Field("from name", album.getFrom().getName(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			
+			if(album.getLikes()!=null)
+			{
+				field= new Field("likes", ""+album.getLikes().getData().size(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+    			doc.add(field);
+			}
+			
+			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			
+			field= new Field("document type", "photo albums", Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			
+			Photo photo=null;
+			try {
+				photo= fbapi.getEntity(album.getCoverPhoto().toString(), Photo.class);
+			} catch (Exception e) {
+				System.out.println("no cover photo");
+			}
+			
 			if(photo!=null)
 			{
 				if(photo.getImages().size()>0)
@@ -1966,22 +1950,6 @@ for(String key:accessparams.keySet())
 			}
 			
 			
-			field= new Field("from id", album.getFrom().getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-			doc.add(field);
-			field= new Field("from name", album.getFrom().getName(), Field.Store.YES, Field.Index.ANALYZED);
-			doc.add(field);
-			
-			if(album.getLikes()!=null)
-			{
-				field= new Field("likes", ""+album.getLikes().getData().size(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-    			doc.add(field);
-			}
-			
-			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
-			doc.add(field);
-			
-			field= new Field("document type", "photo albums", Field.Store.YES, Field.Index.ANALYZED);
-			doc.add(field);
 			try {
 				writer.addDocument(doc);
 			} catch (Exception e) {
@@ -2023,11 +1991,12 @@ for(String key:accessparams.keySet())
         		
         		System.out.println(n.getSubject());
     			Document doc= new Document();
+    			String content= new String();
     			Field field= new Field("id", n.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
-    			field= new Field("message", n.getMessage(), Field.Store.NO, Field.Index.ANALYZED);
+    			field= new Field("message", n.getMessage(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("title", n.getSubject(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
@@ -2042,6 +2011,9 @@ for(String key:accessparams.keySet())
     			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("document type", "note", Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			content+=n.getSubject()+" "+n.getMessage();
+    			field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			try {
     				writer.addDocument(doc);
@@ -2075,8 +2047,8 @@ for(String key:accessparams.keySet())
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String path= "/home/singh/learnweb/FacebookIndex/index";
-		//String path= "C:\\Users\\singh\\workspaceinterweb\\FacebookConnector\\FacebookIndex\\"+userid+"j";
+		String path= "/home/singh/learnweb/FacebookIndex/"+userid+"indexfolder1";
+		//String path= "C:\\Users\\singh\\FacebookIndex\\"+"testnew";
 		
 		
 		Lucene base= new Lucene(false, new File(path));
@@ -2084,306 +2056,146 @@ for(String key:accessparams.keySet())
 		String[] fields= { "gender","political","concentration","document type","descreption","description","title",
 				"project1 name", "project1 description", "project2 name", "project2 description", "project3 name", "project3 description"
 				,"languages", "sports","favourite athletes","favourite teams","bio","website","hometown","current location","quotes","location","city","country","comments","from name",
-				"message","caption","type","category","about","website"};
-		ArrayList<Document> hits = base.searchIndex(querystr, fields, query.getResultCount());
+				"message","caption","type","category","about","website","source","concentration"};
 		
+		ArrayList<Document> hits = base.searchIndex(querystr, fields, query.getResultCount()*5);
+		
+		//List<Document> hitspage = hits.subList((query.getPage()-1)*query.getResultCount(), query.getPage()*query.getResultCount());
 		for(Document doc: hits)
 		{
 			ResultItem result= new ResultItem(getName());
-			result.setServiceName(doc.get("document type"));
+			result.setServiceName("facebook");
 			result.setType(Query.CT_TEXT);
-			result.setId(doc.get("user"));
-			result.setTitle(doc.get("title"));			
+			result.setId(doc.get("id"));
+			result.setTitle(doc.get("user name")+"'s "+ doc.get("document type")+ ": "+ doc.get("title"));			
 			String desc= new String();
+			if(doc.get("message")!=null&&!doc.get("message").equalsIgnoreCase("unknown"))
+				desc+=doc.get("message")+". ";
 			if(doc.get("description")!=null&&!doc.get("description").equalsIgnoreCase("unknown"))
 				desc+=doc.get("description")+". ";
 			if(doc.get("about")!=null&& doc.get("about").equalsIgnoreCase("unknown"))
 				desc+=doc.get("about")+". ";
 			if(doc.get("category")!=null && !doc.get("category").equalsIgnoreCase("unknown"))
 				desc+=doc.get("category")+". ";
-			result.setDescription(desc);
+			result.setTags(doc.get("user"));
+			
 			//result.setDescription(doc.get("description")+" About:"+doc.get("about")+". Category:"+doc.get("catefory")+ ". Website:"+ doc.get("website"));
-			result.setUrl(doc.get("link"));			
-			result.setDate(doc.get("created time"));
+			result.setUrl(doc.get("link"));
+			if(doc.get("created time")!=null)
+			{
+				Date d = GetLocalDateStringFromUTCString(doc.get("created time"));
+				String date = timeAgoInWords(d);
+				result.setDate(date);
+			}
+			
 			result.setRank(1);			
 			result.setTotalResultCount(25);
 			
+			if(doc.get("talking about")!=null && !doc.get("talking about").equalsIgnoreCase("unknown"))
+				result.setViewCount(Integer.parseInt(doc.get("talking about")));
 			
-//			result.setCommentCount(Integer.getInteger(doc.get("likes")));
-//			
-//			result.setViewCount(Integer.getInteger(doc.get("talking about")));
 			
+			
+			if(doc.get("document type").equalsIgnoreCase("photos") || doc.get("document type").equalsIgnoreCase("photo albums"))
+			{
+				result.setType(Query.CT_IMAGE);
+				Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
+				result.setImageUrl(doc.get("image 0 source"));
+				if(doc.get("comments")!=null && !doc.get("comments").equalsIgnoreCase("null") )
+				desc+=doc.get("comments");
+				for(int i=0;i<8;i++)
+				{
+					Images img= new Images();
+					if(doc.get("image "+i+" source")== null || doc.get("image "+i+" height")==null || doc.get("image "+i+" width")== null )
+						continue;
+				img.setSource(doc.get("image "+i+" source"));
+				img.setHeight(new BigInteger(doc.get("image "+i+" height")));
+				img.setWidth(new BigInteger(doc.get("image "+i+" width")));
+				thumbnails.add(new Thumbnail(img.getSource(), img.getWidth().intValue(), img.getHeight().intValue()));
+				
+				 // thumbnails are orderd by size. so the last assigned image is the largest
+				
+				if(img.getWidth().intValue() <= 100)
+					result.setEmbeddedSize1(CoreUtils.createImageCode(img.getSource(), img.getWidth().intValue(), img.getHeight().intValue(), 100, 100));
+				
+				else if(img.getWidth().intValue() <= 240 && img.getHeight().intValue() >= 300)
+					result.setEmbeddedSize2("<img src=\""+ img.getSource() +"\" width=\""+ img.getWidth() +"\" height=\""+ img.getHeight() +"\" />");
+				
+				else if(img.getWidth().intValue() <= 500)
+					result.setEmbeddedSize3("<img src=\""+ img.getSource() +"\" width=\""+ img.getWidth() +"\" height=\""+ img.getHeight() +"\" />");
+				
+				else if(img.getWidth().intValue() > 500)
+					result.setEmbeddedSize4("<img src=\""+ img.getSource() +"\" width=\""+ img.getWidth() +"\" height=\""+ img.getHeight() +"\" />");
+				}
+				
+				desc+="\r\n";
+				if(doc.get("location")!=null && !doc.get("location").equalsIgnoreCase("unknown"))
+					desc+=" Location: "+doc.get("location");
+				
+				if(doc.get("city")!=null && !doc.get("city").equalsIgnoreCase("unknown"))
+					desc+=" City: "+doc.get("city");
+				
+				if(doc.get("country")!=null && !doc.get("country").equalsIgnoreCase("unknown"))
+					desc+=" Country: "+doc.get("country");
+				desc+="\r\n";
+				
+			result.setThumbnails(thumbnails);
+			
+			}
+			
+			if(doc.get("document type").equalsIgnoreCase("videos") || doc.get("document type").equalsIgnoreCase("videos uploaded"))
+			{
+				if(doc.get("source")!=null)
+					result.setUrl(doc.get("source"));	
+				result.setType(Query.CT_VIDEO);			
+				result.setDate(doc.get("created time"));
+				Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
+				Thumbnail t= new Thumbnail(doc.get("thumbnail"), 160, 89);
+				result.setEmbeddedSize1(CoreUtils.createImageCode(t, 100, 100));
+				result.setThumbnails(thumbnails);
+				result.setEmbeddedSize3(doc.get("embed html"));
+				result.setImageUrl(t.getUrl());
+			}
+			
+			if(doc.get("document type").equalsIgnoreCase("locations") || doc.get("document type").equalsIgnoreCase("events") )
+			{
+				if(doc.get("location")!=null && !doc.get("location").equalsIgnoreCase("unknown"))
+					desc+="Location: "+doc.get("location");
+				desc+="City: "+doc.get("city")+" , Country: "+doc.get("country");
+				if(doc.get("start time")!=null && !doc.get("start time").equalsIgnoreCase("unknown"))
+					desc+="Start time: "+doc.get("start time");
+				if(doc.get("end time")!=null && !doc.get("end time").equalsIgnoreCase("unknown"))
+					desc+="End time: "+doc.get("end time");
+				
+			}
+			
+			
+			
+			if(doc.get("document type").equalsIgnoreCase("personality") )
+			{
+				if(doc.get("hometown")!=null && !doc.get("hometown").equalsIgnoreCase("unknown"))
+					desc+=" hometown: "+doc.get("hometown");
+				if(doc.get("current location")!=null && !doc.get("current location").equalsIgnoreCase("unknown"))
+					desc+=" current location: "+doc.get("current location");
+				if(doc.get("bio")!=null && !doc.get("bio").equalsIgnoreCase("unknown"))
+					desc+=" About: "+doc.get("bio");
+				
+			}
+			String encdesc=null;
+			try {
+				encdesc= new String(desc.getBytes(), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			desc.replaceAll("unknown", " ");
+			System.out.println(desc);
+			System.out.println(encdesc);
+			result.setDescription(encdesc);
 			qresult.addResultItem(result);
 		}
 		
-//		
-//		Lucene groupsbase= new Lucene(false, new File(path+"\\groupbase"));
-//		Lucene notesbase= new Lucene(false, new File(path+"\\notesbase"));
-//		Lucene albumbase = new Lucene(false, new File(path+"\\albumsbase"));
-//		Lucene locationsbase= new Lucene(false, new File(path+"\\locationsbase"));
-//		Lucene videosuploadedbase= new Lucene(false, new File(path+"\\videosuploadedbase"));
-//		
-//		Lucene personalitybase= new Lucene(false, new File(path+"\\personalitybase"));
-//		//Lucene profilefeedbase= new Lucene(false, new File(path+"\\profilefeedbase"));
-//		Lucene videostaggedinbase= new Lucene(false, new File(path+"\\videostaggedinbase"));
-//		Lucene phototaggedbase= new Lucene(false, new File(path+"\\photostaggedinbase"));
-//		Lucene eventsbase= new Lucene(false, new File(path+"\\eventsbase"));
-//		Lucene likesbase= new Lucene(false, new File(path+"\\likesbase"));
-//		
-//		
-//
-//		ArrayList<Document> likes = likesbase.searchIndex(querystr,likes_fields,10);
-//		
-//		
-//		for(Document doc: likes)
-//		{
-//			ResultItem result= new ResultItem(getName());
-//			result.setServiceName("likes");
-//			result.setType(Query.CT_TEXT);
-//			result.setId(doc.get("user"));
-//			result.setTitle(doc.get("title"));			
-//			result.setDescription("default");
-//			//result.setDescription(doc.get("description")+" About:"+doc.get("about")+". Category:"+doc.get("catefory")+ ". Website:"+ doc.get("website"));
-//			result.setUrl(doc.get("link"));			
-//			result.setDate(doc.get("created time"));
-//			result.setRank(1);			
-//			result.setTotalResultCount(25);
-//			
-//			
-////			result.setCommentCount(Integer.getInteger(doc.get("likes")));
-////			
-////			result.setViewCount(Integer.getInteger(doc.get("talking about")));
-//			
-//			qresult.addResultItem(result);
-//		}
-//		
-//		
-//		ArrayList<Document> notes = notesbase.searchIndex(querystr,notes_fields,10);
-//		for(Document doc: notes)
-//		{
-//			ResultItem result= new ResultItem(getName());
-//			result.setServiceName("notes");
-//			result.setType(Query.CT_TEXT);
-//			result.setId(doc.get("user"));
-//			result.setTitle(doc.get("title"));			
-//			result.setDescription(doc.get("message"));
-//			result.setUrl(doc.get("link"));			
-//			result.setDate(doc.get("created time"));
-//			result.setRank(1);			
-//			result.setTotalResultCount(25);
-//			
-//			
-////			result.setCommentCount(Integer.parseInt(doc.get("likes")));
-////			
-////			result.setViewCount(Integer.parseInt(doc.get("talking about")));
-//			
-//			qresult.addResultItem(result);
-//		}
-//		
-//		
-//		ArrayList<Document> personality = personalitybase.searchIndex(querystr,personality_fields,10);
-//		for(Document doc: personality)
-//		{
-//			ResultItem result= new ResultItem(getName());
-//			result.setServiceName("personality");
-//			result.setType(Query.CT_TEXT);
-//			result.setId(doc.get("id"));
-//			result.setTitle(doc.get("name"));			
-//			result.setDescription(doc.get("bio"));
-//			result.setUrl(doc.get("link"));			
-//			result.setDate(doc.get("created time"));
-//			result.setRank(1);			
-//			result.setTotalResultCount(25);
-//			result.setImageUrl("https://graph.facebook.com/"+doc.get("id")+"/picture");
-//			
-////			result.setCommentCount(Integer.parseInt(doc.get("likes")));
-////			
-////			result.setViewCount(Integer.parseInt(doc.get("talking about")));
-//			
-//			qresult.addResultItem(result);
-//		}
-//		
-//		ArrayList<Document> photoalbums = albumbase.searchIndex(querystr,photoalbums_fields,10);
-//		ArrayList<Document> photostaggedin = phototaggedbase.searchIndex(querystr,photostaggedin_fields,10);
-//		for(Document doc: photostaggedin)
-//		{
-//			ResultItem result= new ResultItem(getName());
-//			result.setServiceName("photos");
-//			result.setType(Query.CT_IMAGE);
-//			result.setId(doc.get("user"));
-//			result.setTitle(doc.get("title"));			
-//			result.setDescription(doc.get("location"));
-//			result.setUrl(doc.get("link"));			
-//			result.setDate(doc.get("created time"));
-//			result.setRank(1);			
-//			result.setTotalResultCount(25);
-//			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-//			result.setImageUrl(doc.get("image 0 source"));
-//			for(int i=0;i<8;i++)
-//			{
-//				Images img= new Images();
-//				img.setSource(doc.get("image "+i+" source"));
-//				img.setHeight(new BigInteger(doc.get("image "+i+" height")));
-//				img.setWidth(new BigInteger(doc.get("image "+i+" width")));
-//				thumbnails.add(new Thumbnail(img.getSource(), img.getWidth().intValue(), img.getHeight().intValue()));
-//				
-//				 // thumbnails are orderd by size. so the last assigned image is the largest
-//				
-//				if(img.getWidth().intValue() <= 100)
-//					result.setEmbeddedSize1(CoreUtils.createImageCode(img.getSource(), img.getWidth().intValue(), img.getHeight().intValue(), 100, 100));
-//				
-//				else if(img.getWidth().intValue() <= 240)
-//					result.setEmbeddedSize2("<img src=\""+ img.getSource() +"\" width=\""+ img.getWidth() +"\" height=\""+ img.getHeight() +"\" />");
-//				
-//				else if(img.getWidth().intValue() <= 500)
-//					result.setEmbeddedSize3("<img src=\""+ img.getSource() +"\" width=\""+ img.getWidth() +"\" height=\""+ img.getHeight() +"\" />");
-//				
-//				else if(img.getWidth().intValue() > 500)
-//					result.setEmbeddedSize4("<img src=\""+ img.getSource() +"\" width=\""+ img.getWidth() +"\" height=\""+ img.getHeight() +"\" />");
-//			}
-////			result.setCommentCount(Integer.getInteger(doc.get("likes")));
-////			
-////			result.setViewCount(Integer.getInteger(doc.get("talking about")));
-//			
-//			
-//			
-//			result.setThumbnails(thumbnails);
-//			
-//			
-//			
-//			qresult.addResultItem(result);
-//		}
-//		
-//		
-//		
-//		
-//		
-//		//ArrayList<Document> profilefeed = profilefeedbase.searchIndex(querystr,profilefeed_fields,10);
-//		ArrayList<Document> userevents = eventsbase.searchIndex(querystr,userevents_fields,10);
-//		for(Document doc: userevents)
-//		{
-//			ResultItem result= new ResultItem(getName());
-//			result.setServiceName("events");
-//			result.setType(Query.CT_TEXT);
-//			result.setId(doc.get("user"));
-//			result.setTitle(doc.get("title"));			
-//			result.setDescription(doc.get("description"));
-//			result.setUrl(doc.get("link"));			
-//			result.setDate(doc.get("updated time"));
-//			result.setRank(1);			
-//			result.setTotalResultCount(25);
-//			
-//			
-//			
-//			
-//			qresult.addResultItem(result);
-//		}
-//		
-//		
-//		ArrayList<Document> usergroups = groupsbase.searchIndex(querystr,usergroups_fields,10);
-//		for(Document doc: usergroups)
-//		{
-//			ResultItem result= new ResultItem(getName());
-//			result.setServiceName("groups");
-//			result.setType(Query.CT_TEXT);
-//			result.setId(doc.get("user"));
-//			result.setTitle(doc.get("title"));			
-//			result.setDescription(doc.get("description"));
-//			result.setUrl(doc.get("link"));			
-//			result.setDate(doc.get("updated time"));
-//			result.setRank(1);			
-//			result.setTotalResultCount(25);
-//			
-//			
-//			
-//			
-//			qresult.addResultItem(result);
-//		}
-//		
-//		
-//		ArrayList<Document> userlocations = locationsbase.searchIndex(querystr,userlocations_fields,10);
-//		for(Document doc: userlocations)
-//		{
-//			ResultItem result= new ResultItem(getName());
-//			result.setServiceName("locations");
-//			result.setType(Query.CT_TEXT);
-//			result.setId(doc.get("user"));
-//			result.setTitle(doc.get("title"));			
-//			result.setDescription(doc.get("city")+doc.get("country"));
-//			result.setUrl(doc.get("link"));			
-//			result.setDate(doc.get("created time"));
-//			result.setRank(1);			
-//			result.setTotalResultCount(25);
-//			
-//			
-//			
-//			
-//			qresult.addResultItem(result);
-//		}
-//		ArrayList<Document> videostaggedin = videostaggedinbase.searchIndex(querystr,videostaggedin_fields,10);
-//		for(Document doc: videostaggedin)
-//		{
-//			ResultItem result= new ResultItem(getName());
-//			result.setServiceName("videos");
-//			result.setType(Query.CT_VIDEO);
-//			result.setId(doc.get("user"));
-//			result.setTitle(doc.get("title"));			
-//			result.setDescription(doc.get("description"));
-//			result.setUrl(doc.get("source"));			
-//			result.setDate(doc.get("created time"));
-//			result.setRank(1);			
-//			result.setTotalResultCount(25);
-//			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-//			Thumbnail t= new Thumbnail(doc.get("thumbnail"), 160, 89);
-//			result.setEmbeddedSize1(CoreUtils.createImageCode(t, 100, 100));
-//			result.setThumbnails(thumbnails);
-//			result.setEmbeddedSize3(doc.get("embed html"));
-//			result.setImageUrl(t.getUrl());
-////			result.setCommentCount(Integer.getInteger(doc.get("likes")));
-////			
-////			result.setViewCount(Integer.getInteger(doc.get("talking about")));
-//			
-//			
-//			
-//			
-//			
-//			
-//			
-//			qresult.addResultItem(result);
-//		}
-//		
-//		ArrayList<Document> videosuploaded = videosuploadedbase.searchIndex(querystr,videosuploaded_fields,10);
-//		for(Document doc: videosuploaded)
-//		{
-//			ResultItem result= new ResultItem(getName());
-//			result.setServiceName("videos");
-//			result.setType(Query.CT_VIDEO);
-//			result.setId(doc.get("user"));
-//			result.setTitle(doc.get("title"));			
-//			result.setDescription(doc.get("description"));
-//			result.setUrl(doc.get("source"));			
-//			result.setDate(doc.get("created time"));
-//			result.setRank(1);			
-//			result.setTotalResultCount(25);
-//			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-//			Thumbnail t= new Thumbnail(doc.get("thumbnail"), 160, 89);
-//			result.setEmbeddedSize1(CoreUtils.createImageCode(t, 100, 100));
-//			result.setThumbnails(thumbnails);
-//			result.setEmbeddedSize3(doc.get("embed html"));
-//			result.setImageUrl(t.getUrl());
-////			result.setCommentCount(Integer.getInteger(doc.get("likes")));
-////			
-////			result.setViewCount(Integer.getInteger(doc.get("talking about")));
-//			
-//			
-//			
-//			
-//			
-//			
-//			
-//			qresult.addResultItem(result);
-//		}
-//		Collections.sort(qresult.getResultItems(),COMPARATOR );
+
 		
 		System.out.println("done");
 		return qresult;
@@ -2402,6 +2214,47 @@ for(String key:accessparams.keySet())
 				    };
 
 
+				    
+	public Date GetLocalDateStringFromUTCString(String utcLongDateTime) {
+		 	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+SSSS");
+	       
+
+	        long when = 0;
+	        try {
+	            when = dateFormat.parse(utcLongDateTime).getTime();
+	        } catch (ParseException e) {
+	            e.printStackTrace();
+	        }
+	        Date localDate = new Date(when + TimeZone.getDefault().getRawOffset() + (TimeZone.getDefault().inDaylightTime(new Date()) ? TimeZone.getDefault().getDSTSavings() : 0));
+	        return localDate;			       
+		}
+	
+	public static String timeAgoInWords(Date from) {
+	    Date now = new Date();
+	    long difference = now.getTime() - from.getTime();
+	    long distanceInMin = difference / 60000;
+
+	    if ( 0 <= distanceInMin && distanceInMin <= 1 ) {
+	        return "Less than 1 minute ago";
+	    } else if ( 1 <= distanceInMin && distanceInMin <= 45 ) {
+	        return distanceInMin + " minutes ago";
+	    } else if ( 45 <= distanceInMin && distanceInMin <= 89 ) {
+	        return "About 1 hour";
+	    } else if ( 90 <= distanceInMin && distanceInMin <= 1439 ) {
+	        return "About " + (distanceInMin / 60) + " hours ago";
+	    } else if ( 1440 <= distanceInMin && distanceInMin <= 2529 ) {
+	        return "1 day";
+	    } else if ( 2530 <= distanceInMin && distanceInMin <= 43199 ) {
+	        return (distanceInMin / 1440) + "days ago";
+	    } else if ( 43200 <= distanceInMin && distanceInMin <= 86399 ) {
+	        return "About 1 month ago";
+	    } else if ( 86400 <= distanceInMin && distanceInMin <= 525599 ) {
+	        return "About " + (distanceInMin / 43200) + " months ago";
+	    } else {
+	        long distanceInYears = distanceInMin / 525600;
+	        return "About " + distanceInYears + " years ago";
+	    }
+	}
 
 	@Override
 	public SocialSearchResult get(SocialSearchQuery query,
@@ -2413,7 +2266,7 @@ for(String key:accessparams.keySet())
 		return result;
 	}
 
-	private SocialSearchResult socialSearchFB(
+	public SocialSearchResult socialSearchFB(
 			SocialSearchQuery query, AuthCredentials authCredentials) {
 		
 		notNull(query, "query");
@@ -2434,8 +2287,8 @@ for(String key:accessparams.keySet())
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String path= "C:\\Users\\singh\\workspaceinterweb\\FacebookConnector\\FacebookIndex\\"+userid;
-		Lucene base= new Lucene(false, new File(path+"new"));
+		String path= "/home/singh/learnweb/FacebookIndex/index";
+		Lucene base= new Lucene(false, new File(path));
 		
 		String querystr = query.getQuery();
 		

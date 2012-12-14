@@ -16,6 +16,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -117,6 +118,7 @@ public class Lucene {
 		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(Version.LUCENE_36,
                 fields,
                 analyzer);
+		queryParser.setDefaultOperator(Operator.AND);
 		try {
 			query=queryParser.parse(querystr);
 		} catch (ParseException e) {

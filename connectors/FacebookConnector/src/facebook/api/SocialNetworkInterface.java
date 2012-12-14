@@ -9,6 +9,8 @@ import l3s.facebook.listresponse.notes.Notes;
 import l3s.facebook.listresponse.permissions.Permissions;
 import l3s.facebook.listresponse.photos.Photos;
 import l3s.facebook.listresponse.profilefeed.ProfileFeed;
+import l3s.facebook.listresponse.status.Statuses;
+
 import l3s.facebook.listresponse.userevents.Events;
 import l3s.facebook.listresponse.usergroups.Groups;
 import l3s.facebook.listresponse.userlocations.UserLocationObjects;
@@ -44,6 +46,8 @@ public interface SocialNetworkInterface {
 	public ProfileFeed getUserProfileFeed(String id);
 	
 	public Events getEventsUserIsInvolvedIn(String id);
+	
+	public Statuses getStatusUpdateList(String id);
 	
 	public Groups getGroupsUserIsMemberOf(String id);
 	

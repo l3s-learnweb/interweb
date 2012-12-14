@@ -14,6 +14,8 @@ import l3s.facebook.listresponse.notes.Notes;
 import l3s.facebook.listresponse.permissions.Permissions;
 import l3s.facebook.listresponse.photos.Photos;
 import l3s.facebook.listresponse.profilefeed.ProfileFeed;
+import l3s.facebook.listresponse.status.Statuses;
+
 import l3s.facebook.listresponse.userevents.Events;
 import l3s.facebook.listresponse.usergroups.Groups;
 import l3s.facebook.listresponse.userlocations.UserLocationObjects;
@@ -104,6 +106,9 @@ public class Facebook implements SocialNetworkInterface {
 		Books objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Books.class);
 		return objectResponse;
 	}
+	
+	
+	
 
 	@Override
 	public Friends getFriendsof(String id) {
@@ -420,6 +425,23 @@ public class Facebook implements SocialNetworkInterface {
 		}
 		
 		return objectResponse;
+	}
+
+	@Override
+	public Statuses getStatusUpdateList(String id) {
+		WebResource resource = FacebookClient.resource(graphAPI+id+"/statuses"+accesstokenString);
+
+		TreeMap<String, String> params = new TreeMap<String, String>();
+
+		for (String key : params.keySet()) {
+			String value = params.get(key);
+			resource = resource.queryParam(key, value);
+		}
+	
+		
+		Statuses objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Statuses.class);
+		return objectResponse;
+		
 	}
 
 }
