@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
+
+
 /**
  * <p>Java class for anonymous complex type.
  * 
@@ -65,6 +67,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "createdTime",
     "updatedTime",
     "format",
+    "likes",
     "comments"
 })
 @XmlRootElement(name = "video")
@@ -101,8 +104,19 @@ public class Video {
     protected List<Format> format;
     @XmlElement(required = true)
     protected Comments comments;
+    @XmlElement(required = true)
+    protected Likes likes;
+    public Likes getLikes() {
+    	if(likes==null)
+    		return new Likes();
+		return likes;
+	}
 
-    /**
+	public void setLikes(Likes likes) {
+		this.likes = likes;
+	}
+
+	/**
      * Gets the value of the id property.
      * 
      * @return

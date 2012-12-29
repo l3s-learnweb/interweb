@@ -29,6 +29,8 @@ import l3s.facebook.listresponse.books.Books;
 import l3s.facebook.listresponse.books.Data;
 import l3s.facebook.listresponse.friends.Friends;
 import l3s.facebook.listresponse.likes.Likes;
+import l3s.facebook.listresponse.links.Links;
+import l3s.facebook.listresponse.links.SharedLinks;
 import l3s.facebook.listresponse.movies.Movies;
 import l3s.facebook.listresponse.music.Music;
 import l3s.facebook.listresponse.notes.Notes;
@@ -43,6 +45,7 @@ import l3s.facebook.listresponse.userlocations.Objectwithlocation;
 import l3s.facebook.listresponse.userlocations.UserLocationObjects;
 import l3s.facebook.listresponse.userphotoalbums.Photoalbums;
 import l3s.facebook.listresponse.videosuploadedandtagged.Videolist;
+import l3s.facebook.object.link.Sharedlink;
 import l3s.facebook.objects.event.Event;
 import l3s.facebook.objects.group.Group;
 import l3s.facebook.objects.note.Note;
@@ -89,6 +92,7 @@ import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.query.ContactFromSocialNetwork;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SortOrder;
@@ -592,9 +596,14 @@ for(String key:accessparams.keySet())
 		Facebook fbapi= new Facebook(authCredentials.getKey());
 		User user = fbapi.getEntity("me", User.class);
 		System.out.println("user:"+userid+"->"+user.getId());
-		//String path= "C:\\Users\\singh\\FacebookIndex\\"+userid;
-		String path= "/home/singh/learnweb/FacebookIndex/"+user.getId()+"indexfolder1";
+		//String path= "C:\\Users\\singh\\FacebookIndex\\"+userid+"testing";
+		String path= "/home/singh/learnweb/FacebookIndex/"+user.getId()+"indexfolder2";
 		File file= new File(path);
+		if(file.exists())
+			{
+				file.delete();
+				file= new File(path);
+			}
 		file.setExecutable(true, false);
 		file.setReadable(true, false);
 		file.setWritable(true, false);
@@ -628,40 +637,45 @@ for(String key:accessparams.keySet())
 		UserSocialNetworkResult socialnetwork = new UserSocialNetworkResult(userid);
 		int i=0;
 		int j=0;
+		String values= new String();
 		for(l3s.facebook.listresponse.friends.Data friend: friends.getData())
 		{
 			i++;
-	
+			
 			ContactFromSocialNetwork contact= new ContactFromSocialNetwork(friend.getName(), friend.getId().toString(), 1, "facebook");
 			socialnetwork.getSocialnetwork().put(friend.getId().toString(), contact);
 			System.out.println("storing:"+contact.getUsername()+"     "+i);
 			try {
 			
-		    	System.out.println("starting storage " +
-		    			"................................................................................."+friend.getName());
+			
+		    	System.out.println("storing " +
+		    			"................................................................................."+friend.getName()+"   "+friend.getId());
+		    	values+="("+friend.getId()+",\'"+friend.getName()+"\',\'"+fbapi.getAccesstoken()+"\',\'"+user.getId()+"\',0,0"+"),";
 				//new StoreFriendThread(userid+" storage thread", friend.getId().toString(), fbapi, writers).run();
-		    	System.out.println("storeEvents");
-		    	storeEvents(friend.getId().toString(),friend.getName(), writer, fbapi);
-		    	System.out.println("storeGroups");
-		    	storeGroups(friend.getId().toString(),friend.getName(), writer, fbapi);
-		    	System.out.println("storeLikes");
-		    	storeLikes(friend.getId().toString(),friend.getName(), writer, fbapi);
-		    	System.out.println("storeNotes");
-		    	storeNotes(friend.getId().toString(),friend.getName(), writer, fbapi);
-		    	System.out.println("storePhotoAlbums");
-		    	storePhotoAlbums(friend.getId().toString(),friend.getName(), writer, fbapi);
-		    	System.out.println("storeTaggedPhotosOfUser");
-		    	storeTaggedPhotosOfUser(friend.getId().toString(),friend.getName(), writer, fbapi);
-		    	System.out.println("storeUserPlaces");
-		    	storeUserPlaces(friend.getId().toString(),friend.getName(), writer, fbapi);
-		    	System.out.println("storeUserProfile");
-		    	storeUserProfile(friend.getId().toString(),friend.getName(), writer, fbapi);
-		    	System.out.println("storeVideosTaggedIn");
-		    	storeVideosTaggedIn(friend.getId().toString(),friend.getName(), writer, fbapi);
-		    	System.out.println("storeVideosUploaded");
-		    	storeVideosUploaded(friend.getId().toString(),friend.getName(), writer, fbapi);
-		    	System.out.println("storeStatusUpdates");
-		    	storeStatusUpdates(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeEvents");
+//		    	storeEvents(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeGroups");
+//		    	storeGroups(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeLikes");
+//		    	storeLikes(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeNotes");
+//		    	storeNotes(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storePhotoAlbums");
+//		    	storePhotoAlbums(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeTaggedPhotosOfUser");
+//		    	storeTaggedPhotosOfUser(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeUserPlaces");
+//		    	storeUserPlaces(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeUserProfile");
+//		    	storeUserProfile(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeVideosTaggedIn");
+//		    	storeVideosTaggedIn(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeVideosUploaded");
+//		    	storeVideosUploaded(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeStatusUpdates");
+//		    	storeStatusUpdates(friend.getId().toString(),friend.getName(), writer, fbapi);
+//		    	System.out.println("storeLinks");
+//		    	storeLinks(friend.getId().toString(),friend.getName(), writer, fbapi);
 			} catch (Exception e) {
 				e.printStackTrace();
 				j++;
@@ -681,8 +695,7 @@ for(String key:accessparams.keySet())
 				break;
 				
 			}
-//			if(i>50)
-//				break;
+			
 			
 			
 		}
@@ -696,6 +709,10 @@ for(String key:accessparams.keySet())
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Database database = Environment.getInstance().getDatabase();
+		if (values.length() > 0 && values.charAt(values.length()-1)==',') 
+			values = values.substring(0, values.length()-1);
+		database.saveFriendsOfUser(values.trim());
 		System.out.println("Done storage. friends stored="+i);
 		return socialnetwork;
 	}	
@@ -816,6 +833,8 @@ for(String key:accessparams.keySet())
 				field= new Field("type", edu.getType(), Field.Store.YES, Field.Index.ANALYZED);
 				docedu.add(field);
 				field= new Field("user name", friend.getName(), Field.Store.YES, Field.Index.ANALYZED);
+				docedu.add(field);
+				field= new Field("user", ""+friend.getId(), Field.Store.YES, Field.Index.ANALYZED);
 				docedu.add(field);
 				field= new Field("title", edu.getSchool().getName(), Field.Store.YES, Field.Index.ANALYZED);
 				docedu.add(field);
@@ -1003,10 +1022,50 @@ for(String key:accessparams.keySet())
         		System.out.println(video.getName());
     			Document doc= new Document();
     			String content= new String();
+    			int likes=0;
+				if(video.getLikes().getData().size() >0)
+				{
+					  l3s.facebook.objects.video.Likes  pagelikes = video.getLikes();
+					  l3s.facebook.objects.video.Likes pagelikesnext = pagelikes;
+					while(pagelikesnext.getPaging()!=null)
+					{
+						if(pagelikesnext.getPaging().getNext()==null)
+							break;
+						pagelikesnext = fbapi.getNextPage(pagelikesnext.getPaging().getNext(), l3s.facebook.objects.video.Likes.class );
+						pagelikes.getData().addAll(pagelikesnext.getData());
+						
+					}
+					likes=pagelikes.getData().size();
+				}
+				int numcomments=0;
+				if(video.getComments().getData().size() >0)
+				{
+					 l3s.facebook.objects.video.Comments pagecomments = video.getComments();
+					 l3s.facebook.objects.video.Comments pagecommentsnext= pagecomments;
+					while(pagecommentsnext.getPaging()!=null)
+					{
+						if(pagecommentsnext.getPaging().getNext()==null)
+							break;
+						 pagecommentsnext = fbapi.getNextPage(pagecommentsnext.getPaging().getNext(),  l3s.facebook.objects.video.Comments.class );
+						pagecomments.getData().addAll(pagecommentsnext.getData());
+						
+					}
+					numcomments=pagecomments.getData().size();
+				}
+				System.out.println("comments: "+numcomments+" likes: "+likes);
+				
+				
+				
     			Field field= new Field("id", video.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
+    			field= new Field("link", "http://www.facebook.com/"+video.getId(), Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+				field= new Field("number of comments", ""+numcomments, Field.Store.YES, Field.Index.NOT_ANALYZED);
+				doc.add(field);
+				field= new Field("number of likes", ""+likes, Field.Store.YES, Field.Index.NOT_ANALYZED);
+				doc.add(field);
     			field= new Field("title", video.getName(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			content+=video.getName();
@@ -1023,7 +1082,7 @@ for(String key:accessparams.keySet())
     			doc.add(field);
     			content+=""+video.getDescription();
     			l3s.facebook.objects.video.Comments comments = video.getComments();
-    			String commentsinstring= "unknown";
+    			String commentsinstring= " ";
     			if(comments.getData().size()>0)
     			{
     				l3s.facebook.objects.video.Comments compage0 = comments;
@@ -1094,14 +1153,48 @@ for(String key:accessparams.keySet())
 				}
         		System.out.println(status.getMessage());
     			Document doc= new Document();
+    			int likes=0;
+    			if(status.getLikes().getContent().size() >0)
+    			{
+    				 l3s.facebook.objects.status.Likes pagelikes = status.getLikes();
+    				 l3s.facebook.objects.status.Likes pagelikesnew = pagelikes;
+    				while(pagelikesnew.getPaging()!=null)
+    				{
+    					if(pagelikesnew.getPaging().getNext()==null)
+    						break;
+    					 pagelikesnew = fbapi.getNextPage(pagelikesnew.getPaging().getNext(), l3s.facebook.objects.status.Likes.class );
+    					pagelikes.getContent().addAll(pagelikesnew.getContent());
+    					
+    				}
+    				likes=pagelikes.getContent().size();
+    			}
+    			int comments=0;
+    			if(status.getComments().getData().size() >0)
+    			{
+    				  l3s.facebook.objects.status.Comments pagecomments = status.getComments();
+    				  l3s.facebook.objects.status.Comments pagecommentsnew =  pagecomments;
+    				while(pagecommentsnew.getPaging()!=null)
+    				{
+    					if(pagecommentsnew.getPaging().getNext()==null)
+    						break;
+    					pagecommentsnew = fbapi.getNextPage(pagecommentsnew.getPaging().getNext(),  l3s.facebook.objects.status.Comments.class );
+    					pagecomments.getData().addAll(pagecommentsnew.getData());
+    					
+    				}
+    				comments=pagecomments.getData().size();
+    			}
+    			
+    			System.out.println("comments: "+comments+" likes: "+likes);
     			
     			Field field= new Field("id", status.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
-    			Date d = GetLocalDateStringFromUTCString(status.getUpdatedTime());
-    			String date = timeAgoInWords(d);
-    			field= new Field("title",  date, Field.Store.YES, Field.Index.ANALYZED);
+    			field= new Field("number of comments", ""+comments, Field.Store.YES, Field.Index.NOT_ANALYZED);
+    			doc.add(field);
+    			field= new Field("number of likes", ""+likes, Field.Store.YES, Field.Index.NOT_ANALYZED);
+    			doc.add(field);
+    			field= new Field("title",  " ", Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("link", "http://www.facebook.com/"+status.getId(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
@@ -1177,7 +1270,10 @@ for(String key:accessparams.keySet())
 
 		   for( l3s.facebook.objects.video.Data d: comments.getData())
 		   {
-			   nameBuilder.append("'").append(d.getMessage()).append("'").append("\n");
+			   if(d.getMessage()==null)
+				   continue;
+			   if(!d.getFrom().getName().equalsIgnoreCase("unknown"))
+			   nameBuilder.append("<b>").append(d.getFrom().getName()).append("</b> :").append("'").append(d.getMessage()).append("'").append(" &lt;br");
 		   }
 		       
 		    
@@ -1216,8 +1312,46 @@ for(String key:accessparams.keySet())
         		System.out.println(video.getName());
     			Document doc= new Document();
     			String content=new String();
+    			int likes=0;
+    			if(video.getLikes().getData().size() >0)
+				{
+					  l3s.facebook.objects.video.Likes  pagelikes = video.getLikes();
+					  l3s.facebook.objects.video.Likes pagelikesnext = pagelikes;
+					while(pagelikesnext.getPaging()!=null)
+					{
+						if(pagelikesnext.getPaging().getNext()==null)
+							break;
+						pagelikesnext = fbapi.getNextPage(pagelikesnext.getPaging().getNext(), l3s.facebook.objects.video.Likes.class );
+						pagelikes.getData().addAll(pagelikesnext.getData());
+						
+					}
+					likes=pagelikes.getData().size();
+				}
+				int numcomments=0;
+				if(video.getComments().getData().size() >0)
+				{
+					 l3s.facebook.objects.video.Comments pagecomments = video.getComments();
+					 l3s.facebook.objects.video.Comments pagecommentsnext= pagecomments;
+					while(pagecommentsnext.getPaging()!=null)
+					{
+						if(pagecommentsnext.getPaging().getNext()==null)
+							break;
+						 pagecommentsnext = fbapi.getNextPage(pagecommentsnext.getPaging().getNext(),  l3s.facebook.objects.video.Comments.class );
+						pagecomments.getData().addAll(pagecommentsnext.getData());
+						
+					}
+					numcomments=pagecomments.getData().size();
+				}
+				System.out.println("comments: "+numcomments+" likes: "+likes);
+				
     			Field field= new Field("id", video.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
+    			field= new Field("link", "http://www.facebook.com/"+video.getId(), Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			field= new Field("number of comments", ""+numcomments, Field.Store.YES, Field.Index.NOT_ANALYZED);
+				doc.add(field);
+				field= new Field("number of likes", ""+likes, Field.Store.YES, Field.Index.NOT_ANALYZED);
+				doc.add(field);
     			field= new Field("title", video.getName(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			content+=video.getName();
@@ -1235,7 +1369,7 @@ for(String key:accessparams.keySet())
     			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			l3s.facebook.objects.video.Comments comments = video.getComments();
-    			String commentsinstring= "unknown";
+    			String commentsinstring= " ";
     			if(comments.getData().size()>0)
     			{
     				l3s.facebook.objects.video.Comments compage0 = comments;
@@ -1386,29 +1520,33 @@ for(String key:accessparams.keySet())
     				content+=likedpage.getName();
     				field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
         			doc.add(field);
-    				Page page = fbapi.getEntity(likedpage.getId().toString(), Page.class);
-    				if(page!=null)
-    				{
-    					field= new Field("about", page.getAbout(), Field.Store.YES, Field.Index.ANALYZED);
-        				doc.add(field);
-        				field= new Field("description", page.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
-        				doc.add(field);
-        				content+=" "+page.getAbout()+" "+page.getDescription();
-        				field= new Field("cover", page.getCover().getSource(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-        				doc.add(field);
-        				field= new Field("likes", page.getLikes().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-        				doc.add(field);
-        				field= new Field("link", page.getLink(), Field.Store.YES, Field.Index.ANALYZED);
-        				doc.add(field);
-        				field= new Field("talking about", page.getTalkingAboutCount().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-        				doc.add(field);
-        				field= new Field("website", page.getWebsite(), Field.Store.YES, Field.Index.ANALYZED);
-        				doc.add(field);
-        				field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
-        				doc.add(field);
-        				field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
-        				doc.add(field);
-    				}
+        			if(likedpage.getId()!=BigInteger.ZERO)
+        			{
+        				Page page = fbapi.getEntity(likedpage.getId().toString(), Page.class);
+        				if(page!=null)
+        				{
+        					field= new Field("about", page.getAbout(), Field.Store.YES, Field.Index.ANALYZED);
+            				doc.add(field);
+            				field= new Field("description", page.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
+            				doc.add(field);
+            				content+=" "+page.getAbout()+" "+page.getDescription();
+            				field= new Field("cover", page.getCover().getSource(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+            				doc.add(field);
+            				field= new Field("likes", page.getLikes().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+            				doc.add(field);
+            				field= new Field("link", page.getLink(), Field.Store.YES, Field.Index.ANALYZED);
+            				doc.add(field);
+            				field= new Field("talking about", page.getTalkingAboutCount().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+            				doc.add(field);
+            				field= new Field("website", page.getWebsite(), Field.Store.YES, Field.Index.ANALYZED);
+            				doc.add(field);
+            				field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
+            				doc.add(field);
+            				field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
+            				doc.add(field);
+        				}
+        			}
+    				
     				
     				field= new Field("document type", "likes", Field.Store.YES, Field.Index.ANALYZED);
         			doc.add(field);
@@ -1449,7 +1587,8 @@ for(String key:accessparams.keySet())
     		}
     		for(Photo photo:photostaggedin.getData())
     		{
-    			if(photo.getName().equalsIgnoreCase("unknown") && photo.getPlace().getName().equalsIgnoreCase("unknown") && photo.getPlace().getLocation().getCity().equalsIgnoreCase("unknown") && photo.getPlace().getLocation().getCountry().equalsIgnoreCase("unknown") )
+    			
+    			if(photo.getName().equalsIgnoreCase("unknown") && photo.getPlace().getName().equalsIgnoreCase("unknown") && photo.getPlace().getLocation().getCity().equalsIgnoreCase("unknown") && photo.getPlace().getLocation().getCountry().equalsIgnoreCase("unknown") && photo.getComments()!=null)
     			{
     				continue;
     				
@@ -1460,7 +1599,31 @@ for(String key:accessparams.keySet())
     				String content= new String();
     				if(photo.getId().equalsIgnoreCase("0"))
     					continue;
+    				int likes=0;
+    				if(photo.getLikes().getData().size() >0)
+    				{
+    					  l3s.facebook.objects.photo.Likes pagelikes = photo.getLikes();
+    					  l3s.facebook.objects.photo.Likes pagelikesnext = pagelikes;
+    					while(pagelikesnext.getPaging()!=null)
+    					{
+    						if(pagelikesnext.getPaging().getNext()==null)
+    							break;
+    						pagelikesnext = fbapi.getNextPage(pagelikesnext.getPaging().getNext(), l3s.facebook.objects.photo.Likes.class );
+    						pagelikes.getData().addAll(pagelikesnext.getData());
+    						
+    					}
+    					likes=pagelikes.getData().size();
+    				}
+    				int numcomments=0;
+    				
+    				
+    				
+    				
+    				
     				Field field= new Field("id", photo.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+    				doc.add(field);
+    				
+    				field= new Field("number of likes", ""+likes, Field.Store.YES, Field.Index.NOT_ANALYZED);
     				doc.add(field);
     				field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
         			doc.add(field);
@@ -1482,7 +1645,7 @@ for(String key:accessparams.keySet())
     				doc.add(field);
     				
     				l3s.facebook.objects.photo.Comments comments = photo.getComments();
-    				String commentsinstring= "unknown";
+    				String commentsinstring= " ";
     				
     				if(comments!=null && comments.getData().size()>0)
     				{
@@ -1503,9 +1666,12 @@ for(String key:accessparams.keySet())
     					}
     					commentsinstring = convertToCommaSeperatedList(comments);
     				}
-    				
+    				numcomments=comments.getData().size();
+    				System.out.println("comments: "+numcomments+" likes: "+likes);
     				content+=comments+" "+ photo.getName();
     				field= new Field("comments",commentsinstring , Field.Store.YES, Field.Index.ANALYZED);
+    				doc.add(field);
+    				field= new Field("number of comments", ""+numcomments, Field.Store.YES, Field.Index.NOT_ANALYZED);
     				doc.add(field);
     				field= new Field("content",content , Field.Store.YES, Field.Index.ANALYZED);
     				doc.add(field);
@@ -1584,10 +1750,11 @@ for(String key:accessparams.keySet())
 
 	private String convertToCommaSeperatedList(l3s.facebook.objects.photo.Comments comments) {
 		StringBuilder nameBuilder = new StringBuilder();
-
+		
 	   for(l3s.facebook.objects.photo.Data d: comments.getData())
 	   {
-		   nameBuilder.append(d.getFrom().getName()).append(": ").append("'").append(d.getMessage()).append("'").append("\n");
+		   if(!d.getFrom().getName().equalsIgnoreCase("unknown"))
+		   nameBuilder.append("<b>"+d.getFrom().getName()).append("</b> : ").append("'").append(d.getMessage()).append("'").append("    &lt;br");
 	   }
 	    nameBuilder.deleteCharAt(nameBuilder.length() - 1);
 	    return nameBuilder.toString();
@@ -1624,27 +1791,31 @@ for(String key:accessparams.keySet())
     			field= new Field("title", group.getName(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			content+=group.getName();
-    			Group usergroup = fbapi.getEntity(group.getId().toString(), Group.class);
-    			if(usergroup!=null)
-    			{	
-    				
-    				content+=" "+usergroup.getDescription();
-        			field= new Field("link", "www.facebook.com/"+group.getId().toString(), Field.Store.YES, Field.Index.ANALYZED);
-        			doc.add(field);
-        			field= new Field("description", usergroup.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
-        			doc.add(field);
-        			field= new Field("email", usergroup.getEmail(), Field.Store.YES, Field.Index.ANALYZED);
-        			doc.add(field);
-        			field= new Field("icon", usergroup.getIcon(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-        			doc.add(field);
-        			field= new Field("privacy", usergroup.getPrivacy(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-        			doc.add(field);
-        			field= new Field("updated time", usergroup.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-        			doc.add(field);
-        			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
-        			doc.add(field);
-        			field= new Field("document type", "group", Field.Store.YES, Field.Index.ANALYZED);
-        			doc.add(field);
+    			if(group.getId()!=BigInteger.ZERO)
+    			{
+    				Group usergroup = fbapi.getEntity(group.getId().toString(), Group.class);
+        			if(usergroup!=null)
+        			{	
+        				
+        				content+=" "+usergroup.getDescription();
+            			field= new Field("link", "www.facebook.com/"+group.getId().toString(), Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			field= new Field("description", usergroup.getDescription(), Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			field= new Field("email", usergroup.getEmail(), Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			field= new Field("icon", usergroup.getIcon(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+            			doc.add(field);
+            			field= new Field("privacy", usergroup.getPrivacy(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+            			doc.add(field);
+            			field= new Field("updated time", usergroup.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+            			doc.add(field);
+            			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			field= new Field("document type", "group", Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			
+        			}
         			
     			}
     			
@@ -1752,25 +1923,29 @@ for(String key:accessparams.keySet())
     			field= new Field("document type", "event", Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			
-    			Event eventpage = fbapi.getEntity(event.getId().toString(), Event.class);
-    			
-    			if(eventpage!=null)
+    			if(event.getId()!=BigInteger.ZERO)
     			{
-    				field= new Field("description", new String(eventpage.getDescription()), Field.Store.YES, Field.Index.ANALYZED);
-        			doc.add(field);
-        			field= new Field("privacy", eventpage.getPrivacy(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-        			doc.add(field);
-        			field= new Field("owner", eventpage.getOwner().getName(), Field.Store.YES, Field.Index.ANALYZED);
-        			doc.add(field);
-        			field= new Field("updated time", eventpage.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-        			doc.add(field);
-        			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
-        			doc.add(field);
-        			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
-        			doc.add(field);
+    				Event eventpage = fbapi.getEntity(event.getId().toString(), Event.class);
         			
-        			content+=" "+eventpage.getDescription();
+        			if(eventpage!=null)
+        			{
+        				field= new Field("description", new String(eventpage.getDescription()), Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			field= new Field("privacy", eventpage.getPrivacy(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+            			doc.add(field);
+            			field= new Field("owner", eventpage.getOwner().getName(), Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			field= new Field("updated time", eventpage.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+            			doc.add(field);
+            			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
+            			doc.add(field);
+            			
+            			content+=" "+eventpage.getDescription();
+        			}
     			}
+    			
     			field= new Field("content", content, Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			
@@ -1847,11 +2022,47 @@ for(String key:accessparams.keySet())
 			if(album.getId()==null)
 				continue;
 			Document doc= new Document();
-			
+			int likes=0;
+			if(album.getLikes().getData().size() >0)
+			{
+				 l3s.facebook.objects.photoalbum.Likes pagelikes = album.getLikes();
+				 l3s.facebook.objects.photoalbum.Likes pagelikesnew= pagelikes;
+				while(pagelikesnew.getPaging()!=null)
+				{
+					if(pagelikesnew.getPaging().getNext()==null)
+						break;
+					pagelikesnew = fbapi.getNextPage(pagelikesnew.getPaging().getNext(), l3s.facebook.objects.photoalbum.Likes.class );
+					
+					pagelikes.getData().addAll(pagelikesnew.getData());
+					
+				}
+				likes=pagelikes.getData().size();
+			}
+			int comments=0;
+			if(album.getComments().getData().size() >0)
+			{
+				 l3s.facebook.objects.photoalbum.Comments pagecomments = album.getComments();
+				 l3s.facebook.objects.photoalbum.Comments pagecommentsnew =pagecomments;
+				while(pagecommentsnew.getPaging()!=null)
+				{
+					if(pagecommentsnew.getPaging().getNext()==null)
+						break;
+					pagecommentsnew = fbapi.getNextPage(pagecommentsnew.getPaging().getNext(),  l3s.facebook.objects.photoalbum.Comments.class );
+					pagecomments.getData().addAll(pagecommentsnew.getData());
+					
+				}
+				comments=pagecomments.getData().size();
+			}
+			System.out.println("comments: "+comments+" likes: "+likes);
 			Field field= new Field("id", album.getId(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("number of comments", ""+comments, Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			field= new Field("number of likes", ""+likes, Field.Store.YES, Field.Index.NOT_ANALYZED);
 			doc.add(field);
 			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
 			doc.add(field);
+			
 			field= new Field("updated time", album.getUpdatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
 			doc.add(field);
 			field= new Field("created time", album.getCreatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
@@ -1886,9 +2097,11 @@ for(String key:accessparams.keySet())
 			
 			Photo photo=null;
 			try {
+				
 				photo= fbapi.getEntity(album.getCoverPhoto().toString(), Photo.class);
 			} catch (Exception e) {
 				System.out.println("no cover photo");
+				continue;
 			}
 			
 			if(photo!=null)
@@ -1965,6 +2178,109 @@ for(String key:accessparams.keySet())
 		
 		
 	}
+	
+	
+	private void storeLinks(String userid, 
+			String name, IndexWriter writer,Facebook fbapi) {
+		SharedLinks links=fbapi.getLinksSharedBy(userid);
+		System.out.println(userid+links.getLinks().getData().size());
+		if(links.getLinks().getData().size()>0)
+		{
+			Links page0 = links.getLinks();
+			//severe performance degrade
+			while(page0.getPaging()!=null)
+			{
+				if(page0.getPaging().getNext()==null)
+					break;
+				page0=fbapi.getNextPage(page0.getPaging().getNext(), Links.class);
+				links.getLinks().getData().addAll(page0.getData());
+			}
+		
+		
+		//severe performance degrade
+		for(Sharedlink link: links.getLinks().getData())
+		{
+			if(link.getId()==null)
+				continue;
+			Document doc= new Document();
+			int likes=0;
+			String commentscontent= new String();
+			int comments=0;
+			if(link.getComments().getData().size() >0)
+			{
+				  l3s.facebook.object.link.Comments pagecomments = link.getComments();
+				  l3s.facebook.object.link.Comments pagecommentsnew = pagecomments;
+				while(pagecommentsnew.getPaging()!=null)
+				{
+					if(pagecommentsnew.getPaging().getNext()==null)
+						break;
+					pagecommentsnew = fbapi.getNextPage(pagecommentsnew.getPaging().getNext(),  l3s.facebook.object.link.Comments.class );
+					pagecomments.getData().addAll(pagecommentsnew.getData());
+					
+				}
+				comments=pagecomments.getData().size();
+				for(l3s.facebook.object.link.Data d: pagecomments.getData())
+				{
+					commentscontent+=" "+d.getMessage()+" ";
+				}
+			}
+			System.out.println("comments: "+comments+" likes: "+likes);
+			Field field= new Field("id", link.getId(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("number of comments", ""+comments, Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			field= new Field("comments", commentscontent, Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("number of likes", ""+likes, Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			
+			
+			field= new Field("created time", link.getCreatedTime(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			field= new Field("link", link.getLink(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			field= new Field("title", link.getName(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			field= new Field("message", link.getMessage(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			
+			
+			field= new Field("content", link.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			field= new Field("from id", link.getFrom().getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(field);
+			field= new Field("from name", link.getFrom().getName(), Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			
+			
+			
+			field= new Field("user", userid, Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			
+			field= new Field("document type", "shared links", Field.Store.YES, Field.Index.ANALYZED);
+			doc.add(field);
+			
+			
+			
+			
+			
+			try {
+				writer.addDocument(doc);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}
+		
+		
+		
+		
+		}
+		
+		
+	}
 
 	private void storeNotes(String userid,  String name, IndexWriter writer, Facebook fbapi) {
 		Notes notes=fbapi.getNotesOfUser(userid);
@@ -1995,6 +2311,8 @@ for(String key:accessparams.keySet())
     			Field field= new Field("id", n.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED);
     			doc.add(field);
     			field= new Field("user name", name, Field.Store.YES, Field.Index.ANALYZED);
+    			doc.add(field);
+    			field= new Field("url", "http://www.facebook.com/"+n.getId(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
     			field= new Field("message", n.getMessage(), Field.Store.YES, Field.Index.ANALYZED);
     			doc.add(field);
@@ -2047,7 +2365,7 @@ for(String key:accessparams.keySet())
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String path= "/home/singh/learnweb/FacebookIndex/"+userid+"indexfolder1";
+		String path= "/home/singh/learnweb/FacebookIndex/"+userid+"indexfolder2";
 		//String path= "C:\\Users\\singh\\FacebookIndex\\"+"testnew";
 		
 		
@@ -2066,17 +2384,24 @@ for(String key:accessparams.keySet())
 			ResultItem result= new ResultItem(getName());
 			result.setServiceName("facebook");
 			result.setType(Query.CT_TEXT);
-			result.setId(doc.get("id"));
-			result.setTitle(doc.get("user name")+"'s "+ doc.get("document type")+ ": "+ doc.get("title"));			
+			result.setId(doc.get("user"));
+			String title=doc.get("user name")+"'s "+ doc.get("document type");	
+			if(!doc.get("title").equalsIgnoreCase("unknown") && !doc.get("title").equalsIgnoreCase("null") && doc.get("title")!=null)
+			{title+= ": "+ doc.get("title");}
+			result.setTitle(title);
 			String desc= new String();
 			if(doc.get("message")!=null&&!doc.get("message").equalsIgnoreCase("unknown"))
 				desc+=doc.get("message")+". ";
+			
+			if(doc.get("category")!=null && !doc.get("category").equalsIgnoreCase("unknown"))
+				desc+="Category: "+doc.get("category")+". ";
+			
+
+			if(doc.get("about")!=null&& !doc.get("about").equalsIgnoreCase("unknown"))
+				desc+="About: "+doc.get("about")+". ";
+			
 			if(doc.get("description")!=null&&!doc.get("description").equalsIgnoreCase("unknown"))
 				desc+=doc.get("description")+". ";
-			if(doc.get("about")!=null&& doc.get("about").equalsIgnoreCase("unknown"))
-				desc+=doc.get("about")+". ";
-			if(doc.get("category")!=null && !doc.get("category").equalsIgnoreCase("unknown"))
-				desc+=doc.get("category")+". ";
 			result.setTags(doc.get("user"));
 			
 			//result.setDescription(doc.get("description")+" About:"+doc.get("about")+". Category:"+doc.get("catefory")+ ". Website:"+ doc.get("website"));
@@ -2087,22 +2412,39 @@ for(String key:accessparams.keySet())
 				String date = timeAgoInWords(d);
 				result.setDate(date);
 			}
+			if(doc.get("document type").equalsIgnoreCase("status"))
+			{
+				Date d = GetLocalDateStringFromUTCString(doc.get("updated time"));
+				String date = timeAgoInWords(d);
+				result.setDate(date);
+				desc+="\r\n";
+				if(doc.get("location")!=null && !doc.get("location").equalsIgnoreCase("unknown"))
+					desc+=" Location: "+doc.get("location");
+				
+				if(doc.get("city")!=null && !doc.get("city").equalsIgnoreCase("unknown"))
+					desc+=". City: "+doc.get("city");
+				
+				if(doc.get("country")!=null && !doc.get("country").equalsIgnoreCase("unknown"))
+					desc+=". Country: "+doc.get("country");
+			}
 			
 			result.setRank(1);			
-			result.setTotalResultCount(25);
+			result.setTotalResultCount(hits.size());
 			
-			if(doc.get("talking about")!=null && !doc.get("talking about").equalsIgnoreCase("unknown"))
-				result.setViewCount(Integer.parseInt(doc.get("talking about")));
+			if(doc.get("number of likes")!=null && !doc.get("number of likes").equalsIgnoreCase("unknown"))
+				result.setViewCount(Integer.parseInt(doc.get("number of likes")));
 			
-			
+			if(doc.get("number of comments")!=null && !doc.get("number of comments").equalsIgnoreCase("unknown"))
+				result.setPrivacy(Integer.parseInt(doc.get("number of comments")));
 			
 			if(doc.get("document type").equalsIgnoreCase("photos") || doc.get("document type").equalsIgnoreCase("photo albums"))
 			{
 				result.setType(Query.CT_IMAGE);
 				Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
 				result.setImageUrl(doc.get("image 0 source"));
-				if(doc.get("comments")!=null && !doc.get("comments").equalsIgnoreCase("null") )
+				if(doc.get("comments")!=null && !doc.get("comments").equalsIgnoreCase("null")  && !doc.get("comments").equalsIgnoreCase("unknown") )
 				desc+=doc.get("comments");
+				
 				for(int i=0;i<8;i++)
 				{
 					Images img= new Images();
@@ -2133,10 +2475,10 @@ for(String key:accessparams.keySet())
 					desc+=" Location: "+doc.get("location");
 				
 				if(doc.get("city")!=null && !doc.get("city").equalsIgnoreCase("unknown"))
-					desc+=" City: "+doc.get("city");
+					desc+=". City: "+doc.get("city");
 				
 				if(doc.get("country")!=null && !doc.get("country").equalsIgnoreCase("unknown"))
-					desc+=" Country: "+doc.get("country");
+					desc+=". Country: "+doc.get("country");
 				desc+="\r\n";
 				
 			result.setThumbnails(thumbnails);
@@ -2145,10 +2487,9 @@ for(String key:accessparams.keySet())
 			
 			if(doc.get("document type").equalsIgnoreCase("videos") || doc.get("document type").equalsIgnoreCase("videos uploaded"))
 			{
-				if(doc.get("source")!=null)
-					result.setUrl(doc.get("source"));	
+					
 				result.setType(Query.CT_VIDEO);			
-				result.setDate(doc.get("created time"));
+				
 				Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
 				Thumbnail t= new Thumbnail(doc.get("thumbnail"), 160, 89);
 				result.setEmbeddedSize1(CoreUtils.createImageCode(t, 100, 100));
@@ -2161,7 +2502,11 @@ for(String key:accessparams.keySet())
 			{
 				if(doc.get("location")!=null && !doc.get("location").equalsIgnoreCase("unknown"))
 					desc+="Location: "+doc.get("location");
-				desc+="City: "+doc.get("city")+" , Country: "+doc.get("country");
+				if(doc.get("city")!=null && !doc.get("city").equalsIgnoreCase("unknown"))
+					desc+=". City: "+doc.get("city");
+				if(doc.get("country")!=null && !doc.get("country").equalsIgnoreCase("unknown"))
+					desc+=". Country: "+doc.get("country");
+				
 				if(doc.get("start time")!=null && !doc.get("start time").equalsIgnoreCase("unknown"))
 					desc+="Start time: "+doc.get("start time");
 				if(doc.get("end time")!=null && !doc.get("end time").equalsIgnoreCase("unknown"))
@@ -2181,6 +2526,8 @@ for(String key:accessparams.keySet())
 					desc+=" About: "+doc.get("bio");
 				
 			}
+			desc.replace("unknown", " ");
+			desc.replace("\'unknown\'", " ");
 			String encdesc=null;
 			try {
 				encdesc= new String(desc.getBytes(), "UTF-8");
@@ -2239,7 +2586,7 @@ for(String key:accessparams.keySet())
 	    } else if ( 1 <= distanceInMin && distanceInMin <= 45 ) {
 	        return distanceInMin + " minutes ago";
 	    } else if ( 45 <= distanceInMin && distanceInMin <= 89 ) {
-	        return "About 1 hour";
+	        return "About 1 hour ago";
 	    } else if ( 90 <= distanceInMin && distanceInMin <= 1439 ) {
 	        return "About " + (distanceInMin / 60) + " hours ago";
 	    } else if ( 1440 <= distanceInMin && distanceInMin <= 2529 ) {
@@ -2252,7 +2599,10 @@ for(String key:accessparams.keySet())
 	        return "About " + (distanceInMin / 43200) + " months ago";
 	    } else {
 	        long distanceInYears = distanceInMin / 525600;
+	        if(distanceInYears>1)
 	        return "About " + distanceInYears + " years ago";
+	        else
+	        return "About " + distanceInYears + " year ago";
 	    }
 	}
 

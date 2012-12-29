@@ -1,6 +1,7 @@
 package facebook.api;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.TreeMap;
 
 import javax.ws.rs.core.MediaType;
@@ -8,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import l3s.facebook.listresponse.books.Books;
 import l3s.facebook.listresponse.friends.Friends;
 import l3s.facebook.listresponse.likes.Likes;
+import l3s.facebook.listresponse.links.SharedLinks;
 import l3s.facebook.listresponse.movies.Movies;
 import l3s.facebook.listresponse.music.Music;
 import l3s.facebook.listresponse.notes.Notes;
@@ -21,6 +23,7 @@ import l3s.facebook.listresponse.usergroups.Groups;
 import l3s.facebook.listresponse.userlocations.UserLocationObjects;
 import l3s.facebook.listresponse.userphotoalbums.Photoalbums;
 import l3s.facebook.listresponse.videosuploadedandtagged.Videolist;
+import l3s.facebook.object.error.Error;
 import l3s.facebook.search.publicposts.Publicpostresults;
 import l3s.facebook.search.response.Results;
 
@@ -68,6 +71,7 @@ public class Facebook implements SocialNetworkInterface {
 
 	@Override
 	public <T> T getEntity(String id, Class<T> type) {
+		
 		WebResource resource = FacebookClient.resource(graphAPI+id+accesstokenString);
 
 		TreeMap<String, String> params = new TreeMap<String, String>();
@@ -83,8 +87,18 @@ public class Facebook implements SocialNetworkInterface {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Error error = resource.accept(MediaType.APPLICATION_JSON).get(Error.class);
+			if(error.getCode()==BigInteger.valueOf(100))
+				return null;
+			try {
+				Thread.sleep(100000);
+			} catch (InterruptedException e1) {
+				
+				e1.printStackTrace();
+			}
 		}
-		
+		 
+			
 		return objectResponse;
 	}
 
@@ -137,9 +151,20 @@ public class Facebook implements SocialNetworkInterface {
 			String value = params.get(key);
 			resource = resource.queryParam(key, value);
 		}
+		Likes objectResponse= null;
+		try{
+			 objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Likes.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				Thread.sleep(100000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 	
-		
-		Likes objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Likes.class);
 		return objectResponse;
 	}
 
@@ -169,9 +194,20 @@ public class Facebook implements SocialNetworkInterface {
 			String value = params.get(key);
 			resource = resource.queryParam(key, value);
 		}
-	
+		Notes objectResponse= null;
+		try{
+		objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Notes.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				Thread.sleep(100000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		
-		Notes objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Notes.class);
 		return objectResponse;
 	}
 
@@ -217,9 +253,20 @@ public class Facebook implements SocialNetworkInterface {
 			String value = params.get(key);
 			resource = resource.queryParam(key, value);
 		}
-	
+		Photos objectResponse= null;
+		try{
+			objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Photos.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				Thread.sleep(100000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		
-		Photos objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Photos.class);
 		return objectResponse;
 	}
 
@@ -233,9 +280,20 @@ public class Facebook implements SocialNetworkInterface {
 			String value = params.get(key);
 			resource = resource.queryParam(key, value);
 		}
-	
+		Photoalbums objectResponse= null;
+		try{
+			objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Photoalbums.class);
+		}
+		catch (Exception e) {
+			try {
+				e.printStackTrace();
+				Thread.sleep(100000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		
-		Photoalbums objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Photoalbums.class);
 		return objectResponse;
 	}
 
@@ -265,9 +323,20 @@ public class Facebook implements SocialNetworkInterface {
 			String value = params.get(key);
 			resource = resource.queryParam(key, value);
 		}
-	
+		Events objectResponse=null;
+		try{
+			objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Events.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				Thread.sleep(100000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		
-		Events objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Events.class);
 		return objectResponse;
 	}
 
@@ -283,7 +352,20 @@ public class Facebook implements SocialNetworkInterface {
 		}
 	
 		
-		Groups objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Groups.class);
+		Groups objectResponse=null;
+		try{
+			objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Groups.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				Thread.sleep(100000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
 		return objectResponse;
 	}
 
@@ -297,9 +379,20 @@ public class Facebook implements SocialNetworkInterface {
 			String value = params.get(key);
 			resource = resource.queryParam(key, value);
 		}
-	
+		UserLocationObjects objectResponse=null;
+		try{
+			objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(UserLocationObjects.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				Thread.sleep(100000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		
-		UserLocationObjects objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(UserLocationObjects.class);
 		return objectResponse;
 	}
 
@@ -315,7 +408,20 @@ public class Facebook implements SocialNetworkInterface {
 		}
 	
 		
-		Videolist objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Videolist.class);
+		Videolist objectResponse=null;
+		try{
+			objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Videolist.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				Thread.sleep(100000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
 		return objectResponse;
 	}
 
@@ -331,7 +437,20 @@ public class Facebook implements SocialNetworkInterface {
 		}
 	
 		
-		Videolist objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Videolist.class);
+		Videolist objectResponse=null;
+		try{
+			objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Videolist.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				Thread.sleep(100000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
 		return objectResponse;
 	}
 
@@ -439,7 +558,53 @@ public class Facebook implements SocialNetworkInterface {
 		}
 	
 		
-		Statuses objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Statuses.class);
+		Statuses objectResponse=null;
+		try{
+			objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(Statuses.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
+		
+		return objectResponse;
+		
+		
+	}
+
+	@Override
+	public SharedLinks getLinksSharedBy(String id) {
+		WebResource resource = FacebookClient.resource(graphAPI+id+accesstokenString+"&fields=links");
+
+		TreeMap<String, String> params = new TreeMap<String, String>();
+
+		for (String key : params.keySet()) {
+			String value = params.get(key);
+			resource = resource.queryParam(key, value);
+		}
+	
+		
+		SharedLinks objectResponse=null;
+		try{
+			objectResponse= resource.accept(MediaType.APPLICATION_JSON).get(SharedLinks.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
+		
 		return objectResponse;
 		
 	}

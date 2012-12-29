@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import l3s.facebook.objects.photoalbum.Paging;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -41,7 +43,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "data",
-    "count"
+    "count",
+    "paging"
 })
 @XmlRootElement(name = "comments")
 public class Comments {
@@ -50,7 +53,8 @@ public class Comments {
     protected List<Data> data;
     @XmlElement(required = true)
     protected BigInteger count;
-
+    @XmlElement(required = true)
+    protected Paging paging;
     /**
      * Gets the value of the data property.
      * 
@@ -103,5 +107,7 @@ public class Comments {
     public void setCount(BigInteger value) {
         this.count = value;
     }
-
+    public Paging getPaging() {
+        return paging;
+    }
 }

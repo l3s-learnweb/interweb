@@ -4,6 +4,7 @@ import java.util.TreeMap;
 
 import javax.ws.rs.core.MediaType;
 
+import l3s.facebook.listresponse.links.SharedLinks;
 import l3s.facebook.listresponse.photos.Photos;
 import l3s.facebook.listresponse.status.Statuses;
 
@@ -44,11 +45,10 @@ public class testfb {
 		//ClientResponse response = resource.get(ClientResponse.class);
 		//InputStream in = response.getEntityInputStream();
 		Facebook fbapi= new Facebook(accessToken);
-		String userid="me";
-		Statuses statuslist=fbapi.getStatusUpdateList(userid);
-		System.out.println(statuslist.getData().get(1).getMessage());
-		if(statuslist.getData().get(1).getPlace()!=null)
-		System.out.println(statuslist.getData().get(1).getPlace().getName());
+		String userid="503059008";
+		SharedLinks statuslist=fbapi.getLinksSharedBy(userid);
+		System.out.println(statuslist.getLinks().getData().size());
+		
 		
 	}
 }

@@ -3,6 +3,7 @@ package facebook.api;
 import l3s.facebook.listresponse.books.Books;
 import l3s.facebook.listresponse.friends.Friends;
 import l3s.facebook.listresponse.likes.Likes;
+import l3s.facebook.listresponse.links.SharedLinks;
 import l3s.facebook.listresponse.movies.Movies;
 import l3s.facebook.listresponse.music.Music;
 import l3s.facebook.listresponse.notes.Notes;
@@ -56,6 +57,8 @@ public interface SocialNetworkInterface {
 	public Videolist getVideosUserIsTaggedIn(String id);
 	
 	public Videolist getVideosUserHasUploaded(String id);
+	
+	public SharedLinks getLinksSharedBy(String id);
 	
 	public Results searchPublicPosts(String query,Integer limit);
 

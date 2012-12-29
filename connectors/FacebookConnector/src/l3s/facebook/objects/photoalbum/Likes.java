@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Likes {
 
     @XmlElement(required = true)
-    protected List<Data> data;
+    protected List<DataLike> data;
     @XmlElement(required = true)
     protected Paging paging;
 
@@ -72,9 +72,9 @@ public class Likes {
      * 
      * 
      */
-    public List<Data> getData() {
+    public List<DataLike> getData() {
         if (data == null) {
-            data = new ArrayList<Data>();
+            data = new ArrayList<DataLike>();
         }
         return this.data;
     }
