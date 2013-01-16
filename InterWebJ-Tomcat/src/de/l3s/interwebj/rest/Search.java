@@ -267,7 +267,7 @@ public class Search
 		{
 			int i = Integer.parseInt(resultCount);
 			i = Math.max(1, i);
-			i = Math.min(100, i);
+			i = Math.min(500, i);
 			query.setResultCount(i);
 		}
 		catch (NumberFormatException e)
