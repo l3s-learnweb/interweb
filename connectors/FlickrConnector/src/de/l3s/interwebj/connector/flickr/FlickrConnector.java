@@ -434,6 +434,7 @@ public class FlickrConnector extends AbstractServiceConnector
 	                                    int totalResultCount)
 	    throws FlickrException, InterWebException
 	{
+		
 		ResultItem resultItem = new ResultItem(getName());
 		resultItem.setId(photo.getId());
 		resultItem.setType(createContentType(photo.getMedia()));
@@ -451,10 +452,16 @@ public class FlickrConnector extends AbstractServiceConnector
 		resultItem.setTotalResultCount(totalResultCount);
 		resultItem.setCommentCount(photo.getComments());
 		
-		resultItem.setEmbeddedSize1("<img src=\""+ photo.getThumbnailUrl() +"\" />");
-		resultItem.setEmbeddedSize2("<img src=\""+ photo.getSmallUrl() +"\" />");
-		resultItem.setEmbeddedSize3("<img src=\""+ photo.getMediumUrl() +"\" />");
-		resultItem.setEmbeddedSize4("<img src=\""+ photo.getLargeUrl() +"\" />");
+		Size thumbnail = photo.getThumbnailSize();
+		resultItem.setEmbeddedSize1("<img src=\""+ thumbnail.getSource() +"\" height=\""+ thumbnail.getHeight() +"\" width=\""+ thumbnail.getWidth() +"\"/>");
+		thumbnail = photo.getSmallSize();
+		resultItem.setEmbeddedSize2("<img src=\""+ thumbnail.getSource() +"\" height=\""+ thumbnail.getHeight() +"\" width=\""+ thumbnail.getWidth() +"\"/>");
+		thumbnail = photo.getMediumSize();
+		if(thumbnail != null)
+			resultItem.setEmbeddedSize3("<img src=\""+ thumbnail.getSource() +"\" height=\""+ thumbnail.getHeight() +"\" width=\""+ thumbnail.getWidth() +"\"/>");
+		thumbnail = photo.getLargeSize();
+		if(thumbnail != null)
+			resultItem.setEmbeddedSize4("<img src=\""+ thumbnail.getSource() +"\" height=\""+ thumbnail.getHeight() +"\" width=\""+ thumbnail.getWidth() +"\"/>");
 		
 		if(photo.getLargeUrl() != null && photo.getLargeUrl().length() > 7)
 			resultItem.setImageUrl(photo.getLargeUrl());
@@ -488,14 +495,28 @@ public class FlickrConnector extends AbstractServiceConnector
 	}
 	
 
-	private Set<Thumbnail> createThumbnails(Photo photo)
-	    throws FlickrException
+	private Set<Thumbnail> createThumbnails(Photo photo) throws FlickrException
 	{		
 		SortedSet<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
+		Size thumbnail = photo.getThumbnailSize();
+		if(thumbnail != null)
+			thumbnails.add(new Thumbnail(thumbnail.getSource(), thumbnail.getWidth(), thumbnail.getHeight()));
+		thumbnail = photo.getSmallSize();
+		if(thumbnail != null)
+			thumbnails.add(new Thumbnail(thumbnail.getSource(), thumbnail.getWidth(), thumbnail.getHeight()));
+		thumbnail = photo.getMediumSize();
+		if(thumbnail != null)
+			thumbnails.add(new Thumbnail(thumbnail.getSource(), thumbnail.getWidth(), thumbnail.getHeight()));
+		thumbnail = photo.getLargeSize();
+		if(thumbnail != null)
+			thumbnails.add(new Thumbnail(thumbnail.getSource(), thumbnail.getWidth(), thumbnail.getHeight()));
+		
+		/*
 		thumbnails.add(new Thumbnail(photo.getSmallSquareUrl(), 75, 75)); // das sind nur die maximalen breiten/höhen und somit fast nutzlos
 		thumbnails.add(new Thumbnail(photo.getThumbnailUrl(), 100, 100));
 		thumbnails.add(new Thumbnail(photo.getSmallUrl(), 240, 240));
 		thumbnails.add(new Thumbnail(photo.getMediumUrl(), 500, 500));
+		*/
 		return thumbnails;
 	}
 	
@@ -508,6 +529,10 @@ public class FlickrConnector extends AbstractServiceConnector
 		extras.add("date_upload");
 		extras.add("views");
 		extras.add("media");
+		extras.add("url_t");
+		extras.add("url_s");
+		extras.add("url_m");
+		extras.add("url_l");
 		
 		return extras;
 	}
@@ -551,7 +576,7 @@ public class FlickrConnector extends AbstractServiceConnector
 				}
 				else if(query.getQuery().startsWith("recent::"))
 				{
-					photoList = pi.getRecent(query.getResultCount(), query.getPage());
+					photoList = pi.getRecent(getExtras(), query.getResultCount(), query.getPage());
 				}
 				else 
 				{
@@ -568,9 +593,7 @@ public class FlickrConnector extends AbstractServiceConnector
 				}
 
 				if(null == photoList)
-					photoList = pi.search(params,
-				                                query.getResultCount(),
-				                                query.getPage());
+					photoList = pi.search(params, query.getResultCount(), query.getPage());
 				int rank = query.getResultCount() * (query.getPage()-1);
 				int totalResultCount = photoList.getTotal();
 				queryResult.setTotalResultCount(totalResultCount);
