@@ -55,11 +55,6 @@
 			<locationURI>WORKSPACE_LOC/FlickrConnector/src</locationURI>
 		</link>
 		<link>
-			<name>google-src</name>
-			<type>2</type>
-			<locationURI>WORKSPACE_LOC/GoogleConnector/src</locationURI>
-		</link>
-		<link>
 			<name>ipernity-src</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/IpernityConnector/src</locationURI>

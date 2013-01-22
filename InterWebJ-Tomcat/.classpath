@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="bing-azure-src"/>
 	<classpathentry kind="src" path="youtube-src"/>
 	<classpathentry kind="src" path="slideshare-src"/>
-	<classpathentry kind="src" path="google-src"/>
 	<classpathentry kind="src" path="flickr-src"/>
 	<classpathentry kind="src" path="core-src"/>
 	<classpathentry kind="src" path="vimeo-src"/>
@@ -13,8 +12,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jakarta-oro.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/flickrapi-1.2.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/google/lib/google-ajax-apis.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/gdata-client-1.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/gdata-core-1.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/gdata-media-1.0.jar"/>
@@ -23,8 +20,16 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/activation.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/bing/bing-azure-connector.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/lucene-analyzers-3.6.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/google/lib/gson-1.7.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/lucene-core-3.6.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/axis.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/json.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/saaj.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.web"/>
