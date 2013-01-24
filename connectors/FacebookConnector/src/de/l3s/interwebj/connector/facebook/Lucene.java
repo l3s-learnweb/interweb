@@ -162,7 +162,7 @@ public class Lucene {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		    System.out.println((i + 1) + ". " + d.get("title")+ ". user: " +d.get("user name")+ d.get("document type")+ " score="+score);
+		    System.out.println((i + 1) + ". " + d.get("title")+ ". user: " +d.get("user name")+ "   user-  "+d.get("user")+ " id"+d.get("id"));
 		    results.add(d);
 		}
 		try {

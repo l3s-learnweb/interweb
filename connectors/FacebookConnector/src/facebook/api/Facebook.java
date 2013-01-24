@@ -580,7 +580,7 @@ public class Facebook implements SocialNetworkInterface {
 
 	@Override
 	public SharedLinks getLinksSharedBy(String id) {
-		WebResource resource = FacebookClient.resource(graphAPI+id+accesstokenString+"&fields=links");
+		WebResource resource = FacebookClient.resource(graphAPI+id+"/permissions"+accesstokenString+"&fields=links");
 
 		TreeMap<String, String> params = new TreeMap<String, String>();
 
@@ -607,6 +607,21 @@ public class Facebook implements SocialNetworkInterface {
 		
 		return objectResponse;
 		
+	}
+
+	@Override
+	public void revokeAccessToken(String id) {
+		WebResource resource = FacebookClient.resource(graphAPI+id+accesstokenString+"&method=delete");
+
+		TreeMap<String, String> params = new TreeMap<String, String>();
+
+		for (String key : params.keySet()) {
+			String value = params.get(key);
+			resource = resource.queryParam(key, value);
+		}
+		
+		resource.delete();
+		System.out.println("auth token revoked for "+id);
 	}
 
 }

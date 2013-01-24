@@ -149,7 +149,11 @@ public class FacebookConnector2 extends AbstractServiceConnector
 	private static final String PERMISSIONS = "user_about_me,user_activities,user_checkins,user_education_history,user_events,user_groups,user_hometown,user_interests,user_likes,user_location,user_notes,user_photos,user_questions,user_relationships,user_relationship_details,user_religion_politics,user_status,user_subscriptions,user_videos,user_work_history,email," +
 			"friends_about_me,friends_activities,friends_birthday,friends_checkins,friends_education_history,friends_events,friends_groups,friends_hometown,friends_interests,friends_likes,friends_location," +
 			"friends_notes,friends_photos,friends_questions,friends_relationships,friends_relationship_details,friends_religion_politics,friends_status,friends_subscriptions,friends_videos,friends_website,friends_work_history," +
-			"friends_actions.music,friends_actions.news,friends_actions.video,friends_games_activity";
+			"friends_actions.music,friends_actions.news,friends_actions.video,friends_games_activity,publish_actions,read_stream";
+	
+	 
+
+	
 	
 	private static String CALLBACK_URL = "";
 	private static String GRAPHAPI_URL = "https://graph.facebook.com/";
@@ -584,7 +588,8 @@ for(String key:accessparams.keySet())
 	public void revokeAuthentication()
 	    throws InterWebException
 	{
-		// keine möglichkeit gefunden bei vimeo
+		Facebook fb = new Facebook(getAuthCredentials().getKey());
+		fb.revokeAccessToken(getUserId(getAuthCredentials()));
 	}
 
 	@Override
@@ -597,42 +602,7 @@ for(String key:accessparams.keySet())
 		User user = fbapi.getEntity("me", User.class);
 		System.out.println("user:"+userid+"->"+user.getId());
 		//String path= "C:\\Users\\singh\\FacebookIndex\\"+userid+"testing";
-		String path= "/home/singh/learnweb/FacebookIndex/"+user.getId()+"indexfolder2";
-		File file= new File(path);
-		if(file.exists())
-			{
-				file.delete();
-				file= new File(path);
-			}
-		file.setExecutable(true, false);
-		file.setReadable(true, false);
-		file.setWritable(true, false);
-		Lucene base= new Lucene(false, file );
 		
-		
-		
-		IndexWriter writer=null;
-		
-		
-		try {
-			
-			writer= base.getWriter();
-			
-			
-		} catch (Exception e) {
-			try {
-				writer.close(true);
-				
-			} catch (CorruptIndexException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			e.printStackTrace();
-		}
-	
 
 		UserSocialNetworkResult socialnetwork = new UserSocialNetworkResult(userid);
 		int i=0;
@@ -698,16 +668,7 @@ for(String key:accessparams.keySet())
 			
 			
 			
-		}
-		try {
-			writer.close(true);
-			
-		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
 		}
 		Database database = Environment.getInstance().getDatabase();
 		if (values.length() > 0 && values.charAt(values.length()-1)==',') 
@@ -2365,12 +2326,12 @@ for(String key:accessparams.keySet())
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String path= "/home/singh/learnweb/FacebookIndex/"+userid+"indexfolder2";
+		String path= "/home/singh/learnweb/FacebookIndex/crawltestfinalwithlinks2";
 		//String path= "C:\\Users\\singh\\FacebookIndex\\"+"testnew";
 		
 		
 		Lucene base= new Lucene(false, new File(path));
-		String querystr = query.getQuery();
+		String querystr = query.getQuery()+" AND user:"+userid;
 		String[] fields= { "gender","political","concentration","document type","descreption","description","title",
 				"project1 name", "project1 description", "project2 name", "project2 description", "project3 name", "project3 description"
 				,"languages", "sports","favourite athletes","favourite teams","bio","website","hometown","current location","quotes","location","city","country","comments","from name",
@@ -2381,13 +2342,20 @@ for(String key:accessparams.keySet())
 		//List<Document> hitspage = hits.subList((query.getPage()-1)*query.getResultCount(), query.getPage()*query.getResultCount());
 		for(Document doc: hits)
 		{
+			if(doc.get("user")==null)
+				continue;
 			ResultItem result= new ResultItem(getName());
 			result.setServiceName("facebook");
 			result.setType(Query.CT_TEXT);
-			result.setId(doc.get("user"));
+			if(doc.get("user id")!=null)
+			result.setId(doc.get("user id"));
+			else
+				result.setId(doc.get("user"));
 			String title=doc.get("user name")+"'s "+ doc.get("document type");	
-			if(!doc.get("title").equalsIgnoreCase("unknown") && !doc.get("title").equalsIgnoreCase("null") && doc.get("title")!=null)
-			{title+= ": "+ doc.get("title");}
+			if(doc.get("title")!=null)
+			{if(!doc.get("title").equalsIgnoreCase("unknown") && !doc.get("title").equalsIgnoreCase("null"))
+			{title+= ": "+ doc.get("title");}}
+			
 			result.setTitle(title);
 			String desc= new String();
 			if(doc.get("message")!=null&&!doc.get("message").equalsIgnoreCase("unknown"))
@@ -2638,7 +2606,7 @@ for(String key:accessparams.keySet())
 			e.printStackTrace();
 		}
 		String path= "/home/singh/learnweb/FacebookIndex/index";
-		Lucene base= new Lucene(false, new File(path));
+		Lucene base= new Lucene(true, new File(path));
 		
 		String querystr = query.getQuery();
 		

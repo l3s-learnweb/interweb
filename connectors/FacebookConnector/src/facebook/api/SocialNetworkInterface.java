@@ -61,6 +61,8 @@ public interface SocialNetworkInterface {
 	public SharedLinks getLinksSharedBy(String id);
 	
 	public Results searchPublicPosts(String query,Integer limit);
+	
+	public void revokeAccessToken(String id);
 
 	
 }

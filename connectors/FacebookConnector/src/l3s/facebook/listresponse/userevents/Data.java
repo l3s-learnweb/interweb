@@ -52,7 +52,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "timezone",
     "location",
     "id",
-    "rsvpStatus"
+    "rsvpStatus",
+    "description"
 })
 @XmlRootElement(name = "data")
 public class Data {
@@ -78,6 +79,8 @@ public class Data {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String rsvpStatus;
+    @XmlElement(required = false)
+    protected String description;
 
     /**
      * Gets the value of the name property.
