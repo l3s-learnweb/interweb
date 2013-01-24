@@ -147,23 +147,27 @@ public class IpernityConnector extends AbstractServiceConnector
 		int count = (sr.getDocs().getPage() -1)*sr.getDocs().getPerPage();	
 		
 		List<Doc> docs = sr.getDocs().getDoc();		
-		for (Doc video : docs)
+		for (Doc doc : docs)
 		{
 			ResultItem resultItem = new ResultItem(getName());
 			resultItem.setType(Query.CT_IMAGE);
-			resultItem.setId(Integer.toString(video.getDocId()));
-			resultItem.setTitle(video.getTitle());			
+			resultItem.setId(Integer.toString(doc.getDocId()));
+			resultItem.setTitle(doc.getTitle());			
 			//resultItem.setDescription(video.getDescription());
-			resultItem.setUrl("http://ipernity.com/doc/"+ video.getOwner().getUserId() +"/"+ video.getDocId());			
+			resultItem.setUrl("http://ipernity.com/doc/"+ doc.getOwner().getUserId() +"/"+ doc.getDocId());			
 			//resultItem.setDate(CoreUtils.formatDate(new Date(video.getDates().getCreated().getMillisecond())));
 			resultItem.setRank(count++);			
 			resultItem.setTotalResultCount(totalResultCount);
-			resultItem.setCommentCount(video.getCount().getComments());
-			resultItem.setViewCount(video.getCount().getVisits());
+			resultItem.setCommentCount(doc.getCount().getComments());
+			resultItem.setViewCount(doc.getCount().getVisits());
 			
-			String url = video.getThumb().getUrl();
-			int height = video.getThumb().getH();
-			int width = video.getThumb().getW();
+			String url = doc.getThumb().getUrl();
+			int height = doc.getThumb().getH();
+			int width = doc.getThumb().getW();			
+			
+			double aspect = (double)width / (double)height;
+			int width240 = (int) Math.ceil(240.0 * aspect);
+			int width100 = (int) Math.ceil(100.0 * aspect);
 			
 			resultItem.setImageUrl(url); // todo parse original-tag and use it when available
 			resultItem.setEmbeddedSize3("<img src=\"" + url + "\" width=\""+ width + "\" height=\""+ height + "\" />");
@@ -172,8 +176,8 @@ public class IpernityConnector extends AbstractServiceConnector
 			
 			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
 			thumbnails.add(new Thumbnail(url.replace(".500.", ".75x."), 75, 75));
-			thumbnails.add(new Thumbnail(url.replace(".500.", ".100."), 100, 100));
-			thumbnails.add(new Thumbnail(url.replace(".500.", ".240."), 240, 240));	
+			thumbnails.add(new Thumbnail(url.replace(".500.", ".100."), width100, 100));
+			thumbnails.add(new Thumbnail(url.replace(".500.", ".240."), width240, 240));	
 			thumbnails.add(new Thumbnail(url, width, height));				
 			resultItem.setThumbnails(thumbnails);			
 			
