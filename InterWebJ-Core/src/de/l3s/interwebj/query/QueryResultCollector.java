@@ -28,12 +28,19 @@ public class QueryResultCollector
 		
 
 		@Override
-		public QueryResult call() throws Exception
+		public QueryResult call() 
 		{
 			long startTime = System.currentTimeMillis();
-			Environment.logger.info("[" + connector.getName()
-			                        + "] Start querying: " + query);
-			QueryResult queryResult = connector.get(query, authCredentials);
+			Environment.logger.info("[" + connector.getName()+ "] Start querying: " + query);
+			
+			QueryResult queryResult;
+			try {
+				queryResult = connector.get(query, authCredentials);
+			} 
+			catch (Throwable e) {
+				e.printStackTrace();
+				return new QueryResult(query);
+			}
 			
 			long endTime = System.currentTimeMillis();
 			Environment.logger.info("[" + connector.getName() + "] Finished. ["
