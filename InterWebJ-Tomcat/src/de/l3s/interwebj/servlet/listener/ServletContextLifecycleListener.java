@@ -1,6 +1,8 @@
 package de.l3s.interwebj.servlet.listener;
 
 
+import java.io.File;
+
 import javax.servlet.*;
 
 import de.l3s.interwebj.core.*;
@@ -24,7 +26,20 @@ public class ServletContextLifecycleListener
 	{
 		ServletContext servletContext = e.getServletContext();
 		String webinfRealPath = servletContext.getRealPath("/WEB-INF");
+		
 		String configPath = webinfRealPath + "/config.xml";
+		
+		if(new File("E:\\webservicefolder").exists()){
+			 configPath = webinfRealPath + "/config_local.xml";
+		}else
+		if(new File("C:\\").exists())
+		{}	else if(new File("/data2").exists()){
+	  } else {
+	  }
+		
+		
+		
+		
 		Environment environment = Environment.getInstance(configPath);
 		Environment.logger.info("Starting InterWebJ up...");
 		Engine engine = environment.getEngine();
