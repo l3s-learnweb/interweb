@@ -4,7 +4,7 @@
   <jar-name>dbpedia-connector.jar</jar-name>
   <class>de.l3s.interwebj.connector.dbpedia.DbpediaConnector</class>
   <name>DBPedia</name>
-  <base-url>http://http://lookup.dbpedia.org</base-url>
+  <base-url>http://dbpedia.org</base-url>
   <content-types>
     <content-type>text</content-type>
   </content-types>

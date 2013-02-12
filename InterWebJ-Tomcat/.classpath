@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src-DBpedia"/>
 	<classpathentry kind="src" path="ipernity-src"/>
 	<classpathentry kind="src" path="bing-azure-src"/>
 	<classpathentry kind="src" path="youtube-src"/>
@@ -8,7 +9,6 @@
 	<classpathentry kind="src" path="flickr-src"/>
 	<classpathentry kind="src" path="core-src"/>
 	<classpathentry kind="src" path="vimeo-src"/>
-	<classpathentry kind="src" path="fb-src"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jakarta-oro.jar"/>

@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.*;
 
 import org.apache.commons.lang.*;
 
-import com.aetrion.flickr.people.User;
+
 
 import de.l3s.interwebj.query.*;
 import de.l3s.interwebj.util.*;
