@@ -84,7 +84,7 @@ public class SlideShareConnector
 		QueryResult queryResult = new QueryResult(query);
 		//		WebResource resource = createResource("http://www.slideshare.net/api/2/search_slideshows");
 		Client client = Client.create();
-		WebResource resource = client.resource("http://www.slideshare.net/api/2/search_slideshows");
+		WebResource resource = client.resource("https://www.slideshare.net/api/2/search_slideshows");
 		resource = resource.queryParam("q", query.getQuery());
 		resource = resource.queryParam("lang", query.getLanguage());
 		resource = resource.queryParam("page", Integer.toString(query.getPage()));
@@ -104,6 +104,13 @@ public class SlideShareConnector
 		//		resource = resource.queryParam("detailed", "1");
 		ClientResponse response = postQuery(resource);
 
+		try {
+			String responseContent = CoreUtils.getClientResponseContent(response);
+			System.out.println("search response;:"+ responseContent);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		SearchResponse sr;
 		try { // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
 			sr = response.getEntity(SearchResponse.class);

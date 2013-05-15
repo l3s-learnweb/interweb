@@ -126,7 +126,7 @@ public class IpernityConnector extends AbstractServiceConnector
 		resource = resource.queryParam("page", Integer.toString(query.getPage()));
 		resource = resource.queryParam("per_page", Integer.toString(query.getResultCount()));
 		resource = resource.queryParam("sort", createSortOrder(query.getSortOrder()));
-		resource = resource.queryParam("thumbsize", "500");
+		resource = resource.queryParam("thumbsize", "560");
 		resource = resource.queryParam("extra", "medias,count"); //,dates,original
 		
 		
@@ -183,13 +183,13 @@ public class IpernityConnector extends AbstractServiceConnector
 			}
 			resultItem.setImageUrl(url); // todo parse original-tag and use it when available
 			resultItem.setEmbeddedSize3("<img src=\"" + url + "\" width=\""+ width + "\" height=\""+ height + "\" />");
-			resultItem.setEmbeddedSize2(CoreUtils.createImageCode(url.replace(".500.", ".240."), width, height, 240, 240));
-			resultItem.setEmbeddedSize1(CoreUtils.createImageCode(url.replace(".500.", ".100."), width, height, 100, 100));
+			resultItem.setEmbeddedSize2(CoreUtils.createImageCode(url.replace(".560.", ".240."), width, height, 240, 240));
+			resultItem.setEmbeddedSize1(CoreUtils.createImageCode(url.replace(".560.", ".100."), width, height, 100, 100));
 			
 			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-			thumbnails.add(new Thumbnail(url.replace(".500.", ".75x."), 75, 75));
-			thumbnails.add(new Thumbnail(url.replace(".500.", ".100."), width100, height100));
-			thumbnails.add(new Thumbnail(url.replace(".500.", ".240."), width240, height240));	
+			thumbnails.add(new Thumbnail(url.replace(".560.", ".75x."), 75, 75));
+			thumbnails.add(new Thumbnail(url.replace(".560.", ".100."), width100, height100));
+			thumbnails.add(new Thumbnail(url.replace(".560.", ".240."), width240, height240));	
 			thumbnails.add(new Thumbnail(url, width, height));				
 			resultItem.setThumbnails(thumbnails);			
 			

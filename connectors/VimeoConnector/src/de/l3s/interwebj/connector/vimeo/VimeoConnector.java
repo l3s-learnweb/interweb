@@ -167,7 +167,8 @@ public class VimeoConnector extends AbstractServiceConnector
 			resultItem.setTotalResultCount(totalResultCount);
 			resultItem.setCommentCount(video.getNumberOfComments());
 			resultItem.setViewCount(video.getNumberOfPlays());
-			
+			resultItem.setDuration(video.getDuration());
+		
 			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
 			for(de.l3s.interwebj.connector.vimeo.jaxb.Thumbnail vimeoThumbnail : video.getThumbnails().getThumbnail())
 			{
@@ -178,7 +179,12 @@ public class VimeoConnector extends AbstractServiceConnector
 				if(vimeoThumbnail.getWidth() <= 100)
 					resultItem.setEmbeddedSize1(CoreUtils.createImageCode(vimeoThumbnail.getValue(), vimeoThumbnail.getWidth(), vimeoThumbnail.getHeight(), 100, 100));
 				else if(vimeoThumbnail.getWidth() <= 240)
+				{
 					resultItem.setEmbeddedSize2("<img src=\""+ vimeoThumbnail.getValue() +"\" width=\""+ vimeoThumbnail.getWidth() +"\" height=\""+ vimeoThumbnail.getHeight() +"\" />");
+					
+					thumbnails.add(new Thumbnail(vimeoThumbnail.getValue().replace("_200", "_295"), 295, 166));
+					
+				}
 			}			
 			resultItem.setThumbnails(thumbnails);
 			

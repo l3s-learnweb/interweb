@@ -59,6 +59,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "numberOfLikes",
     "numberOfPlays",
     "numberOfComments",
+    "duration",
     "thumbnails"
 })
 @XmlRootElement(name = "video")
@@ -78,6 +79,8 @@ public class Video {
     protected int numberOfPlays;
     @XmlElement(name = "number_of_comments", required = true)
     protected int numberOfComments;
+    @XmlElement(name = "duration", required = true)
+    protected int duration;
     /*
     @XmlElement(required = true)
     protected Owner owner;
@@ -243,6 +246,8 @@ public class Video {
         this.numberOfComments = value;
     }
 
+    
+    
     /**
      * Gets the value of the owner property.
      * 
@@ -267,7 +272,15 @@ public class Video {
         this.owner = value;
     }*/
 
-    /**
+    public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	/**
      * Gets the value of the thumbnails property.
      * 
      * @return
