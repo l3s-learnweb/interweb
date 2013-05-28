@@ -25,11 +25,6 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		<buildCommand>
-			<name>org.zeroturnaround.eclipse.rebelXmlBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jem.workbench.JavaEMFNature</nature>
@@ -37,7 +32,6 @@
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
-		<nature>org.zeroturnaround.eclipse.jrebelNature</nature>
 	</natures>
 	<linkedResources>
 		<link>
@@ -51,19 +45,9 @@
 			<locationURI>WORKSPACE_LOC/InterWebJ-Core/src</locationURI>
 		</link>
 		<link>
-			<name>dbpedia-src</name>
-			<type>2</type>
-			<locationURI>WORKSPACE_LOC/DbpediaConnector/src</locationURI>
-		</link>
-		<link>
 			<name>flickr-src</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/FlickrConnector/src</locationURI>
-		</link>
-		<link>
-			<name>freebase-src</name>
-			<type>2</type>
-			<locationURI>WORKSPACE_LOC/FreebaseConnector/src</locationURI>
 		</link>
 		<link>
 			<name>ipernity-src</name>
@@ -79,11 +63,6 @@
 			<name>src-DBpedia</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/DbpediaConnector/src</locationURI>
-		</link>
-		<link>
-			<name>src-freebase</name>
-			<type>2</type>
-			<locationURI>WORKSPACE_LOC/FreebaseConnector/src</locationURI>
 		</link>
 		<link>
 			<name>vimeo-src</name>

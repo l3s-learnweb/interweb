@@ -65,6 +65,8 @@ public class SearchResultEntity
 	private String embeddedSize4;
 	@XmlElement(name = "max_image_url")
 	private String imageUrl;
+	@XmlElement(name = "duration")
+	private int duration;
 	
 
 	public SearchResultEntity()
@@ -121,6 +123,7 @@ public class SearchResultEntity
 		setImageUrl(resultItem.getImageUrl());
 		this.privacy = resultItem.getPrivacy();
 		this.privacyConfidence = resultItem.getPrivacyConfidence();
+		this.duration = resultItem.getDuration();
 	}
 	
 

@@ -104,14 +104,16 @@ public class SlideShareConnector
 		//		resource = resource.queryParam("detailed", "1");
 		ClientResponse response = postQuery(resource);
 
+		/*
 		try {
 			String responseContent = CoreUtils.getClientResponseContent(response);
 			System.out.println("search response;:"+ responseContent);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		*/
 		
-		SearchResponse sr;
+		SearchResponse sr;		
 		try { // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
 			sr = response.getEntity(SearchResponse.class);
 		}
@@ -126,6 +128,17 @@ public class SlideShareConnector
 		{
 			return queryResult;
 		}
+		
+		int width = 170;// = Integer.parseInt(size[0]);
+		int height = 128;// = Integer.parseInt(size[1]);
+		int heightSmall = 90;		
+	
+		if(fileType.equals("documents")) 
+		{
+			height = 220;
+			heightSmall = 155;
+		}
+		
 		for (SearchResultEntity sre : searchResults)
 		{
 			ResultItem resultItem = new ResultItem(getName());
@@ -138,13 +151,17 @@ public class SlideShareConnector
 			resultItem.setRank(count++);			
 			resultItem.setTotalResultCount(sr.getMeta().getTotalResults());
 			
+			// slideshare api return always the same wrong thumbnail size
+			//String[] size = sre.getThumbnailSize().substring(1, sre.getThumbnailSize().length()-1).split(",");
+			
+			
 			Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
-			thumbnails.add(new Thumbnail(sre.getThumbnailSmallURL(), 120, 90));
-			thumbnails.add(new Thumbnail(sre.getThumbnailURL(), 170, 128));			
+			thumbnails.add(new Thumbnail(sre.getThumbnailSmallURL(), 120, heightSmall));
+			thumbnails.add(new Thumbnail(sre.getThumbnailURL(), width, height));			
 			resultItem.setThumbnails(thumbnails);
 			
-			resultItem.setEmbeddedSize1(CoreUtils.createImageCode(sre.getThumbnailSmallURL(), 120, 90, 100, 100));
-			resultItem.setEmbeddedSize2("<img src=\""+ sre.getThumbnailURL() +"\" width=\"170\" height=\"128\" />");
+			resultItem.setEmbeddedSize1(CoreUtils.createImageCode(sre.getThumbnailSmallURL(), 120, heightSmall, 100, 100));
+			resultItem.setEmbeddedSize2("<img src=\""+ sre.getThumbnailURL() +"\" width=\""+ width +"\" height=\""+ height +"\" />");
 			resultItem.setImageUrl(sre.getThumbnailURL());
 			
 			// remove spam from the embedded code

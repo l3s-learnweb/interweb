@@ -24,6 +24,8 @@ public class SearchResultEntity
 	
 	@XmlElement(name = "ThumbnailURL")
 	protected String thumbnailURL;
+	@XmlElement(name = "ThumbnailSize")
+	protected String thumbnailSize;
 	@XmlElement(name = "ThumbnailSmallURL")
 	protected String thumbnailSmallURL;
 	@XmlElement(name = "Embed")
@@ -248,5 +250,17 @@ public class SearchResultEntity
 	{
 		this.userName = userName;
 	}
+
+
+	public String getThumbnailSize() {
+		return thumbnailSize;
+	}
+
+
+	public void setThumbnailSize(String thumbnailSize) {
+		this.thumbnailSize = thumbnailSize;
+	}
+	
+	
 	
 }

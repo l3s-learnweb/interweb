@@ -34,6 +34,7 @@ public class ResultItem
 	private int commentCount = -1;
 	private double privacy;
 	private int privacyConfidence;
+	private int duration;
 	
 	private String embeddedSize1;
 	private String embeddedSize2;
@@ -380,6 +381,16 @@ public class ResultItem
 			encoded = decoded;
 		}
 		return decoded;
+	}
+
+
+	public int getDuration() {
+		return duration;
+	}
+
+
+	public void setDuration(int duration) {
+		this.duration = duration;
 	}
 	
 }

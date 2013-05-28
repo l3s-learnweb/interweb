@@ -25,6 +25,7 @@ import com.google.gdata.client.youtube.YouTubeService;
 import com.google.gdata.data.media.MediaByteArraySource;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.media.mediarss.MediaCategory;
+import com.google.gdata.data.media.mediarss.MediaContent;
 import com.google.gdata.data.media.mediarss.MediaDescription;
 import com.google.gdata.data.media.mediarss.MediaGroup;
 import com.google.gdata.data.media.mediarss.MediaKeywords;
@@ -233,8 +234,14 @@ public class YouTubeConnector
 		resultItem.setRank(rank++);
 		resultItem.setTotalResultCount(totalResultCount);
 		resultItem.setViewCount(getViewCount(ve));
-		resultItem.setCommentCount(getCommentCount(ve));
-
+		resultItem.setCommentCount(getCommentCount(ve));		
+		
+		for (MediaContent mediaContent : mg.getContents()) 
+		{			
+			resultItem.setDuration(mediaContent.getDuration());
+			break;
+		}
+		
 		// load thumbnails
 		Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
 		List<MediaThumbnail> mediaThumbnails = mg.getThumbnails();
