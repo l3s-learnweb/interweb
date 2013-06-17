@@ -41,6 +41,7 @@ public class SecurityFilter
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		String requestUrl = getRequestUrl(httpRequest);
 		//		Environment.logger.debug("Requested URL: [" + requestUrl + "]");
+		
 		AccessControll accessControll = environment.getAccessControll();
 		SessionBean sessionBean = (SessionBean) httpRequest.getSession().getAttribute("sessionBean");
 		if (sessionBean == null)
