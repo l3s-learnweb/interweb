@@ -10,6 +10,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bing-azure-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/ipernity-src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src-DBpedia"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/ted-src"/>
         <property name="context-root" value="InterWebJ"/>
         <property name="java-output-path" value="/InterWebJ/build/classes"/>
     </wb-module>

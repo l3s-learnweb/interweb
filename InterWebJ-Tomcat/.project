@@ -65,6 +65,11 @@
 			<locationURI>WORKSPACE_LOC/DbpediaConnector/src</locationURI>
 		</link>
 		<link>
+			<name>ted-src</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/TEDConnector/src</locationURI>
+		</link>
+		<link>
 			<name>vimeo-src</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/VimeoConnector/src</locationURI>
