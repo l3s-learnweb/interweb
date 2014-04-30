@@ -86,7 +86,7 @@ public class Query
 	
 	
 
-	Query(String id,
+	public Query(String id,
 	      String query,
 	      List<String> contentTypes,
 	      Map<String, String> params)
