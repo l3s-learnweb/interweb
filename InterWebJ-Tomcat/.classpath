@@ -49,6 +49,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/ted/lib/xom-1.2.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/ted/lib/xpp3_min-1.1.3.4.O.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/ted/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/ted/lib/slf4j-log4j12-1.6.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.web"/>
