@@ -35,7 +35,7 @@ public class ResultItem
 	private double privacy;
 	private int privacyConfidence;
 	private int duration;
-	
+	private String snippet;
 	private String embeddedSize1;
 	private String embeddedSize2;
 	private String embeddedSize3;
@@ -97,6 +97,9 @@ public class ResultItem
 		return tags;
 	}
 	
+	public String getSnippet(){
+		return snippet;
+	}
 
 	public Thumbnail getThumbnail(int maxWidth, int maxHeight)
 	{
@@ -186,6 +189,14 @@ public class ResultItem
 		this.description = description;
 	}
 	
+	public void setSnippet(String snippet){
+		if(snippet==null){
+			return;
+		}
+		
+		this.snippet=snippet;
+		
+	}
 
 	/**
 	 * html code, could be flash
