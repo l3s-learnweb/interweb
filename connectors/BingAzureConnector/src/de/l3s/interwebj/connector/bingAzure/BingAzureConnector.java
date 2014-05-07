@@ -34,6 +34,9 @@ import de.l3s.interwebj.socialsearch.SocialSearchResult;
 
 public class BingAzureConnector extends AbstractServiceConnector
 {	
+	public BingAzureConnector() {
+		super();
+	}
 	public BingAzureConnector(Configuration configuration)
 	{
 		this(configuration, null);

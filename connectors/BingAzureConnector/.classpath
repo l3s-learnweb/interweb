@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="/InterWebJ-Core/lib/jersey-client-1.5.jar"/>
 	<classpathentry kind="lib" path="/InterWebJ-Core/lib/jersey-core-1.5.jar"/>
 	<classpathentry kind="lib" path="/InterWebJ-Core/lib/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="/InterWebJ-Tomcat/WebContent/WEB-INF/lib/dom4j-2.0.0-ALPHA-2.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j-2.0.0-ALPHA-2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
