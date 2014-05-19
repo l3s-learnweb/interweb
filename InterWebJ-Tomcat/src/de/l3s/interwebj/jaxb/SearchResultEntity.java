@@ -67,7 +67,8 @@ public class SearchResultEntity
 	private String imageUrl;
 	@XmlElement(name = "duration")
 	private int duration;
-	
+	@XmlElement(name = "snippet")
+	private String snippet;
 
 	public SearchResultEntity()
 	{
@@ -121,6 +122,7 @@ public class SearchResultEntity
 		setEmbeddedSize3(resultItem.getEmbeddedSize3());
 		setEmbeddedSize4(resultItem.getEmbeddedSize4());
 		setImageUrl(resultItem.getImageUrl());
+		this.snippet = resultItem.getSnippet();
 		this.privacy = resultItem.getPrivacy();
 		this.privacyConfidence = resultItem.getPrivacyConfidence();
 		this.duration = resultItem.getDuration();
@@ -394,5 +396,9 @@ public class SearchResultEntity
 	 */
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+	
+	public String getSnippet() {
+		return snippet;
 	}
 }
