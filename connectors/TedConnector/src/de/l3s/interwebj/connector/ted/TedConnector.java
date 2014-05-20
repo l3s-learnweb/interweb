@@ -2,15 +2,10 @@ package de.l3s.interwebj.connector.ted;
 
 import static de.l3s.interwebj.util.Assertions.notNull;
 
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,12 +27,10 @@ import de.l3s.interwebj.socialsearch.SocialSearchResult;
 public class TedConnector extends AbstractServiceConnector {
 	
 	public TedConnector() {
-		// TODO Auto-generated constructor stub
 		super();
 	}
 	
 	public TedConnector(Configuration config) {
-		// TODO Auto-generated constructor stub
 		super(config);
 	}
 	
@@ -45,27 +38,22 @@ public class TedConnector extends AbstractServiceConnector {
 
 	@Override
 	public Parameters authenticate(String callbackUrl) throws InterWebException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AuthCredentials completeAuthentication(Parameters params)
-			throws InterWebException {
-		// TODO Auto-generated method stub
+	public AuthCredentials completeAuthentication(Parameters params) throws InterWebException {
 		return null;
 	}
 	
 	@Override
 	public boolean isRegistered() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 	
 	@Override
-	public QueryResult get(Query query, AuthCredentials authCredentials)
-			throws InterWebException {
-		
+	public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException 
+	{		
 		notNull(query, "query");
 		
 		QueryResult qr = new QueryResult(query);
@@ -92,8 +80,7 @@ public class TedConnector extends AbstractServiceConnector {
 			
 	    	index++;
 		}
-		// TODO Auto-generated method stub
-		System.out.println("success");
+
 		return qr;
 	}
 
@@ -120,19 +107,16 @@ public class TedConnector extends AbstractServiceConnector {
 
 	@Override
 	public boolean isConnectorRegistrationDataRequired() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isUserRegistrationDataRequired() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isUserRegistrationRequired() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -145,28 +129,25 @@ public class TedConnector extends AbstractServiceConnector {
 
 	@Override
 	public void revokeAuthentication() throws InterWebException {
-		// TODO Auto-generated method stub
+	
 		
 	}
 
 	@Override
 	public Set<String> getTags(String username, int maxCount)
 			throws IllegalArgumentException, IOException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Set<String> getUsers(Set<String> tags, int maxCount)
 			throws IOException, InterWebException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public SocialSearchResult get(SocialSearchQuery query,
 			AuthCredentials authCredentials) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -176,7 +157,7 @@ public class TedConnector extends AbstractServiceConnector {
 		return test;
 	}
 	
-	@SuppressWarnings("null")
+	
 	private ResultItem convertWebResult(String tedIdkey,HashMap<String,String> valueMap,int index, Pattern pattern,String input)
 	{
 		String speaker=valueMap.get("speaker").split("\\^")[0];
@@ -189,21 +170,21 @@ public class TedConnector extends AbstractServiceConnector {
 		int dur=(min*60)+sec;
 		String description=valueMap.get("description").split("\\^")[0];
 		description=description.replaceAll("(?i)"+input, "<b><i>"+input+"</i></b>");
-		String snippet=null;
-		
+		String snippet=null;		
 	
-		String captionString="";
-		
+		String captionString="";		
 		
 		Iterator<String> keyIterator=valueMap.keySet().iterator();
-		while(keyIterator.hasNext()){
+		while(keyIterator.hasNext())
+		{
 			String key=keyIterator.next();
-			if(key.startsWith("http")){
-			String val=valueMap.get(key);
-			String snip= timeWherePhraseOccurs(val, pattern);
-			if(snip!= "")
-		    captionString+="Link to the transcript-"+key+"\n"+snip+"\n";
-		}
+			if(key.startsWith("http"))
+			{
+				String val=valueMap.get(key);
+				String snip= timeWherePhraseOccurs(val, pattern);
+				if(snip!= "")
+			    captionString+="Link to the transcript-"+key+"\n"+snip+"\n";
+			}
 		}
 		
 		
@@ -214,24 +195,6 @@ public class TedConnector extends AbstractServiceConnector {
 		thumbnails.add(tn);
 		ResultItem resultItem = new ResultItem(getName());
 		resultItem.setType(Query.CT_VIDEO);
-		resultItem.setDuration(120);
-	
-		
-	/*	StringTokenizer st =new StringTokenizer(captionString);
-		StringBuilder sb=new StringBuilder();
-		while(st.hasMoreElements()){
-			String token=(String) st.nextElement();
-			System.out.println(token);
-			System.out.println(input);
-			
-			if(token.equals(input)){
-				 System.out.println(input);
-			     //sb.append("<b>"+token+"</b>");
-			     sb.append(" \""+token+"\" ");}
-			else{
-				
-			    sb.append(" "+token);}
-		} */
 		resultItem.setUrl(valueMap.get("talk").split("\\^")[0]);
 		resultItem.setTitle(valueMap.get("title").split("\\^")[0]);
 		resultItem.setDescription(description);
@@ -261,7 +224,7 @@ public class TedConnector extends AbstractServiceConnector {
 		return resultItem;
 	}
 	
-	public String timeWherePhraseOccurs(String transcriptValue, Pattern p){
+	private String timeWherePhraseOccurs(String transcriptValue, Pattern p){
 		
 		Matcher m=p.matcher(transcriptValue);
     	String captionString="";
@@ -317,7 +280,7 @@ public class TedConnector extends AbstractServiceConnector {
 		
 	}
 	
-	
+	/*
 	public static void main(String args[]){
 		String input1;
 		Scanner scan= new Scanner(System.in);
@@ -332,9 +295,9 @@ public class TedConnector extends AbstractServiceConnector {
 			TedConnector tcon=new TedConnector();
 			QueryResult qresult = tcon.get(query,null);
 		} catch (InterWebException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	} 
+	*/
 
 }
