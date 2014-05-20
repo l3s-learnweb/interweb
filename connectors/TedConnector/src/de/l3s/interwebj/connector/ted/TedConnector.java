@@ -3,9 +3,13 @@ package de.l3s.interwebj.connector.ted;
 import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -280,7 +284,7 @@ public class TedConnector extends AbstractServiceConnector {
 		
 	}
 	
-	/*
+	
 	public static void main(String args[]){
 		String input1;
 		Scanner scan= new Scanner(System.in);
@@ -294,10 +298,11 @@ public class TedConnector extends AbstractServiceConnector {
 		try {
 			TedConnector tcon=new TedConnector();
 			QueryResult qresult = tcon.get(query,null);
+			System.out.println(qresult);
 		} catch (InterWebException e) {
 			e.printStackTrace();
 		}
 	} 
-	*/
+	
 
 }
