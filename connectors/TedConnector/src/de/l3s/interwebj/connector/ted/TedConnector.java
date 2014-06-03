@@ -216,21 +216,21 @@ public class TedConnector extends AbstractServiceConnector {
 		resultItem.setRank(index);
 		resultItem.setEmbeddedSize3("<iframe src=\"http://embed.ted.com/talks/"+valueMap.get("id2").split("\\^")[0]+".html" +"\" width=\"500\" height=\"282\" frameborder=\"0\" scrolling=\"no\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
 		resultItem.setEmbeddedSize4("<iframe src=\"http://embed.ted.com/talks/"+ valueMap.get("id2").split("\\^")[0] +".html" +"\" width=\"100%\" height=\"100%\" frameborder=\"0\" scrolling=\"no\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
-		System.out.println(valueMap.get("id2").split("\\^")[0]);
-		System.out.println("URL of the talk"+"\n");
-		System.out.println(resultItem.getUrl()+"\n");
-		System.out.println("Title"+"\n");
-		System.out.println(resultItem.getTitle()+"\n");
-		System.out.println("Description"+"\n");
-		System.out.println(resultItem.getDescription()+"\n");
-		System.out.println("Snippet"+"\n");
-		System.out.println(resultItem.getSnippet()+"\n");
-		System.out.println("Tags"+"\n");
-		System.out.println(resultItem.getTags()+"\n");
-		System.out.println("Date"+"\n");
-		System.out.println(resultItem.getDate()+"\n");
-		System.out.println("Total Views"+"\n");
-		System.out.println(resultItem.getViewCount()+"\n");
+//		System.out.println(valueMap.get("id2").split("\\^")[0]);
+//		System.out.println("URL of the talk"+"\n");
+//		System.out.println(resultItem.getUrl()+"\n");
+//		System.out.println("Title"+"\n");
+//		System.out.println(resultItem.getTitle()+"\n");
+//		System.out.println("Description"+"\n");
+//		System.out.println(resultItem.getDescription()+"\n");
+//		System.out.println("Snippet"+"\n");
+//		System.out.println(resultItem.getSnippet()+"\n");
+//		System.out.println("Tags"+"\n");
+//		System.out.println(resultItem.getTags()+"\n");
+//		System.out.println("Date"+"\n");
+//		System.out.println(resultItem.getDate()+"\n");
+//		System.out.println("Total Views"+"\n");
+//		System.out.println(resultItem.getViewCount()+"\n");
 		return resultItem;
 	}
 	
