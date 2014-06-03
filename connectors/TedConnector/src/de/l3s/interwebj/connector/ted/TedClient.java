@@ -37,7 +37,7 @@ public class TedClient {
 		boolean enableSearchonDescription=true;
 		
 		public boolean isEnableSearchonTitle() {
-			
+			System.out.println();
 			return enableSearchonTitle;
 		}
 
@@ -73,7 +73,7 @@ public class TedClient {
 		p = Pattern.compile("([A-Z][^.?!]*?)?(?<!\\w)(?i)("+input+")(?!\\w)[^.?!]*?[.?!]{1,2}\"?");
 		
 		String listOfIdsToQuery = "";
-		String superQueryString="select ?id COUNT(?transcript) FROM <http://data-observatory.org/ted_talks> WHERE {?talk <http://www.w3.org/ns/ma-ont#title> ?title ."+
+		String superQueryString="select ?id COUNT(?transcript) FROM <"+Config.GRAPH_NAME+"> WHERE {?talk <http://www.w3.org/ns/ma-ont#title> ?title ."+
 				"?talk <http://www.ted.com/id> ?id ."+
 				"?talk <http://www.w3.org/ns/ma-ont#description> ?description ."+
                 "?transcript <http://purl.org/ontology/bibo/transcriptOf> ?talk .?transcript <http://purl.org/dc/terms/language> ?lang. ?transcript <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?value . ";
@@ -112,9 +112,12 @@ public class TedClient {
 					" FILTER((bif:contains(?title,\"'"+input+"'\") || bif:contains(?description,\"'"+input+"'\") || bif:contains(?value,\"'"+input+"'\"))) } ";
 		}
 		
-		QueryExecution qexecc = new QueryEngineHTTP("http://meco.l3s.uni-hannover.de:8890/sparql", querystring);
+		
+		
+		
+		QueryExecution qexecc = new QueryEngineHTTP(Config.QUERY_ENDPOINT, querystring);
 		ResultSet resultss = qexecc.execSelect();
-
+		
 		ArrayList<String> listOfIds= new ArrayList<String>();
 		
 		while(resultss.hasNext()){
@@ -125,6 +128,9 @@ public class TedClient {
 			listOfIds.add(forPaging);
 		  
 		}
+		
+		
+		
 		
 		if(listOfIds.size()<=resultcount)
 			listOfIdsToQuery= listOfIds.toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
@@ -138,7 +144,7 @@ public class TedClient {
 		
 		String commomQueryString="select ?title ?description ?transcript ?keywords ?thumbnail ?date ?totalviews "
 				+ "?talk ?speaker ?location ?duration ?value ?id ?lang "
-				+ "FROM <http://data-observatory.org/ted_talks> WHERE {?talk <http://www.w3.org/ns/ma-ont#title> ?title ."+
+				+ "FROM <"+Config.GRAPH_NAME+"> WHERE {?talk <http://www.w3.org/ns/ma-ont#title> ?title ."+
 				"?talk <http://www.ted.com/id> ?id ."+
 				"?talk <http://www.w3.org/ns/ma-ont#description> ?description ."+
                 "?talk <http://www.w3.org/ns/dcat#keyword> ?keywords ."+
@@ -152,7 +158,7 @@ public class TedClient {
                 + "?transcript <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?value . FILTER (?id IN "+listOfIdsToQuery+") }";
 	
 		
-		QueryExecution qexec = new QueryEngineHTTP("http://meco.l3s.uni-hannover.de:8890/sparql", commomQueryString);
+		QueryExecution qexec = new QueryEngineHTTP(Config.QUERY_ENDPOINT, commomQueryString);
 		ResultSet results = qexec.execSelect();
 		
 		HashMap<String,HashMap<String,String>> hmap= new HashMap<String,HashMap<String,String>>();
@@ -246,7 +252,7 @@ public class TedClient {
 		
 		
 		}
-		  
+		  System.out.println(hmap.size());
 			return hmap;  
 		  
 	     } 
