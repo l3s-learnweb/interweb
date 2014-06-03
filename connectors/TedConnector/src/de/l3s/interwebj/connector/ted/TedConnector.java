@@ -195,7 +195,7 @@ public class TedConnector extends AbstractServiceConnector {
 				
 				}
 		}
-		
+		captionString=captionString.replaceAll("(?i)"+input, "<b><i>"+input+"</i></b>");
 		additionalDescription="Speaker-"+speaker+"\n"+"Location-"+location+"\n"+"Duration of The video-"+duration+"\n"+captionString;
 		additionalDescription=additionalDescription.replaceAll("(?i)"+input, "<b><i>"+input+"</i></b>");
 		description+="\n"+additionalDescription;
