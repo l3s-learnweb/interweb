@@ -76,10 +76,10 @@
 		</h:form>
 		<ui:fragment rendered="#{searchBean.hasResults()}">
 			<h:outputText value="No results found"
-				rendered="#{searchBean.queryResult.size()==0}" />
+				rendered="${searchBean.queryResult.size()==0}" />
 			<h:outputText
-				value="#{searchBean.queryResult.resultItems.size()} result(s) found (#{searchBean.queryResult.elapsedTime/1000} s)"
-				rendered="#{searchBean.queryResult.size()>0}" />
+				value="${searchBean.queryResult.resultItems.size()} result(s) found (${searchBean.queryResult.elapsedTime/1000} s)"
+				rendered="${searchBean.queryResult.size()>0}" />
 		</ui:fragment>
 		<h:form rendered="#{searchBean.hasResults()}">
 			<h:panelGrid>
@@ -109,7 +109,7 @@
 								<h:outputText value="#{resultItem.embeddedSize3}" escape="false" />
 							
 						<div>
-						<span><h:outputText value="#{resultItem.description}" escape="true" /></span>
+						<span><h:outputText value="#{resultItem.description}" escape="false" /></span>
 						<pre><span style="color: #3399FF;"><h:outputText value="#{resultItem.snippet}" escape="false" /></span></pre></div>
 						<div>
 						<span style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;">
@@ -125,9 +125,6 @@
 				<rich:dataScroller for="result_table" maxPages="11" />
 			</h:panelGrid>
 		</h:form>
-		<img
-			src="http://www.flickr.com/photos/35948364@N00/330342884/sizes/m/"
-			width="500" height="376" />
 	</ui:define>
 </ui:composition>
 </html>

@@ -88,8 +88,10 @@ public class SlideShareConnector
 		resource = resource.queryParam("q", query.getQuery());
 		resource = resource.queryParam("lang", query.getLanguage());
 		resource = resource.queryParam("page", Integer.toString(query.getPage()));
+		
 		resource = resource.queryParam("items_per_page", Integer.toString(query.getResultCount()));
 		resource = resource.queryParam("sort", createSortOrder(query.getSortOrder()));
+		System.out.println(resource.getURI());
 		String searchScope = createSearchScope(query.getSearchScopes());
 		if (searchScope != null)
 		{
@@ -197,7 +199,7 @@ public class SlideShareConnector
 		Client client = Client.create();
 		WebResource resource = client.resource("http://www.slideshare.net/api/2/get_slideshow");
 		resource = resource.queryParam("slideshow_url", url);
-		System.out.println("querying URL: " + resource.toString());
+		
 		ClientResponse response = postQuery(resource);
 		if (response.getClientResponseStatus() != Status.OK)
 		{
@@ -227,7 +229,7 @@ public class SlideShareConnector
 		WebResource resource = client.resource("http://www.slideshare.net/api/2/get_user_tags");
 		resource = resource.queryParam("username", authCredentials.getKey());
 		resource = resource.queryParam("password", authCredentials.getSecret());
-		System.out.println("querying URL: " + resource.toString());
+		
 		ClientResponse response = getQuery(resource);
 		try
 		{
@@ -364,20 +366,17 @@ public class SlideShareConnector
 	}
 	
 
-	private Date parseDate(String dateString)
-	    throws InterWebException
+	private Date parseDate(String dateString) throws InterWebException
 	{
-		SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy",
-		                                                   Locale.US);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
 		try
 		{
 			return dateFormat.parse(dateString);
 		}
 		catch (ParseException e)
-		{
+		{								
 			e.printStackTrace();
-			throw new InterWebException("dateString: [" + dateString + "] "
-			                            + e.getMessage());
+			throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());								
 		}
 	}
 	

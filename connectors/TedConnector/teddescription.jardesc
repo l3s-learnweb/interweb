@@ -11,8 +11,8 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <file path="/TedConnector/.project"/>
         <file path="/TedConnector/connector-config.xml"/>
+        <file path="/TedConnector/.project"/>
         <file path="/TedConnector/.classpath"/>
         <javaElement handleIdentifier="=TedConnector/src"/>
     </selectedElements>

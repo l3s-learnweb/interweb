@@ -12,6 +12,5 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.2.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/InterWebJ-Core"/>
-	<classpathentry kind="lib" path="C:/Users/chawla/Downloads/javautil-3.1.1.jar/javautil-3.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

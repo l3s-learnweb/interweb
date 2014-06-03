@@ -37,7 +37,7 @@ public class TedClient {
 		boolean enableSearchonDescription=true;
 		
 		public boolean isEnableSearchonTitle() {
-			System.out.println();
+			
 			return enableSearchonTitle;
 		}
 
@@ -112,12 +112,9 @@ public class TedClient {
 					" FILTER((bif:contains(?title,\"'"+input+"'\") || bif:contains(?description,\"'"+input+"'\") || bif:contains(?value,\"'"+input+"'\"))) } ";
 		}
 		
-		
-		
-		
 		QueryExecution qexecc = new QueryEngineHTTP("http://meco.l3s.uni-hannover.de:8890/sparql", querystring);
 		ResultSet resultss = qexecc.execSelect();
-		
+
 		ArrayList<String> listOfIds= new ArrayList<String>();
 		
 		while(resultss.hasNext()){
@@ -128,9 +125,6 @@ public class TedClient {
 			listOfIds.add(forPaging);
 		  
 		}
-		
-		
-		
 		
 		if(listOfIds.size()<=resultcount)
 			listOfIdsToQuery= listOfIds.toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
@@ -252,7 +246,7 @@ public class TedClient {
 		
 		
 		}
-		  System.out.println(hmap.size());
+		  
 			return hmap;  
 		  
 	     } 
