@@ -72,7 +72,7 @@ public class TedClient {
 		//input=" "+input+" ";
 		p = Pattern.compile("([A-Z][^.?!]*?)?(?<!\\w)(?i)("+input+")(?!\\w)[^.?!]*?[.?!]{1,2}\"?");
 		
-		String listOfIdsToQuery = "";
+		String listOfIdsToQuery = null;
 		String superQueryString="select ?id COUNT(?transcript) FROM <"+Config.GRAPH_NAME+"> WHERE {?talk <http://www.w3.org/ns/ma-ont#title> ?title ."+
 				"?talk <http://www.ted.com/id> ?id ."+
 				"?talk <http://www.w3.org/ns/ma-ont#description> ?description ."+
@@ -130,18 +130,39 @@ public class TedClient {
 		}
 		
 		
-		
-		
-		if(listOfIds.size()<=resultcount)
-			listOfIdsToQuery= listOfIds.toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
-		else{
-			
+		int listSize=listOfIds.size();
 		offset=(pageNumber-1)*resultcount;
-		listOfIdsToQuery=listOfIds.subList(offset, offset+resultcount).toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
+		
+		if(offset==0)
+		{
+			if(listSize<resultcount)
+				listOfIdsToQuery= listOfIds.toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
+			else
+				listOfIdsToQuery=listOfIds.subList(offset, offset+resultcount).toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
+				
 		}
 			
+		else
+		{
+			if(offset<listSize)
+			{
+				
+				if((listSize-offset)<resultcount)
+					listOfIdsToQuery=listOfIds.subList(offset, offset+(listSize-offset)).toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
+				else
+					listOfIdsToQuery=listOfIds.subList(offset, offset+resultcount).toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
+					
+			}
+			else{
+				
+				listOfIdsToQuery=null;
+			}
+		}
 		
 		
+			
+		
+		if(listOfIdsToQuery!=null){
 		String commomQueryString="select ?title ?description ?transcript ?keywords ?thumbnail ?date ?totalviews "
 				+ "?talk ?speaker ?location ?duration ?value ?id ?lang "
 				+ "FROM <"+Config.GRAPH_NAME+"> WHERE {?talk <http://www.w3.org/ns/ma-ont#title> ?title ."+
@@ -254,8 +275,12 @@ public class TedClient {
 		}
 		  System.out.println(hmap.size());
 			return hmap;  
+		
 		  
 	     } 
+		else
+			return null;
+		}
 		
 	
 		

@@ -76,15 +76,19 @@ public class TedConnector extends AbstractServiceConnector {
 		
 		Pattern pattern=tc.createPattern(query);
 		HashMap<String,HashMap<String,String>> hmap=tc.search(query.getQuery(),query.getPage(),query.getResultCount());
+		
+		if(hmap!=null){
 		Iterator<String> keySetIterator = hmap.keySet().iterator();
 		
 		int index=0;
+		
 		while(keySetIterator.hasNext()){
 			String tedIdKey = keySetIterator.next();
 			HashMap<String,String> valueMap = hmap.get(tedIdKey);
 			qr.addResultItem(convertWebResult(tedIdKey,valueMap, index,pattern,query.getQuery()));
 			
 	    	index++;
+		}
 		}
 
 		return qr;
