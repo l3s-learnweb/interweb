@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,9 +60,6 @@ public class TedConnector extends AbstractServiceConnector {
 		notNull(query, "query");
 		
 		QueryResult qr = new QueryResult(query);
-		query.getQuery();
-		query.getPage();
-		query.getResultCount();
 		
 		TedClient tc = new TedClient();
 		if(query.getParams().get("enabledTitle")=="1")
@@ -75,20 +71,20 @@ public class TedConnector extends AbstractServiceConnector {
 		//query.getParams().get("langOfTheTranscript");
 		
 		Pattern pattern=tc.createPattern(query);
-		HashMap<String,HashMap<String,String>> hmap=tc.search(query.getQuery(),query.getPage(),query.getResultCount());
+		HashMap<String,HashMap<String,String>> hmap = tc.search(query.getQuery(),query.getPage(),query.getResultCount());
 		
-		if(hmap!=null){
+		if(hmap == null)
+			return qr;
+		
 		Iterator<String> keySetIterator = hmap.keySet().iterator();
 		
 		int index=0;
-		
 		while(keySetIterator.hasNext()){
 			String tedIdKey = keySetIterator.next();
 			HashMap<String,String> valueMap = hmap.get(tedIdKey);
 			qr.addResultItem(convertWebResult(tedIdKey,valueMap, index,pattern,query.getQuery()));
 			
 	    	index++;
-		}
 		}
 
 		return qr;
@@ -169,10 +165,13 @@ public class TedConnector extends AbstractServiceConnector {
 	
 	
 	private ResultItem convertWebResult(String tedIdkey,HashMap<String,String> valueMap,int index, Pattern pattern,String input)
-	{
-		String speaker=valueMap.get("speaker").split("\\^")[0];
+	{		
 		String location=valueMap.get("location").split("\\^")[0];
 		String duration=valueMap.get("duration").split("\\^")[0];
+		String speaker=valueMap.get("speaker").split("\\^")[0];
+		if(speaker.length() > 1 && speaker.charAt(speaker.length()-1) == ':')
+			speaker = speaker.substring(0, speaker.length()-1);
+		
 		duration=duration.trim();
 		String durationArray[] =duration.split(":");
 		int min=Integer.parseInt(durationArray[0]);
@@ -195,14 +194,14 @@ public class TedConnector extends AbstractServiceConnector {
 				
 				snippet=snip;
 				if(snip!= "")
-			    captionString+="Link to the transcript-"+key+"\n"+snip+"\n";
+			    captionString+="Transcript: "+key; //+"\n"+snip+"\n";
 				
 				}
 		}
 		captionString=captionString.replaceAll("(?i)"+input, "<b><i>"+input+"</i></b>");
-		additionalDescription="Speaker-"+speaker+"\n"+"Location-"+location+"\n"+"Duration of The video-"+duration+"\n"+captionString;
+		additionalDescription="<br/>Speaker: "+speaker+"<br/>"+"Location: "+location+ "<br/>"+ captionString;
 		additionalDescription=additionalDescription.replaceAll("(?i)"+input, "<b><i>"+input+"</i></b>");
-		description+="\n"+additionalDescription;
+		description+="<br/>"+additionalDescription;
 		Thumbnail tn =new Thumbnail(valueMap.get("thumbnail"),400,300);
 		Set<Thumbnail> thumbnails = new HashSet<Thumbnail>();
 		thumbnails.add(tn);
@@ -220,92 +219,76 @@ public class TedConnector extends AbstractServiceConnector {
 		resultItem.setRank(index);
 		resultItem.setEmbeddedSize3("<iframe src=\"http://embed.ted.com/talks/"+valueMap.get("id2").split("\\^")[0]+".html" +"\" width=\"500\" height=\"282\" frameborder=\"0\" scrolling=\"no\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
 		resultItem.setEmbeddedSize4("<iframe src=\"http://embed.ted.com/talks/"+ valueMap.get("id2").split("\\^")[0] +".html" +"\" width=\"100%\" height=\"100%\" frameborder=\"0\" scrolling=\"no\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
-//		System.out.println(valueMap.get("id2").split("\\^")[0]);
-//		System.out.println("URL of the talk"+"\n");
-//		System.out.println(resultItem.getUrl()+"\n");
-//		System.out.println("Title"+"\n");
-//		System.out.println(resultItem.getTitle()+"\n");
-//		System.out.println("Description"+"\n");
-//		System.out.println(resultItem.getDescription()+"\n");
-//		System.out.println("Snippet"+"\n");
-//		System.out.println(resultItem.getSnippet()+"\n");
-//		System.out.println("Tags"+"\n");
-//		System.out.println(resultItem.getTags()+"\n");
-//		System.out.println("Date"+"\n");
-//		System.out.println(resultItem.getDate()+"\n");
-//		System.out.println("Total Views"+"\n");
-//		System.out.println(resultItem.getViewCount()+"\n");
+
 		return resultItem;
 	}
 	
-	//function to extract the snippet
-	private String timeWherePhraseOccurs(String transcriptValue, String input){
+	// function to extract the snippet
+	private String timeWherePhraseOccurs(String transcriptValue, String input) {
 		String snip;
-	
-	Pattern p= Pattern.compile((input), Pattern.CASE_INSENSITIVE);
-	
-	Matcher m=p.matcher(transcriptValue);
-	int lastIndex1 = 0;
-	int beginIndex=0;
-	String captionString="";
-	while(m.find()){
-		
-		//System.out.println(m.group());
-		lastIndex1= transcriptValue.toLowerCase().indexOf(input.toLowerCase(),lastIndex1);
 
-	       if( lastIndex1 == -1){
-	       lastIndex1=transcriptValue.toLowerCase().indexOf(input.toLowerCase());
-	       }
-	    	   char a, b,c,d,e;
-	    		String dummyX=transcriptValue;
-	    		StringBuilder timeWhereWordOccurs = new StringBuilder();
-	    		
-	    		String dummyXSplit=dummyX.substring(beginIndex, lastIndex1);
-	    		for(int i=0;i<dummyXSplit.length();i++){
-	    		
-	    		a=dummyXSplit.charAt(i);
-	    		if(a>47 && a<59){
-	    			
-	    			
-	    		    
-	    			b=dummyXSplit.charAt(i+1);
-	    			if(b>47 && b<59){
-	    				
-	    		    c=dummyXSplit.charAt(i+2);
-	    		    if(c>47 && c<59){
-	    				
-	    		    d=dummyXSplit.charAt(i+3);
-	    		    if(d>47 && d<59){
-	    		    	timeWhereWordOccurs.delete(0,timeWhereWordOccurs.length());
-	    		    	timeWhereWordOccurs.append(a);
-	    		    	timeWhereWordOccurs.append(b);
-	    		    	timeWhereWordOccurs.append(c);
-	    		    	timeWhereWordOccurs.append(d);
-	    		    e=dummyXSplit.charAt(i+4);
-	    		    if(e>47 && e<58){
-	    		    	
-	    		    	
-	    		    	timeWhereWordOccurs.append(e);
-	    		    }
-	    		   
-	    		    }
-	    		    }
-	    		    }
-	    			 i=i+4;
-	    		}
-	    		
-	    		
-	    	}
-	             lastIndex1+=input.length();
-	             
-	             snip=generateSnippet(lastIndex1,transcriptValue,input);
-	             captionString+=timeWhereWordOccurs+"\t"+snip+"\n";
-	
-	
-	       
-	}
-	        
-              return captionString;
+		Pattern p = Pattern.compile((input), Pattern.CASE_INSENSITIVE);
+
+		Matcher m = p.matcher(transcriptValue);
+		int lastIndex1 = 0;
+		int beginIndex = 0;
+		String captionString = "";
+		
+		while (m.find()) {
+
+			// System.out.println(m.group());
+			lastIndex1 = transcriptValue.toLowerCase().indexOf(
+					input.toLowerCase(), lastIndex1);
+
+			if (lastIndex1 == -1) {
+				lastIndex1 = transcriptValue.toLowerCase().indexOf(
+						input.toLowerCase());
+			}
+			char a, b, c, d, e;
+			String dummyX = transcriptValue;
+			StringBuilder timeWhereWordOccurs = new StringBuilder();
+
+			String dummyXSplit = dummyX.substring(beginIndex, lastIndex1);
+			for (int i = 0; i < dummyXSplit.length(); i++) {
+
+				a = dummyXSplit.charAt(i);
+				if (a > 47 && a < 59) {
+
+					b = dummyXSplit.charAt(i + 1);
+					if (b > 47 && b < 59) {
+
+						c = dummyXSplit.charAt(i + 2);
+						if (c > 47 && c < 59) {
+
+							d = dummyXSplit.charAt(i + 3);
+							if (d > 47 && d < 59) {
+								timeWhereWordOccurs.delete(0,
+										timeWhereWordOccurs.length());
+								timeWhereWordOccurs.append(a);
+								timeWhereWordOccurs.append(b);
+								timeWhereWordOccurs.append(c);
+								timeWhereWordOccurs.append(d);
+								e = dummyXSplit.charAt(i + 4);
+								if (e > 47 && e < 58) {
+
+									timeWhereWordOccurs.append(e);
+								}
+
+							}
+						}
+					}
+					i = i + 4;
+				}
+
+			}
+			lastIndex1 += input.length();
+
+			snip = generateSnippet(lastIndex1, transcriptValue, input);
+			captionString += timeWhereWordOccurs + "\t" + snip + "\n";
+
+		}
+
+		return captionString;
 	}
 	
 	
@@ -359,16 +342,10 @@ public class TedConnector extends AbstractServiceConnector {
 	
 }
 
-
-	/*public static void main(String args[]){
-=======
-	
 	public static void main(String args[]){
->>>>>>> .r2859
-		String input1;
-		Scanner scan= new Scanner(System.in);
-		System.out.println("Enter search phrase");
-		input1=scan.next();
+
+		String input1 = "garbsen";
+
 		List<String> sample =new ArrayList<String>();
 		sample.add("video");
 		Map<String,String> sampleMap=new HashMap<String,String>();
@@ -377,14 +354,14 @@ public class TedConnector extends AbstractServiceConnector {
 		try {
 			TedConnector tcon=new TedConnector();
 			QueryResult qresult = tcon.get(query,null);
+		
 			System.out.println(qresult);
 		} catch (InterWebException e) {
+			
 			e.printStackTrace();
 		}
-<<<<<<< .mine
-	} */
 
-	
-
+		
+	} 
 
 }

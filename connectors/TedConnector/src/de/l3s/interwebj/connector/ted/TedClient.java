@@ -37,7 +37,7 @@ public class TedClient {
 		boolean enableSearchonDescription=true;
 		
 		public boolean isEnableSearchonTitle() {
-			System.out.println();
+		
 			return enableSearchonTitle;
 		}
 
@@ -273,7 +273,7 @@ public class TedClient {
 		
 		
 		}
-		  System.out.println(hmap.size());
+		  
 			return hmap;  
 		
 		  
