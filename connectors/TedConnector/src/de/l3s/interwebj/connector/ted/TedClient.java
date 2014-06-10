@@ -208,12 +208,12 @@ public class TedClient {
 						temp.put( qs.get("transcript").toString(), qs.get("value").toString());
 					}
 					else
-						valueMap.put("transcriptUrl", "NA");
+						temp.put("transcriptUrl", "NA");
 					if(qs.get("transcriptUrl").toString()!=null){
-						valueMap.put("transcriptUrl", qs.get("transcriptUrl").toString());
+						temp.put("OriginalTranscript/"+qs.get("lang").toString().split("\\^")[0], qs.get("transcriptUrl").toString());
 					}
 					 else
-							valueMap.put("transcriptUrl", "NA");
+							temp.put("transcriptUrl", "NA");
 				}
 			
 				
@@ -278,6 +278,8 @@ public class TedClient {
 			}
 			 else
 					valueMap.put("keywords", "NA");
+			
+			
 			if(qs.get("transcript").toString()!=null){
 				
 				valueMap.put( qs.get("transcript").toString(), qs.get("value").toString());
@@ -286,7 +288,7 @@ public class TedClient {
 					valueMap.put("value", "NA");
 			
 			if(qs.get("transcriptUrl").toString()!=null){
-				valueMap.put("transcriptUrl", qs.get("transcriptUrl").toString());
+				valueMap.put("OriginalTranscript/"+qs.get("lang").toString().split("\\^")[0], qs.get("transcriptUrl").toString());
 			}
 			 else
 					valueMap.put("transcriptUrl", "NA");

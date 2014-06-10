@@ -60,6 +60,7 @@ public class TedConnector extends AbstractServiceConnector {
 		notNull(query, "query");
 		
 		QueryResult qr = new QueryResult(query);
+		String lang=query.getLanguage();
 		
 		TedClient tc = new TedClient();
 		if(query.getParams().get("enabledTitle")=="1")
@@ -82,7 +83,7 @@ public class TedConnector extends AbstractServiceConnector {
 		while(keySetIterator.hasNext()){
 			String tedIdKey = keySetIterator.next();
 			HashMap<String,String> valueMap = hmap.get(tedIdKey);
-			qr.addResultItem(convertWebResult(tedIdKey,valueMap, index,pattern,query.getQuery()));
+			qr.addResultItem(convertWebResult(tedIdKey,valueMap, index,pattern,query.getQuery(),lang));
 			
 	    	index++;
 		}
@@ -164,7 +165,7 @@ public class TedConnector extends AbstractServiceConnector {
 	}
 	
 	
-	private ResultItem convertWebResult(String tedIdkey,HashMap<String,String> valueMap,int index, Pattern pattern,String input)
+	private ResultItem convertWebResult(String tedIdkey,HashMap<String,String> valueMap,int index, Pattern pattern,String input,String lang)
 	{		
 		String location=valueMap.get("location").split("\\^")[0];
 		String duration=valueMap.get("duration").split("\\^")[0];
@@ -187,16 +188,31 @@ public class TedConnector extends AbstractServiceConnector {
 		while(keyIterator.hasNext())
 		{
 			String key=keyIterator.next();
-			if(key.startsWith("http:") && key.contains("/en"))
+			if(key.startsWith("http:")&& key.contains("/"+lang))
 			{
 				String val=valueMap.get(key);
 				String snip= timeWherePhraseOccurs(val, input);
 				
 				
 				if(snip!= "")
-			    captionString+=snip+"\n"+"Link to the Transcript: "+valueMap.get("transcriptUrl")+"\n";
+				{
+			 
+			    captionString+=snip+"\n"+"Link to the Transcript: "+valueMap.get("OriginalTranscript"+key.substring(key.lastIndexOf("/")));
+				}
 				
 				}
+			else if(key.startsWith("http:")&& key.contains("/en")){
+				String val=valueMap.get(key);
+				String snip= timeWherePhraseOccurs(val, input);
+				
+				
+				if(snip!= "")
+				{
+			 
+			    captionString+=snip+"\n"+"Link to the Transcript: "+valueMap.get("OriginalTranscript/"+key.substring(key.lastIndexOf("/")));
+				}
+			}
+			
 		}
 		
 		captionString=captionString.replaceAll("(?i)"+input, "<b><i>"+input+"</i></b>");
@@ -208,7 +224,7 @@ public class TedConnector extends AbstractServiceConnector {
 		Thumbnail tn =new Thumbnail(valueMap.get("thumbnail"),400,300);
 		Set<Thumbnail> thumbnails = new HashSet<Thumbnail>();
 		thumbnails.add(tn);
-		System.out.println("snippet="+snippet);
+		
 		ResultItem resultItem = new ResultItem(getName());
 		resultItem.setType(Query.CT_VIDEO);
 		resultItem.setUrl(valueMap.get("talk").split("\\^")[0]);
@@ -231,7 +247,7 @@ public class TedConnector extends AbstractServiceConnector {
 	private String timeWherePhraseOccurs(String transcriptValue, String input) {
 		String snip;
 
-		Pattern p = Pattern.compile((input), Pattern.CASE_INSENSITIVE);
+		Pattern p = Pattern.compile(input,Pattern.CASE_INSENSITIVE);
 
 		Matcher m = p.matcher(transcriptValue);
 		int lastIndex1 = 0;
@@ -289,7 +305,7 @@ public class TedConnector extends AbstractServiceConnector {
             
 			if(timeWhereWordOccurs.toString().contains(":")){
 			snip = generateSnippet(lastIndex1, transcriptValue, input);
-			captionString += timeWhereWordOccurs + "\t" + snip + "\n";}
+			captionString += timeWhereWordOccurs + "\t" + snip+"\n" ;}
 
 		}
 
@@ -307,7 +323,7 @@ public class TedConnector extends AbstractServiceConnector {
 		String snipIncludingInput = "";
 		int indexOfSearchTerm=index;
 		  // to obtain 5 words before the input keyword 
-	    while(numberOfWhitespaces<6 && indexOfSearchTerm>=0){
+	    while(numberOfWhitespaces<6 && indexOfSearchTerm>=0 && transcriptValue.charAt(indexOfSearchTerm)!='\t'){
 	    	if(Character.isWhitespace(transcriptValue.charAt(indexOfSearchTerm))){
 	    		numberOfWhitespaces++;
 	    	}
@@ -318,13 +334,15 @@ public class TedConnector extends AbstractServiceConnector {
 	    			e.printStackTrace();
 	    			break;
 	    		}
+	    		
+	    		
 	    	
 	    }
 	    snipIncludingInput+=transcriptValue.substring(++indexOfSearchTerm, index)+" ";
 	    numberOfWhitespaces=0;
 	    indexOfSearchTerm=transcriptValue.toLowerCase().indexOf(input.toLowerCase());
 	    // to obtain 5 words after the input keyword 
-	    while(numberOfWhitespaces<6 && indexOfSearchTerm<lastIndex){
+	    while(numberOfWhitespaces<6 && indexOfSearchTerm<lastIndex && transcriptValue.charAt(indexOfSearchTerm)!='\t'){
 	    	if(Character.isWhitespace(transcriptValue.charAt(indexOfSearchTerm))){
 	    		numberOfWhitespaces++;
 	    	}
@@ -349,7 +367,7 @@ public class TedConnector extends AbstractServiceConnector {
 
 	public static void main(String args[]){
 
-		String input1 = "berlin";
+		String input1 = "guitar";
 
 		List<String> sample =new ArrayList<String>();
 		sample.add("video");
