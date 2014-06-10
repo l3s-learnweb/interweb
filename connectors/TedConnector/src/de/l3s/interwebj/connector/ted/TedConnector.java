@@ -13,6 +13,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
@@ -183,7 +187,7 @@ public class TedConnector extends AbstractServiceConnector {
 		String snippet="";		
 		String additionalDescription=null; //for adding link to the transcripts ,speaker and location
 	    String captionString="";		
-		
+		System.out.println(valueMap.get("talk").split("\\^")[0]);
 		Iterator<String> keyIterator=valueMap.keySet().iterator();
 		while(keyIterator.hasNext())
 		{
@@ -194,11 +198,8 @@ public class TedConnector extends AbstractServiceConnector {
 				String snip= timeWherePhraseOccurs(val, input);
 				
 				
-				if(snip!= "")
-				{
-			 
 			    captionString+=snip+"\n"+"Link to the Transcript: "+valueMap.get("OriginalTranscript"+key.substring(key.lastIndexOf("/")));
-				}
+				
 				
 				}
 			else if(key.startsWith("http:")&& key.contains("/en")){
@@ -206,11 +207,9 @@ public class TedConnector extends AbstractServiceConnector {
 				String snip= timeWherePhraseOccurs(val, input);
 				
 				
-				if(snip!= "")
-				{
-			 
+				
 			    captionString+=snip+"\n"+"Link to the Transcript: "+valueMap.get("OriginalTranscript/"+key.substring(key.lastIndexOf("/")));
-				}
+				
 			}
 			
 		}
@@ -224,7 +223,7 @@ public class TedConnector extends AbstractServiceConnector {
 		Thumbnail tn =new Thumbnail(valueMap.get("thumbnail"),400,300);
 		Set<Thumbnail> thumbnails = new HashSet<Thumbnail>();
 		thumbnails.add(tn);
-		
+		System.out.println("snippet="+snippet);
 		ResultItem resultItem = new ResultItem(getName());
 		resultItem.setType(Query.CT_VIDEO);
 		resultItem.setUrl(valueMap.get("talk").split("\\^")[0]);
@@ -247,9 +246,12 @@ public class TedConnector extends AbstractServiceConnector {
 	private String timeWherePhraseOccurs(String transcriptValue, String input) {
 		String snip;
 
-		Pattern p = Pattern.compile(input,Pattern.CASE_INSENSITIVE);
+		Pattern p = Pattern.compile((input),Pattern.CASE_INSENSITIVE);
 
 		Matcher m = p.matcher(transcriptValue);
+
+	    System.out.println(transcriptValue);
+	    
 		int lastIndex1 = 0;
 		int beginIndex = 0;
 		String captionString = "";
@@ -367,7 +369,7 @@ public class TedConnector extends AbstractServiceConnector {
 
 	public static void main(String args[]){
 
-		String input1 = "guitar";
+		String input1 = "berlin";
 
 		List<String> sample =new ArrayList<String>();
 		sample.add("video");
