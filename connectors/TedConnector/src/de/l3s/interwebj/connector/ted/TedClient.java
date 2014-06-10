@@ -2,6 +2,7 @@ package de.l3s.interwebj.connector.ted;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -73,8 +74,12 @@ public class TedClient {
 		p = Pattern.compile("([A-Z][^.?!]*?)?(?<!\\w)(?i)("+input+")(?!\\w)[^.?!]*?[.?!]{1,2}\"?");
 		
 		String listOfIdsToQuery = null;
+//		String superQueryString="select ?id COUNT(?transcript) FROM <"+Config.GRAPH_NAME+"> WHERE {?talk <http://www.w3.org/ns/ma-ont#title> ?title ."+
+//				"?talk <http://www.ted.com/id> ?id ."+
+//				"?talk <http://www.w3.org/ns/ma-ont#description> ?description ."+
+//                "?transcript <http://purl.org/ontology/bibo/transcriptOf> ?talk .?transcript <http://purl.org/dc/terms/language> ?lang. ?transcript <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?value . ";
 		String superQueryString="select ?id COUNT(?transcript) FROM <"+Config.GRAPH_NAME+"> WHERE {?talk <http://www.w3.org/ns/ma-ont#title> ?title ."+
-				"?talk <http://www.ted.com/id> ?id ."+
+				"?talk <http://data.linkededucation.org/resource/ted/id> ?id ."+
 				"?talk <http://www.w3.org/ns/ma-ont#description> ?description ."+
                 "?transcript <http://purl.org/ontology/bibo/transcriptOf> ?talk .?transcript <http://purl.org/dc/terms/language> ?lang. ?transcript <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?value . ";
                 
@@ -129,6 +134,13 @@ public class TedClient {
 		  
 		}
 		
+		//to filter out the unique elements from the retrieved results
+		if(listOfIds!=null){
+		HashSet<String> hs=new HashSet<String>();
+		hs.addAll(listOfIds);
+		listOfIds.clear();
+		listOfIds.addAll(hs);
+		}
 		
 		int listSize=listOfIds.size();
 		offset=(pageNumber-1)*resultcount;
@@ -163,20 +175,22 @@ public class TedClient {
 			
 		
 		if(listOfIdsToQuery!=null){
+
+		
 		String commomQueryString="select ?title ?description ?transcript ?keywords ?thumbnail ?date ?totalviews "
-				+ "?talk ?speaker ?location ?duration ?value ?id ?lang "
+				+ "?talk ?speaker ?location ?duration ?value ?id ?lang ?transcriptUrl "
 				+ "FROM <"+Config.GRAPH_NAME+"> WHERE {?talk <http://www.w3.org/ns/ma-ont#title> ?title ."+
-				"?talk <http://www.ted.com/id> ?id ."+
+				"?talk <http://data.linkededucation.org/resource/ted/id> ?id ."+
 				"?talk <http://www.w3.org/ns/ma-ont#description> ?description ."+
                 "?talk <http://www.w3.org/ns/dcat#keyword> ?keywords ."+
                 "?talk <http://purl.org/dc/terms/date> ?date ."+
-                "?talk <http://purl.org/ontology/bibo/Image> ?thumbnail ."+
-                "?talk <http://http://learnweb.l3s.uni-hannover.de/new/lw/openData-schema/totalViews> ?totalviews ."+
+                "?talk <https://schema.org/image> ?thumbnail ."+
+                "?talk <http://learnweb.l3s.uni-hannover.de/new/lw/openData-schema/totalViews> ?totalviews ."+
                 "?talk <http://www.w3.org/ns/ma-ont#hasContributor> ?speaker ."+
                 "?talk <http://www.w3.org/ns/ma-ont#location> ?location ."+
-                "?talk <http://www.w3.org/ns/ma-ont#duration> ?duration ."+
-                "?transcript <http://purl.org/ontology/bibo/transcriptOf> ?talk .?transcript <http://purl.org/dc/terms/language> ?lang. "
-                + "?transcript <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?value . FILTER (?id IN "+listOfIdsToQuery+") }";
+               "?talk <http://www.w3.org/ns/ma-ont#duration> ?duration ."+
+               "?transcript <http://purl.org/ontology/bibo/transcriptOf> ?talk .?transcript <http://purl.org/dc/terms/language> ?lang. "
+                + "?transcript <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?value .?transcript <https://schema.org/url> ?transcriptUrl. FILTER (?id IN "+listOfIdsToQuery+") }";
 	
 		
 		QueryExecution qexec = new QueryEngineHTTP(Config.QUERY_ENDPOINT, commomQueryString);
@@ -193,6 +207,13 @@ public class TedClient {
 					if(qs.get("transcript").toString()!=null){
 						temp.put( qs.get("transcript").toString(), qs.get("value").toString());
 					}
+					else
+						valueMap.put("transcriptUrl", "NA");
+					if(qs.get("transcriptUrl").toString()!=null){
+						valueMap.put("transcriptUrl", qs.get("transcriptUrl").toString());
+					}
+					 else
+							valueMap.put("transcriptUrl", "NA");
 				}
 			
 				
@@ -262,8 +283,15 @@ public class TedClient {
 				valueMap.put( qs.get("transcript").toString(), qs.get("value").toString());
 			}
 			 else
-					valueMap.put("keywords", "NA");
+					valueMap.put("value", "NA");
 			
+			if(qs.get("transcriptUrl").toString()!=null){
+				valueMap.put("transcriptUrl", qs.get("transcriptUrl").toString());
+			}
+			 else
+					valueMap.put("transcriptUrl", "NA");
+			
+
 			
 			
 			hmap.put(qs.get("id").toString(), valueMap);

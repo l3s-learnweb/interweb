@@ -187,24 +187,28 @@ public class TedConnector extends AbstractServiceConnector {
 		while(keyIterator.hasNext())
 		{
 			String key=keyIterator.next();
-			if(key.startsWith("http") && key.contains("?lang=en"))
+			if(key.startsWith("http:") && key.contains("/en"))
 			{
 				String val=valueMap.get(key);
 				String snip= timeWherePhraseOccurs(val, input);
 				
-				snippet=snip;
+				
 				if(snip!= "")
-			    captionString+="Transcript: "+key; //+"\n"+snip+"\n";
+			    captionString+=snip+"\n"+"Link to the Transcript: "+valueMap.get("transcriptUrl")+"\n";
 				
 				}
 		}
+		
 		captionString=captionString.replaceAll("(?i)"+input, "<b><i>"+input+"</i></b>");
-		additionalDescription="<br/>Speaker: "+speaker+"<br/>"+"Location: "+location+ "<br/>"+ captionString;
+		snippet=captionString;
+		additionalDescription="<br/>Speaker: "+speaker+"<br/>"+"Location: "+location;
+		
 		additionalDescription=additionalDescription.replaceAll("(?i)"+input, "<b><i>"+input+"</i></b>");
 		description+="<br/>"+additionalDescription;
 		Thumbnail tn =new Thumbnail(valueMap.get("thumbnail"),400,300);
 		Set<Thumbnail> thumbnails = new HashSet<Thumbnail>();
 		thumbnails.add(tn);
+		System.out.println("snippet="+snippet);
 		ResultItem resultItem = new ResultItem(getName());
 		resultItem.setType(Query.CT_VIDEO);
 		resultItem.setUrl(valueMap.get("talk").split("\\^")[0]);
@@ -282,9 +286,10 @@ public class TedConnector extends AbstractServiceConnector {
 
 			}
 			lastIndex1 += input.length();
-
+            
+			if(timeWhereWordOccurs.toString().contains(":")){
 			snip = generateSnippet(lastIndex1, transcriptValue, input);
-			captionString += timeWhereWordOccurs + "\t" + snip + "\n";
+			captionString += timeWhereWordOccurs + "\t" + snip + "\n";}
 
 		}
 
@@ -344,7 +349,7 @@ public class TedConnector extends AbstractServiceConnector {
 
 	public static void main(String args[]){
 
-		String input1 = "garbsen";
+		String input1 = "berlin";
 
 		List<String> sample =new ArrayList<String>();
 		sample.add("video");
