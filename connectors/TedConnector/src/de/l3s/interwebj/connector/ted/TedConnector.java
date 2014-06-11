@@ -187,7 +187,7 @@ public class TedConnector extends AbstractServiceConnector {
 		String snippet="";		
 		String additionalDescription=null; //for adding link to the transcripts ,speaker and location
 	    String captionString="";		
-		System.out.println(valueMap.get("talk").split("\\^")[0]);
+		
 		Iterator<String> keyIterator=valueMap.keySet().iterator();
 		while(keyIterator.hasNext())
 		{
@@ -223,7 +223,7 @@ public class TedConnector extends AbstractServiceConnector {
 		Thumbnail tn =new Thumbnail(valueMap.get("thumbnail"),400,300);
 		Set<Thumbnail> thumbnails = new HashSet<Thumbnail>();
 		thumbnails.add(tn);
-		System.out.println("snippet="+snippet);
+	
 		ResultItem resultItem = new ResultItem(getName());
 		resultItem.setType(Query.CT_VIDEO);
 		resultItem.setUrl(valueMap.get("talk").split("\\^")[0]);
@@ -249,8 +249,6 @@ public class TedConnector extends AbstractServiceConnector {
 		Pattern p = Pattern.compile((input),Pattern.CASE_INSENSITIVE);
 
 		Matcher m = p.matcher(transcriptValue);
-
-	    System.out.println(transcriptValue);
 	    
 		int lastIndex1 = 0;
 		int beginIndex = 0;
