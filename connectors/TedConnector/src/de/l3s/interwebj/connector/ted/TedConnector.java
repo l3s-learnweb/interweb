@@ -197,7 +197,7 @@ public class TedConnector extends AbstractServiceConnector {
 				String val=valueMap.get(key);
 				String snip= timeWherePhraseOccurs(val, input);
 				
-				
+				if(valueMap.get("OriginalTranscript"+key.substring(key.lastIndexOf("/")))!=null)
 			    captionString+=snip+"\n"+"Link to the Transcript: "+valueMap.get("OriginalTranscript"+key.substring(key.lastIndexOf("/")));
 				
 				
@@ -207,7 +207,7 @@ public class TedConnector extends AbstractServiceConnector {
 				String snip= timeWherePhraseOccurs(val, input);
 				
 				
-				
+				if(valueMap.get("OriginalTranscript"+key.substring(key.lastIndexOf("/")))!=null)
 			    captionString+=snip+"\n"+"Link to the Transcript: "+valueMap.get("OriginalTranscript/"+key.substring(key.lastIndexOf("/")));
 				
 			}
