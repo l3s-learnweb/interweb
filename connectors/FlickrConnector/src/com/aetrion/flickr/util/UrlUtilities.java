@@ -40,12 +40,12 @@ public class UrlUtilities {
         // AuthUtilities.addAuthToken(parameters);
 
         StringBuffer buffer = new StringBuffer();
-        buffer.append("http://");
+        buffer.append("https://");
         buffer.append(host);
-        if (port > 0) {
+     
             buffer.append(":");
-            buffer.append(port);
-        }
+            buffer.append(443);
+       
         if (path == null) {
             path = "/";
         }
@@ -84,12 +84,13 @@ public class UrlUtilities {
 
     public static URL buildPostUrl(String host, int port, String path) throws MalformedURLException {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("http://");
+        buffer.append("https://");
         buffer.append(host);
-        if (port > 0) {
+        
+        
             buffer.append(":");
-            buffer.append(port);
-        }
+            buffer.append(443);
+        
         if (path == null) {
             path = "/";
         }

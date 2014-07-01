@@ -13,6 +13,7 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -124,7 +125,7 @@ public class REST extends Transport {
     public Response get(String path, List parameters) throws IOException, SAXException {
         URL url = UrlUtilities.buildUrl(getHost(), getPort(), path, parameters);
         if (Flickr.debugRequest) System.out.println("GET: " + url);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         if (proxyAuth) {
             conn.setRequestProperty(
