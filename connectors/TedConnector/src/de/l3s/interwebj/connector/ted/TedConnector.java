@@ -188,6 +188,8 @@ public class TedConnector extends AbstractServiceConnector {
 		String additionalDescription=null; //for adding link to the transcripts ,speaker and location
 	    String captionString="";		
 		
+	    String linkToTranscript = "";
+	    
 		Iterator<String> keyIterator=valueMap.keySet().iterator();
 		while(keyIterator.hasNext())
 		{
@@ -195,28 +197,27 @@ public class TedConnector extends AbstractServiceConnector {
 			if(key.startsWith("http:")&& key.contains("/"+lang))
 			{
 				String val=valueMap.get(key);
-				String snip= timeWherePhraseOccurs(val, input);
+				snippet = timeWherePhraseOccurs(val, input);
 				
 				if(valueMap.get("OriginalTranscript"+key.substring(key.lastIndexOf("/")))!=null)
-			    captionString+=snip+"\n"+"Link to the Transcript: "+valueMap.get("OriginalTranscript"+key.substring(key.lastIndexOf("/")));
+					linkToTranscript = "\n"+"Link to the Transcript: "+valueMap.get("OriginalTranscript"+key.substring(key.lastIndexOf("/")));
 				
 				
 				}
-			else if(key.startsWith("http:")&& key.contains("/en")){
+			else if(key.startsWith("http:")&& key.contains("/en"))
+			{
 				String val=valueMap.get(key);
-				String snip= timeWherePhraseOccurs(val, input);
-				
+				snippet = timeWherePhraseOccurs(val, input);				
 				
 				if(valueMap.get("OriginalTranscript"+key.substring(key.lastIndexOf("/")))!=null)
-			    captionString+=snip+"\n"+"Link to the Transcript: "+valueMap.get("OriginalTranscript/"+key.substring(key.lastIndexOf("/")));
-				
+					linkToTranscript = "\n"+"Link to the Transcript: "+valueMap.get("OriginalTranscript/"+key.substring(key.lastIndexOf("/")));				
 			}
 			
 		}
 		
 		captionString=captionString.replaceAll("(?i)"+input, "<b><i>"+input+"</i></b>");
-		snippet=captionString;
-		additionalDescription="<br/>Speaker: "+speaker+"<br/>"+"Location: "+location;
+		//snippet=captionString;
+		additionalDescription="<br/>Speaker: "+speaker+"<br/>"+"Location: "+location +"<br/>"+ linkToTranscript;
 		
 		additionalDescription=additionalDescription.replaceAll("(?i)"+input, "<b><i>"+input+"</i></b>");
 		description+="<br/>"+additionalDescription;
@@ -226,7 +227,8 @@ public class TedConnector extends AbstractServiceConnector {
 	
 		ResultItem resultItem = new ResultItem(getName());
 		resultItem.setType(Query.CT_VIDEO);
-		resultItem.setUrl(valueMap.get("talk").split("\\^")[0]);
+		//resultItem.setUrl(valueMap.get("talk").split("\\^")[0]); only link to xml data
+		resultItem.setUrl("http://www.ted.com/talks/"+ tedIdkey.split("\\^")[0]);
 		resultItem.setTitle(valueMap.get("title").split("\\^")[0]);
 		resultItem.setDescription(description);
 		resultItem.setSnippet(snippet);
