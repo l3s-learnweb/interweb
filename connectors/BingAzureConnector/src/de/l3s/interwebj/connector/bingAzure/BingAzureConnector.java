@@ -3,7 +3,10 @@ package de.l3s.interwebj.connector.bingAzure;
 
 import static de.l3s.interwebj.util.Assertions.notNull;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +30,7 @@ import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 import de.l3s.interwebj.socialsearch.SocialSearchResult;
@@ -76,7 +80,7 @@ public class BingAzureConnector extends AbstractServiceConnector
 		return string.replace(""+(char)57344, "<b>").replace(""+(char)57345, "</b>");
 	}
 	
-	private QueryResult parse(Document document, Query query)
+	private static QueryResult parse(Document document, Query query)
 	{
 		QueryResult queryResult = new QueryResult(query);
 		
@@ -86,12 +90,50 @@ public class BingAzureConnector extends AbstractServiceConnector
 		{
 			Element prop = entry.element("content").element("properties");
 		
-			ResultItem resultItem = new ResultItem(getName());
+			ResultItem resultItem = new ResultItem("");//getName());
 			resultItem.setType(Query.CT_TEXT);
 			resultItem.setTitle(convertHighlighting(prop.elementText("Title")));			
 			resultItem.setDescription(convertHighlighting(prop.elementText("Description")));
 			resultItem.setUrl(prop.elementText("Url"));
 			resultItem.setRank(index++);
+			
+			prop.elementText("Title")
+			prop.elementText("Title")
+			
+			Element thumbnailElement = prop.element("Thumbnail");
+			if(thumbnailElement != null)
+			{
+				
+				
+				Thumbnail thumbnail = new Thumbnail(vimeoThumbnail.getValue(), vimeoThumbnail.getWidth(), vimeoThumbnail.getHeight())
+				
+				
+				Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
+			
+				thumbnails.add(thumbnail);
+		
+				resultItem.setThumbnails(thumbnails);
+			}
+			
+			/*
+			 * 
+			 * 				<d:ID m:type="Edm.Guid">b3fb8ce8-b9b7-423c-bdc2-94e0868fe343</d:ID>
+				<d:Title m:type="Edm.String">Ente schimmt auf der Alster</d:Title>
+				<d:MediaUrl m:type="Edm.String">http://www.hamburg-web.de/fotos/original/11374-ente-schwimmt-auf-alster.jpg</d:MediaUrl>
+				<d:SourceUrl m:type="Edm.String">http://www.hamburg-web.de/fotos/11374-ente-schwimmt-auf-alster.htm</d:SourceUrl>
+				<d:DisplayUrl m:type="Edm.String">www.hamburg-web.de/fotos/11374-ente-schwimmt-auf-alster.htm</d:DisplayUrl>
+				<d:Width m:type="Edm.Int32">1200</d:Width>
+				<d:Height m:type="Edm.Int32">803</d:Height>
+				<d:FileSize m:type="Edm.Int64">140155</d:FileSize>
+				<d:ContentType m:type="Edm.String">image/jpeg</d:ContentType>
+				<d:Thumbnail m:type="Bing.Thumbnail">
+					<d:MediaUrl m:type="Edm.String">http://ts3.mm.bing.net/th?id=HN.608049034425733110&amp;pid=15.1</d:MediaUrl>
+					<d:ContentType m:type="Edm.String">image/jpg</d:ContentType>
+					<d:Width m:type="Edm.Int32">480</d:Width>
+					<d:Height m:type="Edm.Int32">321</d:Height>
+					<d:FileSize m:type="Edm.Int64">11119</d:FileSize>
+				</d:Thumbnail>
+			 */
 			
 			queryResult.addResultItem(resultItem);
 		}
@@ -100,20 +142,41 @@ public class BingAzureConnector extends AbstractServiceConnector
 	
 	public final static void main(String[] args) throws IOException
 	{
-/*
+		//https://api.datamarket.azure.com/Bing/SearchWeb/v1/Web
+		//https://api.datamarket.azure.com/Bing/Search/v1/Image?Query=%27xbox%27
 		AuthCredentials a = new AuthCredentials("ccaaeac1-04d8-4761-8a2c-5d2dfc5f2133", "KE+X3nVEVxvvxM/fZE+1FR4rpl27/nmzQB6VVqGB/2I="); // getAuthCredentials()
-		WebResource resource = createWebResource("https://api.datamarket.azure.com/Data.ashx/Bing/SearchWeb/v1/Web", a);
+		WebResource resource = createWebResource("https://api.datamarket.azure.com/Bing/SearchWeb/v1/Web", a);
 		resource = resource.queryParam("Query", "'enten'");
 		resource = resource.queryParam("$top", "5");
 		resource = resource.queryParam("$skip", "15");
 		resource = resource.queryParam("Market", "'"+ createMarket("de") +"'");
 		resource = resource.queryParam("Options", "'EnableHighlighting'");
 
+
 		ClientResponse response = resource.get(ClientResponse.class);
+		
+		/*
+		 String str = null;
+		    BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntityInputStream()));
+		    try
+		    {
+
+		    while((str = br.readLine()) != null)
+		    {
+		        System.out.println(str);
+		    }
+		    }
+		    catch(IOException e)
+		    {
+		    e.printStackTrace();
+		    }*/
 		SAXReader reader = new SAXReader();
 		Document document;
+		
+		
         try {
 			document = reader.read(response.getEntityInputStream());
+			System.out.println(document.asXML());
 			parse(document, null);
 		} catch (DocumentException e) {
 			e.printStackTrace();
