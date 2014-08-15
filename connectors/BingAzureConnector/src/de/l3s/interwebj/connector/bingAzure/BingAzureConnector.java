@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -77,120 +78,41 @@ public class BingAzureConnector extends AbstractServiceConnector
 	{
 		if(string == null)
 			return "";
-		return string.replace(""+(char)57344, "<b>").replace(""+(char)57345, "</b>");
+
+		return string.replace("<","&lt;").replace(">","&gt;").replace(""+(char)57344, "<b>").replace(""+(char)57345, "</b>");
 	}
 	
-	private static QueryResult parse(Document document, Query query)
-	{
-		QueryResult queryResult = new QueryResult(query);
-		
-		List<Element> entrys = document.getRootElement().elements("entry");
-		int index = 1;
-		for(Element entry : entrys)
-		{
-			Element prop = entry.element("content").element("properties");
-		
-			ResultItem resultItem = new ResultItem("");//getName());
-			resultItem.setType(Query.CT_TEXT);
-			resultItem.setTitle(convertHighlighting(prop.elementText("Title")));			
-			resultItem.setDescription(convertHighlighting(prop.elementText("Description")));
-			resultItem.setUrl(prop.elementText("Url"));
-			resultItem.setRank(index++);
-			
-			prop.elementText("Title")
-			prop.elementText("Title")
-			
-			Element thumbnailElement = prop.element("Thumbnail");
-			if(thumbnailElement != null)
-			{
-				
-				
-				Thumbnail thumbnail = new Thumbnail(vimeoThumbnail.getValue(), vimeoThumbnail.getWidth(), vimeoThumbnail.getHeight())
-				
-				
-				Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-			
-				thumbnails.add(thumbnail);
-		
-				resultItem.setThumbnails(thumbnails);
-			}
-			
-			/*
-			 * 
-			 * 				<d:ID m:type="Edm.Guid">b3fb8ce8-b9b7-423c-bdc2-94e0868fe343</d:ID>
-				<d:Title m:type="Edm.String">Ente schimmt auf der Alster</d:Title>
-				<d:MediaUrl m:type="Edm.String">http://www.hamburg-web.de/fotos/original/11374-ente-schwimmt-auf-alster.jpg</d:MediaUrl>
-				<d:SourceUrl m:type="Edm.String">http://www.hamburg-web.de/fotos/11374-ente-schwimmt-auf-alster.htm</d:SourceUrl>
-				<d:DisplayUrl m:type="Edm.String">www.hamburg-web.de/fotos/11374-ente-schwimmt-auf-alster.htm</d:DisplayUrl>
-				<d:Width m:type="Edm.Int32">1200</d:Width>
-				<d:Height m:type="Edm.Int32">803</d:Height>
-				<d:FileSize m:type="Edm.Int64">140155</d:FileSize>
-				<d:ContentType m:type="Edm.String">image/jpeg</d:ContentType>
-				<d:Thumbnail m:type="Bing.Thumbnail">
-					<d:MediaUrl m:type="Edm.String">http://ts3.mm.bing.net/th?id=HN.608049034425733110&amp;pid=15.1</d:MediaUrl>
-					<d:ContentType m:type="Edm.String">image/jpg</d:ContentType>
-					<d:Width m:type="Edm.Int32">480</d:Width>
-					<d:Height m:type="Edm.Int32">321</d:Height>
-					<d:FileSize m:type="Edm.Int64">11119</d:FileSize>
-				</d:Thumbnail>
-			 */
-			
-			queryResult.addResultItem(resultItem);
-		}
-		return queryResult;
-	}
+
 	
 	public final static void main(String[] args) throws IOException
 	{
 		//https://api.datamarket.azure.com/Bing/SearchWeb/v1/Web
-		//https://api.datamarket.azure.com/Bing/Search/v1/Image?Query=%27xbox%27
+		//https://api.datamarket.azure.com/Bing/Search/v1/Image
 		AuthCredentials a = new AuthCredentials("ccaaeac1-04d8-4761-8a2c-5d2dfc5f2133", "KE+X3nVEVxvvxM/fZE+1FR4rpl27/nmzQB6VVqGB/2I="); // getAuthCredentials()
 		WebResource resource = createWebResource("https://api.datamarket.azure.com/Bing/SearchWeb/v1/Web", a);
-		resource = resource.queryParam("Query", "'enten'");
-		resource = resource.queryParam("$top", "5");
-		resource = resource.queryParam("$skip", "15");
-		resource = resource.queryParam("Market", "'"+ createMarket("de") +"'");
+		resource = resource.queryParam("Query", "'test'");
+		resource = resource.queryParam("$top", "10");
+		resource = resource.queryParam("$skip", "5");
+		resource = resource.queryParam("Market", "'"+ createMarket("en") +"'");
 		resource = resource.queryParam("Options", "'EnableHighlighting'");
 
 
 		ClientResponse response = resource.get(ClientResponse.class);
-		
-		/*
-		 String str = null;
-		    BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntityInputStream()));
-		    try
-		    {
 
-		    while((str = br.readLine()) != null)
-		    {
-		        System.out.println(str);
-		    }
-		    }
-		    catch(IOException e)
-		    {
-		    e.printStackTrace();
-		    }*/
 		SAXReader reader = new SAXReader();
 		Document document;
 		
 		
         try {
 			document = reader.read(response.getEntityInputStream());
-			System.out.println(document.asXML());
-			parse(document, null);
+			//System.out.println(document.asXML());
+			//parse(document, Query.CT_IMAGE);
 		} catch (DocumentException e) {
 			e.printStackTrace();
 			return;
 		}
 		
-		/*
-		ClientResponse response = resource.get(ClientResponse.class);
-		String responseContent = CoreUtils.getClientResponseContent(response);
-		System.out.println("antwort: \n"+ responseContent);
-		*/
-		//SearchResponse sr = resource.get(SearchResponse.class);	
-		//System.out.println("a:"+ sr.getTitle());
-		
+	
 	}
 	
 	private static WebResource createWebResource(String apiUrl, AuthCredentials consumerAuthCredentials) 
@@ -204,27 +126,130 @@ public class BingAzureConnector extends AbstractServiceConnector
 	@Override
 	public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException
 	{
-		notNull(query, "query");		
-
-		//AuthCredentials a = new AuthCredentials("ccaaeac1-04d8-4761-8a2c-5d2dfc5f2133", "KE+X3nVEVxvvxM/fZE+1FR4rpl27/nmzQB6VVqGB/2I="); // 
-		WebResource resource = createWebResource("https://api.datamarket.azure.com/Data.ashx/Bing/SearchWeb/v1/Web", getAuthCredentials());
+		notNull(query, "query");
+		
+		authCredentials = getAuthCredentials();
+		//authCredentials = new AuthCredentials("ccaaeac1-04d8-4761-8a2c-5d2dfc5f2133", "KE+X3nVEVxvvxM/fZE+1FR4rpl27/nmzQB6VVqGB/2I=");
+		
+		QueryResult results = new QueryResult(query);
+		
+		if(query.getContentTypes().contains(Query.CT_IMAGE))
+			results.addQueryResult(getImage(query, authCredentials));
+		
+		if(query.getContentTypes().contains(Query.CT_TEXT))
+			results.addQueryResult(getWeb(query, authCredentials));
+		
+		return results;
+	}
+	
+	private QueryResult getImage(Query query, AuthCredentials authCredentials) throws InterWebException
+	{
+		WebResource resource = createWebResource("https://api.datamarket.azure.com/Bing/Search/v1/Image", authCredentials);
 		resource = resource.queryParam("Query", "'"+ query.getQuery() +"'");
 		resource = resource.queryParam("$top", Integer.toString(query.getResultCount()));
 		resource = resource.queryParam("$skip", Integer.toString( (query.getPage()-1)*query.getResultCount() ));
 		resource = resource.queryParam("Market", "'"+ createMarket(query.getLanguage()) +"'");
 		resource = resource.queryParam("Options", "'EnableHighlighting'");
 		
+		return executeRequest(resource, Query.CT_IMAGE);	
+	}	
+
+	private QueryResult getWeb(Query query, AuthCredentials authCredentials) throws InterWebException
+	{
+		WebResource resource = createWebResource("https://api.datamarket.azure.com/Bing/SearchWeb/v1/Web", authCredentials);
+		resource = resource.queryParam("Query", "'"+ query.getQuery() +"'");
+		resource = resource.queryParam("$top", Integer.toString(query.getResultCount()));
+		resource = resource.queryParam("$skip", Integer.toString( (query.getPage()-1)*query.getResultCount() ));
+		resource = resource.queryParam("Market", "'"+ createMarket(query.getLanguage()) +"'");
+		resource = resource.queryParam("Options", "'EnableHighlighting'");
+		
+		return executeRequest(resource, Query.CT_TEXT);
+	}
+	
+	private QueryResult executeRequest(WebResource resource, String contentType)
+	{
 		ClientResponse response = resource.get(ClientResponse.class);
 		SAXReader reader = new SAXReader();
 
         try {
         	Document document = reader.read(response.getEntityInputStream());
-			return parse(document, query);
+			return parse(document, contentType);
 		} catch (DocumentException e) {
 			e.printStackTrace();
-			return new QueryResult(query);
+			return new QueryResult(null);
 		}		
 	}
+	
+	private QueryResult parse(Document document, String contentType)
+	{
+		QueryResult queryResult = new QueryResult(null);
+		
+		List<Element> entrys = document.getRootElement().elements("entry");
+		int index = 1;
+		for(Element entry : entrys)
+		{
+			Element prop = entry.element("content").element("properties");
+		
+			ResultItem resultItem = new ResultItem(getName());
+			resultItem.setType(contentType);
+			resultItem.setTitle(convertHighlighting(prop.elementText("Title")));			
+			resultItem.setDescription(convertHighlighting(prop.elementText("Description")));
+			resultItem.setUrl(prop.elementText("Url"));
+			resultItem.setRank(index++);
+			
+			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
+			
+			if(contentType == Query.CT_IMAGE) // get image
+			{
+				String url = null;
+				Integer width = null;
+				Integer height = null;
+				
+				try {
+					url = prop.elementText("MediaUrl");
+					width = Integer.parseInt(prop.elementText("Width"));
+					height = Integer.parseInt(prop.elementText("Height"));
+				}
+				catch(Exception e) {
+					//ignore e.printStackTrace();
+				}
+				
+				if(url != null && height != null && width != null)
+				{					
+					thumbnails.add(new Thumbnail(url, width, height));
+				}					
+			}
+
+			
+			Element thumbnailElement = prop.element("Thumbnail");
+			if(thumbnailElement != null)
+			{
+				String url = null;
+				Integer width = null;
+				Integer height = null;
+				
+				try {
+					url = thumbnailElement.elementText("MediaUrl");
+					width = Integer.parseInt(thumbnailElement.elementText("Width"));
+					height = Integer.parseInt(thumbnailElement.elementText("Height"));
+				}
+				catch(NumberFormatException e) {
+					//ignore e.printStackTrace();
+				}
+				
+				if(url != null && height != null && width != null)
+				{					
+					thumbnails.add(new Thumbnail(url, width, height));
+				}			
+			}
+						
+			resultItem.setThumbnails(thumbnails);
+			
+			queryResult.addResultItem(resultItem);
+		}
+		return queryResult;
+	}
+	
 
 	@Override
 	public String getEmbedded(AuthCredentials authCredentials,
@@ -233,7 +258,6 @@ public class BingAzureConnector extends AbstractServiceConnector
 	                          int maxHeight)
 	    throws InterWebException
 	{
-		// TODO: generate somehow site thumbnails
 		return null;
 	}
 	
