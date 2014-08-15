@@ -176,7 +176,7 @@ public class ResultItem
 			return;
 		}
 		description = description.trim();
-		description = unescape(description);
+		//description = unescape(description); TODO testen ob wirklich überflüssig
 		if (description.length() > MAX_DESCRIPTION_LENGTH)
 		{
 			int cutIndex = description.lastIndexOf(' ', MAX_DESCRIPTION_LENGTH);
@@ -322,7 +322,7 @@ public class ResultItem
 			return;
 		}
 		title = title.trim();
-		title = unescape(title);
+		//title = unescape(title); TODO testen ob wirklich überflüssig
 		if (title.length() > MAX_TITLE_LENGTH)
 		{
 			int cutIndex = title.lastIndexOf(' ', MAX_TITLE_LENGTH);
