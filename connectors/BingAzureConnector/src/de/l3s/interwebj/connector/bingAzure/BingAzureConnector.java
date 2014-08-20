@@ -162,7 +162,8 @@ public class BingAzureConnector extends AbstractServiceConnector
 		resource = resource.queryParam("$skip", Integer.toString( (query.getPage()-1)*query.getResultCount() ));
 		resource = resource.queryParam("Market", "'"+ createMarket(query.getLanguage()) +"'");
 		resource = resource.queryParam("Options", "'EnableHighlighting'");
-		
+//		resource = resource.queryParam("ImageFilters", "Size:Large");
+	
 		return executeRequest(resource, Query.CT_TEXT);
 	}
 	
@@ -201,6 +202,8 @@ public class BingAzureConnector extends AbstractServiceConnector
 			
 			if(contentType == Query.CT_IMAGE) // get image
 			{
+				resultItem.setUrl(prop.elementText("SourceUrl"));
+			
 				String url = null;
 				Integer width = null;
 				Integer height = null;
