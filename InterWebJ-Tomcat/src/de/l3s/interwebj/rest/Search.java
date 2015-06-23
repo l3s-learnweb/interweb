@@ -193,7 +193,8 @@ public class Search
 				return ErrorResponse.INVALID_DATE_FROM;
 			}
 		}
-		if (dateFrom != null)
+		
+		if (dateTill != null)
 		{
 			if (checkDate(dateTill))
 			{
@@ -204,6 +205,7 @@ public class Search
 				return ErrorResponse.INVALID_DATE_TILL;
 			}
 		}
+		
 		return null;
 	}
 	
