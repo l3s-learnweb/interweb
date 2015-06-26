@@ -4,6 +4,7 @@ package de.l3s.interwebj.connector.ipernity;
 import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,13 +34,10 @@ import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SortOrder;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
-
 import de.l3s.interwebj.query.UserSocialNetworkResult;
-
 import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 import de.l3s.interwebj.socialsearch.SocialSearchResult;
-
 import de.l3s.interwebj.util.CoreUtils;
 
 
@@ -129,6 +127,23 @@ public class IpernityConnector extends AbstractServiceConnector
 		resource = resource.queryParam("thumbsize", "560");
 		resource = resource.queryParam("extra", "medias,count"); //,dates,original
 		
+		if (query.getParam("date_from") != null) {
+			try {
+				resource = resource.queryParam("created_min", query.getParam("date_from"));
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (query.getParam("date_till") != null) {
+			try {
+				resource = resource.queryParam("created_max", query.getParam("date_till"));
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
 		/*
 		ClientResponse response = resource.get(ClientResponse.class);
