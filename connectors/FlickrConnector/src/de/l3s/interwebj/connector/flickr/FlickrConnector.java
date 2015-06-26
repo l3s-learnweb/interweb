@@ -561,8 +561,27 @@ public class FlickrConnector extends AbstractServiceConnector
 				SearchParameters params = new SearchParameters();
 				params.setExtras(getExtras());
 				params.setMedia(getMediaType(query));
-				params.setMinUploadDate(null);
-				params.setMaxUploadDate(null);
+				
+				if (query.getParam("date_from") != null) {
+					try {
+						Date dateFrom = new Date(CoreUtils.parseDate(query.getParam("date_from")));
+						params.setMinUploadDate(dateFrom);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+				if (query.getParam("date_till") != null) {
+					try {
+						Date dateTill = new Date(CoreUtils.parseDate(query.getParam("date_till")));
+						params.setMaxUploadDate(dateTill);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
 				params.setSort(getSortOrder(query.getSortOrder()));
 				
 				PhotoList photoList = null;
