@@ -1,12 +1,14 @@
 package de.l3s.interwebj.connector.youtube;
 
-
 import static de.l3s.interwebj.util.Assertions.notNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -16,34 +18,30 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
-import com.google.gdata.client.Query.CustomParameter;
-import com.google.gdata.client.authn.oauth.OAuthException;
-import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer;
-import com.google.gdata.client.authn.oauth.OAuthParameters;
-import com.google.gdata.client.youtube.YouTubeQuery;
-import com.google.gdata.client.youtube.YouTubeService;
-import com.google.gdata.data.media.MediaByteArraySource;
-import com.google.gdata.data.media.MediaSource;
-import com.google.gdata.data.media.mediarss.MediaCategory;
-import com.google.gdata.data.media.mediarss.MediaContent;
-import com.google.gdata.data.media.mediarss.MediaDescription;
-import com.google.gdata.data.media.mediarss.MediaGroup;
-import com.google.gdata.data.media.mediarss.MediaKeywords;
-import com.google.gdata.data.media.mediarss.MediaThumbnail;
-import com.google.gdata.data.media.mediarss.MediaTitle;
-import com.google.gdata.data.youtube.UserProfileEntry;
-import com.google.gdata.data.youtube.VideoEntry;
-import com.google.gdata.data.youtube.VideoFeed;
-import com.google.gdata.data.youtube.YouTubeMediaGroup;
-import com.google.gdata.data.youtube.YouTubeNamespace;
-import com.google.gdata.util.ServiceException;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.oauth.client.OAuthClientFilter;
-import com.sun.jersey.oauth.signature.HMAC_SHA1;
-import com.sun.jersey.oauth.signature.OAuthSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
+import com.google.api.client.util.Joiner;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.ChannelListResponse;
+import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoListResponse;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.media.MediaHttpUploader;
+import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
+import com.google.api.client.http.InputStreamContent;
+import com.google.api.services.youtube.model.VideoSnippet;
+import com.google.api.services.youtube.model.VideoStatus;
 
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
@@ -53,33 +51,43 @@ import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
-import de.l3s.interwebj.query.Query.SearchScope;
+import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
-import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 import de.l3s.interwebj.socialsearch.SocialSearchResult;
 import de.l3s.interwebj.util.CoreUtils;
 
 
-public class YouTubeConnector
-    extends AbstractServiceConnector
-{
+public class YouTubeConnector extends AbstractServiceConnector
+{	
+	private static final String CLIENT_ID = "***REMOVED***";
+	private static final String CLIENT_SECRET = "***REMOVED***";
+	private static final String API_KEY = "***REMOVED***";
 	
-	private static final String REQUEST_TOKEN_PATH = "https://www.google.com/accounts/OAuthGetRequestToken";
-	private static final String AUTHORIZATION_PATH = "https://www.google.com/accounts/OAuthAuthorizeToken";
-	private static final String ACCESS_TOKEN_PATH = "https://www.google.com/accounts/OAuthGetAccessToken";
-	private static final String GET_VIDEO_FEED_PATH = "http://gdata.youtube.com/feeds/api/videos";
-	private static final String UPLOAD_VIDEO_PATH = "http://uploads.gdata.youtube.com/feeds/api/users/default/uploads";
-	private static final String USER_PROFILE_PATH = "http://gdata.youtube.com/feeds/api/users/default";
-	private static final String USER_FEED_PREFIX = "http://gdata.youtube.com/feeds/api/users/";	
-	private static final String STANDARD_FEED_PREFIX = "http://gdata.youtube.com/feeds/api/standardfeeds/";
-	private static final String CLIENT_ID = "InterWebJ";
-	private static final String DEVELOPER_KEY = "***REMOVED***";
-	
-	
-	
+	/**
+     * Define a global instance of the HTTP transport.
+     */
+    public static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+
+    /**
+     * Define a global instance of the JSON factory.
+     */
+    public static final JsonFactory JSON_FACTORY = new JacksonFactory();
+    
+    /**
+     * Define a global instance of the scopes.
+     */
+    private static final List<String> SCOPES = Arrays.asList("https://www.googleapis.com/auth/youtube.upload", "profile", "https://www.googleapis.com/auth/youtube");
+    
+    /**
+     * Define a global instance of a Youtube object, which will be used
+     * to make YouTube Data API requests.
+     */
+    private static YouTube youtube = null;
+    
+    private static GoogleAuthorizationCodeFlow flow = null;
 	
 	public YouTubeConnector(Configuration configuration)
 	{
@@ -87,68 +95,41 @@ public class YouTubeConnector
 	}
 	
 
-	public YouTubeConnector(Configuration configuration,
-	                        AuthCredentials consumerAuthCredentials)
+	public YouTubeConnector(Configuration configuration, AuthCredentials consumerAuthCredentials)
 	{
 		super(configuration);
 		setAuthCredentials(consumerAuthCredentials);
 	}
-	
 
+	
 	@Override
-	public Parameters authenticate(String callbackUrl)
-	    throws InterWebException
+	public Parameters authenticate(String callbackUrl) throws InterWebException
 	{
 		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
+		
 		Parameters params = new Parameters();
-		Client client = Client.create();
-		WebResource resource = client.resource(REQUEST_TOKEN_PATH);
-		AuthCredentials authCredentials = getAuthCredentials();
-		com.sun.jersey.oauth.signature.OAuthParameters oauthParams = new com.sun.jersey.oauth.signature.OAuthParameters();
-		oauthParams.consumerKey(authCredentials.getKey());
-		oauthParams.signatureMethod(HMAC_SHA1.NAME);
-		oauthParams.timestamp();
-		oauthParams.nonce();
-		oauthParams.callback(callbackUrl);
-		oauthParams.version();
-		OAuthSecrets oauthSecrets = new OAuthSecrets();
-		oauthSecrets.consumerSecret(authCredentials.getSecret());
-		OAuthClientFilter filter = new OAuthClientFilter(client.getProviders(),
-		                                                 oauthParams,
-		                                                 oauthSecrets);
-		resource.addFilter(filter);
-		Environment.logger.info("querying youtube request token: "
-		                        + resource.toString());
-		try
-		{
-			resource = resource.queryParam("scope", "http://gdata.youtube.com");
-			ClientResponse response = resource.get(ClientResponse.class);
-			String responseContent = CoreUtils.getClientResponseContent(response);
-			Environment.logger.info("Content: " + responseContent);
-			params.addQueryParameters(responseContent);
-			String authUrl = AUTHORIZATION_PATH + "?oauth_token="
-			                 + params.get(Parameters.OAUTH_TOKEN);
-			Environment.logger.info("requesting url: " + authUrl);
+		params.add(Parameters.CALLBACK, callbackUrl);
+		
+		try {
+	        String url = getFlow().newAuthorizationUrl().setRedirectUri(callbackUrl).build();
+	        
+	        params.add(Parameters.AUTHORIZATION_URL, url);
 			
-			params.add(Parameters.AUTHORIZATION_URL, authUrl);
+	        Environment.logger.info("requesting url: " + url);
 		}
-		catch (UniformInterfaceException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			throw new InterWebException(e);
 		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
+		
 		return params;
-	}
+	}	
 	
-
+	
 	@Override
 	public ServiceConnector clone()
 	{
@@ -157,8 +138,7 @@ public class YouTubeConnector
 	
 
 	@Override
-	public AuthCredentials completeAuthentication(Parameters params)
-	    throws InterWebException
+	public AuthCredentials completeAuthentication(Parameters params) throws InterWebException
 	{
 		notNull(params, "params");
 		AuthCredentials authCredentials = null;
@@ -166,282 +146,265 @@ public class YouTubeConnector
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
-		try
-		{
-			String oauthToken = params.get(Parameters.OAUTH_TOKEN);
-			Environment.logger.info("oauth_token: " + oauthToken);
-			String oauthTokenSecret = params.get(Parameters.OAUTH_TOKEN_SECRET);
-			Environment.logger.info("oauth_token_secret: " + oauthTokenSecret);
-			String oauthVerifier = params.get(Parameters.OAUTH_VERIFIER);
-			Environment.logger.info("oauth_verifier: " + oauthVerifier);
-			Client client = Client.create();
-			WebResource resource = client.resource(ACCESS_TOKEN_PATH);
-			AuthCredentials consumerAuthCredentials = getAuthCredentials();
-			com.sun.jersey.oauth.signature.OAuthParameters oauthParams = new com.sun.jersey.oauth.signature.OAuthParameters();
-			oauthParams.version();
-			oauthParams.nonce();
-			oauthParams.timestamp();
-			oauthParams.consumerKey(consumerAuthCredentials.getKey());
-			if (oauthVerifier != null)
-			{
-				oauthParams.verifier(oauthVerifier);
-			}
-			oauthParams.token(oauthToken);
-			oauthParams.signatureMethod(HMAC_SHA1.NAME);
-			OAuthSecrets oauthSecrets = new OAuthSecrets();
-			oauthSecrets.consumerSecret(consumerAuthCredentials.getSecret());
-			oauthSecrets.tokenSecret(oauthTokenSecret);
-			OAuthClientFilter filter = new OAuthClientFilter(client.getProviders(),
-			                                                 oauthParams,
-			                                                 oauthSecrets);
-			resource.addFilter(filter);
-			Environment.logger.info("getting youtube access token: "
-			                        + resource.toString());
-			ClientResponse response = resource.get(ClientResponse.class);
-			String content = CoreUtils.getClientResponseContent(response);
-			Environment.logger.info("youtube response: " + content);
-			params.addQueryParameters(content);
-			String key = params.get(Parameters.OAUTH_TOKEN);
-			String secret = params.get(Parameters.OAUTH_TOKEN_SECRET);
-			authCredentials = new AuthCredentials(key, secret);
-		}
-		catch (UniformInterfaceException e)
-		{
+				
+		String authorizationCode = params.get("code");
+		Environment.logger.info("authorization_code: " + authorizationCode);
+		
+		Credential cred = null;
+		
+		try {
+			GoogleTokenResponse response = getFlow()
+				.newTokenRequest(authorizationCode)
+				.setRedirectUri(params.get(Parameters.CALLBACK))
+				.execute();
+			cred =  flow.createAndStoreCredential(response, null);
+			
+			authCredentials = new AuthCredentials(cred.getAccessToken(), cred.getRefreshToken());
+		} catch (IOException e) {
 			e.printStackTrace();
 			throw new InterWebException(e);
 		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
+		
 		return authCredentials;
 	}
 	
-	private ResultItem createResultItem(VideoEntry ve,
-            int rank,
-            int totalResultCount)
-	{
-		ResultItem resultItem = new ResultItem(getName());
-		resultItem.setType(Query.CT_VIDEO);
-		resultItem.setId(ve.getId());
-		resultItem.setTitle(ve.getTitle().getPlainText());
-		MediaGroup mg = ve.getMediaGroup();
-		resultItem.setDescription(mg.getDescription().getPlainTextContent());
-		resultItem.setUrl(mg.getPlayer().getUrl());
-		resultItem.setDate(CoreUtils.formatDate(ve.getPublished().getValue()));
-		resultItem.setTags(StringUtils.join(mg.getKeywords().getKeywords(), ','));
-		resultItem.setRank(rank++);
-		resultItem.setTotalResultCount(totalResultCount);
-		resultItem.setViewCount(getViewCount(ve));
-		resultItem.setCommentCount(getCommentCount(ve));		
-		
-		for (MediaContent mediaContent : mg.getContents()) 
-		{			
-			resultItem.setDuration(mediaContent.getDuration());
-			break;
-		}
-		
-		// load thumbnails
-		Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
-		List<MediaThumbnail> mediaThumbnails = mg.getThumbnails();
-		for (MediaThumbnail mt : mediaThumbnails)
-		{
-			Thumbnail thumbnail = new Thumbnail(mt.getUrl(), mt.getWidth(),  mt.getHeight());
-			thumbnails.add(thumbnail);
-			
-			if(thumbnail.getUrl().contains("/default.jpg"))
-				resultItem.setEmbeddedSize1(CoreUtils.createImageCode(thumbnail, 100, 100));
-			else if(thumbnail.getUrl().contains("/hqdefault.jpg"))
-			{
-				resultItem.setEmbeddedSize2(CoreUtils.createImageCode(thumbnail, 240, 240));
-				resultItem.setImageUrl(thumbnail.getUrl());
-			}
-		}
-		resultItem.setThumbnails(thumbnails);
-		
-		Pattern pattern = Pattern.compile("v[/=]([^&]+)"); 
-		Matcher matcher = pattern.matcher(mg.getPlayer().getUrl()); 
-		
-	    if(matcher.find()) 
-	    {
-	        String id = matcher.group(1);
-	        
-			//create embedded flash video player
-			String embeddedCode = "<embed pluginspage=\"http://www.adobe.com/go/getflashplayer\" src=\"http://www.youtube.com/v/"+
-									id +"\" type=\"application/x-shockwave-flash\" width=\"500\" height=\"400\"></embed>";
-			resultItem.setEmbeddedSize3(embeddedCode);				
-	    }
-	    return resultItem;
-	}
 	
 	@Override
-	public QueryResult get(Query query, AuthCredentials authCredentials)
-	    throws InterWebException
+	public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException
 	{
 		notNull(query, "query");
 		if (!isRegistered())
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
+		
 		QueryResult queryResult = new QueryResult(query);
+		TokenStorage tokens = TokenStorage.getInstance();
 		
 		if (!query.getContentTypes().contains(Query.CT_VIDEO))
 			return queryResult;
 		
-		try
-		{				
-			YouTubeService service = createYouTubeService(authCredentials);
-			YouTubeQuery ytq = new YouTubeQuery(new URL(GET_VIDEO_FEED_PATH));
-			ytq.setMaxResults(Math.min(50, query.getResultCount()));
-			ytq.setStartIndex(Math.min(50, query.getResultCount()) * (query.getPage()-1)+1);		
-			ytq.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
-			
-			switch (query.getSortOrder())
+		try {
+            // This object is used to make YouTube Data API requests. The last argument is required, but since we don't need anything
+            // initialized when the HttpRequest is initialized, we override the interface and provide a no-op function.
+            youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
+                public void initialize(HttpRequest request) throws IOException {
+                }
+            }).setApplicationName("Interweb").build();
+
+            // Define the API request for retrieving search results.
+            YouTube.Search.List search = youtube.search().list("id");
+
+            // Set your developer key from the {{ Google Cloud Console }} for non-authenticated requests.
+            search.setKey(API_KEY);
+            
+            if(query.getQuery().startsWith("user::"))
+    		{
+            	String[] splitQuery = query.getQuery().split(" ", 2);
+                ChannelListResponse channelListResponse = youtube.channels().list("id").setKey(API_KEY).setForUsername(splitQuery[0].substring(6))
+                        .setFields("items(id)")
+                        .execute();
+                
+                search.setChannelId(channelListResponse.getItems().get(0).getId());
+                
+                if (splitQuery.length > 1 && splitQuery[1] != null) {
+                	search.setQ(splitQuery[1]);
+                }
+    		} else {
+    			search.setQ(query.getQuery());
+    		}
+            
+            search.setMaxResults(new Long(query.getResultCount()));
+            
+            if (query.getParam("date_from") != null) {
+    			try {
+    				DateTime dateFrom = new DateTime(CoreUtils.parseDate(query.getParam("date_from")));
+    				search.setPublishedAfter(dateFrom);
+    			}
+    			catch (Exception e) {
+    				e.printStackTrace();
+    			}
+    		}
+    		
+    		if (query.getParam("date_till") != null) {
+    			try {
+    				DateTime dateTill = new DateTime(CoreUtils.parseDate(query.getParam("date_till")));
+    				search.setPublishedBefore(dateTill);
+    			}
+    			catch (Exception e) {
+    				e.printStackTrace();
+    			}
+    		}
+            
+            /* 
+             * The pageToken parameter identifies a specific page in the result set that
+             * should be returned. In an API response, the nextPageToken and prevPageToken
+             * properties identify other pages that could be retrieved.
+             */
+            //ytq.setStartIndex(Math.min(50, query.getResultCount()) * (query.getPage()-1)+1);
+            if (query.getPage() > 1) {
+            	search.setPageToken(tokens.get(query.getPage()));
+            }
+
+            // Restrict the search results to only include videos. See:
+            // https://developers.google.com/youtube/v3/docs/search/list#type
+            search.setType("video");
+            search.setSafeSearch("none"); // moderate | none | strict
+            
+            switch (query.getSortOrder())
 			{
 				case RELEVANCE:
-					ytq.addCustomParameter(new CustomParameter("orderby", "relevance_lang_"+ query.getLanguage())); break;
+					search.setOrder("relevance"); break;
+					//ytq.addCustomParameter(new CustomParameter("orderby", "relevance_lang_"+ query.getLanguage())); break;
 				case DATE:
-					ytq.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED); break;
+					search.setOrder("date"); break;
 				case INTERESTINGNESS:
-					ytq.setOrderBy(YouTubeQuery.OrderBy.VIEW_COUNT); break;
+					search.setOrder("viewCount"); break;
 				default:
-					ytq.setOrderBy(YouTubeQuery.OrderBy.RELEVANCE);
+					// The default value is relevance (by Google)
+					//search.setOrder("relevance");
+					break;
 			}
-			
-			if(query.getQuery().startsWith("user::"))
-			{
-				String username = query.getQuery().substring(6).trim();					
-				
-				ytq.setAuthor(username);
-			}
-			else if (query.getSearchScopes().contains(SearchScope.TEXT))
-			{
-				ytq.setFullTextQuery(query.getQuery());
-			}
-			
-			VideoFeed vf = service.query(ytq, VideoFeed.class);
-			int rank = ytq.getStartIndex();
-			queryResult.setTotalResultCount(vf.getTotalResults());
-			
-			int resultCount = (int) queryResult.getTotalResultCount();
-			for (VideoEntry ve : vf.getEntries())
-			{
-				ResultItem resultItem = createResultItem(ve, rank++, resultCount);
-				
-				queryResult.addResultItem(resultItem);
-				
-			}
-		}
-		catch (OAuthException e)
-		{
-			e.printStackTrace();
+
+            // To increase efficiency, only retrieve the fields that the application uses.
+            search.setFields("nextPageToken,pageInfo/totalResults,items(id/videoId)");
+            search.setMaxResults(new Long(query.getResultCount()));
+
+            // Call the API and print results.
+            SearchListResponse searchResponse = search.execute();
+            queryResult.setTotalResultCount(searchResponse.getPageInfo().getTotalResults());
+            tokens.put(query.getPage() + 1, searchResponse.getNextPageToken());
+            
+            List<SearchResult> searchResultList = searchResponse.getItems();
+            List<String> videoIds = new ArrayList<String>();
+            
+            if (searchResultList != null) {
+            	// Merge video IDs
+                for (SearchResult searchResult : searchResultList) {
+                    videoIds.add(searchResult.getId().getVideoId());
+                }
+                Joiner stringJoiner = Joiner.on(',');
+                String videoId = stringJoiner.join(videoIds);
+
+                // Call the YouTube Data API's youtube.videos.list method to retrieve the resources that represent the specified videos.
+                YouTube.Videos.List listVideosRequest = youtube.videos().list("snippet, statistics, contentDetails").setId(videoId);
+                listVideosRequest.setKey(API_KEY);
+                VideoListResponse listResponse = listVideosRequest.execute();
+
+                List<Video> videoList = listResponse.getItems();
+
+                if (videoList != null) {
+                	
+                	Iterator<Video> iteratorVideoResults = videoList.iterator();
+                	int rank = Math.min(50, query.getResultCount()) * (query.getPage()-1)+1;
+                	int resultCount = (int) queryResult.getTotalResultCount();
+                	
+                	while (iteratorVideoResults.hasNext()) {
+                		Video singleVideo = iteratorVideoResults.next();
+                		ResultItem resultItem = createResultItem(singleVideo, rank++, resultCount);
+                		if (resultItem != null) {
+                			queryResult.addResultItem(resultItem);
+                		}
+                	}
+                }
+            }
+
+        } catch (GoogleJsonResponseException e) {
+        	//System.err.println("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
+        	e.printStackTrace();
 			throw new InterWebException(e);
-		}
-		catch (MalformedURLException e)
-		{
-			e.printStackTrace();
+        } catch (IOException e) {
+            //System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
+            e.printStackTrace();
 			throw new InterWebException(e);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
+        } catch (Throwable e) {
+        	e.printStackTrace();
 			throw new InterWebException(e);
-		}
-		catch (ServiceException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
+        }
 		
 		return queryResult;
 	}
 	
+	
+	private ResultItem createResultItem(Video singleVideo, int rank, int totalResultCount)
+	{
+        // Confirm that the result represents a video. Otherwise, the item will not contain a video ID.
+        if (!singleVideo.getKind().equals("youtube#video")) {
+            return null;
+        }
+        
+		ResultItem resultItem = new ResultItem(getName());
+		resultItem.setType(Query.CT_VIDEO);
+		resultItem.setId(singleVideo.getId());
+		resultItem.setTitle(singleVideo.getSnippet().getTitle());
+		resultItem.setDescription(singleVideo.getSnippet().getDescription());
+		resultItem.setUrl("https://www.youtube.com/watch?v=" + singleVideo.getId());
+		resultItem.setDate(CoreUtils.formatDate(singleVideo.getSnippet().getPublishedAt().getValue()));
+		resultItem.setTags(StringUtils.join(singleVideo.getSnippet().getTags(), ','));
+		resultItem.setRank(rank++);
+		resultItem.setTotalResultCount(totalResultCount);
+		resultItem.setViewCount(singleVideo.getStatistics().getViewCount().intValue());
+		resultItem.setCommentCount(singleVideo.getStatistics().getCommentCount().intValue());
+		//resultItem.setDuration((int)Duration.parse(singleVideo.getContentDetails().getDuration()).getSeconds()); // Java 8 Solution
+		
+		// load thumbnails
+		Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();		
+		Thumbnail thumbnail;
+		com.google.api.services.youtube.model.Thumbnail googleThumbnail;
+		
+		googleThumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
+		thumbnail = new Thumbnail(googleThumbnail.getUrl(), googleThumbnail.getWidth().intValue(),  googleThumbnail.getHeight().intValue());
+		resultItem.setEmbeddedSize1(CoreUtils.createImageCode(thumbnail, 100, 100));
+		thumbnails.add(thumbnail);
+		
+		googleThumbnail = singleVideo.getSnippet().getThumbnails().getHigh();
+		thumbnail = new Thumbnail(googleThumbnail.getUrl(), googleThumbnail.getWidth().intValue(),  googleThumbnail.getHeight().intValue());
+		resultItem.setEmbeddedSize2(CoreUtils.createImageCode(thumbnail, 240, 240));
+		resultItem.setImageUrl(thumbnail.getUrl());
+		thumbnails.add(thumbnail);
+		
+		resultItem.setThumbnails(thumbnails);
+	    
+		//create embedded flash video player
+		String embeddedCode = "<iframe width=\"500\" height=\"400\" src=\"https://www.youtube.com/embed/" + singleVideo.getId() + "\" frameborder=\"0\" allowfullscreen></iframe>";
+		resultItem.setEmbeddedSize3(embeddedCode);		
+		
+	    return resultItem;
+	}	
+	
 
 	@Override
-	public String getEmbedded(AuthCredentials authCredentials,
-	                          String url,
-	                          int maxWidth,
-	                          int maxHeight)
-	    throws InterWebException
+	public String getEmbedded(AuthCredentials authCredentials, String url, int maxWidth, int maxHeight) throws InterWebException
 	{
-		/*
-		URI uri = URI.create(url);
-		URI baseUri = URI.create(getBaseUrl());
-		if (!baseUri.getHost().endsWith(uri.getHost()))
-		{
-			throw new InterWebException("URL: [" + url
-			                            + "] doesn't belong to connector ["
-			                            + getName() + "]");
-		}
-		String[] queryParams = uri.getQuery().split("&");
-		String id = null;
-		for (String queryParam : queryParams)
-		{
-			String[] param = queryParam.split("=");
-			if (param.length == 2 && param[0].equals("v"))
-			{
-				id = param[1];
-			}
-		}*/
-		if(url.toLowerCase().contains("youtube.com"))
-		{
-			Pattern pattern = Pattern.compile("v[/=]([^&]+)"); 
-			Matcher matcher = pattern.matcher(url); 
-			
-		    if(matcher.find()) 
-		    {
-		        String id = matcher.group(1);
-		        
-				if (id == null)
-				{
-					throw new InterWebException("No id found in URL: [" + url + "]");
-				}
-				String embeddedCode = "<embed pluginspage=\"http://www.adobe.com/go/getflashplayer\" src=\"http://www.youtube.com/v/"
-				                      + id
-				                      + "\" type=\"application/x-shockwave-flash\" width=\""
-				                      + maxWidth
-				                      + "\" height=\""
-				                      + maxHeight
-				                      + "\"></embed>";
-				return embeddedCode;
-		    }
-		}
-		throw new InterWebException("URL: [" + url
-                + "] doesn't belong to connector ["
-                + getName() + "]");
+		Pattern pattern = Pattern.compile(".*(?:youtu.be\\/|v\\/|u\\/\\w\\/|embed\\/|watch\\?v=)([^#\\&\\?]*).*");
+	    Matcher matcher = pattern.matcher(url);
+	    
+	    if (matcher.matches()){
+	    	String id = matcher.group(1);
+			return "<iframe width=\"" + maxWidth + "\" height=\"" + maxHeight + "\" src=\"https://www.youtube.com/embed/" + id + "\" frameborder=\"0\" allowfullscreen></iframe>";
+	    }
+	    
+		throw new InterWebException("URL: [" + url + "] doesn't belong to connector [" + getName() + "]");
 	}
 	
 
 	@Override
-	public String getUserId(AuthCredentials authCredentials)
-	    throws InterWebException
+	public String getUserId(AuthCredentials authCredentials) throws InterWebException
 	{
 		try
 		{
-			YouTubeService service = createYouTubeService(authCredentials);
-			UserProfileEntry profileEntry = service.getEntry(new URL(USER_PROFILE_PATH), UserProfileEntry.class);
-			return profileEntry.getUsername();
-		}
-		catch (OAuthException e)
-		{
-			e.printStackTrace();
-			Environment.logger.severe(e.getMessage());
-			throw new InterWebException(e);
-		}
-		catch (MalformedURLException e)
-		{
-			e.printStackTrace();
-			Environment.logger.severe(e.getMessage());
-			throw new InterWebException(e);
+			youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials))
+        		.setApplicationName("Interweb")
+        		.build();
+			
+            ChannelListResponse channelListResponse = youtube.channels().list("id,contentDetails")
+                    .setMine(true)
+                    .setFields("items(contentDetails/relatedPlaylists/uploads,id)")
+                    .execute();
+
+            return channelListResponse.getItems().get(0).getId();
 		}
 		catch (IOException e)
-		{
-			e.printStackTrace();
-			Environment.logger.severe(e.getMessage());
-			throw new InterWebException(e);
-		}
-		catch (ServiceException e)
 		{
 			e.printStackTrace();
 			Environment.logger.severe(e.getMessage());
@@ -470,13 +433,8 @@ public class YouTubeConnector
 		return true;
 	}
 	
-
 	@Override
-	public ResultItem put(byte[] data,
-	                String contentType,
-	                Parameters params,
-	                AuthCredentials authCredentials)
-	    throws InterWebException
+	public ResultItem put(byte[] data, String contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException
 	{
 		notNull(data, "data");
 		notNull(contentType, "contentType");
@@ -485,128 +443,113 @@ public class YouTubeConnector
 		{
 			throw new InterWebException("Service is not yet registered");
 		}
+		
 		if (authCredentials == null)
 		{
 			throw new InterWebException("Upload is forbidden for non-authorized users");
 		}
-		VideoEntry ve = new VideoEntry();
-		YouTubeMediaGroup mg = ve.getOrCreateMediaGroup();
-		String category = params.get("category", "Film");
-		mg.addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME,
-		                                 category));
-		mg.setTitle(new MediaTitle());
-		String title = params.get(Parameters.TITLE, "No Title");
-		mg.getTitle().setPlainTextContent(title);
-		mg.setKeywords(new MediaKeywords());
-		String tags = params.get(Parameters.TAGS, "");
-		List<String> keywords = CoreUtils.convertToUniqueList(tags);
-		mg.getKeywords().addKeywords(keywords);
-		mg.setDescription(new MediaDescription());
-		String description = params.get(Parameters.DESCRIPTION,
-		                                "No Description");
-		mg.getDescription().setPlainTextContent(description);
-		int privacy = Integer.parseInt(params.get(Parameters.PRIVACY, "0"));
-		mg.setPrivate(privacy > 0);
-		MediaSource ms = new MediaByteArraySource(data, "video/*");
-		ve.setMediaSource(ms);
+		
 		ResultItem resultItem = null;
-		try
-		{
-			YouTubeService service = createYouTubeService(authCredentials);
-			service.getRequestFactory().setHeader("Slug", "no_name.mp4");
-			ve = service.insert(new URL(UPLOAD_VIDEO_PATH), ve);
-			
-			resultItem = createResultItem(ve, 0, 0);
-		}
-		catch (ServiceException e)
-		{
-			e.printStackTrace();
+		
+        try {
+        	youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials))
+    			.setApplicationName("Interweb")
+    			.build();
+        	
+            Video videoObjectDefiningMetadata = new Video();
+            
+            // Set the video to be publicly visible. This is the default setting. Other supporting settings are "unlisted" and "private."
+            VideoStatus status = new VideoStatus();
+            int privacy = Integer.parseInt(params.get(Parameters.PRIVACY, "0"));
+            status.setPrivacyStatus(privacy > 0 ? "private" : "public");
+            videoObjectDefiningMetadata.setStatus(status);
+
+            VideoSnippet snippet = new VideoSnippet();
+
+            String title = params.get(Parameters.TITLE, "No Title");
+            snippet.setTitle(title);
+            String description = params.get(Parameters.DESCRIPTION, "No Description");
+            snippet.setDescription(description);
+            String tags = params.get(Parameters.TAGS, "");
+            snippet.setTags(CoreUtils.convertToUniqueList(tags));
+
+            /*
+            TODO set categories
+            String category = params.get("category", "Film");
+			mg.addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME, category));
+             */
+            
+            // Add the completed snippet object to the video resource.
+            videoObjectDefiningMetadata.setSnippet(snippet);
+
+            InputStream is = new ByteArrayInputStream(data);
+            InputStreamContent mediaContent = new InputStreamContent("video/*", is);
+
+            // Insert the video. The command sends three arguments. The first
+            // specifies which information the API request is setting and which
+            // information the API response should return. The second argument
+            // is the video resource that contains metadata about the new video.
+            // The third argument is the actual video content.
+            YouTube.Videos.Insert videoInsert = youtube.videos().insert("snippet,statistics,status", videoObjectDefiningMetadata, mediaContent);
+
+            // Set the upload type and add an event listener.
+            MediaHttpUploader uploader = videoInsert.getMediaHttpUploader();
+
+            // Indicate whether direct media upload is enabled. A value of
+            // "True" indicates that direct media upload is enabled and that
+            // the entire media content will be uploaded in a single request.
+            // A value of "False," which is the default, indicates that the
+            // request will use the resumable media upload protocol, which
+            // supports the ability to resume an upload operation after a
+            // network interruption or other transmission failure, saving
+            // time and bandwidth in the event of network failures.
+            uploader.setDirectUploadEnabled(false);
+
+            MediaHttpUploaderProgressListener progressListener = new MediaHttpUploaderProgressListener() {
+                public void progressChanged(MediaHttpUploader uploader) throws IOException {
+                    switch (uploader.getUploadState()) {
+                        case INITIATION_STARTED:
+                        	Environment.logger.info("Initiation Started");
+                            break;
+                        case INITIATION_COMPLETE:
+                        	Environment.logger.info("Initiation Completed");
+                            break;
+                        case MEDIA_IN_PROGRESS:
+                        	Environment.logger.info("Upload in progress");
+                            break;
+                        case MEDIA_COMPLETE:
+                        	Environment.logger.info("Upload Completed!");
+                            break;
+                        case NOT_STARTED:
+                        	Environment.logger.info("Upload Not Started!");
+                            break;
+                    }
+                }
+            };
+            uploader.setProgressListener(progressListener);
+
+            Video returnedVideo = videoInsert.execute();            
+            resultItem = createResultItem(returnedVideo, 0, 0);
+
+        } catch (GoogleJsonResponseException e) {
+        	e.printStackTrace();
 			throw new InterWebException(e);
-		}
-		catch (OAuthException e)
-		{
-			e.printStackTrace();
+        } catch (IOException e) {
+        	e.printStackTrace();
 			throw new InterWebException(e);
-		}
-		catch (MalformedURLException e)
-		{
-			e.printStackTrace();
+        } catch (Throwable e) {
+        	e.printStackTrace();
 			throw new InterWebException(e);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new InterWebException(e);
-		}
+        }
+		
 		return resultItem;
 	}
 	
-
 	@Override
-	public void revokeAuthentication()
-	    throws InterWebException
+	public void revokeAuthentication() throws InterWebException
 	{
 		// YouTube doesn't provide api for token revokation
 	}
-	
-
-	private YouTubeService createYouTubeService(AuthCredentials authCredentials)
-	    throws OAuthException
-	{
-		YouTubeService service = new YouTubeService(CLIENT_ID, DEVELOPER_KEY);
-		if (authCredentials != null)
-		{
-			OAuthParameters oauthParams = getOAuthParameters(authCredentials);
-			service.setOAuthCredentials(oauthParams, new OAuthHmacSha1Signer());
-		}
-		return service;
-	}
-	
-
-	private int getCommentCount(VideoEntry ve)
-	{
-		if (ve.getComments() == null)
-		{
-			return -1;
-		}
-		if (ve.getComments().getFeedLink() == null)
-		{
-			return -1;
-		}
-		if (ve.getComments().getFeedLink().getCountHint() == null)
-		{
-			return -1;
-		}
-		return ve.getComments().getFeedLink().getCountHint().intValue();
-	}
-	
-
-	private OAuthParameters getOAuthParameters(AuthCredentials userAuthCredentials)
-	{
-		com.sun.jersey.oauth.signature.OAuthParameters jerseyOAuthParams = new com.sun.jersey.oauth.signature.OAuthParameters().nonce().timestamp();
-		OAuthParameters googleOAuthParams = new OAuthParameters();
-		googleOAuthParams.setOAuthNonce(jerseyOAuthParams.getNonce());
-		googleOAuthParams.setOAuthTimestamp(jerseyOAuthParams.getTimestamp());
-		googleOAuthParams.setOAuthConsumerKey(getAuthCredentials().getKey());
-		googleOAuthParams.setOAuthConsumerSecret(getAuthCredentials().getSecret());
-		if (userAuthCredentials != null)
-		{
-			googleOAuthParams.setOAuthToken(userAuthCredentials.getKey());
-			googleOAuthParams.setOAuthTokenSecret(userAuthCredentials.getSecret());
-		}
-		googleOAuthParams.setOAuthSignatureMethod(HMAC_SHA1.NAME);
-		return googleOAuthParams;
-	}	
-
-	private static int getViewCount(VideoEntry ve)
-	{
-		if (ve.getStatistics() == null)
-		{
-			return -1;
-		}
-		return (int) ve.getStatistics().getViewCount();
-	}
-
 
 	@Override
 	public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException
@@ -614,73 +557,64 @@ public class YouTubeConnector
 		if(maxCount < 1)
 			return null;
 		
-		HashSet<String> tags = new HashSet<String>();
-		YouTubeService service;
-		try {
-			service = createYouTubeService(null);
-		}
-		catch (OAuthException e) { // should never happen
-			throw new RuntimeException(e);
-		}
-	    
-	    UserProfileEntry userProfileEntry = null;
-	    VideoFeed videoFeed;
-		try { 
-			userProfileEntry = service.getEntry(new URL(USER_FEED_PREFIX + username), UserProfileEntry.class);
-			videoFeed = service.getFeed(new URL(userProfileEntry.getUploadsFeedLink().getHref()), VideoFeed.class);
-		}
-		catch (MalformedURLException e) { // should never happen
-			throw new RuntimeException(e);
-		}
-		catch (ServiceException e) {
-			if(e.getMessage().equals("User not found"))
-				throw new IllegalArgumentException("User not found");
-			throw new RuntimeException(e);
-		}
+        youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
+            public void initialize(HttpRequest request) throws IOException {
+            }
+        }).setApplicationName("Interweb").build();
 
-		for (VideoEntry videoEntry : videoFeed.getEntries()) 
-		{
-			YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
-			MediaKeywords keywords = mediaGroup.getKeywords();
+        ChannelListResponse channelListResponse = youtube.channels().list("id").setKey(API_KEY).setForUsername(username)
+                .setFields("items(id)")
+                .execute();
+                
+        ChannelListResponse detailedItem = youtube.channels().list("id, brandingSettings").setKey(API_KEY).setId(channelListResponse.getItems().get(0).getId())
+                .setFields("items(id, brandingSettings)")
+                .execute();
 
-			if (null != keywords) {
-				for (String keyword : keywords.getKeywords()) 
-				{
-					tags.add(keyword);
-					
-					if(tags.size() == maxCount)
-						return tags;
-				}
-			}
-		}
-		
-		// not enough tags found, get more:
-		try {
-			videoFeed = service.getFeed(new URL(STANDARD_FEED_PREFIX + "top_rated"), VideoFeed.class);
-		}
-		catch (ServiceException e) {
-			throw new RuntimeException(e);
-		}
-		
-		for (VideoEntry videoEntry : videoFeed.getEntries()) 
-		{
-			YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
-			MediaKeywords keywords = mediaGroup.getKeywords();
-
-			if (null != keywords) {
-				for (String keyword : keywords.getKeywords()) 
-				{
-					tags.add(keyword);
-					
-					if(tags.size() == maxCount)
-						return tags;
-				}
-			}
-		}
-		
+        HashSet<String> tags = new HashSet<String>();
+        String keywords = detailedItem.getItems().get(0).getBrandingSettings().getChannel().getKeywords();
+        
+        for (String keyword : keywords.replaceAll("[\"'-+.^:,]","").split(" ")) {
+        	tags.add(keyword);
+        }
+        
 		return tags;
 	}
+	
+	
+	/**
+	 * Build an authorization flow and store it as a static class attribute.
+	 * @return GoogleAuthorizationCodeFlow instance.
+	 */
+	public GoogleAuthorizationCodeFlow getFlow() throws IOException {
+	  if (flow == null) {
+	    flow = new GoogleAuthorizationCodeFlow.Builder(
+	        HTTP_TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, SCOPES)
+	        .setAccessType("offline")
+	        .setApprovalPrompt("force")
+	        .build();
+	  }
+	  return flow;
+	}
+	
+	
+	/**
+	 * Convert AuthCredentials to Google Credential
+	 * @param authCredentials
+	 * @return Credential
+	 */
+	private Credential getYoutubeCredential(AuthCredentials authCredentials)
+	{
+		Credential credential = new GoogleCredential.Builder().setTransport(HTTP_TRANSPORT)
+	                .setJsonFactory(JSON_FACTORY)
+	                .setClientSecrets(CLIENT_ID, CLIENT_SECRET).build();
+			
+		credential.setAccessToken(authCredentials.getKey());
+	    credential.setRefreshToken(authCredentials.getSecret());
+	        
+	    return credential;
+	}
 
+	
 	@Override
 	public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException 
 	{
@@ -688,20 +622,15 @@ public class YouTubeConnector
 		throw new NotImplementedException();
 	}
 
-
 	@Override
-	public UserSocialNetworkResult getUserSocialNetwork(String userid,
-			AuthCredentials authCredentials) throws InterWebException {
+	public UserSocialNetworkResult getUserSocialNetwork(String userid, AuthCredentials authCredentials) throws InterWebException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-
 	@Override
-	public SocialSearchResult get(SocialSearchQuery query,
-			AuthCredentials authCredentials) {
+	public SocialSearchResult get(SocialSearchQuery query, AuthCredentials authCredentials) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 }
