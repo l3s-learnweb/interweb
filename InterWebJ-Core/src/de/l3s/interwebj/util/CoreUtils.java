@@ -42,11 +42,16 @@ public class CoreUtils
 		return new ArrayList<String>(list);
 	}
 	
+	
+	public static String formatDate(DateFormat df, Date date)
+	{
+		return (date == null) ? null : df.format(date);
+	}
+	
 
 	public static String formatDate(Date date)
 	{
-		return (date == null)
-		    ? null : formatDate(DEFAULT_DATE_FORMAT, date.getTime());
+		return formatDate(DEFAULT_DATE_FORMAT, date);
 	}
 	
 
