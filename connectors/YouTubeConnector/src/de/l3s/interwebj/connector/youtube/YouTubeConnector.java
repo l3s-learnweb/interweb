@@ -5,6 +5,7 @@ import static de.l3s.interwebj.util.Assertions.notNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -240,10 +241,19 @@ public class YouTubeConnector extends AbstractServiceConnector
              * The pageToken parameter identifies a specific page in the result set that
              * should be returned. In an API response, the nextPageToken and prevPageToken
              * properties identify other pages that could be retrieved.
+             * 
+             * Old solution:
+             * ytq.setStartIndex(Math.min(50, query.getResultCount()) * (query.getPage()-1)+1);
              */
-            //ytq.setStartIndex(Math.min(50, query.getResultCount()) * (query.getPage()-1)+1);
             if (query.getPage() > 1) {
-            	search.setPageToken(tokens.get(query.getPage()));
+            	if (tokens.get(query.getPage()) != null) {
+            		search.setPageToken(tokens.get(query.getPage()));
+            	} else if (tokens.get(-1) != null && tokens.get(-1).equals("no-more-pages")) {
+            		Environment.logger.warning("No more results for page " + query.getPage());
+            		return queryResult;
+            	} else {
+        			throw new InterWebException("YouTube does not support search by specific page numbers without requesting prevent page.");
+            	}
             }
 
             // Restrict the search results to only include videos. See:
@@ -271,9 +281,21 @@ public class YouTubeConnector extends AbstractServiceConnector
             search.setMaxResults(new Long(query.getResultCount()));
 
             // Call the API and print results.
+            Environment.logger.info("Request url: " + search.buildHttpRequestUrl());
             SearchListResponse searchResponse = search.execute();
-            queryResult.setTotalResultCount(searchResponse.getPageInfo().getTotalResults());
-            tokens.put(query.getPage() + 1, searchResponse.getNextPageToken());
+            
+            // Limiting YouTube data API, see more: http://stackoverflow.com/questions/23255957
+            long totalResults = searchResponse.getPageInfo().getTotalResults();
+            queryResult.setTotalResultCount(totalResults > 500 ? 500 : totalResults);
+            
+            if (searchResponse.getNextPageToken() != null)
+            {
+            	Environment.logger.info("Next page " + (query.getPage() + 1) + " its token " + searchResponse.getNextPageToken());
+                tokens.put(query.getPage() + 1, searchResponse.getNextPageToken());
+            } else {
+            	Environment.logger.info("No more results");
+            	tokens.put(-1, "no-more-pages");
+            }
             
             List<SearchResult> searchResultList = searchResponse.getItems();
             List<String> videoIds = new ArrayList<String>();
@@ -345,7 +367,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 		resultItem.setTotalResultCount(totalResultCount);
 		resultItem.setViewCount(singleVideo.getStatistics().getViewCount().intValue());
 		resultItem.setCommentCount(singleVideo.getStatistics().getCommentCount().intValue());
-		//resultItem.setDuration((int)Duration.parse(singleVideo.getContentDetails().getDuration()).getSeconds()); // Java 8 Solution
+		resultItem.setDuration((int)getSecondFromDuration(singleVideo.getContentDetails().getDuration()));
 		
 		// load thumbnails
 		Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();		
@@ -357,7 +379,12 @@ public class YouTubeConnector extends AbstractServiceConnector
 		resultItem.setEmbeddedSize1(CoreUtils.createImageCode(thumbnail, 100, 100));
 		thumbnails.add(thumbnail);
 		
-		googleThumbnail = singleVideo.getSnippet().getThumbnails().getHigh();
+		if (singleVideo.getSnippet().getThumbnails().getMedium() != null) {
+			googleThumbnail = singleVideo.getSnippet().getThumbnails().getMedium();
+		} else {
+			googleThumbnail = singleVideo.getSnippet().getThumbnails().getHigh();
+		}
+		
 		thumbnail = new Thumbnail(googleThumbnail.getUrl(), googleThumbnail.getWidth().intValue(),  googleThumbnail.getHeight().intValue());
 		resultItem.setEmbeddedSize2(CoreUtils.createImageCode(thumbnail, 240, 240));
 		resultItem.setImageUrl(thumbnail.getUrl());
@@ -370,7 +397,23 @@ public class YouTubeConnector extends AbstractServiceConnector
 		resultItem.setEmbeddedSize3(embeddedCode);		
 		
 	    return resultItem;
-	}	
+	}
+	
+	
+	public long getSecondFromDuration(String period) {
+	    String time = period.substring(2);
+	    long duration = 0L;
+	    Object[][] indexs = new Object[][]{{"H", 3600}, {"M", 60}, {"S", 1}};
+	    for(int i = 0; i < indexs.length; i++) {
+	        int index = time.indexOf((String) indexs[i][0]);
+	        if(index != -1) {
+	            String value = time.substring(0, index);
+	            duration += Integer.parseInt(value) * (Integer)indexs[i][1] * 1000;
+	            time = time.substring(value.length() + 1);
+	        }
+	    }
+	    return duration;
+	}
 	
 
 	@Override
