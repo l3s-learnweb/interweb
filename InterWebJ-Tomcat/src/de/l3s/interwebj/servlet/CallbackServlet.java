@@ -86,7 +86,7 @@ public class CallbackServlet
 		{
 			connector = getConnector(parameters);
 			clientType = getClientType(parameters);
-			principal = getPrincipal(parameters);
+			principal = connector.getPrincipal(parameters);
 			
 			
 			Engine engine = Environment.getInstance().getEngine();
@@ -188,24 +188,6 @@ public class CallbackServlet
 			                            + "] not found");
 		}
 		return connector;
-	}
-	
-
-	private InterWebPrincipal getPrincipal(Parameters parameters)
-	    throws InterWebException
-	{
-		String userName = fetchParam(parameters, Parameters.IWJ_USER_ID);
-		if (userName == null)
-		{
-			throw new InterWebException("Unable to fetch user name from the callback URL");
-		}
-		Database database = Environment.getInstance().getDatabase();
-		InterWebPrincipal principal = database.readPrincipalByName(userName);
-		if (principal == null)
-		{
-			throw new InterWebException("User [" + userName + "] not found");
-		}
-		return principal;
 	}
 	
 

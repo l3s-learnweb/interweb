@@ -103,13 +103,12 @@ public class User
 		parameters.add(Parameters.IWJ_USER_ID, principal.getName());
 		parameters.add(Parameters.IWJ_CONNECTOR_ID, connector.getName());
 		parameters.add(Parameters.CLIENT_TYPE, "rest");
-		String interwebjCallbackUrl = baseApiUrl + "callback?"
-		                              + parameters.toQueryString();
-		Environment.logger.info("interwebjCallbackUrl: ["
-		                        + interwebjCallbackUrl + "]");
+		String interwebjCallbackUrl = connector.generateCallbackUrl(baseApiUrl, parameters);
+		Environment.logger.info("interwebjCallbackUrl: [" + interwebjCallbackUrl + "]");
+		
 		try
 		{
-			Parameters params = connector.authenticate(interwebjCallbackUrl);
+			Parameters params = connector.authenticate(interwebjCallbackUrl, parameters);
 			if (userName != null)
 			{
 				params.add(Parameters.USER_KEY, userName);

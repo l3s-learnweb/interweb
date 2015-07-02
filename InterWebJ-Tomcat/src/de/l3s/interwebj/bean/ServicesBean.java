@@ -59,8 +59,7 @@ public class ServicesBean
 	}
 	
 
-	public String authenticate(Object obj)
-	    throws InterWebException
+	public String authenticate(Object obj) throws InterWebException
 	{
 		String baseApiUrl = FacesUtils.getInterWebJBean().getBaseUrl();
 		ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
@@ -71,11 +70,10 @@ public class ServicesBean
 		parameters.add(Parameters.IWJ_USER_ID, principal.getName());
 		parameters.add(Parameters.IWJ_CONNECTOR_ID, connector.getName());
 		parameters.add(Parameters.CLIENT_TYPE, "servlet");
-		String interwebjCallbackUrl = baseApiUrl + "callback?"
-		                              + parameters.toQueryString();
-		Environment.logger.info("interwebjCallbackUrl: ["
-		                        + interwebjCallbackUrl + "]");
-		parameters = connector.authenticate(interwebjCallbackUrl);
+		
+		String interwebjCallbackUrl = connector.generateCallbackUrl(baseApiUrl, parameters);
+		Environment.logger.info("interwebjCallbackUrl: [" + interwebjCallbackUrl + "]");
+		parameters = connector.authenticate(interwebjCallbackUrl, parameters);
 		if (connectorWrapper.getKey() != null)
 		{
 			parameters.add(Parameters.USER_KEY, connectorWrapper.getKey());
