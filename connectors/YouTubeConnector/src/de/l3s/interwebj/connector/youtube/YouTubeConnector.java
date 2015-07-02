@@ -49,7 +49,9 @@ import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.query.QueryResult;
@@ -100,10 +102,10 @@ public class YouTubeConnector extends AbstractServiceConnector
 		super(configuration);
 		setAuthCredentials(consumerAuthCredentials);
 	}
-
+	
 	
 	@Override
-	public Parameters authenticate(String callbackUrl) throws InterWebException
+	public Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException
 	{
 		if (!isRegistered())
 		{
@@ -114,7 +116,8 @@ public class YouTubeConnector extends AbstractServiceConnector
 		params.add(Parameters.CALLBACK, callbackUrl);
 		
 		try {
-	        String url = getFlow().newAuthorizationUrl().setRedirectUri(callbackUrl).build();
+			String userName = "astappiev";
+	        String url = getFlow().newAuthorizationUrl().setRedirectUri(callbackUrl).setState(userName).build();
 	        
 	        params.add(Parameters.AUTHORIZATION_URL, url);
 			
@@ -654,6 +657,30 @@ public class YouTubeConnector extends AbstractServiceConnector
 	    credential.setRefreshToken(authCredentials.getSecret());
 	        
 	    return credential;
+	}
+	
+	@Override
+	public InterWebPrincipal getPrincipal(Parameters parameters) throws InterWebException {
+		String userName = parameters.get("state");
+		
+		if (userName != null) {			
+			Database database = Environment.getInstance().getDatabase();
+			InterWebPrincipal principal = database.readPrincipalByName(userName);
+			if (principal == null)
+			{
+				throw new InterWebException("User [" + userName + "] not found");
+			}
+			return principal;
+		}
+		
+		throw new InterWebException("Unable to fetch user name from the callback URL");
+	}
+	
+	
+	@Override
+	public String generateCallbackUrl(String baseApiUrl, Parameters parameters) {
+		parameters.remove(Parameters.IWJ_USER_ID);
+		return baseApiUrl + "callback?" + parameters.toQueryString();
 	}
 
 	
