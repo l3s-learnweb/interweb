@@ -4,8 +4,11 @@ package de.l3s.interwebj.core;
 import java.io.IOException;
 import java.util.*;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.config.*;
+import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
@@ -64,6 +67,18 @@ public abstract class AbstractServiceConnector
 			return false;
 		}
 		return true;
+	}
+	
+	
+	@Override
+	public Parameters authenticate(String callbackUrl) throws InterWebException {
+		throw new NotImplementedException();
+	}
+	
+	
+	@Override
+	public Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException {
+		return authenticate(callbackUrl);
 	}
 	
 
@@ -139,6 +154,34 @@ public abstract class AbstractServiceConnector
 	public boolean supportContentType(String contentType)
 	{
 		return (contentType != null) && contentTypes.contains(contentType);
+	}
+	
+	@Override
+	public String generateCallbackUrl(String baseApiUrl, Parameters parameters)
+	{
+		return baseApiUrl + "callback?" + parameters.toQueryString();
+	}
+	
+	@Override
+	public InterWebPrincipal getPrincipal(Parameters parameters) throws InterWebException
+	{
+		for (String parameter : parameters.keySet())
+		{
+			if (parameter.equals(Parameters.IWJ_USER_ID))
+			{
+				String userName = parameters.get(parameter);
+				
+				Database database = Environment.getInstance().getDatabase();
+				InterWebPrincipal principal = database.readPrincipalByName(userName);
+				if (principal == null)
+				{
+					throw new InterWebException("User [" + userName + "] not found");
+				}
+				return principal;
+			}
+		}
+		
+		throw new InterWebException("Unable to fetch user name from the callback URL");
 	}
 	
 

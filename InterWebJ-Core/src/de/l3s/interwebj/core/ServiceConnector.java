@@ -15,6 +15,8 @@ public interface ServiceConnector
 	public abstract Parameters authenticate(String callbackUrl)
 	    throws InterWebException;
 	
+	public abstract Parameters authenticate(String callbackUrl, Parameters parameters)
+		    throws InterWebException;
 
 	public abstract ServiceConnector clone();
 	
@@ -109,4 +111,8 @@ public interface ServiceConnector
 
 	public abstract de.l3s.interwebj.socialsearch.SocialSearchResult get(
 			SocialSearchQuery query, AuthCredentials authCredentials);
+	
+	public abstract String generateCallbackUrl(String baseApiUrl, Parameters parameters);
+	
+	public abstract InterWebPrincipal getPrincipal(Parameters parameters) throws InterWebException;
 }
