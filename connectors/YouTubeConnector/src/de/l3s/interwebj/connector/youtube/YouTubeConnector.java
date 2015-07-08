@@ -113,7 +113,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 		}
 		
 		Parameters params = new Parameters();
-		params.add(Parameters.CALLBACK, callbackUrl);
+		params.add(Parameters.CALLBACK + "Auth", callbackUrl);
 		
 		try {
 			String userName = "astappiev";
@@ -158,7 +158,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 		try {
 			GoogleTokenResponse response = getFlow()
 				.newTokenRequest(authorizationCode)
-				.setRedirectUri(params.get(Parameters.CALLBACK))
+				.setRedirectUri(params.get(Parameters.CALLBACK + "Auth"))
 				.execute();
 			cred =  flow.createAndStoreCredential(response, null);
 			
