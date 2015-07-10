@@ -410,7 +410,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 	        int index = time.indexOf((String) indexs[i][0]);
 	        if(index != -1) {
 	            String value = time.substring(0, index);
-	            duration += Integer.parseInt(value) * (Integer)indexs[i][1] * 1000;
+	            duration += Integer.parseInt(value) * (Integer)indexs[i][1];
 	            time = time.substring(value.length() + 1);
 	        }
 	    }
