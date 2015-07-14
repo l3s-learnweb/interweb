@@ -3,15 +3,12 @@ package de.l3s.interwebj.connector.bingAzure;
 
 import static de.l3s.interwebj.util.Assertions.notNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -89,7 +86,8 @@ public class BingAzureConnector extends AbstractServiceConnector
 		//https://api.datamarket.azure.com/Bing/SearchWeb/v1/Web
 		//https://api.datamarket.azure.com/Bing/Search/v1/Image
 		AuthCredentials a = new AuthCredentials("ccaaeac1-04d8-4761-8a2c-5d2dfc5f2133", "KE+X3nVEVxvvxM/fZE+1FR4rpl27/nmzQB6VVqGB/2I="); // getAuthCredentials()
-		WebResource resource = createWebResource("https://api.datamarket.azure.com/Bing/SearchWeb/v1/Web", a);
+		WebResource resource = createWebResource("https://api.datamarket.azure.com/Bing/Search/v1/Composite", a);
+		resource = resource.queryParam("Sources", "'web'");
 		resource = resource.queryParam("Query", "'test'");
 		resource = resource.queryParam("$top", "10");
 		resource = resource.queryParam("$skip", "5");
@@ -105,7 +103,7 @@ public class BingAzureConnector extends AbstractServiceConnector
 		
         try {
 			document = reader.read(response.getEntityInputStream());
-			//System.out.println(document.asXML());
+			System.out.println(document.asXML());
 			//parse(document, Query.CT_IMAGE);
 		} catch (DocumentException e) {
 			e.printStackTrace();
@@ -133,26 +131,14 @@ public class BingAzureConnector extends AbstractServiceConnector
 		
 		QueryResult results = new QueryResult(query);
 		
-		if(query.getContentTypes().contains(Query.CT_IMAGE))
-			results.addQueryResult(getImage(query, authCredentials));
-		
-		if(query.getContentTypes().contains(Query.CT_TEXT))
+		if (query.getPage() != 1 && query.getContentTypes().size() == 1 && query.getContentTypes().contains(Query.CT_TEXT)) {
 			results.addQueryResult(getWeb(query, authCredentials));
+		} else {
+			results.addQueryResult(getComposite(query, authCredentials));
+		}
 		
 		return results;
 	}
-	
-	private QueryResult getImage(Query query, AuthCredentials authCredentials) throws InterWebException
-	{
-		WebResource resource = createWebResource("https://api.datamarket.azure.com/Bing/Search/v1/Image", authCredentials);
-		resource = resource.queryParam("Query", "'"+ query.getQuery() +"'");
-		resource = resource.queryParam("$top", Integer.toString(query.getResultCount()));
-		resource = resource.queryParam("$skip", Integer.toString( (query.getPage()-1)*query.getResultCount() ));
-		resource = resource.queryParam("Market", "'"+ createMarket(query.getLanguage()) +"'");
-		resource = resource.queryParam("Options", "'EnableHighlighting'");
-		
-		return executeRequest(resource, Query.CT_IMAGE);	
-	}	
 
 	private QueryResult getWeb(Query query, AuthCredentials authCredentials) throws InterWebException
 	{
@@ -162,95 +148,186 @@ public class BingAzureConnector extends AbstractServiceConnector
 		resource = resource.queryParam("$skip", Integer.toString( (query.getPage()-1)*query.getResultCount() ));
 		resource = resource.queryParam("Market", "'"+ createMarket(query.getLanguage()) +"'");
 		resource = resource.queryParam("Options", "'EnableHighlighting'");
-//		resource = resource.queryParam("ImageFilters", "Size:Large");
 	
-		return executeRequest(resource, Query.CT_TEXT);
+		return executeRequest(resource);
 	}
 	
-	private QueryResult executeRequest(WebResource resource, String contentType)
+	private QueryResult getComposite(Query query, AuthCredentials authCredentials) throws InterWebException
+	{
+		String sources = "";
+		
+		for (String s : query.getContentTypes()) {
+			if (s.equals(Query.CT_TEXT)) {
+				sources += (sources.length() > 0 ? "+" : "") + "web";
+			} else if (s.equals(Query.CT_IMAGE) || s.equals(Query.CT_VIDEO)) {
+				sources += (sources.length() > 0 ? "+" : "") + s;
+			}
+		}
+		
+		WebResource resource = createWebResource("https://api.datamarket.azure.com/Bing/Search/v1/Composite", authCredentials);
+		resource = resource.queryParam("Sources", "'"+ sources +"'");
+		resource = resource.queryParam("Query", "'"+ query.getQuery() +"'");
+		resource = resource.queryParam("$top", Integer.toString(query.getResultCount()));
+		resource = resource.queryParam("$skip", Integer.toString( (query.getPage()-1)*query.getResultCount() ));
+		resource = resource.queryParam("Market", "'"+ createMarket(query.getLanguage()) +"'");
+		resource = resource.queryParam("Options", "'EnableHighlighting'");
+	
+		return executeRequest(resource);
+	}
+	
+	private QueryResult executeRequest(WebResource resource)
 	{
 		ClientResponse response = resource.get(ClientResponse.class);
 		SAXReader reader = new SAXReader();
 
         try {
         	Document document = reader.read(response.getEntityInputStream());
-			return parse(document, contentType);
+			return parse(document);
 		} catch (DocumentException e) {
 			e.printStackTrace();
 			return new QueryResult(null);
 		}		
 	}
 	
-	private QueryResult parse(Document document, String contentType)
+	private QueryResult parse(Document document)
 	{
 		QueryResult queryResult = new QueryResult(null);
 		
-		List<Element> entrys = document.getRootElement().elements("entry");
-		int index = 1;
-		for(Element entry : entrys)
-		{
-			Element prop = entry.element("content").element("properties");
+		Element rootElement = document.getRootElement();
 		
-			ResultItem resultItem = new ResultItem(getName());
-			resultItem.setType(contentType);
-			resultItem.setTitle(convertHighlighting(prop.elementText("Title")));			
-			resultItem.setDescription(convertHighlighting(prop.elementText("Description")));
-			resultItem.setUrl(prop.elementText("Url"));
-			resultItem.setRank(index++);
-			
-			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-			
-			if(contentType == Query.CT_IMAGE) // get image
+		String title = rootElement.elementText("subtitle");
+		
+		if (title.equals("Bing Web Search")) {
+			List<Element> entrys = rootElement.elements("entry");
+			int index = 1;
+			for(Element entry : entrys)
 			{
-				resultItem.setUrl(prop.elementText("SourceUrl"));
+				Element prop = entry.element("content").element("properties");
 			
-				String url = null;
-				Integer width = null;
-				Integer height = null;
-				
-				try {
-					url = prop.elementText("MediaUrl");
-					width = Integer.parseInt(prop.elementText("Width"));
-					height = Integer.parseInt(prop.elementText("Height"));
-				}
-				catch(Exception e) {
-					//ignore e.printStackTrace();
-				}
-				
-				if(url != null && height != null && width != null)
-				{					
-					thumbnails.add(new Thumbnail(url, width, height));
-				}					
+				ResultItem resultItem = new ResultItem(getName());
+				resultItem.setType(Query.CT_TEXT);
+				resultItem.setTitle(convertHighlighting(prop.elementText("Title")));			
+				resultItem.setDescription(convertHighlighting(prop.elementText("Description")));
+				resultItem.setUrl(prop.elementText("Url"));
+				resultItem.setRank(index++);
+										
+				queryResult.addResultItem(resultItem);
 			}
-
-			
-			Element thumbnailElement = prop.element("Thumbnail");
-			if(thumbnailElement != null)
-			{
-				String url = null;
-				Integer width = null;
-				Integer height = null;
-				
-				try {
-					url = thumbnailElement.elementText("MediaUrl");
-					width = Integer.parseInt(thumbnailElement.elementText("Width"));
-					height = Integer.parseInt(thumbnailElement.elementText("Height"));
-				}
-				catch(NumberFormatException e) {
-					//ignore e.printStackTrace();
-				}
-				
-				if(url != null && height != null && width != null)
-				{					
-					thumbnails.add(new Thumbnail(url, width, height));
-				}			
-			}
-						
-			resultItem.setThumbnails(thumbnails);
-			
-			queryResult.addResultItem(resultItem);
+			return queryResult;
 		}
+		
+		Element rootProp = rootElement.element("entry").element("content").element("properties");
+		int webTotal = !rootProp.elementText("WebTotal").isEmpty() ? Integer.parseInt(rootProp.elementText("WebTotal")) : 0;
+		int imageTotal = !rootProp.elementText("ImageTotal").isEmpty() ? Integer.parseInt(rootProp.elementText("ImageTotal")) : 0;
+		int videoTotal = !rootProp.elementText("VideoTotal").isEmpty() ? Integer.parseInt(rootProp.elementText("VideoTotal")) : 0;
+		queryResult.setTotalResultCount(webTotal + imageTotal + videoTotal);
+		
+		int index = 1;
+		List<Element> resources = rootElement.element("entry").elements("link");
+		
+		for (Element res : resources) {
+			String type = getContentTypeFromTitle(res.attributeValue("title"));
+			
+			if (type == null) {
+				continue;
+			} else if (type.equals(Query.CT_TEXT)) {
+				List<Element> entrys = res.element("inline").element("feed").elements("entry");
+				
+				for(Element entry : entrys)
+				{
+					Element prop = entry.element("content").element("properties");
+					ResultItem resultItem = new ResultItem(getName());
+					resultItem.setType(Query.CT_TEXT);
+					resultItem.setTitle(convertHighlighting(prop.elementText("Title")));			
+					resultItem.setDescription(convertHighlighting(prop.elementText("Description")));
+					resultItem.setUrl(prop.elementText("Url"));
+					resultItem.setRank(index++);
+					resultItem.setTotalResultCount(queryResult.getTotalResultCount());
+							
+					queryResult.addResultItem(resultItem);
+				}
+			} else if (type == Query.CT_IMAGE) {
+				List<Element> entrys = res.element("inline").element("feed").elements("entry");
+								
+				for(Element entry : entrys)
+				{
+					Element prop = entry.element("content").element("properties");
+				
+					ResultItem resultItem = new ResultItem(getName());
+					resultItem.setType(Query.CT_IMAGE); //getContentTypeFromTitle(entry.attributeValue("title"))
+					resultItem.setTitle(convertHighlighting(prop.elementText("Title")));			
+					resultItem.setDescription(convertHighlighting(prop.elementText("Description")));
+					resultItem.setUrl(prop.elementText("Url"));
+					resultItem.setRank(index++);
+					resultItem.setTotalResultCount(queryResult.getTotalResultCount());
+					
+					Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
+					
+					Element sourceUrl = prop.element("SourceUrl");
+					if (sourceUrl != null) {
+						resultItem.setUrl(prop.elementText("SourceUrl"));
+					
+						String url = null;
+						Integer width = null;
+						Integer height = null;
+						
+						try {
+							url = prop.elementText("MediaUrl");
+							width = Integer.parseInt(prop.elementText("Width"));
+							height = Integer.parseInt(prop.elementText("Height"));
+						}
+						catch(Exception e) {
+							//ignore e.printStackTrace();
+						}
+						
+						if(url != null && height != null && width != null)
+						{					
+							thumbnails.add(new Thumbnail(url, width, height));
+						}
+					}
+					
+					Element thumbnailElement = prop.element("Thumbnail");
+					if(thumbnailElement != null)
+					{
+						String url = null;
+						Integer width = null;
+						Integer height = null;
+						
+						try {
+							url = thumbnailElement.elementText("MediaUrl");
+							width = Integer.parseInt(thumbnailElement.elementText("Width"));
+							height = Integer.parseInt(thumbnailElement.elementText("Height"));
+						}
+						catch(NumberFormatException e) {
+							//ignore e.printStackTrace();
+						}
+						
+						if(url != null && height != null && width != null)
+						{					
+							thumbnails.add(new Thumbnail(url, width, height));
+						}			
+					}
+								
+					resultItem.setThumbnails(thumbnails);
+					
+					queryResult.addResultItem(resultItem);
+				}
+			}
+		}
+		
 		return queryResult;
+	}
+	
+	
+	private String getContentTypeFromTitle(String title) {
+		if (title.equalsIgnoreCase("WebResult") || title.equalsIgnoreCase("Web")) {
+			return Query.CT_TEXT;
+		} else if (title.equalsIgnoreCase("ImageResult") || title.equalsIgnoreCase("Image")) {
+			return Query.CT_IMAGE;
+		} else if (title.equalsIgnoreCase("VideoResult") || title.equalsIgnoreCase("Video")) {
+			return Query.CT_VIDEO;
+		}
+		return null;
 	}
 	
 
