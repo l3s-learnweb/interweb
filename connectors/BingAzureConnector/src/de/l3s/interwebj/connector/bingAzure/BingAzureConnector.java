@@ -24,6 +24,7 @@ import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.AbstractServiceConnector;
+import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
@@ -94,8 +95,8 @@ public class BingAzureConnector extends AbstractServiceConnector
 		resource = resource.queryParam("Market", "'"+ createMarket("en") +"'");
 		resource = resource.queryParam("Options", "'EnableHighlighting'");
 
-
 		ClientResponse response = resource.get(ClientResponse.class);
+		Environment.logger.info("Resonse code: " + response.getStatus());
 
 		SAXReader reader = new SAXReader();
 		Document document;
@@ -109,8 +110,6 @@ public class BingAzureConnector extends AbstractServiceConnector
 			e.printStackTrace();
 			return;
 		}
-		
-	
 	}
 	
 	private static WebResource createWebResource(String apiUrl, AuthCredentials consumerAuthCredentials) 
@@ -131,10 +130,15 @@ public class BingAzureConnector extends AbstractServiceConnector
 		
 		QueryResult results = new QueryResult(query);
 		
-		if (query.getPage() != 1 && query.getContentTypes().size() == 1 && query.getContentTypes().contains(Query.CT_TEXT)) {
-			results.addQueryResult(getWeb(query, authCredentials));
-		} else {
+		if (!query.getContentTypes().contains(Query.CT_TEXT) || (query.getContentTypes().contains(Query.CT_TEXT) && query.getContentTypes().size() != 1)) {
+			query.addParam("requestType", "Composite");
 			results.addQueryResult(getComposite(query, authCredentials));
+		} else if (query.getPage() == 1) {
+			query.addParam("requestType", "CompositeFirst");
+			results.addQueryResult(getComposite(query, authCredentials));
+		} else {
+			query.addParam("requestType", "WebOnly");
+			results.addQueryResult(getWeb(query, authCredentials));
 		}
 		
 		return results;
@@ -149,7 +153,7 @@ public class BingAzureConnector extends AbstractServiceConnector
 		resource = resource.queryParam("Market", "'"+ createMarket(query.getLanguage()) +"'");
 		resource = resource.queryParam("Options", "'EnableHighlighting'");
 	
-		return executeRequest(resource);
+		return executeRequest(resource, query, authCredentials);
 	}
 	
 	private QueryResult getComposite(Query query, AuthCredentials authCredentials) throws InterWebException
@@ -172,10 +176,10 @@ public class BingAzureConnector extends AbstractServiceConnector
 		resource = resource.queryParam("Market", "'"+ createMarket(query.getLanguage()) +"'");
 		resource = resource.queryParam("Options", "'EnableHighlighting'");
 	
-		return executeRequest(resource);
+		return executeRequest(resource, query, authCredentials);
 	}
 	
-	private QueryResult executeRequest(WebResource resource)
+	private QueryResult executeRequest(WebResource resource, Query query, AuthCredentials authCredentials) throws InterWebException
 	{
 		ClientResponse response = resource.get(ClientResponse.class);
 		SAXReader reader = new SAXReader();
@@ -184,9 +188,13 @@ public class BingAzureConnector extends AbstractServiceConnector
         	Document document = reader.read(response.getEntityInputStream());
 			return parse(document);
 		} catch (DocumentException e) {
+			if (response.getStatus() == 503 && query.getParam("requestType").equals("CompositeFirst")) {
+				query.addParam("requestType", "WebOnly");
+				return getWeb(query, authCredentials);
+			}
 			e.printStackTrace();
 			return new QueryResult(null);
-		}		
+		}
 	}
 	
 	private QueryResult parse(Document document)
