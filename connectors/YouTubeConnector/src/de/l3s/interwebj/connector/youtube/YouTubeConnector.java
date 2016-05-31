@@ -35,12 +35,14 @@ import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.youtube.model.VideoSnippet;
+import com.google.api.services.youtube.model.VideoStatistics;
 import com.google.api.services.youtube.model.VideoStatus;
 
 import de.l3s.interwebj.AuthCredentials;
@@ -360,16 +362,42 @@ public class YouTubeConnector extends AbstractServiceConnector
 		ResultItem resultItem = new ResultItem(getName());
 		resultItem.setType(Query.CT_VIDEO);
 		resultItem.setId(singleVideo.getId());
-		resultItem.setTitle(singleVideo.getSnippet().getTitle());
-		resultItem.setDescription(singleVideo.getSnippet().getDescription());
 		resultItem.setUrl("https://www.youtube.com/watch?v=" + singleVideo.getId());
-		resultItem.setDate(CoreUtils.formatDate(singleVideo.getSnippet().getPublishedAt().getValue()));
-		resultItem.setTags(StringUtils.join(singleVideo.getSnippet().getTags(), ','));
 		resultItem.setRank(rank++);
 		resultItem.setTotalResultCount(totalResultCount);
-		resultItem.setViewCount(singleVideo.getStatistics().getViewCount().intValue());
-		resultItem.setCommentCount(singleVideo.getStatistics().getCommentCount().intValue());
-		resultItem.setDuration((int)getSecondFromDuration(singleVideo.getContentDetails().getDuration()));
+		
+		VideoSnippet vSnippet = singleVideo.getSnippet();
+		if (vSnippet != null) {
+			if (vSnippet.getTitle() != null) {
+				resultItem.setTitle(vSnippet.getTitle());
+			}
+			if (vSnippet.getDescription() != null) {
+				resultItem.setDescription(vSnippet.getDescription());
+			}
+			if (vSnippet.getPublishedAt() != null) {
+				resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
+			}
+			if (vSnippet.getTags() != null) {
+				resultItem.setTags(StringUtils.join(vSnippet.getTags(), ','));
+			}
+		}
+		
+		VideoStatistics vStatistics = singleVideo.getStatistics();
+		if (vStatistics != null) {
+			if (vStatistics.getViewCount() != null) {
+				resultItem.setViewCount(vStatistics.getViewCount().intValue());
+			}
+			if (vStatistics.getCommentCount() != null) {
+				resultItem.setViewCount(vStatistics.getCommentCount().intValue());
+			}
+		}
+		
+		VideoContentDetails vContentDetails = singleVideo.getContentDetails();
+		if (vContentDetails != null) {
+			if (vContentDetails.getDuration() != null) {
+				resultItem.setDuration((int) getSecondFromDuration(vContentDetails.getDuration()));
+			}
+		}
 		
 		// load thumbnails
 		Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();		
