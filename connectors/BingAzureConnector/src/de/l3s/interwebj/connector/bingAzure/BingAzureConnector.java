@@ -225,9 +225,9 @@ public class BingAzureConnector extends AbstractServiceConnector
 		}
 		
 		Element rootProp = rootElement.element("entry").element("content").element("properties");
-		int webTotal = !rootProp.elementText("WebTotal").isEmpty() ? Integer.parseInt(rootProp.elementText("WebTotal")) : 0;
-		int imageTotal = !rootProp.elementText("ImageTotal").isEmpty() ? Integer.parseInt(rootProp.elementText("ImageTotal")) : 0;
-		int videoTotal = !rootProp.elementText("VideoTotal").isEmpty() ? Integer.parseInt(rootProp.elementText("VideoTotal")) : 0;
+		long webTotal = !rootProp.elementText("WebTotal").isEmpty() ? Long.parseLong(rootProp.elementText("WebTotal")) : 0;
+		long imageTotal = !rootProp.elementText("ImageTotal").isEmpty() ? Long.parseLong(rootProp.elementText("ImageTotal")) : 0;
+		long videoTotal = !rootProp.elementText("VideoTotal").isEmpty() ? Long.parseLong(rootProp.elementText("VideoTotal")) : 0;
 		queryResult.setTotalResultCount(webTotal + imageTotal + videoTotal);
 		
 		int index = 1;
