@@ -79,7 +79,7 @@ public class Engine
 
 	public ServiceConnector getConnector(String connectorName)
 	{
-		ServiceConnector storedServiceConnector = connectors.get(connectorName);
+		ServiceConnector storedServiceConnector = connectors.get(connectorName.toLowerCase());
 		return (storedServiceConnector == null)
 		    ? null : storedServiceConnector.clone();
 	}
@@ -250,7 +250,7 @@ public class Engine
 	                                       AuthCredentials connectorAuthCredentials)
 	{
 		database.saveConnector(connectorName, connectorAuthCredentials);
-		ServiceConnector connector = connectors.get(connectorName);
+		ServiceConnector connector = connectors.get(connectorName.toLowerCase());
 		connector.setAuthCredentials(connectorAuthCredentials);
 	}
 	
@@ -361,7 +361,7 @@ public class Engine
 		AuthCredentials authCredentials = getConnectorAuthCredentials(connector);
 		connector.setAuthCredentials(authCredentials);
 		contentTypes.addAll(connector.getContentTypes());
-		connectors.put(connector.getName(), connector);
+		connectors.put(connector.getName().toLowerCase(), connector);
 	}
 	
 
