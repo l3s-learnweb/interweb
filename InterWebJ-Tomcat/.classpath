@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="ted-src"/>
-	<classpathentry kind="src" path="src-DBpedia"/>
 	<classpathentry kind="src" path="ipernity-src"/>
 	<classpathentry kind="src" path="bing-azure-src"/>
 	<classpathentry kind="src" path="youtube-src"/>
@@ -47,6 +45,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/jackson-core-2.1.3.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/jsr305-1.3.9.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/youtube/lib/google-oauth-client-1.20.0.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_45"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

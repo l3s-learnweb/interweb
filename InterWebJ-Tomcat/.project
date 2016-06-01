@@ -60,16 +60,6 @@
 			<locationURI>WORKSPACE_LOC/SlideShareConnector/src</locationURI>
 		</link>
 		<link>
-			<name>src-DBpedia</name>
-			<type>2</type>
-			<locationURI>WORKSPACE_LOC/DbpediaConnector/src</locationURI>
-		</link>
-		<link>
-			<name>ted-src</name>
-			<type>2</type>
-			<locationURI>WORKSPACE_LOC/TedConnector/src</locationURI>
-		</link>
-		<link>
 			<name>vimeo-src</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/VimeoConnector/src</locationURI>
