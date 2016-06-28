@@ -97,7 +97,7 @@ public class Engine
 		Set<String> keys = connectors.keySet();
 		for (String key : keys)
 		{
-			connectorList.add(connectors.get(key).getName());
+			connectorList.add(connectors.get(key).getName().toLowerCase());
 		}
 		return connectorList;
 	}
