@@ -339,6 +339,7 @@ public class Search
 		List<String> connectorNames = engine.getConnectorNames();
 		for (String service : serviceArray)
 		{
+			service = service.toLowerCase();
 			if (connectorNames.contains(service))
 			{
 				query.addConnectorName(service);
