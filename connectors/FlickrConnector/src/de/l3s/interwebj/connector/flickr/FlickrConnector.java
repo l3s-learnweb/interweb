@@ -455,7 +455,8 @@ public class FlickrConnector extends AbstractServiceConnector
 		Size thumbnail = photo.getThumbnailSize();
 		resultItem.setEmbeddedSize1("<img src=\""+ thumbnail.getSource() +"\" height=\""+ thumbnail.getHeight() +"\" width=\""+ thumbnail.getWidth() +"\"/>");
 		thumbnail = photo.getSmallSize();
-		resultItem.setEmbeddedSize2("<img src=\""+ thumbnail.getSource() +"\" height=\""+ thumbnail.getHeight() +"\" width=\""+ thumbnail.getWidth() +"\"/>");
+		if(thumbnail != null)
+			resultItem.setEmbeddedSize2("<img src=\""+ thumbnail.getSource() +"\" height=\""+ thumbnail.getHeight() +"\" width=\""+ thumbnail.getWidth() +"\"/>");
 		thumbnail = photo.getMediumSize();
 		if(thumbnail != null)
 			resultItem.setEmbeddedSize3("<img src=\""+ thumbnail.getSource() +"\" height=\""+ thumbnail.getHeight() +"\" width=\""+ thumbnail.getWidth() +"\"/>");
