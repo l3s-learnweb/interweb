@@ -9,16 +9,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-
-import l3s.interwebj.lucene.Lucene;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
@@ -26,7 +22,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermFreqVector;
 
-import com.mysql.jdbc.Connection;
 import com.sun.istack.internal.NotNull;
 
 import de.l3s.interwebj.core.Engine;
@@ -35,6 +30,7 @@ import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.query.UserSocialNetworkCollector;
 import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.webutil.FacesUtils;
+import l3s.interwebj.lucene.Lucene;
 
 
 @ManagedBean

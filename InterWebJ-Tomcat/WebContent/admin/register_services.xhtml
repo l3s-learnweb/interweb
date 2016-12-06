@@ -36,14 +36,14 @@
 							rendered="#{registerServicesBean.isRegistered(connectorWrapper)}" />
 						<h:inputText id="key" label="key"
 							value="#{connectorWrapper.key}"
-							rendered="#{!registerServicesBean.isRegistered(connectorWrapper)}"
+							rendered="${!registerServicesBean.isRegistered(connectorWrapper)}"
 							style="margin-bottom:5px" />
 						<h:outputLabel value="Secret:" style="margin-right:5px" />
 						<h:outputLabel value="#{connectorWrapper.connector.authCredentials.secret}"
 							rendered="#{registerServicesBean.isRegistered(connectorWrapper)}" />
 						<h:inputText id="secret" label="secret"
 							value="#{connectorWrapper.secret}"
-							rendered="#{!registerServicesBean.isRegistered(connectorWrapper)}" />
+							rendered="${not registerServicesBean.isRegistered(connectorWrapper)}" />
 					</h:panelGrid>
 				</h:column>
 				<h:column>
@@ -55,7 +55,7 @@
 					<h:commandButton
 						action="#{registerServicesBean.register(connectorWrapper)}"
 						value="Register"
-						rendered="#{!registerServicesBean.isRegistered(connectorWrapper)}"
+						rendered="${!registerServicesBean.isRegistered(connectorWrapper)}"
 						style="margin-left:10px" />
 				</h:column>
 			</h:dataTable>

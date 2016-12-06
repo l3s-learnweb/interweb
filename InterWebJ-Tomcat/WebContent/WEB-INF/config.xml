@@ -3,14 +3,15 @@
 <configuration>
   <database>
     <connection> 
-      <!--   
-      <url>jdbc:mysql://localhost:3333/interwebj</url>
-      <url>jdbc:mysql://mysql.l3s.uni-hannover.de/interwebj</url>   
-      -->
-      <url>jdbc:mysql://mysql.l3s.uni-hannover.de/interwebj</url> 
-      <user-name>interwebj</user-name> 
-      <user-password>IckNu5boc=</user-password> 
-     </connection>
-    <driver-name>com.mysql.jdbc.Driver</driver-name>
+      <url>jdbc:mysql://localhost:3308/interwebj</url>
+      <user-name>interwebj</user-name>
+      <user-password>IckNu5boc=</user-password>
+    </connection>
+    <!-- <connection>
+      <url>jdbc:mysql://localhost:3306/interwebj</url>
+      <user-name>interwebj</user-name>
+      <user-password>W4CA4mNbORbsIrNp</user-password>
+    </connection> -->
+    <driver-name>org.mariadb.jdbc.Driver</driver-name>
   </database>
 </configuration>

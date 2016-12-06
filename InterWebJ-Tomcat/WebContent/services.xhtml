@@ -38,7 +38,7 @@
 				<h:column>
 					<h:commandButton value="Authenticate"
 						action="#{servicesBean.authenticate(connectorWrapper)}"
-						rendered="#{!servicesBean.isUserAuthenticated(connectorWrapper)}" />
+						rendered="${!servicesBean.isUserAuthenticated(connectorWrapper)}" />
 					<h:commandButton value="Revoke"
 						action="#{servicesBean.revoke(connectorWrapper)}"
 						rendered="#{servicesBean.isUserAuthenticated(connectorWrapper)}" />
