@@ -1,6 +1,5 @@
 package de.l3s.interwebj.core;
 
-
 import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.security.Principal;
@@ -12,6 +11,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
@@ -27,447 +29,365 @@ import de.l3s.interwebj.query.QueryResultCollector;
 import de.l3s.interwebj.query.QueryResultMerger;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.UserSocialNetworkCollector;
-import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 import de.l3s.interwebj.socialsearch.SocialSearchResultCollector;
 import de.l3s.interwebj.util.ExpirableMap;
 import de.l3s.interwebj.util.ExpirationPolicy;
 
-
 public class Engine
 {
-	
-	private Map<String, ServiceConnector> connectors;
-	private Set<String> contentTypes;
-	private Database database;
-	private ExpirableMap<String, Object> expirableMap;
-	private Map<String, Map<ServiceConnector, Parameters>> pendingAuthorizationConnectors;
-	
+    private Map<String, ServiceConnector> connectors;
+    private Set<String> contentTypes;
+    private Database database;
+    private ExpirableMap<String, Object> expirableMap;
+    private Map<String, Map<ServiceConnector, Parameters>> pendingAuthorizationConnectors;
+    private Cache<Query, QueryResult> cache;
 
-	public Engine(Database database)
+    public Engine(Database database)
+    {
+	this.database = database;
+	init();
+    }
+
+    public Cache<Query, QueryResult> getCache()
+    {
+	return cache;
+    }
+
+    public void addPendingAuthorizationConnector(InterWebPrincipal principal, ServiceConnector connector, Parameters params)
+    {
+	notNull(principal, "principal");
+	notNull(connector, "connector");
+	notNull(params, "params");
+	Environment.logger.info("Adding pending authorization connector [" + connector.getName() + "] for user [" + principal.getName() + "]");
+	Environment.logger.info("params: [" + params + "]");
+	Map<ServiceConnector, Parameters> expirableMap = createExpirableMap(60);
+
+	if(pendingAuthorizationConnectors.containsKey(principal.getName()))
 	{
-		this.database = database;
-		init();
+	    expirableMap = pendingAuthorizationConnectors.get(principal.getName());
 	}
-	
-
-	public void addPendingAuthorizationConnector(InterWebPrincipal principal,
-	                                             ServiceConnector connector,
-	                                             Parameters params)
+	else
 	{
-		notNull(principal, "principal");
-		notNull(connector, "connector");
-		notNull(params, "params");
-		Environment.logger.info("Adding pending authorization connector ["
-		                        + connector.getName() + "] for user ["
-		                        + principal.getName() + "]");
-		Environment.logger.info("params: [" + params + "]");
-		Map<ServiceConnector, Parameters> expirableMap = createExpirableMap(60);
-		
-		if (pendingAuthorizationConnectors.containsKey(principal.getName()))
-		{
-			expirableMap = pendingAuthorizationConnectors.get(principal.getName());
-		}
-		else
-		{
-			pendingAuthorizationConnectors.put(principal.getName(),
-			                                   expirableMap);
-		}
-		expirableMap.put(connector, params);
+	    pendingAuthorizationConnectors.put(principal.getName(), expirableMap);
 	}
-	
+	expirableMap.put(connector, params);
+    }
 
-	public ServiceConnector getConnector(String connectorName)
+    public ServiceConnector getConnector(String connectorName)
+    {
+	ServiceConnector storedServiceConnector = connectors.get(connectorName.toLowerCase());
+	return (storedServiceConnector == null) ? null : storedServiceConnector.clone();
+    }
+
+    public AuthCredentials getConnectorAuthCredentials(ServiceConnector connector)
+    {
+	return database.readConnectorAuthCredentials(connector.getName());
+    }
+
+    public List<String> getConnectorNames()
+    {
+	List<String> connectorList = new ArrayList<String>();
+	Set<String> keys = connectors.keySet();
+	for(String key : keys)
 	{
-		ServiceConnector storedServiceConnector = connectors.get(connectorName.toLowerCase());
-		return (storedServiceConnector == null)
-		    ? null : storedServiceConnector.clone();
+	    connectorList.add(connectors.get(key).getName().toLowerCase());
 	}
-	
+	return connectorList;
+    }
 
-	public AuthCredentials getConnectorAuthCredentials(ServiceConnector connector)
+    public List<ServiceConnector> getConnectors()
+    {
+	List<ServiceConnector> connectorList = new ArrayList<ServiceConnector>();
+
+	Set<String> connectorNames = connectors.keySet();
+	for(String connectorName : connectorNames)
 	{
-		return database.readConnectorAuthCredentials(connector.getName());
+	    ServiceConnector connector = getConnector(connectorName);
+	    connectorList.add(connector);
 	}
-	
+	return connectorList;
+    }
 
-	public List<String> getConnectorNames()
-	{
-		List<String> connectorList = new ArrayList<String>();
-		Set<String> keys = connectors.keySet();
-		for (String key : keys)
-		{
-			connectorList.add(connectors.get(key).getName().toLowerCase());
-		}
-		return connectorList;
-	}
-	
+    public List<String> getContentTypes()
+    {
+	return new ArrayList<String>(contentTypes);
+    }
 
-	public List<ServiceConnector> getConnectors()
-	{
-		List<ServiceConnector> connectorList = new ArrayList<ServiceConnector>();
-		
-		Set<String> connectorNames = connectors.keySet();
-		for (String connectorName : connectorNames)
-		{
-			ServiceConnector connector = getConnector(connectorName);
-			connectorList.add(connector);
-		}
-		return connectorList;
-	}
-	
+    public ExpirableMap<String, Object> getExpirableMap()
+    {
+	return expirableMap;
+    }
 
-	public List<String> getContentTypes()
-	{
-		return new ArrayList<String>(contentTypes);
-	}
-	
+    public QueryResultCollector getQueryResultCollector(Query query, InterWebPrincipal principal) throws InterWebException
+    {
+	Environment.logger.info(query.toString());
+	/*
+	String userName = (principal == null)? "anonymous" : principal.getName();
+	query.addParam("user", userName);		
+	*/
 
-	public ExpirableMap<String, Object> getExpirableMap()
+	QueryResultMerger merger = new DumbQueryResultMerger();
+	/*
+	if(query.getPrivacy() != -1) // increase the number of results, to fetch enough public and private results
 	{
-		return expirableMap;
-	}
-	
-
-	public QueryResultCollector getQueryResultCollector(Query query, InterWebPrincipal principal)
-	    throws InterWebException
-	{
-		Environment.logger.info(query.toString());
-		String userName = (principal == null)? "anonymous" : principal.getName();
-		query.addParam("user", userName);		
-		
-		QueryResultMerger merger = new DumbQueryResultMerger();
-		/*
-		if(query.getPrivacy() != -1) // increase the number of results, to fetch enough public and private results
-		{
-			if(query.getPrivacy() < 0f) query.setPrivacy(0f);
-			if(query.getPrivacy() > 1f) query.setPrivacy(1f);
-				
-			int estimatedPrivateResults = Math.round(query.getResultCount() * query.getConnectorNames().size() * query.getPrivacy());
-			int estimatedPublicResults = query.getResultCount() * query.getConnectorNames().size() - estimatedPrivateResults;
-				
-			merger = new PrivacyQueryResultMerger(query.getResultCount(), estimatedPrivateResults, estimatedPublicResults);
+		if(query.getPrivacy() < 0f) query.setPrivacy(0f);
+		if(query.getPrivacy() > 1f) query.setPrivacy(1f);
 			
-			int tmp_number_of_results =  estimatedPrivateResults*5 + (int)Math.ceil(estimatedPublicResults*1.25);		
+		int estimatedPrivateResults = Math.round(query.getResultCount() * query.getConnectorNames().size() * query.getPrivacy());
+		int estimatedPublicResults = query.getResultCount() * query.getConnectorNames().size() - estimatedPrivateResults;
 			
-			query.setResultCount(tmp_number_of_results);
-			
-		}*/
+		merger = new PrivacyQueryResultMerger(query.getResultCount(), estimatedPrivateResults, estimatedPublicResults);
 		
-		QueryResultCollector collector = new QueryResultCollector(query, merger);
-		for (String connectorName : query.getConnectorNames())
-		{
-			ServiceConnector connector = getConnector(connectorName);
-			if (connector.isRegistered())
-			{
-				AuthCredentials authCredentials = getUserAuthCredentials(connector, principal);
-				collector.addQueryResultRetriever(connector, authCredentials);
-			}
-		}
-		return collector;
-	}
-	
+		int tmp_number_of_results =  estimatedPrivateResults*5 + (int)Math.ceil(estimatedPublicResults*1.25);		
+		
+		query.setResultCount(tmp_number_of_results);
+		
+	}*/
 
-	public AuthCredentials getUserAuthCredentials(ServiceConnector connector,
-	                                              Principal principal)
+	QueryResultCollector collector = new QueryResultCollector(query, merger);
+	for(String connectorName : query.getConnectorNames())
 	{
-		notNull(connector, "connector");
-		return (principal == null)
-		    ? null : database.readUserAuthCredentials(connector.getName(),
-		                                              principal.getName());
+	    ServiceConnector connector = getConnector(connectorName);
+	    if(connector.isRegistered())
+	    {
+		AuthCredentials authCredentials = getUserAuthCredentials(connector, principal);
+		collector.addQueryResultRetriever(connector, authCredentials);
+	    }
 	}
-	
+	return collector;
+    }
 
-	public boolean isUserAuthenticated(ServiceConnector connector,
-	                                   Principal principal)
+    public AuthCredentials getUserAuthCredentials(ServiceConnector connector, Principal principal)
+    {
+	notNull(connector, "connector");
+	return (principal == null) ? null : database.readUserAuthCredentials(connector.getName(), principal.getName());
+    }
+
+    public boolean isUserAuthenticated(ServiceConnector connector, Principal principal)
+    {
+	return getUserAuthCredentials(connector, principal) != null;
+    }
+
+    public void loadConnectors(String realPath, String pluginDirPath)
+    {
+	init();
+	ConnectorLoader connectorLoader = new ConnectorLoader();
+	List<ServiceConnector> connectors = connectorLoader.load(pluginDirPath);
+
+	//HashSet<String> linkedConnectors=new HashSet<String>();
+	//linkedConnectors.add("bing");
+
+	boolean isDebug = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+	System.out.println("In debug : " + isDebug);
+
+	for(ServiceConnector connector : connectors)
 	{
-		return getUserAuthCredentials(connector, principal) != null;
-	}
-	
+	    if(isDebug)
+	    {
+		connector = connectorLoader.loadLinkedConnector(realPath, connector.getName());
+	    }
 
-	public void loadConnectors(String realPath, String pluginDirPath)
+	    addConnector(connector);
+	    if(!database.hasConnector(connector.getName()))
+	    {
+		database.saveConnector(connector.getName(), null);
+	    }
+	}
+
+    }
+
+    public void processAuthenticationCallback(InterWebPrincipal principal, ServiceConnector connector, Parameters params) throws InterWebException
+    {
+	notNull(principal, "principal");
+	notNull(connector, "connector");
+	Environment.logger.info("Trying to find pending authorization connector [" + connector.getName() + "] for user [" + principal.getName() + "]");
+	Parameters pendingParameters = getPendingAuthorizationParameters(principal, connector);
+	params.add(pendingParameters, false);
+	AuthCredentials authCredentials = connector.completeAuthentication(params);
+	System.out.println(authCredentials);
+	String userId = connector.getUserId(authCredentials);
+	Environment.logger.info("Connector [" + connector.getName() + "] for user [" + principal.getName() + "] authenticated");
+	setUserAuthCredentials(connector.getName(), principal, userId, authCredentials);
+	Environment.logger.info("authentication data saved");
+    }
+
+    public void setConsumerAuthCredentials(String connectorName, AuthCredentials connectorAuthCredentials)
+    {
+	database.saveConnector(connectorName, connectorAuthCredentials);
+	ServiceConnector connector = connectors.get(connectorName.toLowerCase());
+	connector.setAuthCredentials(connectorAuthCredentials);
+    }
+
+    public void setUserAuthCredentials(String connectorName, InterWebPrincipal principal, String userId, AuthCredentials consumerAuthCredentials)
+    {
+	database.saveUserAuthCredentials(connectorName, principal.getName(), userId, consumerAuthCredentials);
+    }
+
+    public ResultItem upload(byte[] data, Principal principal, List<String> connectorNames, String contentType, Parameters params) throws InterWebException
+    {
+	Environment.logger.info("start uploading ...");
+	for(String connectorName : connectorNames)
 	{
-		init();
-		ConnectorLoader connectorLoader = new ConnectorLoader();
-		List<ServiceConnector> connectors = connectorLoader.load(pluginDirPath);
-		
-		//HashSet<String> linkedConnectors=new HashSet<String>();
-		//linkedConnectors.add("bing");
-
-		boolean isDebug = java.lang.management.ManagementFactory
-				.getRuntimeMXBean().getInputArguments().toString()
-				.indexOf("-agentlib:jdwp") > 0;
-		System.out.println("In debug : " + isDebug);
-
-		for (ServiceConnector connector : connectors)
-		{
-			if(isDebug) 
-			{
-				connector=connectorLoader.loadLinkedConnector(realPath,connector.getName());
-			}
-			
-			addConnector(connector);
-			if (!database.hasConnector(connector.getName()))
-			{
-				database.saveConnector(connector.getName(), null);
-			}
-		}
-		
-		
-		
+	    Environment.logger.info("connectorName: [" + connectorName + "]");
+	    ServiceConnector connector = getConnector(connectorName);
+	    if(connector != null && connector.supportContentType(contentType) && connector.isRegistered() && isUserAuthenticated(connector, principal))
+	    {
+		Environment.logger.info("uploading to connector: " + connectorName);
+		AuthCredentials userAuthCredentials = getUserAuthCredentials(connector, principal);
+		ResultItem result = connector.put(data, contentType, params, userAuthCredentials);
+		Environment.logger.info("done");
+		if(null != result)
+		    return result;
+	    }
 	}
-	
+	Environment.logger.info("... uploading done");
+	return null;
+    }
 
-	public void processAuthenticationCallback(InterWebPrincipal principal,
-	                                          ServiceConnector connector,
-	                                          Parameters params)
-	    throws InterWebException
+    public UserSocialNetworkCollector getSocialNetworkOf(String userid, Principal principal, String connectorName)
+    {
+	UserSocialNetworkCollector col = new UserSocialNetworkCollector(userid, null);
+	Environment.logger.info("connectorName: [" + connectorName + "]");
+	ServiceConnector connector = getConnector(connectorName);
+	if(connector != null && connector.isRegistered() && isUserAuthenticated(connector, principal))
 	{
-		notNull(principal, "principal");
-		notNull(connector, "connector");
-		Environment.logger.info("Trying to find pending authorization connector ["
-		                        + connector.getName()
-		                        + "] for user ["
-		                        + principal.getName() + "]");
-		Parameters pendingParameters = getPendingAuthorizationParameters(principal,
-		                                                                 connector);
-		params.add(pendingParameters, false);
-		AuthCredentials authCredentials = connector.completeAuthentication(params);
-		System.out.println(authCredentials);
-		String userId = connector.getUserId(authCredentials);
-		Environment.logger.info("Connector [" + connector.getName()
-		                        + "] for user [" + principal.getName()
-		                        + "] authenticated");
-		setUserAuthCredentials(connector.getName(),
-		                       principal,
-		                       userId,
-		                       authCredentials);
-		Environment.logger.info("authentication data saved");
-	}
-	
+	    Environment.logger.info("authorizing: " + connectorName);
+	    AuthCredentials userAuthCredentials = getUserAuthCredentials(connector, principal);
 
-	public void setConsumerAuthCredentials(String connectorName,
-	                                       AuthCredentials connectorAuthCredentials)
+	    //storing sn from interweb interface				try {
+	    //					result = connector.getUserSocialNetwork(userid,userAuthCredentials);
+	    //					System.out.println(result.toString()+ "size ="+ result.getResultItems().size());
+	    //				} catch (InterWebException e) {
+	    //					// TODO Auto-generated catch block
+	    //					e.printStackTrace();
+	    //				}
+
+	    col.addSocialNetworkRetriever(connector, userAuthCredentials);
+	    Environment.logger.info("done");
+
+	}
+
+	Environment.logger.info("... got social network");
+
+	return col;
+
+    }
+
+    public SocialSearchResultCollector getSocialSearchResultsOf(String query, Principal principal)
+    {
+
+	String connectorName = "Facebook";
+
+	Environment.logger.info(query.toString());
+
+	SocialSearchQuery squery = new SocialSearchQuery(query);
+	SocialSearchResultCollector collector = new SocialSearchResultCollector(squery);
+
+	ServiceConnector connector = getConnector(connectorName);
+	if(connector.isRegistered())
 	{
-		database.saveConnector(connectorName, connectorAuthCredentials);
-		ServiceConnector connector = connectors.get(connectorName.toLowerCase());
-		connector.setAuthCredentials(connectorAuthCredentials);
+	    AuthCredentials authCredentials = getUserAuthCredentials(connector, principal);
+	    collector.addSocialSearchResultRetriever(connector, authCredentials);
 	}
-	
 
-	public void setUserAuthCredentials(String connectorName,
-	                                   InterWebPrincipal principal,
-	                                   String userId,
-	                                   AuthCredentials consumerAuthCredentials)
+	return collector;
+
+    }
+
+    private void addConnector(ServiceConnector connector)
+    {
+	AuthCredentials authCredentials = getConnectorAuthCredentials(connector);
+	connector.setAuthCredentials(authCredentials);
+	contentTypes.addAll(connector.getContentTypes());
+	connectors.put(connector.getName().toLowerCase(), connector);
+    }
+
+    private ExpirableMap<ServiceConnector, Parameters> createExpirableMap(int minutes)
+    {
+	ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
+	return new ExpirableMap<ServiceConnector, Parameters>(builder.timeToIdle(minutes, TimeUnit.MINUTES).build());
+    }
+
+    private Parameters getPendingAuthorizationParameters(InterWebPrincipal principal, ServiceConnector connector) throws InterWebException
+    {
+	notNull(principal, "principal");
+	notNull(connector, "connector");
+	if(!pendingAuthorizationConnectors.containsKey(principal.getName()) || pendingAuthorizationConnectors.get(principal.getName()) == null)
 	{
-		database.saveUserAuthCredentials(connectorName,
-		                                 principal.getName(),
-		                                 userId,
-		                                 consumerAuthCredentials);
+	    pendingAuthorizationConnectors.remove(principal.getName());
+	    throw new InterWebException("There are no connectors with pending authorization info for user [" + principal.getName() + "]");
 	}
-	
-
-	public ResultItem upload(byte[] data,
-	                   Principal principal,
-	                   List<String> connectorNames,
-	                   String contentType,
-	                   Parameters params)
-	    throws InterWebException
+	Map<ServiceConnector, Parameters> expirableMap = pendingAuthorizationConnectors.get(principal.getName());
+	if(!expirableMap.containsKey(connector) || expirableMap.get(connector) == null)
 	{
-		Environment.logger.info("start uploading ...");
-		for (String connectorName : connectorNames)
-		{			
-			Environment.logger.info("connectorName: [" + connectorName + "]");
-			ServiceConnector connector = getConnector(connectorName);
-			if (connector != null && connector.supportContentType(contentType)
-			    && connector.isRegistered()
-			    && isUserAuthenticated(connector, principal))
-			{
-				Environment.logger.info("uploading to connector: "
-				                        + connectorName);
-				AuthCredentials userAuthCredentials = getUserAuthCredentials(connector,
-				                                                     principal);
-				ResultItem result = connector.put(data, contentType, params, userAuthCredentials);
-				Environment.logger.info("done");
-				if(null != result)
-					return result;					
-			}
-		}
-		Environment.logger.info("... uploading done");
-		return null;
+	    throw new InterWebException("There are no parameters with pending authorization info for user [" + principal.getName() + "] and connector [" + connector.getName() + "]");
 	}
-	public UserSocialNetworkCollector getSocialNetworkOf(String userid,Principal principal, String connectorName) {
-		UserSocialNetworkCollector col= new UserSocialNetworkCollector(userid, null);
-			Environment.logger.info("connectorName: [" + connectorName + "]");
-			ServiceConnector connector = getConnector(connectorName);
-			if (connector != null && connector.isRegistered()
-			    && isUserAuthenticated(connector, principal))
-			{
-				Environment.logger.info("authorizing: "
-				                        + connectorName);
-				AuthCredentials userAuthCredentials = getUserAuthCredentials(connector,
-				                                                     principal);
-				
-				
-				
-//storing sn from interweb interface				try {
-//					result = connector.getUserSocialNetwork(userid,userAuthCredentials);
-//					System.out.println(result.toString()+ "size ="+ result.getResultItems().size());
-//				} catch (InterWebException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-				
-				col.addSocialNetworkRetriever(connector, userAuthCredentials);
-				Environment.logger.info("done");
-								
-			}
-		
-		Environment.logger.info("... got social network");
-		
-		return col;
-		
-		
-	}
-	
-	public SocialSearchResultCollector getSocialSearchResultsOf(String query,Principal principal) {
-		
-		String connectorName = "Facebook";
-
-		Environment.logger.info(query.toString());
-		
-		
-		SocialSearchQuery squery= new SocialSearchQuery(query);
-		SocialSearchResultCollector collector = new SocialSearchResultCollector(squery);
-		
-			ServiceConnector connector = getConnector(connectorName);
-			if (connector.isRegistered())
-			{
-				AuthCredentials authCredentials = getUserAuthCredentials(connector,
-				                                                         principal);
-				collector.addSocialSearchResultRetriever(connector, authCredentials);
-			}
-		
-		return collector;
-		
-		
-	}
-	
-	
-	
-
-	private void addConnector(ServiceConnector connector)
+	Parameters parameters = expirableMap.get(connector);
+	expirableMap.remove(connector);
+	if(expirableMap.isEmpty())
 	{
-		AuthCredentials authCredentials = getConnectorAuthCredentials(connector);
-		connector.setAuthCredentials(authCredentials);
-		contentTypes.addAll(connector.getContentTypes());
-		connectors.put(connector.getName().toLowerCase(), connector);
+	    pendingAuthorizationConnectors.remove(principal.getName());
 	}
-	
+	return parameters;
+    }
 
-	private ExpirableMap<ServiceConnector, Parameters> createExpirableMap(int minutes)
-	{
-		ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
-		return new ExpirableMap<ServiceConnector, Parameters>(builder.timeToIdle(minutes,
-		                                                                         TimeUnit.MINUTES).build());
-	}
-	
+    private void init()
+    {
+	connectors = new TreeMap<String, ServiceConnector>();
+	contentTypes = new TreeSet<String>();
+	ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
+	expirableMap = new ExpirableMap<String, Object>(builder.timeToIdle(60, TimeUnit.MINUTES).build());
+	pendingAuthorizationConnectors = new HashMap<String, Map<ServiceConnector, Parameters>>();
 
-	private Parameters getPendingAuthorizationParameters(InterWebPrincipal principal,
-	                                                     ServiceConnector connector)
-	    throws InterWebException
-	{
-		notNull(principal, "principal");
-		notNull(connector, "connector");
-		if (!pendingAuthorizationConnectors.containsKey(principal.getName())
-		    || pendingAuthorizationConnectors.get(principal.getName()) == null)
-		{
-			pendingAuthorizationConnectors.remove(principal.getName());
-			throw new InterWebException("There are no connectors with pending authorization info for user ["
-			                            + principal.getName() + "]");
-		}
-		Map<ServiceConnector, Parameters> expirableMap = pendingAuthorizationConnectors.get(principal.getName());
-		if (!expirableMap.containsKey(connector)
-		    || expirableMap.get(connector) == null)
-		{
-			throw new InterWebException("There are no parameters with pending authorization info for user ["
-			                            + principal.getName()
-			                            + "] and connector ["
-			                            + connector.getName() + "]");
-		}
-		Parameters parameters = expirableMap.get(connector);
-		expirableMap.remove(connector);
-		if (expirableMap.isEmpty())
-		{
-			pendingAuthorizationConnectors.remove(principal.getName());
-		}
-		return parameters;
-	}
-	
+	cache = CacheBuilder.newBuilder().maximumSize(10000).build();
+    }
 
-	private void init()
+    public static void main(String[] args) throws InterWebException
+    {
+	Database database = Environment.getInstance().getDatabase();
+	InterWebPrincipal principal;
+	principal = database.authenticate("olex", "123456");
+	AuthCredentials authCredentials;
+	authCredentials = database.readConnectorAuthCredentials("flickr");
+	System.out.println(authCredentials);
+	Engine engine = new Engine(database);
+	engine.loadConnectors("", "./connectors");
+	//String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
+	List<String> connectorNames = engine.getConnectorNames();
+	Environment.logger.info("Searching in connectors: " + connectorNames);
+	int retryCount = 5;
+	for(int i = 0; i < retryCount; i++)
 	{
-		connectors = new TreeMap<String, ServiceConnector>();
-		contentTypes = new TreeSet<String>();
-		ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
-		expirableMap = new ExpirableMap<String, Object>(builder.timeToIdle(60,
-		                                                                   TimeUnit.MINUTES).build());
-		pendingAuthorizationConnectors = new HashMap<String, Map<ServiceConnector, Parameters>>();
+	    testSearch("london", connectorNames, engine, principal);
 	}
-	
+	//		for (String word : words)
+	//		{
+	//			testSearch(word, connectorNames, engine, principal);
+	//		}
+	Environment.logger.info("finished");
 
-	public static void main(String[] args)
-	    throws InterWebException
-	{
-		Database database = Environment.getInstance().getDatabase();
-		InterWebPrincipal principal;
-		principal = database.authenticate("olex", "123456");
-		AuthCredentials authCredentials;
-		authCredentials = database.readConnectorAuthCredentials("flickr");
-		System.out.println(authCredentials);
-		Engine engine = new Engine(database);
-		engine.loadConnectors("","./connectors");
-		//String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
-		List<String> connectorNames = engine.getConnectorNames();
-		Environment.logger.info("Searching in connectors: " + connectorNames);
-		int retryCount = 5;
-		for (int i = 0; i < retryCount; i++)
-		{
-			testSearch("london", connectorNames, engine, principal);
-		}
-		//		for (String word : words)
-		//		{
-		//			testSearch(word, connectorNames, engine, principal);
-		//		}
-		Environment.logger.info("finished");
-		
-	}
-	
+    }
 
-	private static void testSearch(String word,
-	                               List<String> connectorNames,
-	                               Engine engine,
-	                               InterWebPrincipal principal)
-	    throws InterWebException
+    private static void testSearch(String word, List<String> connectorNames, Engine engine, InterWebPrincipal principal) throws InterWebException
+    {
+	QueryFactory queryFactory = new QueryFactory();
+	Query query = queryFactory.createQuery(word);
+	query.addContentType(Query.CT_VIDEO);
+	query.addContentType(Query.CT_IMAGE);
+	query.addSearchScope(SearchScope.TEXT);
+	query.addSearchScope(SearchScope.TAGS);
+	query.setResultCount(10);
+	query.setPrivacy(0.5f);
+	query.setSortOrder(SortOrder.RELEVANCE);
+	for(String connectorName : connectorNames)
 	{
-		QueryFactory queryFactory = new QueryFactory();
-		Query query = queryFactory.createQuery(word);
-		query.addContentType(Query.CT_VIDEO);
-		query.addContentType(Query.CT_IMAGE);
-		query.addSearchScope(SearchScope.TEXT);
-		query.addSearchScope(SearchScope.TAGS);
-		query.setResultCount(10);
-		query.setPrivacy(0.5f);
-		query.setSortOrder(SortOrder.RELEVANCE);
-		for (String connectorName : connectorNames)
-		{
-			query.addConnectorName(connectorName);
-		}
-		QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
-		
-		QueryResult queryResult = collector.retrieve();
-		System.out.println("query: [" + query + "]");
-		System.out.println("elapsed time : [" + queryResult.getElapsedTime()
-		                   + "]");
+	    query.addConnectorName(connectorName);
 	}
+	QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
+
+	QueryResult queryResult = collector.retrieve();
+	System.out.println("query: [" + query + "]");
+	System.out.println("elapsed time : [" + queryResult.getElapsedTime() + "]");
+    }
 }

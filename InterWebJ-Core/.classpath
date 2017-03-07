@@ -28,6 +28,7 @@
 	<classpathentry kind="lib" path="lib/lucene-analyzers-3.6.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-3.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/mariadb-java-client-1.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/guava-jdk5-13.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

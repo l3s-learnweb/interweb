@@ -45,5 +45,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/InterWebJ-Core/lib/guava-jdk5-13.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
