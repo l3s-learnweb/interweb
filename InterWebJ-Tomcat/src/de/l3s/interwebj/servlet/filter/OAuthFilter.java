@@ -1,16 +1,24 @@
 package de.l3s.interwebj.servlet.filter;
 
-import static de.l3s.interwebj.webutil.RestUtils.*;
+import static de.l3s.interwebj.webutil.RestUtils.throwWebApplicationException;
 
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 
-import com.sun.jersey.oauth.server.*;
-import com.sun.jersey.oauth.signature.*;
-import com.sun.jersey.spi.container.*;
+import com.sun.jersey.oauth.server.OAuthServerRequest;
+import com.sun.jersey.oauth.signature.OAuthParameters;
+import com.sun.jersey.oauth.signature.OAuthSecrets;
+import com.sun.jersey.oauth.signature.OAuthSignature;
+import com.sun.jersey.oauth.signature.OAuthSignatureException;
+import com.sun.jersey.spi.container.ContainerRequest;
+import com.sun.jersey.spi.container.ContainerRequestFilter;
 
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
-import de.l3s.interwebj.jaxb.*;
+import de.l3s.interwebj.core.Consumer;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.db.Database;
+import de.l3s.interwebj.jaxb.ErrorResponse;
 
 public class OAuthFilter implements ContainerRequestFilter
 {
@@ -18,7 +26,6 @@ public class OAuthFilter implements ContainerRequestFilter
     @Context
     SecurityContext context;
 
-    @SuppressWarnings("null")
     @Override
     public ContainerRequest filter(ContainerRequest containerRequest)
     {

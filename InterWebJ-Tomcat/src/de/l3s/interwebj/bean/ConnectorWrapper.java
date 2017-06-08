@@ -1,6 +1,6 @@
 package de.l3s.interwebj.bean;
 
-import de.l3s.interwebj.core.*;
+import de.l3s.interwebj.core.ServiceConnector;
 
 public class ConnectorWrapper
 {

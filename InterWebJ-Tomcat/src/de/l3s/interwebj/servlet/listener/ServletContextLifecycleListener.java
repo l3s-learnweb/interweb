@@ -2,10 +2,13 @@ package de.l3s.interwebj.servlet.listener;
 
 import java.io.File;
 
-import javax.servlet.*;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.db.Database;
 
 public class ServletContextLifecycleListener implements ServletContextListener
 {

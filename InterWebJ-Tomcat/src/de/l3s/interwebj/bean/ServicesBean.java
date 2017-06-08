@@ -1,17 +1,24 @@
 package de.l3s.interwebj.bean;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.faces.application.*;
-import javax.faces.bean.*;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.StringUtils;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
-import de.l3s.interwebj.webutil.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.Parameters;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.db.Database;
+import de.l3s.interwebj.webutil.FacesUtils;
 
 @ManagedBean
 @RequestScoped

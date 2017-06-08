@@ -1,10 +1,12 @@
 package de.l3s.interwebj.jaxb;
 
-import java.util.ArrayList;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import javax.xml.bind.annotation.*;
-
-import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.query.ContactFromSocialNetwork;
+import de.l3s.interwebj.query.UserSocialNetworkResult;
 
 @XmlRootElement(name = "socialnetwork")
 @XmlAccessorType(XmlAccessType.FIELD)

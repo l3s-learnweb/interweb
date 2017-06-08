@@ -1,12 +1,12 @@
 package de.l3s.interwebj.jaxb.services;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AuthorizedServiceEntity extends ServiceEntity
 {
-
-    @SuppressWarnings("hiding")
     @XmlElement(name = "revokeauthorization")
     protected AuthorizationEntity authorizationEntity;
 

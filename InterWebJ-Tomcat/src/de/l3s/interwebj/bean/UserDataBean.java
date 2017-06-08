@@ -1,12 +1,14 @@
 package de.l3s.interwebj.bean;
 
-import javax.faces.application.*;
-import javax.faces.bean.*;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
-import de.l3s.interwebj.webutil.*;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.db.Database;
+import de.l3s.interwebj.webutil.FacesUtils;
 
 @ManagedBean
 @RequestScoped

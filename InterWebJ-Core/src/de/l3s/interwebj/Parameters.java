@@ -1,8 +1,11 @@
 package de.l3s.interwebj;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class Parameters
 {

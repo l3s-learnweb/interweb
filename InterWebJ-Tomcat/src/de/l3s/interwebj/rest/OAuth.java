@@ -1,26 +1,44 @@
 package de.l3s.interwebj.rest;
 
-import static de.l3s.interwebj.webutil.RestUtils.*;
+import static de.l3s.interwebj.webutil.RestUtils.throwWebApplicationException;
 
-import java.awt.*;
-import java.io.*;
-import java.net.*;
+import java.awt.Desktop;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URI;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
-import com.sun.jersey.api.client.*;
-import com.sun.jersey.api.core.*;
-import com.sun.jersey.core.util.*;
-import com.sun.jersey.oauth.server.*;
-import com.sun.jersey.oauth.signature.*;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
+import com.sun.jersey.oauth.server.OAuthServerRequest;
+import com.sun.jersey.oauth.signature.OAuthParameters;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
-import de.l3s.interwebj.jaxb.*;
-import de.l3s.interwebj.jaxb.auth.*;
-import de.l3s.interwebj.util.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.db.Database;
+import de.l3s.interwebj.jaxb.ErrorResponse;
+import de.l3s.interwebj.jaxb.SearchResponse;
+import de.l3s.interwebj.jaxb.XMLResponse;
+import de.l3s.interwebj.jaxb.auth.OAuthAccessTokenResponse;
+import de.l3s.interwebj.jaxb.auth.OAuthRequestTokenResponse;
+import de.l3s.interwebj.util.ExpirableMap;
+import de.l3s.interwebj.util.RandomGenerator;
 
 @Path("/oauth")
 public class OAuth extends Endpoint

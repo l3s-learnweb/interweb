@@ -1,18 +1,25 @@
 package de.l3s.interwebj.webutil;
 
-import java.io.*;
-import java.nio.charset.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.Charset;
 
-import javax.el.*;
-import javax.faces.*;
-import javax.faces.application.*;
-import javax.faces.component.*;
-import javax.faces.context.*;
-import javax.faces.lifecycle.*;
-import javax.servlet.http.*;
+import javax.el.ELResolver;
+import javax.faces.FactoryFinder;
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.context.FacesContextFactory;
+import javax.faces.lifecycle.Lifecycle;
+import javax.faces.lifecycle.LifecycleFactory;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import de.l3s.interwebj.bean.*;
-import de.l3s.interwebj.core.*;
+import de.l3s.interwebj.bean.InterWebJBean;
+import de.l3s.interwebj.bean.SessionBean;
+import de.l3s.interwebj.core.Environment;
 
 public class FacesUtils
 {

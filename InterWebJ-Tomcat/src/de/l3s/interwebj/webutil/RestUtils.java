@@ -1,9 +1,10 @@
 package de.l3s.interwebj.webutil;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import de.l3s.interwebj.jaxb.*;
+import de.l3s.interwebj.jaxb.ErrorResponse;
 
 public class RestUtils
 {

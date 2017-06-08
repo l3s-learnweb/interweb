@@ -1,6 +1,6 @@
 package de.l3s.interwebj.query;
 
-import java.io.*;
+import java.io.Serializable;
 
 import de.l3s.interwebj.util.CoreUtils;
 

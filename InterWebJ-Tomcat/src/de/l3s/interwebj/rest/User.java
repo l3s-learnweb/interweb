@@ -1,27 +1,50 @@
 package de.l3s.interwebj.rest;
 
-import static de.l3s.interwebj.webutil.RestUtils.*;
+import static de.l3s.interwebj.webutil.RestUtils.throwWebApplicationException;
 
-import java.awt.*;
-import java.net.*;
+import java.awt.Desktop;
+import java.net.URI;
 import java.util.List;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 
-import com.sun.jersey.api.client.*;
-import com.sun.jersey.api.core.*;
-import com.sun.jersey.core.util.*;
-import com.sun.jersey.oauth.signature.*;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
+import com.sun.jersey.oauth.signature.OAuthParameters;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
-import de.l3s.interwebj.jaxb.*;
-import de.l3s.interwebj.jaxb.services.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.Parameters;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.db.Database;
+import de.l3s.interwebj.jaxb.ErrorResponse;
+import de.l3s.interwebj.jaxb.OkResponse;
+import de.l3s.interwebj.jaxb.SocialNetworkResponse;
+import de.l3s.interwebj.jaxb.XMLResponse;
+import de.l3s.interwebj.jaxb.services.AuthorizationLinkEntity;
+import de.l3s.interwebj.jaxb.services.AuthorizationLinkResponse;
+import de.l3s.interwebj.jaxb.services.ServiceEntity;
+import de.l3s.interwebj.jaxb.services.ServiceResponse;
+import de.l3s.interwebj.jaxb.services.ServicesResponse;
 import de.l3s.interwebj.query.UserSocialNetworkCollector;
 import de.l3s.interwebj.query.UserSocialNetworkResult;
-import de.l3s.interwebj.util.*;
+import de.l3s.interwebj.util.CoreUtils;
+import de.l3s.interwebj.util.ExpirableMap;
 
 @Path("/users/{user}")
 public class User extends Endpoint
@@ -51,7 +74,7 @@ public class User extends Endpoint
 	    expirableMap.put(userid, userSocialNetwork);
 	    //create xml objects to wrap like search response 
 	    SocialNetworkResponse socialnetworkresponse = new SocialNetworkResponse(userSocialNetwork);
-	    String userName = (principal == null) ? "anonymous" : principal.getName();
+	    // String userName = (principal == null) ? "anonymous" : principal.getName();
 	    socialnetworkresponse.getSocialNetwork().setUser(userid);
 	    Environment.logger.info(socialnetworkresponse.getSocialNetwork().getResults().size() + " results found  ");
 	    return socialnetworkresponse;

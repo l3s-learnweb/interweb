@@ -1,10 +1,11 @@
 package de.l3s.interwebj.core;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import de.l3s.interwebj.query.*;
-import de.l3s.interwebj.util.*;
+import de.l3s.interwebj.query.QueryResult;
+import de.l3s.interwebj.util.ExpirableMap;
+import de.l3s.interwebj.util.ExpirationPolicy;
 
 public class StandingQueryResultPool
 {

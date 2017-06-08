@@ -1,8 +1,9 @@
 package de.l3s.interwebj.bean;
 
-import javax.faces.bean.*;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 
-import de.l3s.interwebj.core.*;
+import de.l3s.interwebj.core.InterWebPrincipal;
 
 @ManagedBean
 @SessionScoped

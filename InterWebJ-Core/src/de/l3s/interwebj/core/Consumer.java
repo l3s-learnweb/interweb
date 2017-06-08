@@ -1,7 +1,8 @@
 package de.l3s.interwebj.core;
 
-import static de.l3s.interwebj.util.Assertions.*;
-import de.l3s.interwebj.*;
+import static de.l3s.interwebj.util.Assertions.notNull;
+
+import de.l3s.interwebj.AuthCredentials;
 
 public class Consumer
 {

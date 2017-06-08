@@ -1,20 +1,32 @@
 package de.l3s.interwebj.bean;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
-import javax.faces.application.*;
-import javax.faces.bean.*;
-import javax.faces.model.*;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.model.SelectItem;
 
-import com.sun.istack.internal.*;
+import com.sun.istack.internal.NotNull;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SearchScope;
-import de.l3s.interwebj.util.*;
-import de.l3s.interwebj.webutil.*;
+import de.l3s.interwebj.query.QueryFactory;
+import de.l3s.interwebj.query.QueryResult;
+import de.l3s.interwebj.query.QueryResultCollector;
+import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.Thumbnail;
+import de.l3s.interwebj.util.CoreUtils;
+import de.l3s.interwebj.webutil.FacesUtils;
 
 @ManagedBean
 @ViewScoped
@@ -191,7 +203,6 @@ public class SearchBean implements Serializable
 	query.setResultCount(resultCount);
 	query.setPage(page);
 	query.setLanguage(language);
-
 	query.setPrivacy(usePrivacy ? 1f : -1f);
 	query.setTimeout(timeout);
 	query.setPrivacyUseImageFeatures(privacyUseImageFeatures);
@@ -208,8 +219,10 @@ public class SearchBean implements Serializable
 	    Environment.logger.severe(e.getMessage());
 	    FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 	}
+	/* standing queries are never used
 	ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
 	expirableMap.put(queryResult.getQuery().getId(), queryResult);
+	*/
 	this.queryResult = queryResult;
 	return "success";
     }

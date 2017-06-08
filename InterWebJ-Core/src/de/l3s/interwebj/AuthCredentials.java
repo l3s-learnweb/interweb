@@ -1,6 +1,7 @@
 package de.l3s.interwebj;
 
-import static de.l3s.interwebj.util.Assertions.*;
+import static de.l3s.interwebj.util.Assertions.notEmpty;
+import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.Serializable;
 

@@ -1,10 +1,17 @@
 package de.l3s.interwebj.query;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.ServiceConnector;
 
 public class UserSocialNetworkCollector
 
@@ -24,29 +31,21 @@ public class UserSocialNetworkCollector
 
 	public UserSocialNetworkResult call() throws Exception
 	{
-	    long startTime = System.currentTimeMillis();
+
 	    Environment.logger.info("[" + connector.getName() + "] Start querying: " + userid);
 	    UserSocialNetworkResult queryResult = connector.getUserSocialNetwork(userid, authCredentials);
 	    //queryResult = Environment.getInstance().getPrivacyClassifier().classify(queryResult);
-	    long endTime = System.currentTimeMillis();
-	    /*Environment.logger.info("[" + connector.getName() + "] Finished. ["
-	                            + queryResult.getResultItems().size()
-	                            + " of total "
-	                            + queryResult.getTotalResultCount()
-	                            + "] result(s) found in ["
-	                            + (endTime - startTime) + "] ms");*/
+
 	    return queryResult;
 	}
     }
 
     private String userid;
-    private QueryResultMerger merger;
     private List<UserResultRetriever> retrievers;
 
     public UserSocialNetworkCollector(String userid, QueryResultMerger merger)
     {
 	this.userid = userid;
-	this.merger = merger;
 	retrievers = new ArrayList<UserSocialNetworkCollector.UserResultRetriever>();
     }
 

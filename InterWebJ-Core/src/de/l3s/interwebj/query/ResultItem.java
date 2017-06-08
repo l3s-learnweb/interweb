@@ -1,9 +1,8 @@
 package de.l3s.interwebj.query;
 
-import java.io.*;
-import java.util.*;
-
-import org.apache.commons.lang.*;
+import java.io.Serializable;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ResultItem implements Serializable
 {
@@ -362,20 +361,6 @@ public class ResultItem implements Serializable
     public void setPrivacyConfidence(int privacyConfidence)
     {
 	this.privacyConfidence = privacyConfidence;
-    }
-
-    private String unescape(String encoded)
-    {
-	if(encoded == null)
-	{
-	    return null;
-	}
-	String decoded;
-	while(!(decoded = StringEscapeUtils.unescapeHtml(encoded)).equals(encoded))
-	{
-	    encoded = decoded;
-	}
-	return decoded;
     }
 
     public int getDuration()

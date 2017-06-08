@@ -1,11 +1,11 @@
 package de.l3s.interwebj.util;
 
-import java.math.*;
-import java.security.*;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.RandomStringUtils;
 
-import de.l3s.interwebj.*;
+import de.l3s.interwebj.AuthCredentials;
 
 public class RandomGenerator
 {

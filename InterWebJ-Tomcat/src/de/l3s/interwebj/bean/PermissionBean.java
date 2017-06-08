@@ -1,11 +1,13 @@
 package de.l3s.interwebj.bean;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.faces.bean.*;
-import javax.faces.model.*;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
+import javax.faces.model.SelectItem;
 
-import com.sun.istack.internal.*;
+import com.sun.istack.internal.NotNull;
 
 @ManagedBean
 @RequestScoped

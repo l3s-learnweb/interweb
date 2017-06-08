@@ -1,16 +1,20 @@
 package de.l3s.interwebj.rest;
 
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
 
-import com.sun.jersey.api.client.*;
-import com.sun.jersey.api.core.*;
-import com.sun.jersey.oauth.client.*;
-import com.sun.jersey.oauth.server.*;
-import com.sun.jersey.oauth.signature.*;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.oauth.client.OAuthClientFilter;
+import com.sun.jersey.oauth.server.OAuthServerRequest;
+import com.sun.jersey.oauth.signature.HMAC_SHA1;
+import com.sun.jersey.oauth.signature.OAuthParameters;
+import com.sun.jersey.oauth.signature.OAuthSecrets;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.db.Database;
 
 public class Endpoint
 {

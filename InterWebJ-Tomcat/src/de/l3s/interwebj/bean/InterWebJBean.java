@@ -1,12 +1,14 @@
 package de.l3s.interwebj.bean;
 
-import java.net.*;
+import java.net.URI;
 
-import javax.faces.bean.*;
-import javax.servlet.http.*;
+import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.ManagedBean;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpUtils;
 
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.webutil.*;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.webutil.FacesUtils;
 
 @ManagedBean(name = "interwebj")
 @ApplicationScoped

@@ -1,7 +1,8 @@
 package de.l3s.interwebj.query;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 public class QueryResult implements Serializable
 {

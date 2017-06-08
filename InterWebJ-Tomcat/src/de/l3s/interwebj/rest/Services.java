@@ -1,22 +1,33 @@
 package de.l3s.interwebj.rest;
 
-import static de.l3s.interwebj.webutil.RestUtils.*;
+import static de.l3s.interwebj.webutil.RestUtils.throwWebApplicationException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.StringUtils;
 
-import com.sun.jersey.api.client.*;
-import com.sun.jersey.api.core.*;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.core.HttpContext;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.db.*;
-import de.l3s.interwebj.jaxb.*;
-import de.l3s.interwebj.jaxb.services.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.db.Database;
+import de.l3s.interwebj.jaxb.ErrorResponse;
+import de.l3s.interwebj.jaxb.XMLResponse;
+import de.l3s.interwebj.jaxb.services.AuthorizationEntity;
+import de.l3s.interwebj.jaxb.services.AuthorizationLinkEntity;
+import de.l3s.interwebj.jaxb.services.ServiceEntity;
+import de.l3s.interwebj.jaxb.services.ServicesResponse;
 
 @Path("/services")
 public class Services extends Endpoint

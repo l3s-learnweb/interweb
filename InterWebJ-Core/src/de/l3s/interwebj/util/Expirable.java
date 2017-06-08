@@ -1,8 +1,8 @@
 package de.l3s.interwebj.util;
 
-import static de.l3s.interwebj.util.Assertions.*;
+import static de.l3s.interwebj.util.Assertions.notNull;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 public final class Expirable<K, V>
 {

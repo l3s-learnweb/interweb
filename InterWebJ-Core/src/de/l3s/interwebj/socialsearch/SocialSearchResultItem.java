@@ -6,14 +6,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.lucene.document.Document;
 
 public class SocialSearchResultItem implements Serializable
 {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6470460991607534720L;
     private String username;
     private String userid;
     private String imageurl;
@@ -147,17 +149,6 @@ public class SocialSearchResultItem implements Serializable
 
 	story = topdoc.get("description");
 
-    }
-
-    private void findreason()
-    {
-
-    }
-
-    private String findstory()
-    {
-	// TODO Auto-generated method stub
-	return null;
     }
 
     public String getUsername()

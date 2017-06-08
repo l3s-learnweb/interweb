@@ -1,14 +1,25 @@
 package de.l3s.interwebj.db;
 
-import static de.l3s.interwebj.util.Assertions.*;
+import static de.l3s.interwebj.util.Assertions.notNull;
 
-import java.sql.*;
-import java.util.*;
-import java.util.logging.*;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Logger;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.config.*;
-import de.l3s.interwebj.core.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.config.Configuration;
+import de.l3s.interwebj.core.Consumer;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
 
 public class JDBCDatabase implements Database
 {
@@ -49,6 +60,8 @@ public class JDBCDatabase implements Database
     private static final String PSTMT_SELECT_MEDIATOR = "SELECT mediator FROM iwj_mediators WHERE name=?";
     private static final String PSTMT_INSERT_MEDIATOR = "INSERT INTO iwj_mediators (user,mediator) VALUES (?,?)";
     private static final String PSTMT_DELETE_MEDIATOR = "DELETE FROM iwj_mediators WHERE user=?";
+
+    private static final String PSTMT_LOG_QUERY = "INSERT DELAYED INTO `iwj_query_log` (`consumer_key`, `query`) VALUES (?,?)";
 
     private Logger logger;
 
@@ -664,6 +677,33 @@ public class JDBCDatabase implements Database
 	}
     }
 
+    public void logQuery(String consumerKey, String query)
+    {
+	notNull(consumerKey, "connectorName");
+	notNull(query, "userName");
+
+	if(query.length() > 200)
+	    query = query.substring(0, 200);
+
+	try
+	{
+	    if(openConnection())
+	    {
+		PreparedStatement pstmt = preparedStatements.get(PSTMT_LOG_QUERY);
+		pstmt.setString(1, consumerKey);
+		pstmt.setString(2, query);
+		pstmt.executeUpdate();
+		dbConnection.commit();
+	    }
+	}
+	catch(SQLException e)
+	{
+	    e.printStackTrace();
+	    logger.severe(e.getMessage());
+	    close();
+	}
+    }
+
     @Override
     public void updatePrincipal(InterWebPrincipal principal)
     {
@@ -835,6 +875,9 @@ public class JDBCDatabase implements Database
 	addPreparedStatement(PSTMT_SELECT_MEDIATOR);
 	addPreparedStatement(PSTMT_INSERT_MEDIATOR);
 	addPreparedStatement(PSTMT_DELETE_MEDIATOR);
+
+	addPreparedStatement(PSTMT_LOG_QUERY);
+
     }
 
     private boolean openConnection() throws SQLException

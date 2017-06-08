@@ -1,9 +1,8 @@
 package de.l3s.interwebj.socialsearch;
 
-import java.io.*;
-import java.util.*;
-
-import de.l3s.interwebj.query.ResultItem;
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SocialSearchResult implements Serializable
 {

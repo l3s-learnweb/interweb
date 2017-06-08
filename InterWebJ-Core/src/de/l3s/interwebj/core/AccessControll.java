@@ -1,6 +1,7 @@
 package de.l3s.interwebj.core;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AccessControll
 {

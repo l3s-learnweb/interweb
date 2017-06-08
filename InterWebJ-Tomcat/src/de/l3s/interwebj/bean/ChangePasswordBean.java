@@ -1,6 +1,7 @@
 package de.l3s.interwebj.bean;
 
-import javax.faces.bean.*;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 
 @ManagedBean
 @RequestScoped

@@ -1,12 +1,20 @@
 package de.l3s.interwebj.servlet.filter;
 
-import java.io.*;
+import java.io.IOException;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import de.l3s.interwebj.bean.*;
-import de.l3s.interwebj.core.*;
+import de.l3s.interwebj.bean.SessionBean;
+import de.l3s.interwebj.core.AccessControll;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
 
 public class SecurityFilter implements Filter
 {

@@ -1,17 +1,15 @@
 package de.l3s.interwebj.core;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.NotImplementedException;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.config.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.Parameters;
+import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.db.Database;
-import de.l3s.interwebj.query.Query;
-import de.l3s.interwebj.query.QueryResult;
-import de.l3s.interwebj.query.ResultItem;
-import de.l3s.interwebj.query.UserSocialNetworkResult;
 
 public abstract class AbstractServiceConnector implements ServiceConnector
 {

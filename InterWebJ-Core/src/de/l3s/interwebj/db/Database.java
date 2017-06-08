@@ -1,9 +1,10 @@
 package de.l3s.interwebj.db;
 
-import java.util.*;
+import java.util.List;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.core.Consumer;
+import de.l3s.interwebj.core.InterWebPrincipal;
 
 public interface Database
 {
@@ -49,4 +50,6 @@ public interface Database
     String readMediator(String userName);
 
     void saveMediator(String userName, String mediator);
+
+    void logQuery(String consumerKey, String query);
 }

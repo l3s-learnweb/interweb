@@ -1,17 +1,9 @@
 package de.l3s.interwebj.servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,7 +13,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
@@ -53,17 +44,6 @@ public class CallbackServlet extends HttpServlet
     public CallbackServlet()
     {
 	super();
-    }
-
-    private void print(InputStream xmlstream) throws IOException
-    {
-	BufferedReader br = new BufferedReader(new InputStreamReader(xmlstream));
-	String line;
-	while((line = br.readLine()) != null)
-	{
-	    System.out.println(line);
-	}
-
     }
 
     public void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException

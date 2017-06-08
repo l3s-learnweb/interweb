@@ -1,8 +1,11 @@
 package de.l3s.interwebj.query;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import de.l3s.interwebj.util.*;
+import de.l3s.interwebj.util.RandomGenerator;
 
 public class QueryFactory
 {

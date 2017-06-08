@@ -1,10 +1,15 @@
 package de.l3s.interwebj.core;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Set;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.query.*;
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.Parameters;
+import de.l3s.interwebj.query.Query;
+import de.l3s.interwebj.query.QueryResult;
+import de.l3s.interwebj.query.ResultItem;
+import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 
 public interface ServiceConnector

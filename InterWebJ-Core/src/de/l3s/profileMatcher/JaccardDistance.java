@@ -2,8 +2,6 @@ package de.l3s.profileMatcher;
 
 import com.wcohen.ss.SmithWaterman;
 
-import de.l3s.profileMatcher.StringDistance;
-
 public class JaccardDistance extends StringDistance
 {
 

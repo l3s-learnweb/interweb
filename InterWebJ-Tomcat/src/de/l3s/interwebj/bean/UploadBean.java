@@ -1,19 +1,25 @@
 package de.l3s.interwebj.bean;
 
-import java.io.*;
-import java.nio.charset.*;
-import java.util.*;
+import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.faces.bean.*;
-import javax.faces.model.*;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.model.SelectItem;
 
-import org.richfaces.event.*;
-import org.richfaces.model.*;
+import org.richfaces.event.FileUploadEvent;
+import org.richfaces.model.UploadedFile;
 
-import de.l3s.interwebj.*;
-import de.l3s.interwebj.core.*;
-import de.l3s.interwebj.query.*;
-import de.l3s.interwebj.webutil.*;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.Parameters;
+import de.l3s.interwebj.core.Engine;
+import de.l3s.interwebj.core.Environment;
+import de.l3s.interwebj.core.InterWebPrincipal;
+import de.l3s.interwebj.core.ServiceConnector;
+import de.l3s.interwebj.query.Query;
+import de.l3s.interwebj.webutil.FacesUtils;
 
 /**
  * @author olex

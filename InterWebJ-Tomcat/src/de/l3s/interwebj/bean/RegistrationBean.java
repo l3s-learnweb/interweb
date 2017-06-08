@@ -1,9 +1,10 @@
 package de.l3s.interwebj.bean;
 
-import java.util.*;
-import java.util.regex.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
-import de.l3s.interwebj.db.*;
+import de.l3s.interwebj.db.Database;
 
 public class RegistrationBean
 {

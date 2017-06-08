@@ -1,8 +1,6 @@
 package de.l3s.interwebj.jaxb;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,9 +10,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.lucene.document.Document;
 
-import de.l3s.interwebj.core.Environment;
-import de.l3s.interwebj.query.ResultItem;
-import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.socialsearch.SocialSearchResultItem;
 
 @XmlRootElement(name = "result")

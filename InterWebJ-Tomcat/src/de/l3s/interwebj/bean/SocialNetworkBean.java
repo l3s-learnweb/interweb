@@ -69,7 +69,7 @@ public class SocialNetworkBean
 
     public void init()
     {
-	Engine engine = Environment.getInstance().getEngine();
+	Environment.getInstance().getEngine();
 
     }
 
@@ -229,7 +229,7 @@ public class SocialNetworkBean
 	try
 	{
 	    UserSocialNetworkCollector collector = engine.getSocialNetworkOf("me", principal, "Facebook");
-	    //result = collector.retrieve();
+	    result = collector.retrieve();
 	}
 	catch(Exception e)
 	{

@@ -1,9 +1,15 @@
 package de.l3s.interwebj.util;
 
-import java.text.*;
-import java.util.*;
-import java.util.logging.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class LoggerCreator
 {
