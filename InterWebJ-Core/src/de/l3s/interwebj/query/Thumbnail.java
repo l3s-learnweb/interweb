@@ -3,6 +3,8 @@ package de.l3s.interwebj.query;
 
 import java.io.*;
 
+import de.l3s.interwebj.util.CoreUtils;
+
 
 public class Thumbnail
     implements Comparable<Thumbnail>, Serializable
@@ -17,7 +19,7 @@ public class Thumbnail
 
 	public Thumbnail(String url, int width, int height)
 	{
-		this.url = url;
+		this.url = CoreUtils.ulrToHttps(url);
 		this.width = width;
 		this.height = height;
 	}

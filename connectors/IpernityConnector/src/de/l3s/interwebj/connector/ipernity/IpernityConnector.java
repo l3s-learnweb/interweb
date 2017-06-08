@@ -4,7 +4,6 @@ package de.l3s.interwebj.connector.ipernity;
 import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,8 +33,8 @@ import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SortOrder;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
-import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.query.Thumbnail;
+import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 import de.l3s.interwebj.socialsearch.SocialSearchResult;
 import de.l3s.interwebj.util.CoreUtils;

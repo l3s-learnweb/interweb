@@ -118,7 +118,12 @@ public class BingAzureConnector extends AbstractServiceConnector
 			queryResult.addResultItem(resultItem);
 		    }
 		    results.addQueryResult(queryResult);
+		    
+		    if(pages.getValue().size() ==0)
+			Environment.logger.warning("No text results found; response: "+ response.getJsonContent());
 		}
+		else
+		    Environment.logger.warning("Result pages are null");
 	    }
 	    
 	    if(query.getContentTypes().contains(Query.CT_IMAGE))
@@ -132,6 +137,9 @@ public class BingAzureConnector extends AbstractServiceConnector
 		    QueryResult queryResult = new QueryResult(null);
 		    int intResultCount = 100;
 		    int index = 1;
+		    
+		    if(images.getValue().size() ==0)
+			Environment.logger.warning("No image results found; response: "+ response.getJsonContent());
 		    
 		    for(Image image : images.getValue())
 		    {
@@ -199,7 +207,7 @@ public class BingAzureConnector extends AbstractServiceConnector
 
     private BingResponse getWeb(Query query, AuthCredentials authCredentials) throws InterWebException, UnsupportedOperationException, IOException
     {
-	int count = query.getResultCount()>20? query.getResultCount():20; // min 20 results per request
+	int count = query.getResultCount();//>20? query.getResultCount():20; // min 20 results per request
 	
 	BingQuery bingQuery = new BingQuery();
 	bingQuery.setQuery(query.getQuery());

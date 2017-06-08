@@ -91,7 +91,7 @@ public class SlideShareConnector
 		
 		resource = resource.queryParam("items_per_page", Integer.toString(query.getResultCount()));
 		resource = resource.queryParam("sort", createSortOrder(query.getSortOrder()));
-		System.out.println(resource.getURI());
+		
 		String searchScope = createSearchScope(query.getSearchScopes());
 		if (searchScope != null)
 		{
@@ -105,15 +105,6 @@ public class SlideShareConnector
 		resource = resource.queryParam("file_type", fileType);
 		//		resource = resource.queryParam("detailed", "1");
 		ClientResponse response = postQuery(resource);
-
-		/*
-		try {
-			String responseContent = CoreUtils.getClientResponseContent(response);
-			System.out.println("search response;:"+ responseContent);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		*/
 		
 		SearchResponse sr;		
 		try { // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt

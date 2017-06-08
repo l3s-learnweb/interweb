@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
+import de.l3s.interwebj.util.CoreUtils;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -59,7 +61,7 @@ public class Thumbnail {
      *     
      */
     public String getValue() {
-        return value;
+        return CoreUtils.ulrToHttps(value);
     }
 
     /**

@@ -188,8 +188,8 @@ public class VimeoConnector extends AbstractServiceConnector
 			}			
 			resultItem.setThumbnails(thumbnails);
 			
-			resultItem.setEmbeddedSize3("<iframe src=\"http://player.vimeo.com/video/"+ video.getId() +"\" width=\"500\" height=\"282\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
-			resultItem.setEmbeddedSize4("<iframe src=\"http://player.vimeo.com/video/"+ video.getId() +"\" width=\"100%\" height=\"100%\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
+			resultItem.setEmbeddedSize3("<iframe src=\"https://player.vimeo.com/video/"+ video.getId() +"\" width=\"500\" height=\"282\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
+			resultItem.setEmbeddedSize4("<iframe src=\"https://player.vimeo.com/video/"+ video.getId() +"\" width=\"100%\" height=\"100%\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");	
 			
 			queryResult.addResultItem(resultItem);
 		}

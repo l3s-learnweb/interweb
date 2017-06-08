@@ -423,7 +423,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 		resultItem.setThumbnails(thumbnails);
 	    
 		//create embedded flash video player
-		String embeddedCode = "<iframe width=\"500\" height=\"400\" src=\"https://www.youtube.com/embed/" + singleVideo.getId() + "\" frameborder=\"0\" allowfullscreen></iframe>";
+		String embeddedCode = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/" + singleVideo.getId() + "\" frameborder=\"0\" allowfullscreen></iframe>";
 		resultItem.setEmbeddedSize3(embeddedCode);		
 		
 	    return resultItem;
