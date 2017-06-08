@@ -2,8 +2,6 @@ package de.l3s.interwebj.query;
 
 import java.io.Serializable;
 
-import de.l3s.interwebj.util.CoreUtils;
-
 public class Thumbnail implements Comparable<Thumbnail>, Serializable
 {
 
@@ -15,7 +13,7 @@ public class Thumbnail implements Comparable<Thumbnail>, Serializable
 
     public Thumbnail(String url, int width, int height)
     {
-	this.url = CoreUtils.ulrToHttps(url);
+	this.url = url; // disabled because of ipernity CoreUtils.ulrToHttps(url);
 	this.width = width;
 	this.height = height;
     }

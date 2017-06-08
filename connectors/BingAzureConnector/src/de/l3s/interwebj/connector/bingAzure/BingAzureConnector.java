@@ -71,7 +71,8 @@ public class BingAzureConnector extends AbstractServiceConnector
     {
 	notNull(query, "query");
 
-	authCredentials = getAuthCredentials(); // we have to use this; authCredentials parameter is null
+	if(authCredentials == null)
+	    authCredentials = getAuthCredentials(); // we have to use this; authCredentials parameter is null
 
 	String key = (authCredentials != null) ? authCredentials.getKey() : "no";
 	Environment.getInstance().getDatabase().logQuery(key, query.getQuery());
