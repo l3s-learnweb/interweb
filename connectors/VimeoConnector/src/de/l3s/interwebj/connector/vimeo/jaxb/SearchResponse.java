@@ -5,7 +5,6 @@
 // Generated on: 2012.05.13 at 07:49:56 PM CEST 
 //
 
-
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -18,11 +17,12 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -41,11 +41,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "videos"
-})
+@XmlType(name = "", propOrder = { "videos" })
 @XmlRootElement(name = "rsp")
-public class SearchResponse {
+public class SearchResponse
+{
 
     @XmlElement(required = true)
     protected Videos videos;
@@ -58,49 +57,52 @@ public class SearchResponse {
      * Gets the value of the videos property.
      * 
      * @return
-     *     possible object is
-     *     {@link Videos }
-     *     
+     * 	possible object is
+     *         {@link Videos }
+     * 
      */
-    public Videos getVideos() {
-        return videos;
+    public Videos getVideos()
+    {
+	return videos;
     }
 
     /**
      * Sets the value of the videos property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Videos }
-     *     
+     *            allowed object is
+     *            {@link Videos }
+     * 
      */
-    public void setVideos(Videos value) {
-        this.videos = value;
+    public void setVideos(Videos value)
+    {
+	this.videos = value;
     }
-
 
     /**
      * Gets the value of the stat property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getStat() {
-        return stat;
+    public String getStat()
+    {
+	return stat;
     }
 
     /**
      * Sets the value of the stat property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setStat(String value) {
-        this.stat = value;
+    public void setStat(String value)
+    {
+	this.stat = value;
     }
 
 }

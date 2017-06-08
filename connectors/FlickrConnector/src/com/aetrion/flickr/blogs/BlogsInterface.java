@@ -26,7 +26,8 @@ import com.aetrion.flickr.util.XMLUtilities;
  * @author Anthony Eden
  * @version $Id: BlogsInterface.java,v 1.14 2009/07/11 20:30:27 x-mago Exp $
  */
-public class BlogsInterface {
+public class BlogsInterface
+{
 
     private static final String METHOD_GET_SERVICES = "flickr.blogs.getServices";
     private static final String METHOD_GET_LIST = "flickr.blogs.getList";
@@ -36,10 +37,11 @@ public class BlogsInterface {
     private String sharedSecret;
     private Transport transportAPI;
 
-    public BlogsInterface(String apiKey, String sharedSecret, Transport transport) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transportAPI = transport;
+    public BlogsInterface(String apiKey, String sharedSecret, Transport transport)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transportAPI = transport;
     }
 
     /**
@@ -52,31 +54,33 @@ public class BlogsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public Collection getServices()
-      throws IOException, SAXException, FlickrException {
-        List list = new ArrayList();
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_SERVICES));
-        parameters.add(new Parameter("api_key", apiKey));
+    public Collection getServices() throws IOException, SAXException, FlickrException
+    {
+	List list = new ArrayList();
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_SERVICES));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Element servicesElement = response.getPayload();
-        NodeList serviceNodes = servicesElement.getElementsByTagName("service");
-        for (int i = 0; i < serviceNodes.getLength(); i++) {
-            Element serviceElement = (Element) serviceNodes.item(i);
-            Service srv = new Service();
-            srv.setId(serviceElement.getAttribute("id"));
-            srv.setName(XMLUtilities.getValue(serviceElement));
-            list.add(srv);
-        }
-        return list;
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Element servicesElement = response.getPayload();
+	NodeList serviceNodes = servicesElement.getElementsByTagName("service");
+	for(int i = 0; i < serviceNodes.getLength(); i++)
+	{
+	    Element serviceElement = (Element) serviceNodes.item(i);
+	    Service srv = new Service();
+	    srv.setId(serviceElement.getAttribute("id"));
+	    srv.setName(XMLUtilities.getValue(serviceElement));
+	    list.add(srv);
+	}
+	return list;
     }
 
     /**
-     * Post the specified photo to a blog.  Note that the Photo.title and Photo.description are used for the blog entry
+     * Post the specified photo to a blog. Note that the Photo.title and Photo.description are used for the blog entry
      * title and body respectively.
      *
      * @param photo The photo metadata
@@ -86,29 +90,27 @@ public class BlogsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void postPhoto(Photo photo, String blogId, String blogPassword) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_POST_PHOTO));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void postPhoto(Photo photo, String blogId, String blogPassword) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_POST_PHOTO));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("blog_id", blogId));
-        parameters.add(new Parameter("photo_id", photo.getId()));
-        parameters.add(new Parameter("title", photo.getTitle()));
-        parameters.add(new Parameter("description", photo.getDescription()));
-        if (blogPassword != null) {
-            parameters.add(new Parameter("blog_password", blogPassword));
-        }
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("blog_id", blogId));
+	parameters.add(new Parameter("photo_id", photo.getId()));
+	parameters.add(new Parameter("title", photo.getTitle()));
+	parameters.add(new Parameter("description", photo.getDescription()));
+	if(blogPassword != null)
+	{
+	    parameters.add(new Parameter("blog_password", blogPassword));
+	}
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
     /**
@@ -120,8 +122,9 @@ public class BlogsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void postPhoto(Photo photo, String blogId) throws IOException, SAXException, FlickrException {
-        postPhoto(photo, blogId, null);
+    public void postPhoto(Photo photo, String blogId) throws IOException, SAXException, FlickrException
+    {
+	postPhoto(photo, blogId, null);
     }
 
     /**
@@ -131,35 +134,33 @@ public class BlogsInterface {
      * @throws IOException
      * @throws SAXException
      */
-    public Collection getList() throws IOException, SAXException, FlickrException {
-        List blogs = new ArrayList();
+    public Collection getList() throws IOException, SAXException, FlickrException
+    {
+	List blogs = new ArrayList();
 
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_LIST));
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_LIST));
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        Element blogsElement = response.getPayload();
-        NodeList blogNodes = blogsElement.getElementsByTagName("blog");
-        for (int i = 0; i < blogNodes.getLength(); i++) {
-            Element blogElement = (Element) blogNodes.item(i);
-            Blog blog = new Blog();
-            blog.setId(blogElement.getAttribute("id"));
-            blog.setName(blogElement.getAttribute("name"));
-            blog.setNeedPassword("1".equals(blogElement.getAttribute("needspassword")));
-            blog.setUrl(blogElement.getAttribute("url"));
-            blogs.add(blog);
-        }
-        return blogs;
+	Element blogsElement = response.getPayload();
+	NodeList blogNodes = blogsElement.getElementsByTagName("blog");
+	for(int i = 0; i < blogNodes.getLength(); i++)
+	{
+	    Element blogElement = (Element) blogNodes.item(i);
+	    Blog blog = new Blog();
+	    blog.setId(blogElement.getAttribute("id"));
+	    blog.setName(blogElement.getAttribute("name"));
+	    blog.setNeedPassword("1".equals(blogElement.getAttribute("needspassword")));
+	    blog.setUrl(blogElement.getAttribute("url"));
+	    blogs.add(blog);
+	}
+	return blogs;
     }
 }

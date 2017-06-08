@@ -10,54 +10,66 @@ import java.math.BigDecimal;
  *
  * @author Anthony Eden
  */
-public class Blog {
-	private static final long serialVersionUID = 12L;
+public class Blog
+{
+    private static final long serialVersionUID = 12L;
 
     private BigDecimal id;
     private String name;
     private boolean needPassword;
     private String url;
 
-    public Blog() {
+    public Blog()
+    {
 
     }
 
-    public BigDecimal getId() {
-        return id;
+    public BigDecimal getId()
+    {
+	return id;
     }
 
-    public void setId(BigDecimal id) {
-        this.id = id;
+    public void setId(BigDecimal id)
+    {
+	this.id = id;
     }
 
-    public void setId(String id) {
-        if (id != null) {
-            setId(new BigDecimal(id));
-        }
+    public void setId(String id)
+    {
+	if(id != null)
+	{
+	    setId(new BigDecimal(id));
+	}
     }
 
-    public String getName() {
-        return name;
+    public String getName()
+    {
+	return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name)
+    {
+	this.name = name;
     }
 
-    public boolean isNeedPassword() {
-        return needPassword;
+    public boolean isNeedPassword()
+    {
+	return needPassword;
     }
 
-    public void setNeedPassword(boolean needPassword) {
-        this.needPassword = needPassword;
+    public void setNeedPassword(boolean needPassword)
+    {
+	this.needPassword = needPassword;
     }
 
-    public String getUrl() {
-        return url;
+    public String getUrl()
+    {
+	return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrl(String url)
+    {
+	this.url = url;
     }
 
 }

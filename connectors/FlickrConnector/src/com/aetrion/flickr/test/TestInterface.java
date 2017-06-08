@@ -23,7 +23,8 @@ import org.xml.sax.SAXException;
  *
  * @author Matt Ray
  */
-public class TestInterface {
+public class TestInterface
+{
 
     public static final String METHOD_ECHO = "flickr.test.echo";
     public static final String METHOD_LOGIN = "flickr.test.login";
@@ -33,14 +34,11 @@ public class TestInterface {
     private String sharedSecret;
     private Transport transport;
 
-    public TestInterface(
-        String apiKey,
-        String sharedSecret,
-        Transport transportAPI
-    ) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transport = transportAPI;
+    public TestInterface(String apiKey, String sharedSecret, Transport transportAPI)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transport = transportAPI;
     }
 
     /**
@@ -52,17 +50,19 @@ public class TestInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public Collection echo(Collection params) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_ECHO));
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.addAll(params);
+    public Collection echo(Collection params) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_ECHO));
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.addAll(params);
 
-        Response response = transport.post(transport.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        return response.getPayloadCollection();
+	Response response = transport.post(transport.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	return response.getPayloadCollection();
     }
 
     /**
@@ -73,53 +73,48 @@ public class TestInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public User login() throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_LOGIN));
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+    public User login() throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_LOGIN));
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transport.post(transport.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Element userElement = response.getPayload();
-        User user = new User();
-        user.setId(userElement.getAttribute("id"));
+	Response response = transport.post(transport.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Element userElement = response.getPayload();
+	User user = new User();
+	user.setId(userElement.getAttribute("id"));
 
-        Element usernameElement = (Element) userElement.getElementsByTagName("username").item(0);
-        user.setUsername(((Text) usernameElement.getFirstChild()).getData());
+	Element usernameElement = (Element) userElement.getElementsByTagName("username").item(0);
+	user.setUsername(((Text) usernameElement.getFirstChild()).getData());
 
-        return user;
+	return user;
     }
-    
+
     /**
      * Null test.
      * This method requires authentication with 'read' permission.
-     * @throws SAXException 
-     * @throws IOException 
-     * @throws FlickrException 
+     * 
+     * @throws SAXException
+     * @throws IOException
+     * @throws FlickrException
      */
-    public void null_() throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_NULL));
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+    public void null_() throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_NULL));
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transport.get(transport.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transport.get(transport.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
 }

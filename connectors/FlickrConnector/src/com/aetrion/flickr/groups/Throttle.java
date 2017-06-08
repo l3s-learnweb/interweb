@@ -7,7 +7,8 @@ package com.aetrion.flickr.groups;
  * @author Anthony Eden
  * @version $Id: Throttle.java,v 1.3 2009/07/12 22:43:07 x-mago Exp $
  */
-public class Throttle {
+public class Throttle
+{
     private static final long serialVersionUID = 12L;
 
     private int count;
@@ -19,12 +20,14 @@ public class Throttle {
      *
      * @return mx number of posts allowed
      */
-    public int getCount() {
-        return count;
+    public int getCount()
+    {
+	return count;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setCount(int count)
+    {
+	this.count = count;
     }
 
     /**
@@ -32,12 +35,14 @@ public class Throttle {
      *
      * @return mode
      */
-    public String getMode() {
-        return mode;
+    public String getMode()
+    {
+	return mode;
     }
 
-    public void setMode(String mode) {
-        this.mode = mode;
+    public void setMode(String mode)
+    {
+	this.mode = mode;
     }
 
     /**
@@ -46,11 +51,13 @@ public class Throttle {
      *
      * @return units
      */
-    public int getRemaining() {
-        return remaining;
+    public int getRemaining()
+    {
+	return remaining;
     }
 
-    public void setRemaining(int remaining) {
-        this.remaining = remaining;
+    public void setRemaining(int remaining)
+    {
+	this.remaining = remaining;
     }
 }

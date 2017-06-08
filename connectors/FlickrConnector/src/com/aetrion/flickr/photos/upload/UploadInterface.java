@@ -22,22 +22,20 @@ import com.aetrion.flickr.auth.AuthUtilities;
  * @author till (Till Krech) extranoise:flickr
  * @version $Id: UploadInterface.java,v 1.3 2008/01/28 23:01:45 x-mago Exp $
  */
-public class UploadInterface {
-    public static final String METHOD_CHECK_TICKETS  = "flickr.photos.upload.checkTickets";
+public class UploadInterface
+{
+    public static final String METHOD_CHECK_TICKETS = "flickr.photos.upload.checkTickets";
 
     private String apiKey;
     private String sharedSecret;
     private Transport transportAPI;
 
-    public UploadInterface(
-        String apiKey,
-        String sharedSecret,
-        Transport transport
-     ) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transportAPI = transport;
-     }
+    public UploadInterface(String apiKey, String sharedSecret, Transport transport)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transportAPI = transport;
+    }
 
     /**
      * Checks the status of one or more asynchronous photo upload tickets.
@@ -49,62 +47,65 @@ public class UploadInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public List checkTickets(Set tickets) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_CHECK_TICKETS));
-        parameters.add(new Parameter("api_key", apiKey));
+    public List checkTickets(Set tickets) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_CHECK_TICKETS));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        StringBuffer sb = new StringBuffer();
-        Iterator it = tickets.iterator();
-        while (it.hasNext()) {
-            if (sb.length() > 0) {
-                sb.append(",");
-            }
-            Object obj = it.next();
-            if (obj instanceof Ticket) {
-                sb.append(((Ticket) obj).getTicketId());
-            } else {
-                sb.append(obj);
-            }
-        }
-        parameters.add(new Parameter("tickets", sb.toString()));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	StringBuffer sb = new StringBuffer();
+	Iterator it = tickets.iterator();
+	while(it.hasNext())
+	{
+	    if(sb.length() > 0)
+	    {
+		sb.append(",");
+	    }
+	    Object obj = it.next();
+	    if(obj instanceof Ticket)
+	    {
+		sb.append(((Ticket) obj).getTicketId());
+	    }
+	    else
+	    {
+		sb.append(obj);
+	    }
+	}
+	parameters.add(new Parameter("tickets", sb.toString()));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        // <uploader>
-        //  <ticket id="128" complete="1" photoid="2995" />
-        //  <ticket id="129" complete="0" />
-        //  <ticket id="130" complete="2" />
-        //  <ticket id="131" invalid="1" />
-        // </uploader>
+	// <uploader>
+	//  <ticket id="128" complete="1" photoid="2995" />
+	//  <ticket id="129" complete="0" />
+	//  <ticket id="130" complete="2" />
+	//  <ticket id="131" invalid="1" />
+	// </uploader>
 
-        List list = new ArrayList();
-        Element uploaderElement = response.getPayload();
-        NodeList ticketNodes = uploaderElement.getElementsByTagName("ticket");
-        int n = ticketNodes.getLength();
-        for (int i = 0; i < n; i++) {
-            Element ticketElement = (Element) ticketNodes.item(i);
-            String id = ticketElement.getAttribute("id");
-            String complete = ticketElement.getAttribute("complete");
-            boolean invalid = "1".equals(ticketElement.getAttribute("invalid"));
-            String photoId = ticketElement.getAttribute("photoid");
-            Ticket info = new Ticket();
-            info.setTicketId(id);
-            info.setInvalid(invalid);
-            info.setStatus(Integer.parseInt(complete));
-            info.setPhotoId(photoId);
-            list.add(info);
-        }
-        return list;
+	List list = new ArrayList();
+	Element uploaderElement = response.getPayload();
+	NodeList ticketNodes = uploaderElement.getElementsByTagName("ticket");
+	int n = ticketNodes.getLength();
+	for(int i = 0; i < n; i++)
+	{
+	    Element ticketElement = (Element) ticketNodes.item(i);
+	    String id = ticketElement.getAttribute("id");
+	    String complete = ticketElement.getAttribute("complete");
+	    boolean invalid = "1".equals(ticketElement.getAttribute("invalid"));
+	    String photoId = ticketElement.getAttribute("photoid");
+	    Ticket info = new Ticket();
+	    info.setTicketId(id);
+	    info.setInvalid(invalid);
+	    info.setStatus(Integer.parseInt(complete));
+	    info.setPhotoId(photoId);
+	    list.add(info);
+	}
+	return list;
     }
 
 }

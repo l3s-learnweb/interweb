@@ -7,8 +7,9 @@ package com.aetrion.flickr.photos;
 /**
  * @author Anthony Eden
  */
-public class Exif {
-	private static final long serialVersionUID = 12L;
+public class Exif
+{
+    private static final long serialVersionUID = 12L;
 
     private String tagspace;
     private String tagspaceId;
@@ -17,52 +18,64 @@ public class Exif {
     private String raw;
     private String clean;
 
-    public String getTagspace() {
-        return tagspace;
+    public String getTagspace()
+    {
+	return tagspace;
     }
 
-    public void setTagspace(String tagspace) {
-        this.tagspace = tagspace;
+    public void setTagspace(String tagspace)
+    {
+	this.tagspace = tagspace;
     }
 
-    public String getTagspaceId() {
-        return tagspaceId;
+    public String getTagspaceId()
+    {
+	return tagspaceId;
     }
 
-    public void setTagspaceId(String tagspaceId) {
-        this.tagspaceId = tagspaceId;
+    public void setTagspaceId(String tagspaceId)
+    {
+	this.tagspaceId = tagspaceId;
     }
 
-    public String getTag() {
-        return tag;
+    public String getTag()
+    {
+	return tag;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setTag(String tag)
+    {
+	this.tag = tag;
     }
 
-    public String getLabel() {
-        return label;
+    public String getLabel()
+    {
+	return label;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setLabel(String label)
+    {
+	this.label = label;
     }
 
-    public String getRaw() {
-        return raw;
+    public String getRaw()
+    {
+	return raw;
     }
 
-    public void setRaw(String raw) {
-        this.raw = raw;
+    public void setRaw(String raw)
+    {
+	this.raw = raw;
     }
 
-    public String getClean() {
-        return clean;
+    public String getClean()
+    {
+	return clean;
     }
 
-    public void setClean(String clean) {
-        this.clean = clean;
+    public void setClean(String clean)
+    {
+	this.clean = clean;
     }
 
 }

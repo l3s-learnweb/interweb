@@ -105,7 +105,7 @@ public class CoreUtils
 	    return url.replace("http://", "https://");
 	return url;
     }
-    
+
     public static String createImageCode(String url, int imageWidth, int imageHeight, int maxWidth, int maxHeight)
     {
 	if(null == url || url.length() < 7 || imageWidth < 2 || imageHeight < 2)
@@ -127,8 +127,6 @@ public class CoreUtils
 	    width = (int) (width * ratio);
 	    height = maxHeight;
 	}
-
-	
 
 	return "<img src=\"" + ulrToHttps(url) + "\" width=\"" + width + "\" height=\"" + height + "\" alt=\"\" />";
     }

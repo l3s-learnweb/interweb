@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-  <database>
-    <connection> 
-      <!--   
-      <url>jdbc:mysql://localhost:3333/interwebj</url>
-      <url>jdbc:mysql://mysql.l3s.uni-hannover.de/interwebj</url>   
-      -->
-      <url>jdbc:mysql://localhost:3306/interwebj</url> 
-      <user-name>root</user-name> 
-      <user-password></user-password> 
-     </connection>
-    <driver-name>com.mysql.jdbc.Driver</driver-name>
-  </database>
+	<database>
+		<connection>
+			<!-- <url>jdbc:mysql://localhost:3333/interwebj</url> <url>jdbc:mysql://mysql.l3s.uni-hannover.de/interwebj</url> -->
+			<url>jdbc:mysql://localhost:3306/interwebj</url>
+			<user-name>root</user-name>
+			<user-password></user-password>
+		</connection>
+		<driver-name>com.mysql.jdbc.Driver</driver-name>
+	</database>
 </configuration>

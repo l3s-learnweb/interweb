@@ -4,76 +4,91 @@ import java.util.List;
 
 import de.l3s.bingService.utils.UriUtils;
 
-public class VideoHolder {
+public class VideoHolder
+{
 
-	private String id;
+    private String id;
 
-	private String readLink;
+    private String readLink;
 
-	private String webSearchUrl;
+    private String webSearchUrl;
 
-	private String webSearchUrlPingSuffix;
+    private String webSearchUrlPingSuffix;
 
-	private boolean isFamilyFriendly;
-	
-	private String scenario;
+    private boolean isFamilyFriendly;
 
-	private List<Video> value;
+    private String scenario;
 
-	public String getId() {
-		return id;
-	}
+    private List<Video> value;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId()
+    {
+	return id;
+    }
 
-	public String getReadLink() {
-		return readLink;
-	}
+    public void setId(String id)
+    {
+	this.id = id;
+    }
 
-	public void setReadLink(String readLink) {
-		this.readLink = readLink;
-	}
+    public String getReadLink()
+    {
+	return readLink;
+    }
 
-	public String getWebSearchUrl() {
-		return webSearchUrl;
-	}
+    public void setReadLink(String readLink)
+    {
+	this.readLink = readLink;
+    }
 
-	public void setWebSearchUrl(String webSearchUrl) {
-		this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
-	}
+    public String getWebSearchUrl()
+    {
+	return webSearchUrl;
+    }
 
-	public String getWebSearchUrlPingSuffix() {
-		return webSearchUrlPingSuffix;
-	}
+    public void setWebSearchUrl(String webSearchUrl)
+    {
+	this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
+    }
 
-	public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix) {
-		this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
-	}
+    public String getWebSearchUrlPingSuffix()
+    {
+	return webSearchUrlPingSuffix;
+    }
 
-	public boolean isFamilyFriendly() {
-		return isFamilyFriendly;
-	}
+    public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix)
+    {
+	this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
+    }
 
-	public void setFamilyFriendly(boolean isFamilyFriendly) {
-		this.isFamilyFriendly = isFamilyFriendly;
-	}
+    public boolean isFamilyFriendly()
+    {
+	return isFamilyFriendly;
+    }
 
-	public List<Video> getValue() {
-		return value;
-	}
+    public void setFamilyFriendly(boolean isFamilyFriendly)
+    {
+	this.isFamilyFriendly = isFamilyFriendly;
+    }
 
-	public void setValue(List<Video> value) {
-		this.value = value;
-	}
+    public List<Video> getValue()
+    {
+	return value;
+    }
 
-	public String getScenario() {
-		return scenario;
-	}
+    public void setValue(List<Video> value)
+    {
+	this.value = value;
+    }
 
-	public void setScenario(String scenario) {
-		this.scenario = scenario;
-	}
+    public String getScenario()
+    {
+	return scenario;
+    }
+
+    public void setScenario(String scenario)
+    {
+	this.scenario = scenario;
+    }
 
 }

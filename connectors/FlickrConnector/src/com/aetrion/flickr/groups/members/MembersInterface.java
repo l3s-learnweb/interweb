@@ -22,21 +22,19 @@ import com.aetrion.flickr.util.StringUtilities;
  * @author mago
  * @version $Id: MembersInterface.java,v 1.1 2009/06/21 19:55:15 x-mago Exp $
  */
-public class MembersInterface {
+public class MembersInterface
+{
     public static final String METHOD_GET_LIST = "flickr.groups.members.getList";
 
     private String apiKey;
     private String sharedSecret;
     private Transport transportAPI;
 
-    public MembersInterface(
-        String apiKey,
-        String sharedSecret,
-        Transport transportAPI
-    ) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transportAPI = transportAPI;
+    public MembersInterface(String apiKey, String sharedSecret, Transport transportAPI)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transportAPI = transportAPI;
     }
 
     /**
@@ -55,60 +53,56 @@ public class MembersInterface {
      * @throws SAXException
      * @see <a href="http://www.flickr.com/services/api/flickr.groups.members.getList.html">API Documentation</a>
      */
-    public MembersList getList(String groupId, Set memberTypes, int perPage, int page)
-      throws FlickrException, IOException, SAXException {
-        MembersList members = new MembersList();
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_LIST));
-        parameters.add(new Parameter("api_key", apiKey));
+    public MembersList getList(String groupId, Set memberTypes, int perPage, int page) throws FlickrException, IOException, SAXException
+    {
+	MembersList members = new MembersList();
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_LIST));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("group_id", groupId));
+	parameters.add(new Parameter("group_id", groupId));
 
-        if (perPage > 0) {
-            parameters.add(new Parameter("per_page", "" + perPage));
-        }
-        if (page > 0) {
-            parameters.add(new Parameter("page", "" + page));
-        }
-        if (memberTypes != null) {
-            parameters.add(
-                new Parameter(
-                    "membertypes",
-                    StringUtilities.join(memberTypes, ",")
-                )
-            );
-        }
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Element mElement = response.getPayload();
-        members.setPage(mElement.getAttribute("page"));
-        members.setPages(mElement.getAttribute("pages"));
-        members.setPerPage(mElement.getAttribute("perpage"));
-        members.setTotal(mElement.getAttribute("total"));
+	if(perPage > 0)
+	{
+	    parameters.add(new Parameter("per_page", "" + perPage));
+	}
+	if(page > 0)
+	{
+	    parameters.add(new Parameter("page", "" + page));
+	}
+	if(memberTypes != null)
+	{
+	    parameters.add(new Parameter("membertypes", StringUtilities.join(memberTypes, ",")));
+	}
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Element mElement = response.getPayload();
+	members.setPage(mElement.getAttribute("page"));
+	members.setPages(mElement.getAttribute("pages"));
+	members.setPerPage(mElement.getAttribute("perpage"));
+	members.setTotal(mElement.getAttribute("total"));
 
-        NodeList mNodes = mElement.getElementsByTagName("member");
-        for (int i = 0; i < mNodes.getLength(); i++) {
-            Element element = (Element) mNodes.item(i);
-            members.add(parseMember(element));
-        }
-        return members;
+	NodeList mNodes = mElement.getElementsByTagName("member");
+	for(int i = 0; i < mNodes.getLength(); i++)
+	{
+	    Element element = (Element) mNodes.item(i);
+	    members.add(parseMember(element));
+	}
+	return members;
     }
 
-    private Member parseMember(Element mElement) {
-        Member member = new Member();
-        member.setId(mElement.getAttribute("nsid"));
-        member.setUserName(mElement.getAttribute("username"));
-        member.setIconServer(mElement.getAttribute("iconserver"));
-        member.setIconFarm(mElement.getAttribute("iconfarm"));
-        member.setMemberType(mElement.getAttribute("membertype"));
-        return member;
+    private Member parseMember(Element mElement)
+    {
+	Member member = new Member();
+	member.setId(mElement.getAttribute("nsid"));
+	member.setUserName(mElement.getAttribute("username"));
+	member.setIconServer(mElement.getAttribute("iconserver"));
+	member.setIconFarm(mElement.getAttribute("iconfarm"));
+	member.setMemberType(mElement.getAttribute("membertype"));
+	return member;
     }
 }

@@ -1,143 +1,122 @@
 package de.l3s.interwebj.jaxb.services;
 
-
 import javax.xml.bind.annotation.*;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ServiceEntity
 {
-	
-	@XmlAttribute(name = "id")
-	protected String id;
-	@XmlElement(name = "title")
-	protected String title;
-	@XmlElement(name = "mediatypes")
-	protected String mediaTypes;
-	@XmlElement(name = "authorized")
-	protected boolean authorized;
-	@XmlElement(name = "serviceuserid")
-	protected String serviceUserId;
-	@XmlElement(name = "message")
-	protected String message;
-	@XmlElement(name = "authorization")
-	protected AuthorizationEntity authorizationEntity;
-	@XmlElement(name = "revokeauthorization")
-	protected AuthorizationEntity revokeAuthorizationEntity;
-	
 
-	public ServiceEntity()
-	{
-	}
-	
+    @XmlAttribute(name = "id")
+    protected String id;
+    @XmlElement(name = "title")
+    protected String title;
+    @XmlElement(name = "mediatypes")
+    protected String mediaTypes;
+    @XmlElement(name = "authorized")
+    protected boolean authorized;
+    @XmlElement(name = "serviceuserid")
+    protected String serviceUserId;
+    @XmlElement(name = "message")
+    protected String message;
+    @XmlElement(name = "authorization")
+    protected AuthorizationEntity authorizationEntity;
+    @XmlElement(name = "revokeauthorization")
+    protected AuthorizationEntity revokeAuthorizationEntity;
 
-	public ServiceEntity(AuthorizationEntity authorizationEntity,
-	                     boolean authenticated)
-	{
-		authorized = authenticated;
-		if (authenticated)
-		{
-			revokeAuthorizationEntity = authorizationEntity;
-		}
-		else
-		{
-			this.authorizationEntity = authorizationEntity;
-		}
-	}
-	
+    public ServiceEntity()
+    {
+    }
 
-	public AuthorizationEntity getAuthorizationEntity()
+    public ServiceEntity(AuthorizationEntity authorizationEntity, boolean authenticated)
+    {
+	authorized = authenticated;
+	if(authenticated)
 	{
-		return authorizationEntity;
+	    revokeAuthorizationEntity = authorizationEntity;
 	}
-	
+	else
+	{
+	    this.authorizationEntity = authorizationEntity;
+	}
+    }
 
-	public String getId()
-	{
-		return id;
-	}
-	
+    public AuthorizationEntity getAuthorizationEntity()
+    {
+	return authorizationEntity;
+    }
 
-	public String getMediaTypes()
-	{
-		return mediaTypes;
-	}
-	
+    public String getId()
+    {
+	return id;
+    }
 
-	public String getMessage()
-	{
-		return message;
-	}
-	
+    public String getMediaTypes()
+    {
+	return mediaTypes;
+    }
 
-	public AuthorizationEntity getRevokeAuthorizationEntity()
-	{
-		return revokeAuthorizationEntity;
-	}
-	
+    public String getMessage()
+    {
+	return message;
+    }
 
-	public String getServiceUserId()
-	{
-		return serviceUserId;
-	}
-	
+    public AuthorizationEntity getRevokeAuthorizationEntity()
+    {
+	return revokeAuthorizationEntity;
+    }
 
-	public String getTitle()
-	{
-		return title;
-	}
-	
+    public String getServiceUserId()
+    {
+	return serviceUserId;
+    }
 
-	public boolean isAuthorized()
-	{
-		return authorized;
-	}
-	
+    public String getTitle()
+    {
+	return title;
+    }
 
-	public void setAuthorizationEntity(AuthorizationEntity authorizationEntity)
-	{
-	}
-	
+    public boolean isAuthorized()
+    {
+	return authorized;
+    }
 
-	public void setAuthorized(boolean authorized)
-	{
-		this.authorized = authorized;
-	}
-	
+    public void setAuthorizationEntity(AuthorizationEntity authorizationEntity)
+    {
+    }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
-	
+    public void setAuthorized(boolean authorized)
+    {
+	this.authorized = authorized;
+    }
 
-	public void setMediaTypes(String mediaTypes)
-	{
-		this.mediaTypes = mediaTypes;
-	}
-	
+    public void setId(String id)
+    {
+	this.id = id;
+    }
 
-	public void setMessage(String message)
-	{
-		this.message = message;
-	}
-	
+    public void setMediaTypes(String mediaTypes)
+    {
+	this.mediaTypes = mediaTypes;
+    }
 
-	public void setRevokeAuthorizationEntity(AuthorizationEntity revokeAuthorizationEntity)
-	{
-		this.revokeAuthorizationEntity = revokeAuthorizationEntity;
-	}
-	
+    public void setMessage(String message)
+    {
+	this.message = message;
+    }
 
-	public void setServiceUserId(String serviceUserId)
-	{
-		this.serviceUserId = serviceUserId;
-	}
-	
+    public void setRevokeAuthorizationEntity(AuthorizationEntity revokeAuthorizationEntity)
+    {
+	this.revokeAuthorizationEntity = revokeAuthorizationEntity;
+    }
 
-	public void setTitle(String title)
-	{
-		this.title = title;
-	}
-	
+    public void setServiceUserId(String serviceUserId)
+    {
+	this.serviceUserId = serviceUserId;
+    }
+
+    public void setTitle(String title)
+    {
+	this.title = title;
+    }
+
 }

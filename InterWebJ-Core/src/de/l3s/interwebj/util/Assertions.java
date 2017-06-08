@@ -1,46 +1,40 @@
 package de.l3s.interwebj.util;
 
-
 public class Assertions
 {
-	
-	public static void notEmpty(Object object, String name)
-	{
-		notNull(object, name);
-		if (object.toString().length() == 0)
-		{
-			throw new IllegalArgumentException("Argument [" + name
-			                                   + "] must not be empty string");
-		}
-	}
-	
 
-	public static long notNegative(long value)
+    public static void notEmpty(Object object, String name)
+    {
+	notNull(object, name);
+	if(object.toString().length() == 0)
 	{
-		if (value < 0)
-		{
-			throw new IllegalArgumentException("Value must not be negative");
-		}
-		return value;
+	    throw new IllegalArgumentException("Argument [" + name + "] must not be empty string");
 	}
-	
+    }
 
-	public static void notNull(Object object, String name)
+    public static long notNegative(long value)
+    {
+	if(value < 0)
 	{
-		if (object == null)
-		{
-			throw new NullPointerException("Argument [" + name
-			                               + "] must not be null");
-		}
+	    throw new IllegalArgumentException("Value must not be negative");
 	}
-	
+	return value;
+    }
 
-	public static long notZero(long value, String name)
+    public static void notNull(Object object, String name)
+    {
+	if(object == null)
 	{
-		if (value == 0)
-		{
-			throw new IllegalArgumentException("Value must not be equal zero");
-		}
-		return value;
+	    throw new NullPointerException("Argument [" + name + "] must not be null");
 	}
+    }
+
+    public static long notZero(long value, String name)
+    {
+	if(value == 0)
+	{
+	    throw new IllegalArgumentException("Value must not be equal zero");
+	}
+	return value;
+    }
 }

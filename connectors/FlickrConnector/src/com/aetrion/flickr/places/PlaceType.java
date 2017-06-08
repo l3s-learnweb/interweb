@@ -12,32 +12,42 @@ package com.aetrion.flickr.places;
  * @author mago
  * @version $Id: PlaceType.java,v 1.2 2009/07/12 22:43:07 x-mago Exp $
  */
-public class PlaceType {
+public class PlaceType
+{
     private static final long serialVersionUID = 12L;
 
     int placeTypeId;
     String placeTypeName;
 
-    public int getPlaceTypeId() {
-        return placeTypeId;
+    public int getPlaceTypeId()
+    {
+	return placeTypeId;
     }
 
-    public void setPlaceTypeId(String placeTypeId) {
-        try {
-            setPlaceTypeId(Integer.parseInt(placeTypeId));
-        } catch (NumberFormatException e) {}
+    public void setPlaceTypeId(String placeTypeId)
+    {
+	try
+	{
+	    setPlaceTypeId(Integer.parseInt(placeTypeId));
+	}
+	catch(NumberFormatException e)
+	{
+	}
     }
 
-    public void setPlaceTypeId(int placeTypeId) {
-        this.placeTypeId = placeTypeId;
+    public void setPlaceTypeId(int placeTypeId)
+    {
+	this.placeTypeId = placeTypeId;
     }
 
-    public String getPlaceTypeName() {
-        return placeTypeName;
+    public String getPlaceTypeName()
+    {
+	return placeTypeName;
     }
 
-    public void setPlaceTypeName(String placeTypeName) {
-        this.placeTypeName = placeTypeName;
+    public void setPlaceTypeName(String placeTypeName)
+    {
+	this.placeTypeName = placeTypeName;
     }
 
 }

@@ -22,14 +22,16 @@
 					for="consumer_url" />
 				<h:outputLabel for="consumer_desc" value="Description: "></h:outputLabel>
 				<h:inputTextarea id="consumer_desc" label="application description"
-						value="#{consumersBean.description}" cols="40" rows="8" />
+					value="#{consumersBean.description}" cols="40" rows="8" />
 				<h:message showSummary="true" showDetail="false" styleClass="error"
 					for="consumer_desc" />
-				<h:column><br/></h:column>
+				<h:column>
+					<br />
+				</h:column>
 				<h:column />
 				<h:column />
 				<h:column />
-				<h:commandButton value="Add" action="#{consumersBean.addConsumer()}"/>
+				<h:commandButton value="Add" action="#{consumersBean.addConsumer()}" />
 			</h:panelGrid>
 		</h:form>
 	</ui:define>

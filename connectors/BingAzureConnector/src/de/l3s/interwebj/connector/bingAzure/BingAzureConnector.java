@@ -77,15 +77,14 @@ public class BingAzureConnector extends AbstractServiceConnector
 	try
 	{
 	    QueryResult results = new QueryResult(query);
-	    
-	    
+
 	    long totalResultCount = 0;
 	    BingResponse response = getWeb(query, authCredentials);
 
 	    if(query.getContentTypes().contains(Query.CT_TEXT))
 	    {
 		QueryResult queryResult = new QueryResult(null);
-		
+
 		WebPagesMainHolder pages = response.getWebPages();
 		int index = 1;
 		int intResultCount = 0;
@@ -118,14 +117,14 @@ public class BingAzureConnector extends AbstractServiceConnector
 			queryResult.addResultItem(resultItem);
 		    }
 		    results.addQueryResult(queryResult);
-		    
-		    if(pages.getValue().size() ==0)
-			Environment.logger.warning("No text results found; response: "+ response.getJsonContent());
+
+		    if(pages.getValue().size() == 0)
+			Environment.logger.warning("No text results found; response: " + response.getJsonContent());
 		}
 		else
 		    Environment.logger.warning("Result pages are null");
 	    }
-	    
+
 	    if(query.getContentTypes().contains(Query.CT_IMAGE))
 	    {
 		ImageHolder images = response.getImages();
@@ -137,10 +136,10 @@ public class BingAzureConnector extends AbstractServiceConnector
 		    QueryResult queryResult = new QueryResult(null);
 		    int intResultCount = 100;
 		    int index = 1;
-		    
-		    if(images.getValue().size() ==0)
-			Environment.logger.warning("No image results found; response: "+ response.getJsonContent());
-		    
+
+		    if(images.getValue().size() == 0)
+			Environment.logger.warning("No image results found; response: " + response.getJsonContent());
+
 		    for(Image image : images.getValue())
 		    {
 			ResultItem resultItem = new ResultItem(getName());
@@ -165,13 +164,14 @@ public class BingAzureConnector extends AbstractServiceConnector
 			    if(url != null && height != null && width != null)
 			    {
 				thumbnails.add(new Thumbnail(url, width, height));
-				
-				resultItem.setEmbeddedSize1("<img src=\""+ url +"\" height=\""+ height +"\" width=\""+ width +"\"/>");
-				
+
+				resultItem.setEmbeddedSize1("<img src=\"" + url + "\" height=\"" + height + "\" width=\"" + width + "\"/>");
+
 			    }
 			}
 			catch(Exception e)
-			{ Environment.logger.warning(e.getMessage());
+			{
+			    Environment.logger.warning(e.getMessage());
 			}
 
 			try
@@ -179,16 +179,17 @@ public class BingAzureConnector extends AbstractServiceConnector
 			    url = image.getMedia().getContentUrl();
 			    width = Integer.parseInt(image.getMedia().getWidth());
 			    height = Integer.parseInt(image.getMedia().getHeight());
-			    
+
 			    if(url != null && height != null && width != null)
 			    {
 				thumbnails.add(new Thumbnail(url, width, height));
 			    }
 			}
 			catch(Exception e)
-			{Environment.logger.warning(e.getMessage());
+			{
+			    Environment.logger.warning(e.getMessage());
 			}
-			
+
 			resultItem.setThumbnails(thumbnails);
 
 			queryResult.addResultItem(resultItem);
@@ -208,7 +209,7 @@ public class BingAzureConnector extends AbstractServiceConnector
     private BingResponse getWeb(Query query, AuthCredentials authCredentials) throws InterWebException, UnsupportedOperationException, IOException
     {
 	int count = query.getResultCount();//>20? query.getResultCount():20; // min 20 results per request
-	
+
 	BingQuery bingQuery = new BingQuery();
 	bingQuery.setQuery(query.getQuery());
 	bingQuery.setCount(count);

@@ -1,59 +1,52 @@
 package de.l3s.interwebj.config;
 
-
 import java.io.*;
 import java.util.*;
 
 import org.apache.commons.configuration.*;
 import org.apache.commons.configuration.ConfigurationException;
 
-
 public class Configuration
 {
-	
-	private XMLConfiguration configuration;
-	
 
-	public Configuration(InputStream is)
-	{
-		configuration = (XMLConfiguration) new XMLConfiguration().interpolatedConfiguration();
-		try
-		{
-			configuration.load(is);
-		}
-		catch (ConfigurationException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
+    private XMLConfiguration configuration;
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public String getPropertyValue(String propertiesBase, String propertyName)
+    public Configuration(InputStream is)
+    {
+	configuration = (XMLConfiguration) new XMLConfiguration().interpolatedConfiguration();
+	try
 	{
-		List properties = configuration.configurationsAt(propertiesBase
-		                                                 + ".property");
-		for (Iterator<HierarchicalConfiguration> it = properties.iterator(); it.hasNext();)
-		{
-			HierarchicalConfiguration sub = it.next();
-			if (propertyName.equals(sub.getString("name")))
-			{
-				return sub.getString("value");
-			}
-		}
-		return null;
+	    configuration.load(is);
 	}
-	
+	catch(ConfigurationException e)
+	{
+	    e.printStackTrace();
+	}
+    }
 
-	public String getValue(String key)
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public String getPropertyValue(String propertiesBase, String propertyName)
+    {
+	List properties = configuration.configurationsAt(propertiesBase + ".property");
+	for(Iterator<HierarchicalConfiguration> it = properties.iterator(); it.hasNext();)
 	{
-		return configuration.getProperty(key).toString();
+	    HierarchicalConfiguration sub = it.next();
+	    if(propertyName.equals(sub.getString("name")))
+	    {
+		return sub.getString("value");
+	    }
 	}
-	
+	return null;
+    }
 
-	@SuppressWarnings("unchecked")
-	public List<String> getValues(String key)
-	{
-		return configuration.getList(key, new ArrayList<String>());
-	}
+    public String getValue(String key)
+    {
+	return configuration.getProperty(key).toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getValues(String key)
+    {
+	return configuration.getList(key, new ArrayList<String>());
+    }
 }

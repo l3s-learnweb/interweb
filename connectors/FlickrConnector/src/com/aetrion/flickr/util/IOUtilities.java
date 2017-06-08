@@ -14,50 +14,72 @@ import java.io.Writer;
  *
  * @author Anthony Eden
  */
-public class IOUtilities {
+public class IOUtilities
+{
 
-    private IOUtilities() {
+    private IOUtilities()
+    {
 
     }
 
-    public static void close(InputStream s) {
-        if (s != null) {
-            try {
-                s.close();
-            } catch (IOException e) {
+    public static void close(InputStream s)
+    {
+	if(s != null)
+	{
+	    try
+	    {
+		s.close();
+	    }
+	    catch(IOException e)
+	    {
 
-            }
-        }
+	    }
+	}
     }
 
-    public static void close(OutputStream s) {
-        if (s != null) {
-            try {
-                s.close();
-            } catch (IOException e) {
+    public static void close(OutputStream s)
+    {
+	if(s != null)
+	{
+	    try
+	    {
+		s.close();
+	    }
+	    catch(IOException e)
+	    {
 
-            }
-        }
+	    }
+	}
     }
 
-    public static void close(Reader s) {
-        if (s != null) {
-            try {
-                s.close();
-            } catch (IOException e) {
+    public static void close(Reader s)
+    {
+	if(s != null)
+	{
+	    try
+	    {
+		s.close();
+	    }
+	    catch(IOException e)
+	    {
 
-            }
-        }
+	    }
+	}
     }
 
-    public static void close(Writer s) {
-        if (s != null) {
-            try {
-                s.close();
-            } catch (IOException e) {
+    public static void close(Writer s)
+    {
+	if(s != null)
+	{
+	    try
+	    {
+		s.close();
+	    }
+	    catch(IOException e)
+	    {
 
-            }
-        }
+	    }
+	}
     }
 
 }

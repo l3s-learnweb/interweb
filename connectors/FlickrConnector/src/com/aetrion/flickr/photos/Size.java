@@ -10,15 +10,17 @@ import java.util.regex.Matcher;
 import com.aetrion.flickr.util.StringUtilities;
 
 /**
- * This class descibes a Size of a Photo.<p>
+ * This class descibes a Size of a Photo.
+ * <p>
  *
  * @author Anthony Eden
  * @version $Id: Size.java,v 1.7 2009/07/23 20:41:03 x-mago Exp $
  */
-public class Size {
-	private static final long serialVersionUID = 12L;
+public class Size
+{
+    private static final long serialVersionUID = 12L;
 
-	/**
+    /**
      * Thumbnail, 100 on longest side.
      *
      * @see com.aetrion.flickr.photos.Size#getLabel()
@@ -85,7 +87,8 @@ public class Size {
     private String source;
     private String url;
 
-    public Size() {
+    public Size()
+    {
 
     }
 
@@ -100,30 +103,44 @@ public class Size {
      * @see com.aetrion.flickr.photos.Size#LARGE
      * @see com.aetrion.flickr.photos.Size#ORIGINAL
      */
-    public int getLabel() {
-        return label;
+    public int getLabel()
+    {
+	return label;
     }
 
     /**
      * Set the String-representation of size.
      *
      * Like: Square, Thumbnail, Small, Medium, Large, Original.
+     * 
      * @param label
      */
-    public void setLabel(String label) {
-        if (label.equals("Square")) {
-            setLabel(SQUARE);
-        } else if (label.equals("Thumbnail")) {
-            setLabel(THUMB);
-        } else if (label.equals("Small")) {
-            setLabel(SMALL);
-        } else if (label.equals("Medium")) {
-            setLabel(MEDIUM);
-        } else if (label.equals("Large")) {
-            setLabel(LARGE);
-        } else if (label.equals("Original")) {
-            setLabel(ORIGINAL);
-        }
+    public void setLabel(String label)
+    {
+	if(label.equals("Square"))
+	{
+	    setLabel(SQUARE);
+	}
+	else if(label.equals("Thumbnail"))
+	{
+	    setLabel(THUMB);
+	}
+	else if(label.equals("Small"))
+	{
+	    setLabel(SMALL);
+	}
+	else if(label.equals("Medium"))
+	{
+	    setLabel(MEDIUM);
+	}
+	else if(label.equals("Large"))
+	{
+	    setLabel(LARGE);
+	}
+	else if(label.equals("Original"))
+	{
+	    setLabel(ORIGINAL);
+	}
     }
 
     /**
@@ -137,36 +154,45 @@ public class Size {
      * @see com.aetrion.flickr.photos.Size#LARGE
      * @see com.aetrion.flickr.photos.Size#ORIGINAL
      */
-    public void setLabel(int label) {
-        this.label = label;
+    public void setLabel(int label)
+    {
+	this.label = label;
     }
 
-    public int getWidth() {
-        return width;
+    public int getWidth()
+    {
+	return width;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
+    public void setWidth(int width)
+    {
+	this.width = width;
     }
 
-    public void setWidth(String width) {
-        if (width != null) {
-            setWidth(Integer.parseInt(width));
-        }
+    public void setWidth(String width)
+    {
+	if(width != null)
+	{
+	    setWidth(Integer.parseInt(width));
+	}
     }
 
-    public int getHeight() {
-        return height;
+    public int getHeight()
+    {
+	return height;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
+    public void setHeight(int height)
+    {
+	this.height = height;
     }
 
-    public void setHeight(String height) {
-        if (height != null) {
-            setHeight(Integer.parseInt(height));
-        }
+    public void setHeight(String height)
+    {
+	if(height != null)
+	{
+	    setHeight(Integer.parseInt(height));
+	}
     }
 
     /**
@@ -174,12 +200,14 @@ public class Size {
      *
      * @return Image-URL
      */
-    public String getSource() {
-        return source;
+    public String getSource()
+    {
+	return source;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setSource(String source)
+    {
+	this.source = source;
     }
 
     /**
@@ -187,62 +215,87 @@ public class Size {
      *
      * @return Page-URL
      */
-    public String getUrl() {
-        return url;
+    public String getUrl()
+    {
+	return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-	@Override
-	public boolean equals(Object obj) {
-        if ((obj == null) || (obj.getClass() != this.getClass())) {
-            return false;
-        }
-		// object must be GeoData at this point
-        Size test = (Size) obj;
-        Class cl = this.getClass();
-        Method[] method = cl.getMethods();
-        for (int i = 0; i < method.length; i++) {
-            Matcher m = StringUtilities.getterPattern.matcher(method[i].getName());
-            if (m.find() && !method[i].getName().equals("getClass")) {
-                try {
-                    Object res = method[i].invoke(this, null);
-                    Object resTest = method[i].invoke(test, null);
-                    String retType = method[i].getReturnType().toString();
-                    if (retType.indexOf("class") == 0) {
-                        if (res != null && resTest != null) {
-                            if (!res.equals(resTest)) return false;
-                        } else {
-                            //return false;
-                        }
-                    } else if (retType.equals("int")) {
-                        if (!((Integer) res).equals(((Integer)resTest))) return false;
-                    } else {
-                        System.out.println(method[i].getName() + "|" +
-                            method[i].getReturnType().toString());
-                    }
-                } catch (IllegalAccessException ex) {
-                    System.out.println("Size equals " + method[i].getName() + " " + ex);
-                } catch (InvocationTargetException ex) {
-                    //System.out.println("equals " + method[i].getName() + " " + ex);
-                } catch (Exception ex) {
-                    System.out.println("Size equals " + method[i].getName() + " " + ex);
-                }
-            }
-        }
-        return true;
+    public void setUrl(String url)
+    {
+	this.url = url;
     }
 
     @Override
-    public int hashCode() {
-        int hash = 1;
-        hash += new Integer(label).hashCode();
-        hash += new Integer(width).hashCode();
-        hash += new Integer(height).hashCode();
-        if (source != null) hash += source.hashCode();
-        if (url != null) hash += url.hashCode();
-        return hash;
+    public boolean equals(Object obj)
+    {
+	if((obj == null) || (obj.getClass() != this.getClass()))
+	{
+	    return false;
+	}
+	// object must be GeoData at this point
+	Size test = (Size) obj;
+	Class cl = this.getClass();
+	Method[] method = cl.getMethods();
+	for(int i = 0; i < method.length; i++)
+	{
+	    Matcher m = StringUtilities.getterPattern.matcher(method[i].getName());
+	    if(m.find() && !method[i].getName().equals("getClass"))
+	    {
+		try
+		{
+		    Object res = method[i].invoke(this, null);
+		    Object resTest = method[i].invoke(test, null);
+		    String retType = method[i].getReturnType().toString();
+		    if(retType.indexOf("class") == 0)
+		    {
+			if(res != null && resTest != null)
+			{
+			    if(!res.equals(resTest))
+				return false;
+			}
+			else
+			{
+			    //return false;
+			}
+		    }
+		    else if(retType.equals("int"))
+		    {
+			if(!((Integer) res).equals(((Integer) resTest)))
+			    return false;
+		    }
+		    else
+		    {
+			System.out.println(method[i].getName() + "|" + method[i].getReturnType().toString());
+		    }
+		}
+		catch(IllegalAccessException ex)
+		{
+		    System.out.println("Size equals " + method[i].getName() + " " + ex);
+		}
+		catch(InvocationTargetException ex)
+		{
+		    //System.out.println("equals " + method[i].getName() + " " + ex);
+		}
+		catch(Exception ex)
+		{
+		    System.out.println("Size equals " + method[i].getName() + " " + ex);
+		}
+	    }
+	}
+	return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+	int hash = 1;
+	hash += new Integer(label).hashCode();
+	hash += new Integer(width).hashCode();
+	hash += new Integer(height).hashCode();
+	if(source != null)
+	    hash += source.hashCode();
+	if(url != null)
+	    hash += url.hashCode();
+	return hash;
     }
 }

@@ -65,17 +65,17 @@ public class QueryResultCollector
 
     public QueryResult retrieve() throws InterWebException
     {
-	 Cache<Query, QueryResult> cache = Environment.getInstance().getEngine().getCache();
-	 
+	Cache<Query, QueryResult> cache = Environment.getInstance().getEngine().getCache();
+
 	QueryResult result = cache.getIfPresent(query);
 	if(result != null)
 	{
-	    Environment.logger.info("Return cached results for: "+query);
+	    Environment.logger.info("Return cached results for: " + query);
 	    return result;
 	}
-	
-	Environment.logger.info("Search for: "+query);
-	
+
+	Environment.logger.info("Search for: " + query);
+
 	List<FutureTask<QueryResult>> tasks = new ArrayList<FutureTask<QueryResult>>();
 	for(QueryResultRetriever retriever : retrievers)
 	{
@@ -84,7 +84,7 @@ public class QueryResultCollector
 	    Thread t = new Thread(task);
 	    t.start();
 	}
-	
+
 	QueryResult queryResult = new QueryResult(query);
 	long startTime = System.currentTimeMillis();
 	queryResult.setCreatedTime(startTime);
@@ -113,9 +113,9 @@ public class QueryResultCollector
 	}
 	queryResult.setElapsedTime(System.currentTimeMillis() - startTime);
 	queryResult = merger.merge(queryResult);
-	
+
 	cache.put(query, queryResult);
-	
+
 	return queryResult;
     }
 }

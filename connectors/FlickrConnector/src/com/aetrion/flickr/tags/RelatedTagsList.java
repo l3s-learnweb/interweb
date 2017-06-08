@@ -9,17 +9,20 @@ import java.util.ArrayList;
 /**
  * @author Anthony Eden
  */
-public class RelatedTagsList extends ArrayList {
+public class RelatedTagsList extends ArrayList
+{
     private static final long serialVersionUID = 12L;
 
     private String source;
 
-    public String getSource() {
-        return source;
+    public String getSource()
+    {
+	return source;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setSource(String source)
+    {
+	this.source = source;
     }
 
 }

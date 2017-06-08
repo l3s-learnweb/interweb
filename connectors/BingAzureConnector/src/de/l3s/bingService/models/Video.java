@@ -2,86 +2,103 @@ package de.l3s.bingService.models;
 
 import java.util.List;
 
-public class Video {
-	
-	private Media media;
+public class Video
+{
 
-	private String description;
+    private Media media;
 
-	private List<Publisher> publisher;
+    private String description;
 
-	private String duration;
+    private List<Publisher> publisher;
 
-	private String motionThumbnailUrl;
+    private String duration;
 
-	private String embedHtml;
+    private String motionThumbnailUrl;
 
-	private Boolean allowHttpsEmbed;
+    private String embedHtml;
 
-	private String viewCount;
+    private Boolean allowHttpsEmbed;
 
-	public String getDescription() {
-		return description;
-	}
+    private String viewCount;
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription()
+    {
+	return description;
+    }
 
-	public String getDuration() {
-		return duration;
-	}
+    public void setDescription(String description)
+    {
+	this.description = description;
+    }
 
-	public void setDuration(String duration) {
-		this.duration = duration;
-	}
+    public String getDuration()
+    {
+	return duration;
+    }
 
-	public String getMotionThumbnailUrl() {
-		return motionThumbnailUrl;
-	}
+    public void setDuration(String duration)
+    {
+	this.duration = duration;
+    }
 
-	public void setMotionThumbnailUrl(String motionThumbnailUrl) {
-		this.motionThumbnailUrl = motionThumbnailUrl;
-	}
+    public String getMotionThumbnailUrl()
+    {
+	return motionThumbnailUrl;
+    }
 
-	public String getEmbedHtml() {
-		return embedHtml;
-	}
+    public void setMotionThumbnailUrl(String motionThumbnailUrl)
+    {
+	this.motionThumbnailUrl = motionThumbnailUrl;
+    }
 
-	public void setEmbedHtml(String embedHtml) {
-		this.embedHtml = embedHtml;
-	}
+    public String getEmbedHtml()
+    {
+	return embedHtml;
+    }
 
-	public Boolean getAllowHttpsEmbed() {
-		return allowHttpsEmbed;
-	}
+    public void setEmbedHtml(String embedHtml)
+    {
+	this.embedHtml = embedHtml;
+    }
 
-	public void setAllowHttpsEmbed(Boolean allowHttpsEmbed) {
-		this.allowHttpsEmbed = allowHttpsEmbed;
-	}
+    public Boolean getAllowHttpsEmbed()
+    {
+	return allowHttpsEmbed;
+    }
 
-	public String getViewCount() {
-		return viewCount;
-	}
+    public void setAllowHttpsEmbed(Boolean allowHttpsEmbed)
+    {
+	this.allowHttpsEmbed = allowHttpsEmbed;
+    }
 
-	public void setViewCount(String viewCount) {
-		this.viewCount = viewCount;
-	}
+    public String getViewCount()
+    {
+	return viewCount;
+    }
 
-	public List<Publisher> getPublisher() {
-		return publisher;
-	}
+    public void setViewCount(String viewCount)
+    {
+	this.viewCount = viewCount;
+    }
 
-	public void setPublisher(List<Publisher> publisher) {
-		this.publisher = publisher;
-	}
+    public List<Publisher> getPublisher()
+    {
+	return publisher;
+    }
 
-	public Media getMedia() {
-		return media;
-	}
+    public void setPublisher(List<Publisher> publisher)
+    {
+	this.publisher = publisher;
+    }
 
-	public void setMedia(Media media) {
-		this.media = media;
-	}
+    public Media getMedia()
+    {
+	return media;
+    }
+
+    public void setMedia(Media media)
+    {
+	this.media = media;
+    }
 
 }

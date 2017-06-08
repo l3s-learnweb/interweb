@@ -5,7 +5,6 @@
 // Generated on: 2012.05.13 at 07:49:56 PM CEST 
 //
 
-
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -18,11 +17,12 @@ import javax.xml.bind.annotation.XmlValue;
 
 import de.l3s.interwebj.util.CoreUtils;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -38,11 +38,10 @@ import de.l3s.interwebj.util.CoreUtils;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "value"
-})
+@XmlType(name = "", propOrder = { "value" })
 @XmlRootElement(name = "thumbnail")
-public class Thumbnail {
+public class Thumbnail
+{
 
     @XmlValue
     @XmlSchemaType(name = "anyURI")
@@ -56,72 +55,78 @@ public class Thumbnail {
      * Gets the value of the value property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getValue() {
-        return CoreUtils.ulrToHttps(value);
+    public String getValue()
+    {
+	return CoreUtils.ulrToHttps(value);
     }
 
     /**
      * Sets the value of the value property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setValue(String value)
+    {
+	this.value = value;
     }
 
     /**
      * Gets the value of the height property.
      * 
      * @return
-     *     possible object is
-     *     {@link int }
-     *     
+     * 	possible object is
+     *         {@link int }
+     * 
      */
-    public int getHeight() {
-        return height;
+    public int getHeight()
+    {
+	return height;
     }
 
     /**
      * Sets the value of the height property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link int }
-     *     
+     *            allowed object is
+     *            {@link int }
+     * 
      */
-    public void setHeight(int value) {
-        this.height = value;
+    public void setHeight(int value)
+    {
+	this.height = value;
     }
 
     /**
      * Gets the value of the width property.
      * 
      * @return
-     *     possible object is
-     *     {@link int }
-     *     
+     * 	possible object is
+     *         {@link int }
+     * 
      */
-    public int getWidth() {
-        return width;
+    public int getWidth()
+    {
+	return width;
     }
 
     /**
      * Sets the value of the width property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link int }
-     *     
+     *            allowed object is
+     *            {@link int }
+     * 
      */
-    public void setWidth(int value) {
-        this.width = value;
+    public void setWidth(int value)
+    {
+	this.width = value;
     }
 
 }

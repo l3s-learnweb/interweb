@@ -32,14 +32,15 @@
 					<h:panelGrid columns="2" cellpadding="0" cellspacing="0"
 						style="font-size: 0.8em; color:#5C5C5C;">
 						<h:outputLabel value="Key:" style="margin-right:5px" />
-						<h:outputLabel value="#{connectorWrapper.connector.authCredentials.key}"
+						<h:outputLabel
+							value="#{connectorWrapper.connector.authCredentials.key}"
 							rendered="#{registerServicesBean.isRegistered(connectorWrapper)}" />
-						<h:inputText id="key" label="key"
-							value="#{connectorWrapper.key}"
+						<h:inputText id="key" label="key" value="#{connectorWrapper.key}"
 							rendered="${!registerServicesBean.isRegistered(connectorWrapper)}"
 							style="margin-bottom:5px" />
 						<h:outputLabel value="Secret:" style="margin-right:5px" />
-						<h:outputLabel value="#{connectorWrapper.connector.authCredentials.secret}"
+						<h:outputLabel
+							value="#{connectorWrapper.connector.authCredentials.secret}"
 							rendered="#{registerServicesBean.isRegistered(connectorWrapper)}" />
 						<h:inputText id="secret" label="secret"
 							value="#{connectorWrapper.secret}"

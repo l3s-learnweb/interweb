@@ -2,66 +2,79 @@ package de.l3s.bingService.models;
 
 import java.util.List;
 
-public class New extends WebPageBase {
+public class New extends WebPageBase
+{
 
-	private Image image;
+    private Image image;
 
-	private String description;
-	
-	private List<About> about;
+    private String description;
 
-	private List<Provider> provider;
+    private List<About> about;
 
-	private String datePublished;
+    private List<Provider> provider;
 
-	private String category;
+    private String datePublished;
 
-	public Image getImage() {
-		return image;
-	}
+    private String category;
 
-	public void setImage(Image image) {
-		this.image = image;
-	}
+    public Image getImage()
+    {
+	return image;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setImage(Image image)
+    {
+	this.image = image;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription()
+    {
+	return description;
+    }
 
-	public List<About> getAbout() {
-		return about;
-	}
+    public void setDescription(String description)
+    {
+	this.description = description;
+    }
 
-	public void setAbout(List<About> about) {
-		this.about = about;
-	}
+    public List<About> getAbout()
+    {
+	return about;
+    }
 
-	public List<Provider> getProviders() {
-		return provider;
-	}
+    public void setAbout(List<About> about)
+    {
+	this.about = about;
+    }
 
-	public void setProviders(List<Provider> provider) {
-		this.provider = provider;
-	}
+    public List<Provider> getProviders()
+    {
+	return provider;
+    }
 
-	public String getDatePublished() {
-		return datePublished;
-	}
+    public void setProviders(List<Provider> provider)
+    {
+	this.provider = provider;
+    }
 
-	public void setDatePublished(String datePublished) {
-		this.datePublished = datePublished;
-	}
+    public String getDatePublished()
+    {
+	return datePublished;
+    }
 
-	public String getCategory() {
-		return category;
-	}
+    public void setDatePublished(String datePublished)
+    {
+	this.datePublished = datePublished;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public String getCategory()
+    {
+	return category;
+    }
+
+    public void setCategory(String category)
+    {
+	this.category = category;
+    }
 
 }

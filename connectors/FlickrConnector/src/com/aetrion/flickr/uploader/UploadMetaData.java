@@ -12,7 +12,8 @@ import java.util.Collection;
  * @author Anthony Eden
  * @version $Id: UploadMetaData.java,v 1.7 2007/11/02 21:46:52 x-mago Exp $
  */
-public class UploadMetaData {
+public class UploadMetaData
+{
 
     private String title;
     private String description;
@@ -25,52 +26,64 @@ public class UploadMetaData {
     private String safetyLevel;
     private String contentType;
 
-    public String getTitle() {
-        return title;
+    public String getTitle()
+    {
+	return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(String title)
+    {
+	this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescription()
+    {
+	return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(String description)
+    {
+	this.description = description;
     }
 
-    public Collection getTags() {
-        return tags;
+    public Collection getTags()
+    {
+	return tags;
     }
 
-    public void setTags(Collection tags) {
-        this.tags = tags;
+    public void setTags(Collection tags)
+    {
+	this.tags = tags;
     }
 
-    public boolean isPublicFlag() {
-        return publicFlag;
+    public boolean isPublicFlag()
+    {
+	return publicFlag;
     }
 
-    public void setPublicFlag(boolean publicFlag) {
-        this.publicFlag = publicFlag;
+    public void setPublicFlag(boolean publicFlag)
+    {
+	this.publicFlag = publicFlag;
     }
 
-    public boolean isFriendFlag() {
-        return friendFlag;
+    public boolean isFriendFlag()
+    {
+	return friendFlag;
     }
 
-    public void setFriendFlag(boolean friendFlag) {
-        this.friendFlag = friendFlag;
+    public void setFriendFlag(boolean friendFlag)
+    {
+	this.friendFlag = friendFlag;
     }
 
-    public boolean isFamilyFlag() {
-        return familyFlag;
+    public boolean isFamilyFlag()
+    {
+	return familyFlag;
     }
 
-    public void setFamilyFlag(boolean familyFlag) {
-        this.familyFlag = familyFlag;
+    public void setFamilyFlag(boolean familyFlag)
+    {
+	this.familyFlag = familyFlag;
     }
 
     /**
@@ -81,8 +94,9 @@ public class UploadMetaData {
      * @see com.aetrion.flickr.Flickr#CONTENTTYPE_SCREENSHOT
      * @return contentType
      */
-    public String getContentType() {
-        return contentType;
+    public String getContentType()
+    {
+	return contentType;
     }
 
     /**
@@ -93,16 +107,19 @@ public class UploadMetaData {
      * @see com.aetrion.flickr.Flickr#CONTENTTYPE_SCREENSHOT
      * @param contentType
      */
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
+    public void setContentType(String contentType)
+    {
+	this.contentType = contentType;
     }
 
-    public Boolean isHidden() {
-        return hidden;
+    public Boolean isHidden()
+    {
+	return hidden;
     }
 
-    public void setHidden(Boolean hidden) {
-        this.hidden = hidden;
+    public void setHidden(Boolean hidden)
+    {
+	this.hidden = hidden;
     }
 
     /**
@@ -113,35 +130,41 @@ public class UploadMetaData {
      * @see com.aetrion.flickr.Flickr#SAFETYLEVEL_SAFE
      * @return The safety-level
      */
-    public String getSafetyLevel() {
-        return safetyLevel;
+    public String getSafetyLevel()
+    {
+	return safetyLevel;
     }
 
     /**
-     * Set the safety level (adultness) of a photo.<p>
+     * Set the safety level (adultness) of a photo.
+     * <p>
      *
      * @see com.aetrion.flickr.Flickr#SAFETYLEVEL_MODERATE
      * @see com.aetrion.flickr.Flickr#SAFETYLEVEL_RESTRICTED
      * @see com.aetrion.flickr.Flickr#SAFETYLEVEL_SAFE
      * @param safetyLevel
      */
-    public void setSafetyLevel(String safetyLevel) {
-        this.safetyLevel = safetyLevel;
+    public void setSafetyLevel(String safetyLevel)
+    {
+	this.safetyLevel = safetyLevel;
     }
 
-    public boolean isAsync() {
-        return async;
+    public boolean isAsync()
+    {
+	return async;
     }
 
     /**
-     * Switch the Uploader behaviour - sychronous or asyncrounous.<p>
+     * Switch the Uploader behaviour - sychronous or asyncrounous.
+     * <p>
      *
      * The default is sychronous.
      *
      * @param async boolean
      */
-    public void setAsync(boolean async) {
-        this.async = async;
+    public void setAsync(boolean async)
+    {
+	this.async = async;
     }
 
 }

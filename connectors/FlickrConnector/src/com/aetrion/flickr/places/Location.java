@@ -11,7 +11,8 @@ package com.aetrion.flickr.places;
  * @see com.aetrion.flickr.photos.SearchParameters#setPlaceId(String)
  * @see com.aetrion.flickr.photos.Photo#getPlaceId()
  */
-public class Location {
+public class Location
+{
     private static final long serialVersionUID = 12L;
 
     private String woeId = "";
@@ -25,55 +26,68 @@ public class Location {
     private double longitude = 0.0;
     private int placeType = 0;
 
-    public Location() {
+    public Location()
+    {
     }
 
-    public String getPlaceId() {
-        return placeId;
+    public String getPlaceId()
+    {
+	return placeId;
     }
 
-    public void setPlaceId(String placeId) {
-        this.placeId = placeId;
+    public void setPlaceId(String placeId)
+    {
+	this.placeId = placeId;
     }
 
-    public String getPlaceUrl() {
-        return placeUrl;
+    public String getPlaceUrl()
+    {
+	return placeUrl;
     }
 
-    public void setPlaceUrl(String placeUrl) {
-        this.placeUrl = placeUrl;
+    public void setPlaceUrl(String placeUrl)
+    {
+	this.placeUrl = placeUrl;
     }
 
-    public Place getLocality() {
-        return locality;
+    public Place getLocality()
+    {
+	return locality;
     }
 
-    public void setLocality(Place locality) {
-        this.locality = locality;
+    public void setLocality(Place locality)
+    {
+	this.locality = locality;
     }
 
-    public Place getCounty() {
-        return county;
+    public Place getCounty()
+    {
+	return county;
     }
 
-    public void setCounty(Place county) {
-        this.county = county;
+    public void setCounty(Place county)
+    {
+	this.county = county;
     }
 
-    public Place getRegion() {
-        return region;
+    public Place getRegion()
+    {
+	return region;
     }
 
-    public void setRegion(Place region) {
-        this.region = region;
+    public void setRegion(Place region)
+    {
+	this.region = region;
     }
 
-    public Place getCountry() {
-        return country;
+    public Place getCountry()
+    {
+	return country;
     }
 
-    public void setCountry(Place country) {
-        this.country = country;
+    public void setCountry(Place country)
+    {
+	this.country = country;
     }
 
     /**
@@ -81,48 +95,66 @@ public class Location {
      * @return woeid
      * @see com.aetrion.flickr.photos.SearchParameters#setWoeId(String)
      */
-    public String getWoeId() {
-        return woeId;
+    public String getWoeId()
+    {
+	return woeId;
     }
 
-    public void setWoeId(String woeId) {
-        this.woeId = woeId;
+    public void setWoeId(String woeId)
+    {
+	this.woeId = woeId;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public double getLatitude()
+    {
+	return latitude;
     }
 
-    public void setLatitude(String latitude) {
-        try {
-            setLatitude(Double.parseDouble(latitude));
-        } catch (NumberFormatException e) {}
+    public void setLatitude(String latitude)
+    {
+	try
+	{
+	    setLatitude(Double.parseDouble(latitude));
+	}
+	catch(NumberFormatException e)
+	{
+	}
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLatitude(double latitude)
+    {
+	this.latitude = latitude;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public double getLongitude()
+    {
+	return longitude;
     }
 
-    public void setLongitude(String longitude) {
-        try {
-            setLongitude(Double.parseDouble(longitude));
-        } catch (NumberFormatException e) {}
+    public void setLongitude(String longitude)
+    {
+	try
+	{
+	    setLongitude(Double.parseDouble(longitude));
+	}
+	catch(NumberFormatException e)
+	{
+	}
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLongitude(double longitude)
+    {
+	this.longitude = longitude;
     }
 
-    public int getPlaceType() {
-        return placeType;
+    public int getPlaceType()
+    {
+	return placeType;
     }
 
-    public void setPlaceType(int placeType) {
-        this.placeType = placeType;
+    public void setPlaceType(int placeType)
+    {
+	this.placeType = placeType;
     }
 
 }

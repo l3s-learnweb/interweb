@@ -1,25 +1,30 @@
 package de.l3s.bingService.models;
 
-public class Instrumentation {
-	
-	private String pingUrlBase;
-	
-	private String pageLoadPingUrl;
+public class Instrumentation
+{
 
-	public String getPingUrlBase() {
-		return pingUrlBase;
-	}
+    private String pingUrlBase;
 
-	public void setPingUrlBase(String pingUrlBase) {
-		this.pingUrlBase = pingUrlBase;
-	}
+    private String pageLoadPingUrl;
 
-	public String getPageLoadPingUrl() {
-		return pageLoadPingUrl;
-	}
+    public String getPingUrlBase()
+    {
+	return pingUrlBase;
+    }
 
-	public void setPageLoadPingUrl(String pageLoadPingUrl) {
-		this.pageLoadPingUrl = pageLoadPingUrl;
-	}
+    public void setPingUrlBase(String pingUrlBase)
+    {
+	this.pingUrlBase = pingUrlBase;
+    }
+
+    public String getPageLoadPingUrl()
+    {
+	return pageLoadPingUrl;
+    }
+
+    public void setPageLoadPingUrl(String pageLoadPingUrl)
+    {
+	this.pageLoadPingUrl = pageLoadPingUrl;
+    }
 
 }

@@ -64,7 +64,7 @@ public class BingApiService implements BingRequestConstants
     }
 
     private String apiKey;
- 
+
     public BingApiService(String apiKey)
     {
 	super();
@@ -81,7 +81,7 @@ public class BingApiService implements BingRequestConstants
 
 	BingResponse bingResponse = null;
 	BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-	
+
 	String rawBingResponse = readJsonResponseAsString(reader);
 
 	bingResponse = JsonParser.fromJson(rawBingResponse);
@@ -92,7 +92,7 @@ public class BingApiService implements BingRequestConstants
 
 	return bingResponse;
     }
-    
+
     private String readJsonResponseAsString(BufferedReader rd) throws IOException
     {
 	StringBuilder result = new StringBuilder();

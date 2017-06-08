@@ -8,6 +8,7 @@ import com.aetrion.flickr.SearchResultList;
  * @author mago
  * @version $Id: MembersList.java,v 1.1 2009/06/21 19:55:15 x-mago Exp $
  */
-public class MembersList extends SearchResultList {
+public class MembersList extends SearchResultList
+{
     private static final long serialVersionUID = 617037681128L;
 }

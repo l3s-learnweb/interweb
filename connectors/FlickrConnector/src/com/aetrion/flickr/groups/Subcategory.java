@@ -8,39 +8,47 @@ package com.aetrion.flickr.groups;
  *
  * @author Anthony Eden
  */
-public class Subcategory {
-	private static final long serialVersionUID = 12L;
+public class Subcategory
+{
+    private static final long serialVersionUID = 12L;
 
     private int id;
     private String name;
     private int count;
 
-    public Subcategory() {
+    public Subcategory()
+    {
 
     }
 
-    public int getId() {
-        return id;
+    public int getId()
+    {
+	return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int id)
+    {
+	this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getName()
+    {
+	return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name)
+    {
+	this.name = name;
     }
 
-    public int getCount() {
-        return count;
+    public int getCount()
+    {
+	return count;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setCount(int count)
+    {
+	this.count = count;
     }
 
 }

@@ -21,7 +21,8 @@ import org.xml.sax.SAXException;
 /**
  * @author Anthony Eden
  */
-public class NotesInterface {
+public class NotesInterface
+{
 
     public static final String METHOD_ADD = "flickr.photos.notes.add";
     public static final String METHOD_DELETE = "flickr.photos.notes.delete";
@@ -31,55 +32,51 @@ public class NotesInterface {
     private String sharedSecret;
     private Transport transportAPI;
 
-    public NotesInterface(
-        String apiKey,
-        String sharedSecret,
-        Transport transportAPI
-    ) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transportAPI = transportAPI;
+    public NotesInterface(String apiKey, String sharedSecret, Transport transportAPI)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transportAPI = transportAPI;
     }
 
     /**
-     * Add a note to a photo.  The Note object bounds and text must be specified.
+     * Add a note to a photo. The Note object bounds and text must be specified.
      *
      * @param photoId The photo ID
      * @param note The Note object
      * @return The updated Note object
      */
-    public Note add(String photoId, Note note) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_ADD));
-        parameters.add(new Parameter("api_key", apiKey));
+    public Note add(String photoId, Note note) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_ADD));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photo_id", photoId));
-        Rectangle bounds = note.getBounds();
-        if (bounds != null) {
-            parameters.add(new Parameter("note_x", String.valueOf(bounds.x)));
-            parameters.add(new Parameter("note_y", String.valueOf(bounds.y)));
-            parameters.add(new Parameter("note_w", String.valueOf(bounds.width)));
-            parameters.add(new Parameter("note_h", String.valueOf(bounds.height)));
-        }
-        String text = note.getText();
-        if (text != null) {
-            parameters.add(new Parameter("note_text", text));
-        }
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("photo_id", photoId));
+	Rectangle bounds = note.getBounds();
+	if(bounds != null)
+	{
+	    parameters.add(new Parameter("note_x", String.valueOf(bounds.x)));
+	    parameters.add(new Parameter("note_y", String.valueOf(bounds.y)));
+	    parameters.add(new Parameter("note_w", String.valueOf(bounds.width)));
+	    parameters.add(new Parameter("note_h", String.valueOf(bounds.height)));
+	}
+	String text = note.getText();
+	if(text != null)
+	{
+	    parameters.add(new Parameter("note_text", text));
+	}
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        Element noteElement = response.getPayload();
-        note.setId(noteElement.getAttribute("id"));
-        return note;
+	Element noteElement = response.getPayload();
+	note.setId(noteElement.getAttribute("id"));
+	return note;
     }
 
     /**
@@ -90,23 +87,20 @@ public class NotesInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void delete(String noteId) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_DELETE));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void delete(String noteId) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_DELETE));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("note_id", noteId));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("note_id", noteId));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
     /**
@@ -117,34 +111,33 @@ public class NotesInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void edit(Note note) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_EDIT));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void edit(Note note) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_EDIT));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("note_id", note.getId()));
-        Rectangle bounds = note.getBounds();
-        if (bounds != null) {
-            parameters.add(new Parameter("note_x", String.valueOf(bounds.x)));
-            parameters.add(new Parameter("note_y", String.valueOf(bounds.y)));
-            parameters.add(new Parameter("note_w", String.valueOf(bounds.width)));
-            parameters.add(new Parameter("note_h", String.valueOf(bounds.height)));
-        }
-        String text = note.getText();
-        if (text != null) {
-            parameters.add(new Parameter("note_text", text));
-        }
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("note_id", note.getId()));
+	Rectangle bounds = note.getBounds();
+	if(bounds != null)
+	{
+	    parameters.add(new Parameter("note_x", String.valueOf(bounds.x)));
+	    parameters.add(new Parameter("note_y", String.valueOf(bounds.y)));
+	    parameters.add(new Parameter("note_w", String.valueOf(bounds.width)));
+	    parameters.add(new Parameter("note_h", String.valueOf(bounds.height)));
+	}
+	String text = note.getText();
+	if(text != null)
+	{
+	    parameters.add(new Parameter("note_text", text));
+	}
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
 }

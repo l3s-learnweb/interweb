@@ -5,7 +5,6 @@
 // Generated on: 2012.05.13 at 07:49:56 PM CEST 
 //
 
-
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
 import java.math.BigInteger;
@@ -18,11 +17,12 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -47,7 +47,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "owner")
-public class Owner {
+public class Owner
+{
 
     @XmlAttribute(name = "display_name", required = true)
     @XmlSchemaType(name = "anySimpleType")
@@ -78,216 +79,234 @@ public class Owner {
      * Gets the value of the displayName property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getDisplayName() {
-        return displayName;
+    public String getDisplayName()
+    {
+	return displayName;
     }
 
     /**
      * Sets the value of the displayName property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setDisplayName(String value) {
-        this.displayName = value;
+    public void setDisplayName(String value)
+    {
+	this.displayName = value;
     }
 
     /**
      * Gets the value of the id property.
      * 
      * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     * 	possible object is
+     *         {@link BigInteger }
+     * 
      */
-    public BigInteger getId() {
-        return id;
+    public BigInteger getId()
+    {
+	return id;
     }
 
     /**
      * Sets the value of the id property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *            allowed object is
+     *            {@link BigInteger }
+     * 
      */
-    public void setId(BigInteger value) {
-        this.id = value;
+    public void setId(BigInteger value)
+    {
+	this.id = value;
     }
 
     /**
      * Gets the value of the isPlus property.
      * 
      * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     * 	possible object is
+     *         {@link BigInteger }
+     * 
      */
-    public BigInteger getIsPlus() {
-        return isPlus;
+    public BigInteger getIsPlus()
+    {
+	return isPlus;
     }
 
     /**
      * Sets the value of the isPlus property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *            allowed object is
+     *            {@link BigInteger }
+     * 
      */
-    public void setIsPlus(BigInteger value) {
-        this.isPlus = value;
+    public void setIsPlus(BigInteger value)
+    {
+	this.isPlus = value;
     }
 
     /**
      * Gets the value of the isPro property.
      * 
      * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     * 	possible object is
+     *         {@link BigInteger }
+     * 
      */
-    public BigInteger getIsPro() {
-        return isPro;
+    public BigInteger getIsPro()
+    {
+	return isPro;
     }
 
     /**
      * Sets the value of the isPro property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *            allowed object is
+     *            {@link BigInteger }
+     * 
      */
-    public void setIsPro(BigInteger value) {
-        this.isPro = value;
+    public void setIsPro(BigInteger value)
+    {
+	this.isPro = value;
     }
 
     /**
      * Gets the value of the isStaff property.
      * 
      * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     * 	possible object is
+     *         {@link BigInteger }
+     * 
      */
-    public BigInteger getIsStaff() {
-        return isStaff;
+    public BigInteger getIsStaff()
+    {
+	return isStaff;
     }
 
     /**
      * Sets the value of the isStaff property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *            allowed object is
+     *            {@link BigInteger }
+     * 
      */
-    public void setIsStaff(BigInteger value) {
-        this.isStaff = value;
+    public void setIsStaff(BigInteger value)
+    {
+	this.isStaff = value;
     }
 
     /**
      * Gets the value of the profileurl property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getProfileurl() {
-        return profileurl;
+    public String getProfileurl()
+    {
+	return profileurl;
     }
 
     /**
      * Sets the value of the profileurl property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setProfileurl(String value) {
-        this.profileurl = value;
+    public void setProfileurl(String value)
+    {
+	this.profileurl = value;
     }
 
     /**
      * Gets the value of the realname property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getRealname() {
-        return realname;
+    public String getRealname()
+    {
+	return realname;
     }
 
     /**
      * Sets the value of the realname property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setRealname(String value) {
-        this.realname = value;
+    public void setRealname(String value)
+    {
+	this.realname = value;
     }
 
     /**
      * Gets the value of the username property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getUsername() {
-        return username;
+    public String getUsername()
+    {
+	return username;
     }
 
     /**
      * Sets the value of the username property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setUsername(String value) {
-        this.username = value;
+    public void setUsername(String value)
+    {
+	this.username = value;
     }
 
     /**
      * Gets the value of the videosurl property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getVideosurl() {
-        return videosurl;
+    public String getVideosurl()
+    {
+	return videosurl;
     }
 
     /**
      * Sets the value of the videosurl property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setVideosurl(String value) {
-        this.videosurl = value;
+    public void setVideosurl(String value)
+    {
+	this.videosurl = value;
     }
 
 }

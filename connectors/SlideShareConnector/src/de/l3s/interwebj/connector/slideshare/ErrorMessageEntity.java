@@ -1,41 +1,35 @@
 package de.l3s.interwebj.connector.slideshare;
 
-
 import javax.xml.bind.annotation.*;
-
 
 @XmlRootElement(name = "Message")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ErrorMessageEntity
 {
-	
-	@XmlAttribute(name = "ID")
-	protected int id;
-	@XmlValue
-	protected String message;
-	
 
-	public int getId()
-	{
-		return id;
-	}
-	
+    @XmlAttribute(name = "ID")
+    protected int id;
+    @XmlValue
+    protected String message;
 
-	public String getMessage()
-	{
-		return message;
-	}
-	
+    public int getId()
+    {
+	return id;
+    }
 
-	public void setId(int id)
-	{
-		this.id = id;
-	}
-	
+    public String getMessage()
+    {
+	return message;
+    }
 
-	public void setMessage(String message)
-	{
-		this.message = message;
-	}
-	
+    public void setId(int id)
+    {
+	this.id = id;
+    }
+
+    public void setMessage(String message)
+    {
+	this.message = message;
+    }
+
 }

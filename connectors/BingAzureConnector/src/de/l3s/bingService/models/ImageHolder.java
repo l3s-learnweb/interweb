@@ -4,86 +4,103 @@ import java.util.List;
 
 import de.l3s.bingService.utils.UriUtils;
 
-public class ImageHolder {
+public class ImageHolder
+{
 
-	private String id;
+    private String id;
 
-	private String readLink;
+    private String readLink;
 
-	private String webSearchUrl;
+    private String webSearchUrl;
 
-	private String webSearchUrlPingSuffix;
+    private String webSearchUrlPingSuffix;
 
-	private Boolean isFamilyFriendly;
+    private Boolean isFamilyFriendly;
 
-	private List<Image> values;
+    private List<Image> values;
 
-	private Boolean displayShoppingSourcesBadges;
+    private Boolean displayShoppingSourcesBadges;
 
-	private Boolean displayRecipeSourcesBadges;
+    private Boolean displayRecipeSourcesBadges;
 
-	public String getId() {
-		return id;
-	}
+    public String getId()
+    {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id)
+    {
+	this.id = id;
+    }
 
-	public String getReadLink() {
-		return readLink;
-	}
+    public String getReadLink()
+    {
+	return readLink;
+    }
 
-	public void setReadLink(String readLink) {
-		this.readLink = readLink;
-	}
+    public void setReadLink(String readLink)
+    {
+	this.readLink = readLink;
+    }
 
-	public String getWebSearchUrl() {
-		return webSearchUrl;
-	}
+    public String getWebSearchUrl()
+    {
+	return webSearchUrl;
+    }
 
-	public void setWebSearchUrl(String webSearchUrl) {
-		this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
-	}
+    public void setWebSearchUrl(String webSearchUrl)
+    {
+	this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
+    }
 
-	public String getWebSearchUrlPingSuffix() {
-		return webSearchUrlPingSuffix;
-	}
+    public String getWebSearchUrlPingSuffix()
+    {
+	return webSearchUrlPingSuffix;
+    }
 
-	public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix) {
-		this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
-	}
+    public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix)
+    {
+	this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
+    }
 
-	public Boolean getIsFamilyFriendly() {
-		return isFamilyFriendly;
-	}
+    public Boolean getIsFamilyFriendly()
+    {
+	return isFamilyFriendly;
+    }
 
-	public void setIsFamilyFriendly(Boolean isFamilyFriendly) {
-		this.isFamilyFriendly = isFamilyFriendly;
-	}
+    public void setIsFamilyFriendly(Boolean isFamilyFriendly)
+    {
+	this.isFamilyFriendly = isFamilyFriendly;
+    }
 
-	public List<Image> getValue() {
-		return values;
-	}
+    public List<Image> getValue()
+    {
+	return values;
+    }
 
-	public void setValue(List<Image> values) {
-		this.values = values;
-	}
+    public void setValue(List<Image> values)
+    {
+	this.values = values;
+    }
 
-	public Boolean getDisplayShoppingSourcesBadges() {
-		return displayShoppingSourcesBadges;
-	}
+    public Boolean getDisplayShoppingSourcesBadges()
+    {
+	return displayShoppingSourcesBadges;
+    }
 
-	public void setDisplayShoppingSourcesBadges(Boolean displayShoppingSourcesBadges) {
-		this.displayShoppingSourcesBadges = displayShoppingSourcesBadges;
-	}
+    public void setDisplayShoppingSourcesBadges(Boolean displayShoppingSourcesBadges)
+    {
+	this.displayShoppingSourcesBadges = displayShoppingSourcesBadges;
+    }
 
-	public Boolean getDisplayRecipeSourcesBadges() {
-		return displayRecipeSourcesBadges;
-	}
+    public Boolean getDisplayRecipeSourcesBadges()
+    {
+	return displayRecipeSourcesBadges;
+    }
 
-	public void setDisplayRecipeSourcesBadges(Boolean displayRecipeSourcesBadges) {
-		this.displayRecipeSourcesBadges = displayRecipeSourcesBadges;
-	}
+    public void setDisplayRecipeSourcesBadges(Boolean displayRecipeSourcesBadges)
+    {
+	this.displayRecipeSourcesBadges = displayRecipeSourcesBadges;
+    }
 
 }

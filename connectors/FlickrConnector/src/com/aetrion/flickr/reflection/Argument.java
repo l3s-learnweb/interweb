@@ -12,34 +12,41 @@ package com.aetrion.flickr.reflection;
  * @see Method#setArguments(java.util.Collection)
  * @version $Id: Argument.java,v 1.3 2007/11/18 22:48:09 x-mago Exp $
  */
-public class Argument {
+public class Argument
+{
 
     private String name;
     private boolean optional;
     private String description;
 
-    public String getName() {
-        return name;
+    public String getName()
+    {
+	return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name)
+    {
+	this.name = name;
     }
 
-    public boolean isOptional() {
-        return optional;
+    public boolean isOptional()
+    {
+	return optional;
     }
 
-    public void setOptional(boolean optional) {
-        this.optional = optional;
+    public void setOptional(boolean optional)
+    {
+	this.optional = optional;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescription()
+    {
+	return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(String description)
+    {
+	this.description = description;
     }
 
 }

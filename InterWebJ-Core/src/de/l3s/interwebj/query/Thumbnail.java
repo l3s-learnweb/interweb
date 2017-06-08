@@ -1,87 +1,78 @@
 package de.l3s.interwebj.query;
 
-
 import java.io.*;
 
 import de.l3s.interwebj.util.CoreUtils;
 
-
-public class Thumbnail
-    implements Comparable<Thumbnail>, Serializable
+public class Thumbnail implements Comparable<Thumbnail>, Serializable
 {
-	
-	private static final long serialVersionUID = -792701713759619246L;
-	
-	private int width;
-	private int height;
-	private String url;
-	
 
-	public Thumbnail(String url, int width, int height)
-	{
-		this.url = CoreUtils.ulrToHttps(url);
-		this.width = width;
-		this.height = height;
-	}
-	
+    private static final long serialVersionUID = -792701713759619246L;
 
-	@Override
-	public int compareTo(Thumbnail t)
-	{
-		if (width < t.width)
-		{
-			return -1;
-		}
-		if (width > t.width)
-		{
-			return 1;
-		}
-		if (height < t.height)
-		{
-			return -1;
-		}
-		if (height > t.height)
-		{
-			return 1;
-		}
-		return url.compareTo(t.url);
-	}
-	
+    private int width;
+    private int height;
+    private String url;
 
-	public int getHeight()
-	{
-		return height;
-	}
-	
+    public Thumbnail(String url, int width, int height)
+    {
+	this.url = CoreUtils.ulrToHttps(url);
+	this.width = width;
+	this.height = height;
+    }
 
-	public String getUrl()
+    @Override
+    public int compareTo(Thumbnail t)
+    {
+	if(width < t.width)
 	{
-		return url;
+	    return -1;
 	}
-	
+	if(width > t.width)
+	{
+	    return 1;
+	}
+	if(height < t.height)
+	{
+	    return -1;
+	}
+	if(height > t.height)
+	{
+	    return 1;
+	}
+	return url.compareTo(t.url);
+    }
 
-	public int getWidth()
-	{
-		return width;
-	}
-	
+    public int getHeight()
+    {
+	return height;
+    }
 
-	@Override
-	public String toString()
+    public String getUrl()
+    {
+	return url;
+    }
+
+    public int getWidth()
+    {
+	return width;
+    }
+
+    @Override
+    public String toString()
+    {
+	StringBuilder builder = new StringBuilder();
+	builder.append("Thumbnail [");
+	if(url != null)
 	{
-		StringBuilder builder = new StringBuilder();
-		builder.append("Thumbnail [");
-		if (url != null)
-		{
-			builder.append("url=");
-			builder.append(url);
-			builder.append(", ");
-		}
-		builder.append("width=");
-		builder.append(width);
-		builder.append(", height=");
-		builder.append(height);
-		builder.append("]");
-		return builder.toString();
+	    builder.append("url=");
+	    builder.append(url);
+	    builder.append(", ");
 	}
+	builder.append("width=");
+	builder.append(width);
+	builder.append(", height=");
+	builder.append(height);
+	builder.append("]");
+	return builder.toString();
+    }
 }

@@ -5,7 +5,6 @@
 // Generated on: 2012.08.10 at 02:28:15 PM CEST 
 //
 
-
 package de.l3s.interwebj.connector.ipernity.jaxb;
 
 import java.util.ArrayList;
@@ -17,11 +16,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -94,11 +94,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "docs"
-})
+@XmlType(name = "", propOrder = { "docs" })
 @XmlRootElement(name = "api")
-public class SearchResponse22222 {
+public class SearchResponse22222
+{
 
     @XmlElement(required = true)
     protected SearchResponse22222.Docs docs;
@@ -111,79 +110,86 @@ public class SearchResponse22222 {
      * Gets the value of the docs property.
      * 
      * @return
-     *     possible object is
-     *     {@link SearchResponse22222.Docs }
-     *     
+     * 	possible object is
+     *         {@link SearchResponse22222.Docs }
+     * 
      */
-    public SearchResponse22222.Docs getDocs() {
-        return docs;
+    public SearchResponse22222.Docs getDocs()
+    {
+	return docs;
     }
 
     /**
      * Sets the value of the docs property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link SearchResponse22222.Docs }
-     *     
+     *            allowed object is
+     *            {@link SearchResponse22222.Docs }
+     * 
      */
-    public void setDocs(SearchResponse22222.Docs value) {
-        this.docs = value;
+    public void setDocs(SearchResponse22222.Docs value)
+    {
+	this.docs = value;
     }
 
     /**
      * Gets the value of the status property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getStatus() {
-        return status;
+    public String getStatus()
+    {
+	return status;
     }
 
     /**
      * Sets the value of the status property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setStatus(String value) {
-        this.status = value;
+    public void setStatus(String value)
+    {
+	this.status = value;
     }
 
     /**
      * Gets the value of the at property.
      * 
      * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * 	possible object is
+     *         {@link Integer }
+     * 
      */
-    public Integer getAt() {
-        return at;
+    public Integer getAt()
+    {
+	return at;
     }
 
     /**
      * Sets the value of the at property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     *            allowed object is
+     *            {@link Integer }
+     * 
      */
-    public void setAt(Integer value) {
-        this.at = value;
+    public void setAt(Integer value)
+    {
+	this.at = value;
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -244,706 +250,753 @@ public class SearchResponse22222 {
      * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "doc"
-    })
-    public static class Docs {
+    @XmlType(name = "", propOrder = { "doc" })
+    public static class Docs
+    {
 
-        @XmlElement(required = true)
-        protected List<SearchResponse22222.Docs.Doc> doc;
-        @XmlAttribute(name = "total")
-        protected Integer total;
-        @XmlAttribute(name = "per_page")
-        protected Integer perPage;
-        @XmlAttribute(name = "page")
-        protected Integer page;
-        @XmlAttribute(name = "pages")
-        protected Integer pages;
+	@XmlElement(required = true)
+	protected List<SearchResponse22222.Docs.Doc> doc;
+	@XmlAttribute(name = "total")
+	protected Integer total;
+	@XmlAttribute(name = "per_page")
+	protected Integer perPage;
+	@XmlAttribute(name = "page")
+	protected Integer page;
+	@XmlAttribute(name = "pages")
+	protected Integer pages;
 
-        /**
-         * Gets the value of the doc property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the doc property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getDoc().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link SearchResponse22222.Docs.Doc }
-         * 
-         * 
-         */
-        public List<SearchResponse22222.Docs.Doc> getDoc() {
-            if (doc == null) {
-                doc = new ArrayList<SearchResponse22222.Docs.Doc>();
-            }
-            return this.doc;
-        }
+	/**
+	 * Gets the value of the doc property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list,
+	 * not a snapshot. Therefore any modification you make to the
+	 * returned list will be present inside the JAXB object.
+	 * This is why there is not a <CODE>set</CODE> method for the doc property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getDoc().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list
+	 * {@link SearchResponse22222.Docs.Doc }
+	 * 
+	 * 
+	 */
+	public List<SearchResponse22222.Docs.Doc> getDoc()
+	{
+	    if(doc == null)
+	    {
+		doc = new ArrayList<SearchResponse22222.Docs.Doc>();
+	    }
+	    return this.doc;
+	}
 
-        /**
-         * Gets the value of the total property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Integer }
-         *     
-         */
-        public Integer getTotal() {
-            return total;
-        }
+	/**
+	 * Gets the value of the total property.
+	 * 
+	 * @return
+	 * 	possible object is
+	 *         {@link Integer }
+	 * 
+	 */
+	public Integer getTotal()
+	{
+	    return total;
+	}
 
-        /**
-         * Sets the value of the total property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Integer }
-         *     
-         */
-        public void setTotal(Integer value) {
-            this.total = value;
-        }
+	/**
+	 * Sets the value of the total property.
+	 * 
+	 * @param value
+	 *            allowed object is
+	 *            {@link Integer }
+	 * 
+	 */
+	public void setTotal(Integer value)
+	{
+	    this.total = value;
+	}
 
-        /**
-         * Gets the value of the perPage property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Integer }
-         *     
-         */
-        public Integer getPerPage() {
-            return perPage;
-        }
+	/**
+	 * Gets the value of the perPage property.
+	 * 
+	 * @return
+	 * 	possible object is
+	 *         {@link Integer }
+	 * 
+	 */
+	public Integer getPerPage()
+	{
+	    return perPage;
+	}
 
-        /**
-         * Sets the value of the perPage property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Integer }
-         *     
-         */
-        public void setPerPage(Integer value) {
-            this.perPage = value;
-        }
+	/**
+	 * Sets the value of the perPage property.
+	 * 
+	 * @param value
+	 *            allowed object is
+	 *            {@link Integer }
+	 * 
+	 */
+	public void setPerPage(Integer value)
+	{
+	    this.perPage = value;
+	}
 
-        /**
-         * Gets the value of the page property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Integer }
-         *     
-         */
-        public Integer getPage() {
-            return page;
-        }
+	/**
+	 * Gets the value of the page property.
+	 * 
+	 * @return
+	 * 	possible object is
+	 *         {@link Integer }
+	 * 
+	 */
+	public Integer getPage()
+	{
+	    return page;
+	}
 
-        /**
-         * Sets the value of the page property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Integer }
-         *     
-         */
-        public void setPage(Integer value) {
-            this.page = value;
-        }
+	/**
+	 * Sets the value of the page property.
+	 * 
+	 * @param value
+	 *            allowed object is
+	 *            {@link Integer }
+	 * 
+	 */
+	public void setPage(Integer value)
+	{
+	    this.page = value;
+	}
 
-        /**
-         * Gets the value of the pages property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Integer }
-         *     
-         */
-        public Integer getPages() {
-            return pages;
-        }
+	/**
+	 * Gets the value of the pages property.
+	 * 
+	 * @return
+	 * 	possible object is
+	 *         {@link Integer }
+	 * 
+	 */
+	public Integer getPages()
+	{
+	    return pages;
+	}
 
-        /**
-         * Sets the value of the pages property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Integer }
-         *     
-         */
-        public void setPages(Integer value) {
-            this.pages = value;
-        }
+	/**
+	 * Sets the value of the pages property.
+	 * 
+	 * @param value
+	 *            allowed object is
+	 *            {@link Integer }
+	 * 
+	 */
+	public void setPages(Integer value)
+	{
+	    this.pages = value;
+	}
 
+	/**
+	 * <p>
+	 * Java class for anonymous complex type.
+	 * 
+	 * <p>
+	 * The following schema fragment specifies the expected content contained within this class.
+	 * 
+	 * <pre>
+	 * &lt;complexType>
+	 *   &lt;complexContent>
+	 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *       &lt;sequence>
+	 *         &lt;element name="owner">
+	 *           &lt;complexType>
+	 *             &lt;complexContent>
+	 *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *                 &lt;attribute name="user_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+	 *               &lt;/restriction>
+	 *             &lt;/complexContent>
+	 *           &lt;/complexType>
+	 *         &lt;/element>
+	 *         &lt;element name="thumb">
+	 *           &lt;complexType>
+	 *             &lt;complexContent>
+	 *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *                 &lt;attribute name="label" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *                 &lt;attribute name="url" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *                 &lt;attribute name="secret" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *                 &lt;attribute name="farm" type="{http://www.w3.org/2001/XMLSchema}int" />
+	 *                 &lt;attribute name="path" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *                 &lt;attribute name="ext" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *                 &lt;attribute name="icon" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *                 &lt;attribute name="h" type="{http://www.w3.org/2001/XMLSchema}int" />
+	 *                 &lt;attribute name="w" type="{http://www.w3.org/2001/XMLSchema}int" />
+	 *               &lt;/restriction>
+	 *             &lt;/complexContent>
+	 *           &lt;/complexType>
+	 *         &lt;/element>
+	 *       &lt;/sequence>
+	 *       &lt;attribute name="doc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+	 *       &lt;attribute name="media" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *       &lt;attribute name="license" type="{http://www.w3.org/2001/XMLSchema}int" />
+	 *       &lt;attribute name="title" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *       &lt;attribute name="rotation" type="{http://www.w3.org/2001/XMLSchema}int" />
+	 *     &lt;/restriction>
+	 *   &lt;/complexContent>
+	 * &lt;/complexType>
+	 * </pre>
+	 * 
+	 * 
+	 */
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "", propOrder = { "owner", "thumb" })
+	public static class Doc
+	{
 
-        /**
-         * <p>Java class for anonymous complex type.
-         * 
-         * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
-         * <pre>
-         * &lt;complexType>
-         *   &lt;complexContent>
-         *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *       &lt;sequence>
-         *         &lt;element name="owner">
-         *           &lt;complexType>
-         *             &lt;complexContent>
-         *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *                 &lt;attribute name="user_id" type="{http://www.w3.org/2001/XMLSchema}int" />
-         *               &lt;/restriction>
-         *             &lt;/complexContent>
-         *           &lt;/complexType>
-         *         &lt;/element>
-         *         &lt;element name="thumb">
-         *           &lt;complexType>
-         *             &lt;complexContent>
-         *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *                 &lt;attribute name="label" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *                 &lt;attribute name="url" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *                 &lt;attribute name="secret" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *                 &lt;attribute name="farm" type="{http://www.w3.org/2001/XMLSchema}int" />
-         *                 &lt;attribute name="path" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *                 &lt;attribute name="ext" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *                 &lt;attribute name="icon" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *                 &lt;attribute name="h" type="{http://www.w3.org/2001/XMLSchema}int" />
-         *                 &lt;attribute name="w" type="{http://www.w3.org/2001/XMLSchema}int" />
-         *               &lt;/restriction>
-         *             &lt;/complexContent>
-         *           &lt;/complexType>
-         *         &lt;/element>
-         *       &lt;/sequence>
-         *       &lt;attribute name="doc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
-         *       &lt;attribute name="media" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *       &lt;attribute name="license" type="{http://www.w3.org/2001/XMLSchema}int" />
-         *       &lt;attribute name="title" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *       &lt;attribute name="rotation" type="{http://www.w3.org/2001/XMLSchema}int" />
-         *     &lt;/restriction>
-         *   &lt;/complexContent>
-         * &lt;/complexType>
-         * </pre>
-         * 
-         * 
-         */
-        @XmlAccessorType(XmlAccessType.FIELD)
-        @XmlType(name = "", propOrder = {
-            "owner",
-            "thumb"
-        })
-        public static class Doc {
+	    @XmlElement(required = true)
+	    protected SearchResponse22222.Docs.Doc.Owner owner;
+	    @XmlElement(required = true)
+	    protected SearchResponse22222.Docs.Doc.Thumb thumb;
+	    @XmlAttribute(name = "doc_id")
+	    protected Integer docId;
+	    @XmlAttribute(name = "media")
+	    protected String media;
+	    @XmlAttribute(name = "license")
+	    protected Integer license;
+	    @XmlAttribute(name = "title")
+	    protected String title;
+	    @XmlAttribute(name = "rotation")
+	    protected Integer rotation;
 
-            @XmlElement(required = true)
-            protected SearchResponse22222.Docs.Doc.Owner owner;
-            @XmlElement(required = true)
-            protected SearchResponse22222.Docs.Doc.Thumb thumb;
-            @XmlAttribute(name = "doc_id")
-            protected Integer docId;
-            @XmlAttribute(name = "media")
-            protected String media;
-            @XmlAttribute(name = "license")
-            protected Integer license;
-            @XmlAttribute(name = "title")
-            protected String title;
-            @XmlAttribute(name = "rotation")
-            protected Integer rotation;
+	    /**
+	     * Gets the value of the owner property.
+	     * 
+	     * @return
+	     * 	possible object is
+	     *         {@link SearchResponse22222.Docs.Doc.Owner }
+	     * 
+	     */
+	    public SearchResponse22222.Docs.Doc.Owner getOwner()
+	    {
+		return owner;
+	    }
 
-            /**
-             * Gets the value of the owner property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link SearchResponse22222.Docs.Doc.Owner }
-             *     
-             */
-            public SearchResponse22222.Docs.Doc.Owner getOwner() {
-                return owner;
-            }
+	    /**
+	     * Sets the value of the owner property.
+	     * 
+	     * @param value
+	     *            allowed object is
+	     *            {@link SearchResponse22222.Docs.Doc.Owner }
+	     * 
+	     */
+	    public void setOwner(SearchResponse22222.Docs.Doc.Owner value)
+	    {
+		this.owner = value;
+	    }
 
-            /**
-             * Sets the value of the owner property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link SearchResponse22222.Docs.Doc.Owner }
-             *     
-             */
-            public void setOwner(SearchResponse22222.Docs.Doc.Owner value) {
-                this.owner = value;
-            }
+	    /**
+	     * Gets the value of the thumb property.
+	     * 
+	     * @return
+	     * 	possible object is
+	     *         {@link SearchResponse22222.Docs.Doc.Thumb }
+	     * 
+	     */
+	    public SearchResponse22222.Docs.Doc.Thumb getThumb()
+	    {
+		return thumb;
+	    }
 
-            /**
-             * Gets the value of the thumb property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link SearchResponse22222.Docs.Doc.Thumb }
-             *     
-             */
-            public SearchResponse22222.Docs.Doc.Thumb getThumb() {
-                return thumb;
-            }
+	    /**
+	     * Sets the value of the thumb property.
+	     * 
+	     * @param value
+	     *            allowed object is
+	     *            {@link SearchResponse22222.Docs.Doc.Thumb }
+	     * 
+	     */
+	    public void setThumb(SearchResponse22222.Docs.Doc.Thumb value)
+	    {
+		this.thumb = value;
+	    }
 
-            /**
-             * Sets the value of the thumb property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link SearchResponse22222.Docs.Doc.Thumb }
-             *     
-             */
-            public void setThumb(SearchResponse22222.Docs.Doc.Thumb value) {
-                this.thumb = value;
-            }
+	    /**
+	     * Gets the value of the docId property.
+	     * 
+	     * @return
+	     * 	possible object is
+	     *         {@link Integer }
+	     * 
+	     */
+	    public Integer getDocId()
+	    {
+		return docId;
+	    }
 
-            /**
-             * Gets the value of the docId property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link Integer }
-             *     
-             */
-            public Integer getDocId() {
-                return docId;
-            }
+	    /**
+	     * Sets the value of the docId property.
+	     * 
+	     * @param value
+	     *            allowed object is
+	     *            {@link Integer }
+	     * 
+	     */
+	    public void setDocId(Integer value)
+	    {
+		this.docId = value;
+	    }
 
-            /**
-             * Sets the value of the docId property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link Integer }
-             *     
-             */
-            public void setDocId(Integer value) {
-                this.docId = value;
-            }
+	    /**
+	     * Gets the value of the media property.
+	     * 
+	     * @return
+	     * 	possible object is
+	     *         {@link String }
+	     * 
+	     */
+	    public String getMedia()
+	    {
+		return media;
+	    }
 
-            /**
-             * Gets the value of the media property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getMedia() {
-                return media;
-            }
+	    /**
+	     * Sets the value of the media property.
+	     * 
+	     * @param value
+	     *            allowed object is
+	     *            {@link String }
+	     * 
+	     */
+	    public void setMedia(String value)
+	    {
+		this.media = value;
+	    }
 
-            /**
-             * Sets the value of the media property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setMedia(String value) {
-                this.media = value;
-            }
+	    /**
+	     * Gets the value of the license property.
+	     * 
+	     * @return
+	     * 	possible object is
+	     *         {@link Integer }
+	     * 
+	     */
+	    public Integer getLicense()
+	    {
+		return license;
+	    }
 
-            /**
-             * Gets the value of the license property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link Integer }
-             *     
-             */
-            public Integer getLicense() {
-                return license;
-            }
+	    /**
+	     * Sets the value of the license property.
+	     * 
+	     * @param value
+	     *            allowed object is
+	     *            {@link Integer }
+	     * 
+	     */
+	    public void setLicense(Integer value)
+	    {
+		this.license = value;
+	    }
 
-            /**
-             * Sets the value of the license property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link Integer }
-             *     
-             */
-            public void setLicense(Integer value) {
-                this.license = value;
-            }
+	    /**
+	     * Gets the value of the title property.
+	     * 
+	     * @return
+	     * 	possible object is
+	     *         {@link String }
+	     * 
+	     */
+	    public String getTitle()
+	    {
+		return title;
+	    }
 
-            /**
-             * Gets the value of the title property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getTitle() {
-                return title;
-            }
+	    /**
+	     * Sets the value of the title property.
+	     * 
+	     * @param value
+	     *            allowed object is
+	     *            {@link String }
+	     * 
+	     */
+	    public void setTitle(String value)
+	    {
+		this.title = value;
+	    }
 
-            /**
-             * Sets the value of the title property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setTitle(String value) {
-                this.title = value;
-            }
+	    /**
+	     * Gets the value of the rotation property.
+	     * 
+	     * @return
+	     * 	possible object is
+	     *         {@link Integer }
+	     * 
+	     */
+	    public Integer getRotation()
+	    {
+		return rotation;
+	    }
 
-            /**
-             * Gets the value of the rotation property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link Integer }
-             *     
-             */
-            public Integer getRotation() {
-                return rotation;
-            }
+	    /**
+	     * Sets the value of the rotation property.
+	     * 
+	     * @param value
+	     *            allowed object is
+	     *            {@link Integer }
+	     * 
+	     */
+	    public void setRotation(Integer value)
+	    {
+		this.rotation = value;
+	    }
 
-            /**
-             * Sets the value of the rotation property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link Integer }
-             *     
-             */
-            public void setRotation(Integer value) {
-                this.rotation = value;
-            }
+	    /**
+	     * <p>
+	     * Java class for anonymous complex type.
+	     * 
+	     * <p>
+	     * The following schema fragment specifies the expected content contained within this class.
+	     * 
+	     * <pre>
+	     * &lt;complexType>
+	     *   &lt;complexContent>
+	     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	     *       &lt;attribute name="user_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+	     *     &lt;/restriction>
+	     *   &lt;/complexContent>
+	     * &lt;/complexType>
+	     * </pre>
+	     * 
+	     * 
+	     */
+	    @XmlAccessorType(XmlAccessType.FIELD)
+	    @XmlType(name = "")
+	    public static class Owner
+	    {
 
+		@XmlAttribute(name = "user_id")
+		protected Integer userId;
 
-            /**
-             * <p>Java class for anonymous complex type.
-             * 
-             * <p>The following schema fragment specifies the expected content contained within this class.
-             * 
-             * <pre>
-             * &lt;complexType>
-             *   &lt;complexContent>
-             *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-             *       &lt;attribute name="user_id" type="{http://www.w3.org/2001/XMLSchema}int" />
-             *     &lt;/restriction>
-             *   &lt;/complexContent>
-             * &lt;/complexType>
-             * </pre>
-             * 
-             * 
-             */
-            @XmlAccessorType(XmlAccessType.FIELD)
-            @XmlType(name = "")
-            public static class Owner {
+		/**
+		 * Gets the value of the userId property.
+		 * 
+		 * @return
+		 * 	possible object is
+		 *         {@link Integer }
+		 * 
+		 */
+		public Integer getUserId()
+		{
+		    return userId;
+		}
 
-                @XmlAttribute(name = "user_id")
-                protected Integer userId;
+		/**
+		 * Sets the value of the userId property.
+		 * 
+		 * @param value
+		 *            allowed object is
+		 *            {@link Integer }
+		 * 
+		 */
+		public void setUserId(Integer value)
+		{
+		    this.userId = value;
+		}
 
-                /**
-                 * Gets the value of the userId property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link Integer }
-                 *     
-                 */
-                public Integer getUserId() {
-                    return userId;
-                }
+	    }
 
-                /**
-                 * Sets the value of the userId property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link Integer }
-                 *     
-                 */
-                public void setUserId(Integer value) {
-                    this.userId = value;
-                }
+	    /**
+	     * <p>
+	     * Java class for anonymous complex type.
+	     * 
+	     * <p>
+	     * The following schema fragment specifies the expected content contained within this class.
+	     * 
+	     * <pre>
+	     * &lt;complexType>
+	     *   &lt;complexContent>
+	     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	     *       &lt;attribute name="label" type="{http://www.w3.org/2001/XMLSchema}string" />
+	     *       &lt;attribute name="url" type="{http://www.w3.org/2001/XMLSchema}string" />
+	     *       &lt;attribute name="secret" type="{http://www.w3.org/2001/XMLSchema}string" />
+	     *       &lt;attribute name="farm" type="{http://www.w3.org/2001/XMLSchema}int" />
+	     *       &lt;attribute name="path" type="{http://www.w3.org/2001/XMLSchema}string" />
+	     *       &lt;attribute name="ext" type="{http://www.w3.org/2001/XMLSchema}string" />
+	     *       &lt;attribute name="icon" type="{http://www.w3.org/2001/XMLSchema}string" />
+	     *       &lt;attribute name="h" type="{http://www.w3.org/2001/XMLSchema}int" />
+	     *       &lt;attribute name="w" type="{http://www.w3.org/2001/XMLSchema}int" />
+	     *     &lt;/restriction>
+	     *   &lt;/complexContent>
+	     * &lt;/complexType>
+	     * </pre>
+	     * 
+	     * 
+	     */
+	    @XmlAccessorType(XmlAccessType.FIELD)
+	    @XmlType(name = "")
+	    public static class Thumb
+	    {
 
-            }
+		@XmlAttribute(name = "label")
+		protected String label;
+		@XmlAttribute(name = "url")
+		protected String url;
+		@XmlAttribute(name = "secret")
+		protected String secret;
+		@XmlAttribute(name = "farm")
+		protected Integer farm;
+		@XmlAttribute(name = "path")
+		protected String path;
+		@XmlAttribute(name = "ext")
+		protected String ext;
+		@XmlAttribute(name = "icon")
+		protected String icon;
+		@XmlAttribute(name = "h")
+		protected Integer h;
+		@XmlAttribute(name = "w")
+		protected Integer w;
 
+		/**
+		 * Gets the value of the label property.
+		 * 
+		 * @return
+		 * 	possible object is
+		 *         {@link String }
+		 * 
+		 */
+		public String getLabel()
+		{
+		    return label;
+		}
 
-            /**
-             * <p>Java class for anonymous complex type.
-             * 
-             * <p>The following schema fragment specifies the expected content contained within this class.
-             * 
-             * <pre>
-             * &lt;complexType>
-             *   &lt;complexContent>
-             *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-             *       &lt;attribute name="label" type="{http://www.w3.org/2001/XMLSchema}string" />
-             *       &lt;attribute name="url" type="{http://www.w3.org/2001/XMLSchema}string" />
-             *       &lt;attribute name="secret" type="{http://www.w3.org/2001/XMLSchema}string" />
-             *       &lt;attribute name="farm" type="{http://www.w3.org/2001/XMLSchema}int" />
-             *       &lt;attribute name="path" type="{http://www.w3.org/2001/XMLSchema}string" />
-             *       &lt;attribute name="ext" type="{http://www.w3.org/2001/XMLSchema}string" />
-             *       &lt;attribute name="icon" type="{http://www.w3.org/2001/XMLSchema}string" />
-             *       &lt;attribute name="h" type="{http://www.w3.org/2001/XMLSchema}int" />
-             *       &lt;attribute name="w" type="{http://www.w3.org/2001/XMLSchema}int" />
-             *     &lt;/restriction>
-             *   &lt;/complexContent>
-             * &lt;/complexType>
-             * </pre>
-             * 
-             * 
-             */
-            @XmlAccessorType(XmlAccessType.FIELD)
-            @XmlType(name = "")
-            public static class Thumb {
+		/**
+		 * Sets the value of the label property.
+		 * 
+		 * @param value
+		 *            allowed object is
+		 *            {@link String }
+		 * 
+		 */
+		public void setLabel(String value)
+		{
+		    this.label = value;
+		}
 
-                @XmlAttribute(name = "label")
-                protected String label;
-                @XmlAttribute(name = "url")
-                protected String url;
-                @XmlAttribute(name = "secret")
-                protected String secret;
-                @XmlAttribute(name = "farm")
-                protected Integer farm;
-                @XmlAttribute(name = "path")
-                protected String path;
-                @XmlAttribute(name = "ext")
-                protected String ext;
-                @XmlAttribute(name = "icon")
-                protected String icon;
-                @XmlAttribute(name = "h")
-                protected Integer h;
-                @XmlAttribute(name = "w")
-                protected Integer w;
+		/**
+		 * Gets the value of the url property.
+		 * 
+		 * @return
+		 * 	possible object is
+		 *         {@link String }
+		 * 
+		 */
+		public String getUrl()
+		{
+		    return url;
+		}
 
-                /**
-                 * Gets the value of the label property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getLabel() {
-                    return label;
-                }
+		/**
+		 * Sets the value of the url property.
+		 * 
+		 * @param value
+		 *            allowed object is
+		 *            {@link String }
+		 * 
+		 */
+		public void setUrl(String value)
+		{
+		    this.url = value;
+		}
 
-                /**
-                 * Sets the value of the label property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setLabel(String value) {
-                    this.label = value;
-                }
+		/**
+		 * Gets the value of the secret property.
+		 * 
+		 * @return
+		 * 	possible object is
+		 *         {@link String }
+		 * 
+		 */
+		public String getSecret()
+		{
+		    return secret;
+		}
 
-                /**
-                 * Gets the value of the url property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getUrl() {
-                    return url;
-                }
+		/**
+		 * Sets the value of the secret property.
+		 * 
+		 * @param value
+		 *            allowed object is
+		 *            {@link String }
+		 * 
+		 */
+		public void setSecret(String value)
+		{
+		    this.secret = value;
+		}
 
-                /**
-                 * Sets the value of the url property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setUrl(String value) {
-                    this.url = value;
-                }
+		/**
+		 * Gets the value of the farm property.
+		 * 
+		 * @return
+		 * 	possible object is
+		 *         {@link Integer }
+		 * 
+		 */
+		public Integer getFarm()
+		{
+		    return farm;
+		}
 
-                /**
-                 * Gets the value of the secret property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getSecret() {
-                    return secret;
-                }
+		/**
+		 * Sets the value of the farm property.
+		 * 
+		 * @param value
+		 *            allowed object is
+		 *            {@link Integer }
+		 * 
+		 */
+		public void setFarm(Integer value)
+		{
+		    this.farm = value;
+		}
 
-                /**
-                 * Sets the value of the secret property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setSecret(String value) {
-                    this.secret = value;
-                }
+		/**
+		 * Gets the value of the path property.
+		 * 
+		 * @return
+		 * 	possible object is
+		 *         {@link String }
+		 * 
+		 */
+		public String getPath()
+		{
+		    return path;
+		}
 
-                /**
-                 * Gets the value of the farm property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link Integer }
-                 *     
-                 */
-                public Integer getFarm() {
-                    return farm;
-                }
+		/**
+		 * Sets the value of the path property.
+		 * 
+		 * @param value
+		 *            allowed object is
+		 *            {@link String }
+		 * 
+		 */
+		public void setPath(String value)
+		{
+		    this.path = value;
+		}
 
-                /**
-                 * Sets the value of the farm property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link Integer }
-                 *     
-                 */
-                public void setFarm(Integer value) {
-                    this.farm = value;
-                }
+		/**
+		 * Gets the value of the ext property.
+		 * 
+		 * @return
+		 * 	possible object is
+		 *         {@link String }
+		 * 
+		 */
+		public String getExt()
+		{
+		    return ext;
+		}
 
-                /**
-                 * Gets the value of the path property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getPath() {
-                    return path;
-                }
+		/**
+		 * Sets the value of the ext property.
+		 * 
+		 * @param value
+		 *            allowed object is
+		 *            {@link String }
+		 * 
+		 */
+		public void setExt(String value)
+		{
+		    this.ext = value;
+		}
 
-                /**
-                 * Sets the value of the path property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setPath(String value) {
-                    this.path = value;
-                }
+		/**
+		 * Gets the value of the icon property.
+		 * 
+		 * @return
+		 * 	possible object is
+		 *         {@link String }
+		 * 
+		 */
+		public String getIcon()
+		{
+		    return icon;
+		}
 
-                /**
-                 * Gets the value of the ext property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getExt() {
-                    return ext;
-                }
+		/**
+		 * Sets the value of the icon property.
+		 * 
+		 * @param value
+		 *            allowed object is
+		 *            {@link String }
+		 * 
+		 */
+		public void setIcon(String value)
+		{
+		    this.icon = value;
+		}
 
-                /**
-                 * Sets the value of the ext property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setExt(String value) {
-                    this.ext = value;
-                }
+		/**
+		 * Gets the value of the h property.
+		 * 
+		 * @return
+		 * 	possible object is
+		 *         {@link Integer }
+		 * 
+		 */
+		public Integer getH()
+		{
+		    return h;
+		}
 
-                /**
-                 * Gets the value of the icon property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getIcon() {
-                    return icon;
-                }
+		/**
+		 * Sets the value of the h property.
+		 * 
+		 * @param value
+		 *            allowed object is
+		 *            {@link Integer }
+		 * 
+		 */
+		public void setH(Integer value)
+		{
+		    this.h = value;
+		}
 
-                /**
-                 * Sets the value of the icon property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setIcon(String value) {
-                    this.icon = value;
-                }
+		/**
+		 * Gets the value of the w property.
+		 * 
+		 * @return
+		 * 	possible object is
+		 *         {@link Integer }
+		 * 
+		 */
+		public Integer getW()
+		{
+		    return w;
+		}
 
-                /**
-                 * Gets the value of the h property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link Integer }
-                 *     
-                 */
-                public Integer getH() {
-                    return h;
-                }
+		/**
+		 * Sets the value of the w property.
+		 * 
+		 * @param value
+		 *            allowed object is
+		 *            {@link Integer }
+		 * 
+		 */
+		public void setW(Integer value)
+		{
+		    this.w = value;
+		}
 
-                /**
-                 * Sets the value of the h property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link Integer }
-                 *     
-                 */
-                public void setH(Integer value) {
-                    this.h = value;
-                }
+	    }
 
-                /**
-                 * Gets the value of the w property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link Integer }
-                 *     
-                 */
-                public Integer getW() {
-                    return w;
-                }
-
-                /**
-                 * Sets the value of the w property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link Integer }
-                 *     
-                 */
-                public void setW(Integer value) {
-                    this.w = value;
-                }
-
-            }
-
-        }
+	}
 
     }
 

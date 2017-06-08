@@ -5,7 +5,6 @@
 // Generated on: 2012.05.13 at 07:49:56 PM CEST 
 //
 
-
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
 import java.util.ArrayList;
@@ -16,11 +15,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -37,11 +37,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "thumbnail"
-})
+@XmlType(name = "", propOrder = { "thumbnail" })
 @XmlRootElement(name = "thumbnails")
-public class Thumbnails {
+public class Thumbnails
+{
 
     @XmlElement(required = true)
     protected List<Thumbnail> thumbnail;
@@ -57,8 +56,9 @@ public class Thumbnails {
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getThumbnail().add(newItem);
+     * getThumbnail().add(newItem);
      * </pre>
      * 
      * 
@@ -68,11 +68,13 @@ public class Thumbnails {
      * 
      * 
      */
-    public List<Thumbnail> getThumbnail() {
-        if (thumbnail == null) {
-            thumbnail = new ArrayList<Thumbnail>();
-        }
-        return this.thumbnail;
+    public List<Thumbnail> getThumbnail()
+    {
+	if(thumbnail == null)
+	{
+	    thumbnail = new ArrayList<Thumbnail>();
+	}
+	return this.thumbnail;
     }
 
 }

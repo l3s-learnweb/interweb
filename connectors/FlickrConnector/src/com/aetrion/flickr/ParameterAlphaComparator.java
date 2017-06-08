@@ -11,7 +11,8 @@ import java.util.Comparator;
  *
  * @author Anthony Eden
  */
-public class ParameterAlphaComparator implements Comparator {
+public class ParameterAlphaComparator implements Comparator
+{
 
     /**
      * Compare the two objects
@@ -20,9 +21,10 @@ public class ParameterAlphaComparator implements Comparator {
      * @param o2 The second parameter
      * @return The comparison results
      */
-    public int compare(Object o1, Object o2) {
-        Parameter p1 = (Parameter) o1;
-        Parameter p2 = (Parameter) o2;
-        return p1.getName().compareTo(p2.getName());
+    public int compare(Object o1, Object o2)
+    {
+	Parameter p1 = (Parameter) o1;
+	Parameter p2 = (Parameter) o2;
+	return p1.getName().compareTo(p2.getName());
     }
 }

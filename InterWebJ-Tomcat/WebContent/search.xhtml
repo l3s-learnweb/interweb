@@ -25,30 +25,31 @@
 						<h:inputText id="result_count" label="results count"
 							required="true" value="#{searchBean.resultCount}" size="4"
 							style="margin-right: 5px;" />
-						<br/>	
-						<h:outputLabel value="Page: "/>	
+						<br />
+						<h:outputLabel value="Page: " />
 						<h:selectOneListbox value="#{searchBean.page}" size="1">
-							<f:selectItem itemValue="1"  />
+							<f:selectItem itemValue="1" />
 							<f:selectItem itemValue="2" />
 							<f:selectItem itemValue="3" />
 							<f:selectItem itemValue="4" />
 							<f:selectItem itemValue="5" />
 							<f:selectItem itemValue="6" />
 						</h:selectOneListbox>
-						<br/>	
-						<h:outputLabel value="Language: "/>
-						<h:inputText required="true" value="#{searchBean.language}" size="2" maxlength="2"
-							style="margin-right: 5px;" />
-						<br/>	
-						<h:outputLabel value="Timeout: "/>
-						<h:inputText required="true" value="#{searchBean.timeout}" size="3" maxlength="3"
-							style="margin-right: 5px;" />
-						<br/>	
-						<h:outputLabel value="Use privacy classifier: "/>
+						<br />
+						<h:outputLabel value="Language: " />
+						<h:inputText required="true" value="#{searchBean.language}"
+							size="2" maxlength="2" style="margin-right: 5px;" />
+						<br />
+						<h:outputLabel value="Timeout: " />
+						<h:inputText required="true" value="#{searchBean.timeout}"
+							size="3" maxlength="3" style="margin-right: 5px;" />
+						<br />
+						<h:outputLabel value="Use privacy classifier: " />
 						<h:selectBooleanCheckbox value="#{searchBean.usePrivacy}"></h:selectBooleanCheckbox>
-						<br/>
-						<h:outputLabel value="Use image feature: "/>
-						<h:selectBooleanCheckbox value="#{searchBean.privacyUseImageFeatures}"></h:selectBooleanCheckbox>
+						<br />
+						<h:outputLabel value="Use image feature: " />
+						<h:selectBooleanCheckbox
+							value="#{searchBean.privacyUseImageFeatures}"></h:selectBooleanCheckbox>
 					</h:panelGroup>
 					<rich:panel styleClass="richpanel" style="border-width: 1px;">
 						<f:facet name="header">
@@ -91,34 +92,53 @@
 					</rich:column>
 					<rich:column style="vertical-align: top;">
 						<span style="white-space: nowrap;"><img
-							src="#{searchBean.getConnectorBaseUrl(resultItem.connectorName)}/favicon.ico" alt="#{resultItem.connectorName}"
+							src="#{searchBean.getConnectorBaseUrl(resultItem.connectorName)}/favicon.ico"
+							alt="#{resultItem.connectorName}"
 							style="vertical-align: middle; margin: 3px;" />&nbsp;&nbsp;<h:outputText
-							value="#{resultItem.serviceName}" /> </span>
+								value="#{resultItem.serviceName}" /> </span>
 					</rich:column>
 					<rich:column>
 						<div>
-						<h6><img
-							src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
-							style="vertical-align: middle; margin: 3px;" /><h:outputLink
-							value="#{resultItem.url}" target="_blank">&nbsp;<h:outputText value="#{resultItem.title}" escape="false" /></h:outputLink></h6>
-						<div>
-							<h:outputLink value="#{resultItem.url}" target="_blank" style="border-width: 0px;">
-								<h:outputText value="#{resultItem.embeddedSize1}" escape="false" /><hr/>
-								<h:outputText value="#{resultItem.embeddedSize2}" escape="false" /><hr/>
-							</h:outputLink>
+							<h6>
+								<img
+									src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
+									style="vertical-align: middle; margin: 3px;" />
+								<h:outputLink value="#{resultItem.url}" target="_blank">&nbsp;<h:outputText
+										value="#{resultItem.title}" escape="false" />
+								</h:outputLink>
+							</h6>
+							<div>
+								<h:outputLink value="#{resultItem.url}" target="_blank"
+									style="border-width: 0px;">
+									<h:outputText value="#{resultItem.embeddedSize1}"
+										escape="false" />
+									<hr />
+									<h:outputText value="#{resultItem.embeddedSize2}"
+										escape="false" />
+									<hr />
+								</h:outputLink>
 								<h:outputText value="#{resultItem.embeddedSize3}" escape="false" />
-							
-						<div>
-						<span><h:outputText value="#{resultItem.description}" escape="false" /></span>
-						<pre><span style="color: #3399FF;"><h:outputText value="#{resultItem.snippet}" escape="false" /></span></pre></div>
-						<div>
-						<span style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;">
-							<span style="background-color: #D0EFEF;">Added</span>: #{resultItem.date} &ndash; 
-							<span style="background-color: #D0EFEF;">Tags</span>: #{searchBean.getTags(resultItem)} &ndash; 
-							<span style="background-color: #D0EFEF;">Privacy</span>: #{resultItem.privacy} (#{resultItem.privacyConfidence}) 
-						</span>
-						</div>
-						</div>
+
+								<div>
+									<span><h:outputText value="#{resultItem.description}"
+											escape="false" /></span>
+									<pre>
+										<span style="color: #3399FF;"><h:outputText
+												value="#{resultItem.snippet}" escape="false" /></span>
+									</pre>
+								</div>
+								<div>
+									<span
+										style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;">
+										<span style="background-color: #D0EFEF;">Added</span>:
+										#{resultItem.date} &ndash; <span
+										style="background-color: #D0EFEF;">Tags</span>:
+										#{searchBean.getTags(resultItem)} &ndash; <span
+										style="background-color: #D0EFEF;">Privacy</span>:
+										#{resultItem.privacy} (#{resultItem.privacyConfidence})
+									</span>
+								</div>
+							</div>
 						</div>
 					</rich:column>
 				</rich:dataTable>

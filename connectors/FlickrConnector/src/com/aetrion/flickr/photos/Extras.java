@@ -12,8 +12,9 @@ import java.util.Set;
  * @author Anthony Eden
  * @version $Id: Extras.java,v 1.12 2009/07/23 20:41:03 x-mago Exp $
  */
-public class Extras {
-	private static final long serialVersionUID = 12L;
+public class Extras
+{
+    private static final long serialVersionUID = 12L;
     public static final String KEY_EXTRAS = "extras";
 
     public static final String LICENSE = "license";
@@ -45,8 +46,10 @@ public class Extras {
      * @see com.aetrion.flickr.people.PeopleInterface#getPublicPhotos(String, Set, int, int)
      * @see com.aetrion.flickr.photosets.PhotosetsInterface#getPhotos(String, Set, int, int, int)
      * @see com.aetrion.flickr.photos.PhotosInterface#getContactsPublicPhotos(String, Set, int, boolean, boolean, boolean)
-     * @see com.aetrion.flickr.photos.PhotosInterface#getWithGeoData(java.util.Date, java.util.Date, java.util.Date, java.util.Date, int, String, Set, int, int)
-     * @see com.aetrion.flickr.photos.PhotosInterface#getWithoutGeoData(java.util.Date, java.util.Date, java.util.Date, java.util.Date, int, String, Set, int, int)
+     * @see com.aetrion.flickr.photos.PhotosInterface#getWithGeoData(java.util.Date, java.util.Date, java.util.Date, java.util.Date, int, String, Set,
+     *      int, int)
+     * @see com.aetrion.flickr.photos.PhotosInterface#getWithoutGeoData(java.util.Date, java.util.Date, java.util.Date, java.util.Date, int, String,
+     *      Set, int, int)
      * @see com.aetrion.flickr.photos.PhotosInterface#recentlyUpdated(java.util.Date, Set, int, int)
      * @see com.aetrion.flickr.photos.SearchParameters#setExtras(Set)
      * @see com.aetrion.flickr.photos.geo.GeoInterface#photosForLocation(GeoData, Set, int, int)
@@ -64,8 +67,10 @@ public class Extras {
      * @see com.aetrion.flickr.people.PeopleInterface#getPublicPhotos(String, Set, int, int)
      * @see com.aetrion.flickr.photosets.PhotosetsInterface#getPhotos(String, Set, int, int, int)
      * @see com.aetrion.flickr.photos.PhotosInterface#getContactsPublicPhotos(String, Set, int, boolean, boolean, boolean)
-     * @see com.aetrion.flickr.photos.PhotosInterface#getWithGeoData(java.util.Date, java.util.Date, java.util.Date, java.util.Date, int, String, Set, int, int)
-     * @see com.aetrion.flickr.photos.PhotosInterface#getWithoutGeoData(java.util.Date, java.util.Date, java.util.Date, java.util.Date, int, String, Set, int, int)
+     * @see com.aetrion.flickr.photos.PhotosInterface#getWithGeoData(java.util.Date, java.util.Date, java.util.Date, java.util.Date, int, String, Set,
+     *      int, int)
+     * @see com.aetrion.flickr.photos.PhotosInterface#getWithoutGeoData(java.util.Date, java.util.Date, java.util.Date, java.util.Date, int, String,
+     *      Set, int, int)
      * @see com.aetrion.flickr.photos.PhotosInterface#recentlyUpdated(java.util.Date, Set, int, int)
      * @see com.aetrion.flickr.photos.geo.GeoInterface#photosForLocation(GeoData, Set, int, int)
      * @see com.aetrion.flickr.interestingness.InterestingnessInterface#getList(java.util.Date, Set, int, int)
@@ -73,38 +78,41 @@ public class Extras {
      */
     public static final Set MIN_EXTRAS = new HashSet();
 
-    static {
-        ALL_EXTRAS.add(DATE_TAKEN);
-        ALL_EXTRAS.add(DATE_UPLOAD);
-        ALL_EXTRAS.add(ICON_SERVER);
-        ALL_EXTRAS.add(LAST_UPDATE);
-        ALL_EXTRAS.add(LICENSE);
-        ALL_EXTRAS.add(ORIGINAL_FORMAT);
-        ALL_EXTRAS.add(OWNER_NAME);
-        ALL_EXTRAS.add(GEO);
-        ALL_EXTRAS.add(TAGS);
-        ALL_EXTRAS.add(MACHINE_TAGS);
-        ALL_EXTRAS.add(O_DIMS);
-        ALL_EXTRAS.add(MEDIA);
-        ALL_EXTRAS.add(VIEWS);
-        ALL_EXTRAS.add(PATH_ALIAS);
-        ALL_EXTRAS.add(URL_S);
-        ALL_EXTRAS.add(URL_SQ);
-        ALL_EXTRAS.add(URL_T);
-        ALL_EXTRAS.add(URL_M);
-        ALL_EXTRAS.add(URL_O);
-        ALL_EXTRAS.add(URL_L);
+    static
+    {
+	ALL_EXTRAS.add(DATE_TAKEN);
+	ALL_EXTRAS.add(DATE_UPLOAD);
+	ALL_EXTRAS.add(ICON_SERVER);
+	ALL_EXTRAS.add(LAST_UPDATE);
+	ALL_EXTRAS.add(LICENSE);
+	ALL_EXTRAS.add(ORIGINAL_FORMAT);
+	ALL_EXTRAS.add(OWNER_NAME);
+	ALL_EXTRAS.add(GEO);
+	ALL_EXTRAS.add(TAGS);
+	ALL_EXTRAS.add(MACHINE_TAGS);
+	ALL_EXTRAS.add(O_DIMS);
+	ALL_EXTRAS.add(MEDIA);
+	ALL_EXTRAS.add(VIEWS);
+	ALL_EXTRAS.add(PATH_ALIAS);
+	ALL_EXTRAS.add(URL_S);
+	ALL_EXTRAS.add(URL_SQ);
+	ALL_EXTRAS.add(URL_T);
+	ALL_EXTRAS.add(URL_M);
+	ALL_EXTRAS.add(URL_O);
+	ALL_EXTRAS.add(URL_L);
     }
 
-    static {
-        MIN_EXTRAS.add(ORIGINAL_FORMAT);
-        MIN_EXTRAS.add(OWNER_NAME);
+    static
+    {
+	MIN_EXTRAS.add(ORIGINAL_FORMAT);
+	MIN_EXTRAS.add(OWNER_NAME);
     }
 
     /**
      * No-op constructor.
      */
-    private Extras() {
+    private Extras()
+    {
     }
 
 }

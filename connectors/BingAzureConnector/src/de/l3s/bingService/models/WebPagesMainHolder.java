@@ -4,45 +4,54 @@ import java.util.List;
 
 import de.l3s.bingService.utils.UriUtils;
 
-public class WebPagesMainHolder {
+public class WebPagesMainHolder
+{
 
-	private String webSearchUrl;
+    private String webSearchUrl;
 
-	private String webSearchUrlPingSuffix;
+    private String webSearchUrlPingSuffix;
 
-	private String totalEstimatedMatches;
+    private String totalEstimatedMatches;
 
-	private List<WebPage> value;
+    private List<WebPage> value;
 
-	public String getWebSearchUrl() {
-		return webSearchUrl;
-	}
+    public String getWebSearchUrl()
+    {
+	return webSearchUrl;
+    }
 
-	public void setWebSearchUrl(String webSearchUrl) {
-		this.webSearchUrl =  UriUtils.splitQuery(webSearchUrl);
-	}
+    public void setWebSearchUrl(String webSearchUrl)
+    {
+	this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
+    }
 
-	public String getWebSearchUrlPingSuffix() {
-		return webSearchUrlPingSuffix;
-	}
+    public String getWebSearchUrlPingSuffix()
+    {
+	return webSearchUrlPingSuffix;
+    }
 
-	public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix) {
-		this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
-	}
+    public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix)
+    {
+	this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
+    }
 
-	public String getTotalEstimatedMatches() {
-		return totalEstimatedMatches;
-	}
+    public String getTotalEstimatedMatches()
+    {
+	return totalEstimatedMatches;
+    }
 
-	public void setTotalEstimatedMatches(String totalEstimatedMatches) {
-		this.totalEstimatedMatches = totalEstimatedMatches;
-	}
+    public void setTotalEstimatedMatches(String totalEstimatedMatches)
+    {
+	this.totalEstimatedMatches = totalEstimatedMatches;
+    }
 
-	public List<WebPage> getValue() {
-		return value;
-	}
+    public List<WebPage> getValue()
+    {
+	return value;
+    }
 
-	public void setValue(List<WebPage> value) {
-		this.value = value;
-	}
+    public void setValue(List<WebPage> value)
+    {
+	this.value = value;
+    }
 }

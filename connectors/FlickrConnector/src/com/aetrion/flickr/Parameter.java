@@ -8,7 +8,8 @@ package com.aetrion.flickr;
  *
  * @author Anthony Eden
  */
-public class Parameter {
+public class Parameter
+{
 
     private String name;
     private Object value;
@@ -19,22 +20,26 @@ public class Parameter {
      * @param name The parameter name
      * @param value The parameter value
      */
-    public Parameter(String name, Object value) {
-        this.name = name;
-        this.value = value;
+    public Parameter(String name, Object value)
+    {
+	this.name = name;
+	this.value = value;
     }
 
-    public Parameter(String name, long value) {
-		this.name = name;
-		this.value = new Long(value);
-	}
-
-	public String getName() {
-        return name;
+    public Parameter(String name, long value)
+    {
+	this.name = name;
+	this.value = new Long(value);
     }
 
-    public Object getValue() {
-        return value;
+    public String getName()
+    {
+	return name;
+    }
+
+    public Object getValue()
+    {
+	return value;
     }
 
 }

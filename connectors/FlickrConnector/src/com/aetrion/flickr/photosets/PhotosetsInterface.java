@@ -35,7 +35,8 @@ import com.aetrion.flickr.util.XMLUtilities;
  * @author Anthony Eden
  * @version $Id: PhotosetsInterface.java,v 1.27 2009/11/08 21:58:00 x-mago Exp $
  */
-public class PhotosetsInterface {
+public class PhotosetsInterface
+{
 
     public static final String METHOD_ADD_PHOTO = "flickr.photosets.addPhoto";
     public static final String METHOD_CREATE = "flickr.photosets.create";
@@ -53,14 +54,11 @@ public class PhotosetsInterface {
     private String sharedSecret;
     private Transport transportAPI;
 
-    public PhotosetsInterface(
-        String apiKey,
-        String sharedSecret,
-        Transport transportAPI
-    ) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transportAPI = transportAPI;
+    public PhotosetsInterface(String apiKey, String sharedSecret, Transport transportAPI)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transportAPI = transportAPI;
     }
 
     /**
@@ -71,24 +69,21 @@ public class PhotosetsInterface {
      * @param photosetId The photoset ID
      * @param photoId The photo ID
      */
-    public void addPhoto(String photosetId, String photoId) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_ADD_PHOTO));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void addPhoto(String photosetId, String photoId) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_ADD_PHOTO));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photoset_id", photosetId));
-        parameters.add(new Parameter("photo_id", photoId));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("photoset_id", photosetId));
+	parameters.add(new Parameter("photo_id", photoId));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
     /**
@@ -102,31 +97,27 @@ public class PhotosetsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public Photoset create(String title, String description, String primaryPhotoId)
-            throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_CREATE));
-        parameters.add(new Parameter("api_key", apiKey));
+    public Photoset create(String title, String description, String primaryPhotoId) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_CREATE));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("title", title));
-        parameters.add(new Parameter("description", description));
-        parameters.add(new Parameter("primary_photo_id", primaryPhotoId));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("title", title));
+	parameters.add(new Parameter("description", description));
+	parameters.add(new Parameter("primary_photo_id", primaryPhotoId));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Element photosetElement = (Element) response.getPayload();
-        Photoset photoset = new Photoset();
-        photoset.setId(photosetElement.getAttribute("id"));
-        photoset.setUrl(photosetElement.getAttribute("url"));
-        return photoset;
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Element photosetElement = (Element) response.getPayload();
+	Photoset photoset = new Photoset();
+	photoset.setId(photosetElement.getAttribute("id"));
+	photoset.setUrl(photosetElement.getAttribute("url"));
+	return photoset;
     }
 
     /**
@@ -137,23 +128,20 @@ public class PhotosetsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void delete(String photosetId) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_DELETE));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void delete(String photosetId) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_DELETE));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photoset_id", photosetId));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("photoset_id", photosetId));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
     /**
@@ -166,28 +154,25 @@ public class PhotosetsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void editMeta(String photosetId, String title, String description)
-            throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_EDIT_META));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void editMeta(String photosetId, String title, String description) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_EDIT_META));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photoset_id", photosetId));
-        parameters.add(new Parameter("title", title));
-        if (description != null) {
-            parameters.add(new Parameter("description", description));
-        }
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("photoset_id", photosetId));
+	parameters.add(new Parameter("title", title));
+	if(description != null)
+	{
+	    parameters.add(new Parameter("description", description));
+	}
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
     /**
@@ -200,26 +185,22 @@ public class PhotosetsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void editPhotos(String photosetId, String primaryPhotoId, String[] photoIds)
-            throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_EDIT_PHOTOS));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void editPhotos(String photosetId, String primaryPhotoId, String[] photoIds) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_EDIT_PHOTOS));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photoset_id", photosetId));
-        parameters.add(new Parameter("primary_photo_id", primaryPhotoId));
-        parameters.add(new Parameter("photo_ids", StringUtilities.join(photoIds, ",")));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("photoset_id", photosetId));
+	parameters.add(new Parameter("primary_photo_id", primaryPhotoId));
+	parameters.add(new Parameter("photo_ids", StringUtilities.join(photoIds, ",")));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
     /**
@@ -234,49 +215,54 @@ public class PhotosetsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public PhotoContext getContext(String photoId, String photosetId)
-            throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_CONTEXT));
-        parameters.add(new Parameter("api_key", apiKey));
+    public PhotoContext getContext(String photoId, String photosetId) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_CONTEXT));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photo_id", photoId));
-        parameters.add(new Parameter("photoset_id", photosetId));
+	parameters.add(new Parameter("photo_id", photoId));
+	parameters.add(new Parameter("photoset_id", photosetId));
 
-        if (AuthUtilities.isAuthenticated(parameters)) {
-            parameters.add(
-                new Parameter(
-                    "api_sig",
-                    AuthUtilities.getSignature(sharedSecret, parameters)
-                )
-            );
-        }
+	if(AuthUtilities.isAuthenticated(parameters))
+	{
+	    parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
+	}
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Collection payload = response.getPayloadCollection();
-        Iterator iter = payload.iterator();
-        PhotoContext photoContext = new PhotoContext();
-        while (iter.hasNext()) {
-            Element element = (Element) iter.next();
-            String elementName = element.getTagName();
-            if (elementName.equals("prevphoto")) {
-                Photo photo = new Photo();
-                photo.setId(element.getAttribute("id"));
-                photoContext.setPreviousPhoto(photo);
-            } else if (elementName.equals("nextphoto")) {
-                Photo photo = new Photo();
-                photo.setId(element.getAttribute("id"));
-                photoContext.setNextPhoto(photo);
-            } else if (elementName.equals("count")) {
-            	// TODO: process this information
-            } else {
-                System.err.println("unsupported element name: " + elementName);
-            }
-        }
-        return photoContext;
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Collection payload = response.getPayloadCollection();
+	Iterator iter = payload.iterator();
+	PhotoContext photoContext = new PhotoContext();
+	while(iter.hasNext())
+	{
+	    Element element = (Element) iter.next();
+	    String elementName = element.getTagName();
+	    if(elementName.equals("prevphoto"))
+	    {
+		Photo photo = new Photo();
+		photo.setId(element.getAttribute("id"));
+		photoContext.setPreviousPhoto(photo);
+	    }
+	    else if(elementName.equals("nextphoto"))
+	    {
+		Photo photo = new Photo();
+		photo.setId(element.getAttribute("id"));
+		photoContext.setNextPhoto(photo);
+	    }
+	    else if(elementName.equals("count"))
+	    {
+		// TODO: process this information
+	    }
+	    else
+	    {
+		System.err.println("unsupported element name: " + elementName);
+	    }
+	}
+	return photoContext;
     }
 
     /**
@@ -290,53 +276,51 @@ public class PhotosetsInterface {
      * @throws IOException
      * @throws SAXException
      */
-    public Photoset getInfo(String photosetId) throws FlickrException, IOException, SAXException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_INFO));
-        parameters.add(new Parameter("api_key", apiKey));
+    public Photoset getInfo(String photosetId) throws FlickrException, IOException, SAXException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_INFO));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photoset_id", photosetId));
+	parameters.add(new Parameter("photoset_id", photosetId));
 
-        if (AuthUtilities.isAuthenticated(parameters)) {
-            parameters.add(
-                new Parameter(
-                    "api_sig",
-                    AuthUtilities.getSignature(sharedSecret, parameters)
-                )
-            );
-        }
+	if(AuthUtilities.isAuthenticated(parameters))
+	{
+	    parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
+	}
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Element photosetElement = (Element)response.getPayload();
-        Photoset photoset = new Photoset();
-        photoset.setId(photosetElement.getAttribute("id"));
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Element photosetElement = (Element) response.getPayload();
+	Photoset photoset = new Photoset();
+	photoset.setId(photosetElement.getAttribute("id"));
 
-        User owner = new User();
-        owner.setId(photosetElement.getAttribute("owner"));
-        photoset.setOwner(owner);
+	User owner = new User();
+	owner.setId(photosetElement.getAttribute("owner"));
+	photoset.setOwner(owner);
 
-        Photo primaryPhoto = new Photo();
-        primaryPhoto.setId(photosetElement.getAttribute("primary"));
-        primaryPhoto.setSecret(photosetElement.getAttribute("secret")); // TODO verify that this is the secret for the photo
-        primaryPhoto.setServer(photosetElement.getAttribute("server")); // TODO verify that this is the server for the photo
-        primaryPhoto.setFarm(photosetElement.getAttribute("farm"));
-        photoset.setPrimaryPhoto(primaryPhoto);
+	Photo primaryPhoto = new Photo();
+	primaryPhoto.setId(photosetElement.getAttribute("primary"));
+	primaryPhoto.setSecret(photosetElement.getAttribute("secret")); // TODO verify that this is the secret for the photo
+	primaryPhoto.setServer(photosetElement.getAttribute("server")); // TODO verify that this is the server for the photo
+	primaryPhoto.setFarm(photosetElement.getAttribute("farm"));
+	photoset.setPrimaryPhoto(primaryPhoto);
 
-        // TODO remove secret/server/farm from photoset?
-        // It's rather related to the primaryPhoto, then to the photoset itself.
-        photoset.setSecret(photosetElement.getAttribute("secret"));
-        photoset.setServer(photosetElement.getAttribute("server"));
-        photoset.setFarm(photosetElement.getAttribute("farm"));
-        photoset.setPhotoCount(photosetElement.getAttribute("photos"));
+	// TODO remove secret/server/farm from photoset?
+	// It's rather related to the primaryPhoto, then to the photoset itself.
+	photoset.setSecret(photosetElement.getAttribute("secret"));
+	photoset.setServer(photosetElement.getAttribute("server"));
+	photoset.setFarm(photosetElement.getAttribute("farm"));
+	photoset.setPhotoCount(photosetElement.getAttribute("photos"));
 
-        photoset.setTitle(XMLUtilities.getChildValue(photosetElement, "title"));
-        photoset.setDescription(XMLUtilities.getChildValue(photosetElement, "description"));
-        photoset.setPrimaryPhoto(primaryPhoto);
+	photoset.setTitle(XMLUtilities.getChildValue(photosetElement, "title"));
+	photoset.setDescription(XMLUtilities.getChildValue(photosetElement, "description"));
+	photoset.setPrimaryPhoto(primaryPhoto);
 
-        return photoset;
+	return photoset;
     }
 
     /**
@@ -352,60 +336,60 @@ public class PhotosetsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public Photosets getList(String userId) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_LIST));
-        parameters.add(new Parameter("api_key", apiKey));
+    public Photosets getList(String userId) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_LIST));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        if (userId != null) {
-            parameters.add(new Parameter("user_id", userId));
-        }
-        if (AuthUtilities.isAuthenticated(parameters)) {
-            parameters.add(
-                new Parameter(
-                    "api_sig",
-                    AuthUtilities.getSignature(sharedSecret, parameters)
-                )
-            );
-        }
+	if(userId != null)
+	{
+	    parameters.add(new Parameter("user_id", userId));
+	}
+	if(AuthUtilities.isAuthenticated(parameters))
+	{
+	    parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
+	}
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Photosets photosetsObject = new Photosets();
-        Element photosetsElement = response.getPayload();
-        List photosets = new ArrayList();
-        NodeList photosetElements = photosetsElement.getElementsByTagName("photoset");
-        for (int i = 0; i < photosetElements.getLength(); i++) {
-            Element photosetElement = (Element) photosetElements.item(i);
-            Photoset photoset = new Photoset();
-            photoset.setId(photosetElement.getAttribute("id"));
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Photosets photosetsObject = new Photosets();
+	Element photosetsElement = response.getPayload();
+	List photosets = new ArrayList();
+	NodeList photosetElements = photosetsElement.getElementsByTagName("photoset");
+	for(int i = 0; i < photosetElements.getLength(); i++)
+	{
+	    Element photosetElement = (Element) photosetElements.item(i);
+	    Photoset photoset = new Photoset();
+	    photoset.setId(photosetElement.getAttribute("id"));
 
-            User owner = new User();
-            owner.setId(photosetElement.getAttribute("owner"));
-            photoset.setOwner(owner);
+	    User owner = new User();
+	    owner.setId(photosetElement.getAttribute("owner"));
+	    photoset.setOwner(owner);
 
-            Photo primaryPhoto = new Photo();
-            primaryPhoto.setId(photosetElement.getAttribute("primary"));
-            primaryPhoto.setSecret(photosetElement.getAttribute("secret")); // TODO verify that this is the secret for the photo
-            primaryPhoto.setServer(photosetElement.getAttribute("server")); // TODO verify that this is the server for the photo
-            primaryPhoto.setFarm(photosetElement.getAttribute("farm"));
-            photoset.setPrimaryPhoto(primaryPhoto);
+	    Photo primaryPhoto = new Photo();
+	    primaryPhoto.setId(photosetElement.getAttribute("primary"));
+	    primaryPhoto.setSecret(photosetElement.getAttribute("secret")); // TODO verify that this is the secret for the photo
+	    primaryPhoto.setServer(photosetElement.getAttribute("server")); // TODO verify that this is the server for the photo
+	    primaryPhoto.setFarm(photosetElement.getAttribute("farm"));
+	    photoset.setPrimaryPhoto(primaryPhoto);
 
-            photoset.setSecret(photosetElement.getAttribute("secret"));
-            photoset.setServer(photosetElement.getAttribute("server"));
-            photoset.setFarm(photosetElement.getAttribute("farm"));
-            photoset.setPhotoCount(photosetElement.getAttribute("photos"));
+	    photoset.setSecret(photosetElement.getAttribute("secret"));
+	    photoset.setServer(photosetElement.getAttribute("server"));
+	    photoset.setFarm(photosetElement.getAttribute("farm"));
+	    photoset.setPhotoCount(photosetElement.getAttribute("photos"));
 
-            photoset.setTitle(XMLUtilities.getChildValue(photosetElement, "title"));
-            photoset.setDescription(XMLUtilities.getChildValue(photosetElement, "description"));
+	    photoset.setTitle(XMLUtilities.getChildValue(photosetElement, "title"));
+	    photoset.setDescription(XMLUtilities.getChildValue(photosetElement, "description"));
 
-            photosets.add(photoset);
-        }
+	    photosets.add(photoset);
+	}
 
-        photosetsObject.setPhotosets(photosets);
-        return photosetsObject;
+	photosetsObject.setPhotosets(photosets);
+	return photosetsObject;
     }
 
     /**
@@ -430,58 +414,59 @@ public class PhotosetsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public PhotoList getPhotos(String photosetId, Set extras,
-      int privacy_filter, int perPage, int page)
-      throws IOException, SAXException, FlickrException {
-        PhotoList photos = new PhotoList();
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_PHOTOS));
-        parameters.add(new Parameter("api_key", apiKey));
+    public PhotoList getPhotos(String photosetId, Set extras, int privacy_filter, int perPage, int page) throws IOException, SAXException, FlickrException
+    {
+	PhotoList photos = new PhotoList();
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_PHOTOS));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photoset_id", photosetId));
+	parameters.add(new Parameter("photoset_id", photosetId));
 
-        if (perPage > 0) {
-            parameters.add(new Parameter("per_page", new Integer(perPage)));
-        }
+	if(perPage > 0)
+	{
+	    parameters.add(new Parameter("per_page", new Integer(perPage)));
+	}
 
-        if (page > 0) {
-            parameters.add(new Parameter("page", new Integer(page)));
-        }
+	if(page > 0)
+	{
+	    parameters.add(new Parameter("page", new Integer(page)));
+	}
 
-        if (privacy_filter > 0) {
-            parameters.add(new Parameter("privacy_filter", "" + privacy_filter));
-        }
+	if(privacy_filter > 0)
+	{
+	    parameters.add(new Parameter("privacy_filter", "" + privacy_filter));
+	}
 
-        if (extras != null && !extras.isEmpty()) {
-            parameters.add(new Parameter(Extras.KEY_EXTRAS, StringUtilities.join(extras, ",")));
-        }
-        if (AuthUtilities.isAuthenticated(parameters)) {
-            parameters.add(
-                new Parameter(
-                    "api_sig",
-                    AuthUtilities.getSignature(sharedSecret, parameters)
-                )
-            );
-        }
+	if(extras != null && !extras.isEmpty())
+	{
+	    parameters.add(new Parameter(Extras.KEY_EXTRAS, StringUtilities.join(extras, ",")));
+	}
+	if(AuthUtilities.isAuthenticated(parameters))
+	{
+	    parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
+	}
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        Element photoset = response.getPayload();
-        NodeList photoElements = photoset.getElementsByTagName("photo");
-        photos.setPage(photoset.getAttribute("page"));
-        photos.setPages(photoset.getAttribute("pages"));
-        photos.setPerPage(photoset.getAttribute("per_page"));
-        photos.setTotal(photoset.getAttribute("total"));
+	Element photoset = response.getPayload();
+	NodeList photoElements = photoset.getElementsByTagName("photo");
+	photos.setPage(photoset.getAttribute("page"));
+	photos.setPages(photoset.getAttribute("pages"));
+	photos.setPerPage(photoset.getAttribute("per_page"));
+	photos.setTotal(photoset.getAttribute("total"));
 
-        for (int i = 0; i < photoElements.getLength(); i++) {
-            Element photoElement = (Element) photoElements.item(i);
-            photos.add(PhotoUtils.createPhoto(photoElement, photoset));
-        }
+	for(int i = 0; i < photoElements.getLength(); i++)
+	{
+	    Element photoElement = (Element) photoElements.item(i);
+	    photos.add(PhotoUtils.createPhoto(photoElement, photoset));
+	}
 
-        return photos;
+	return photos;
     }
 
     /**
@@ -506,9 +491,9 @@ public class PhotosetsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public PhotoList getPhotos(String photosetId, int perPage, int page) 
-      throws IOException, SAXException, FlickrException {
-        return getPhotos(photosetId, Extras.MIN_EXTRAS, Flickr.PRIVACY_LEVEL_NO_FILTER, perPage, page);
+    public PhotoList getPhotos(String photosetId, int perPage, int page) throws IOException, SAXException, FlickrException
+    {
+	return getPhotos(photosetId, Extras.MIN_EXTRAS, Flickr.PRIVACY_LEVEL_NO_FILTER, perPage, page);
     }
 
     /**
@@ -521,24 +506,21 @@ public class PhotosetsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void orderSets(String[] photosetIds) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_ORDER_SETS));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void orderSets(String[] photosetIds) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_ORDER_SETS));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photoset_ids", StringUtilities.join(photosetIds, ",")));
+	parameters.add(new Parameter("photoset_ids", StringUtilities.join(photosetIds, ",")));
 
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
     /**
@@ -550,24 +532,21 @@ public class PhotosetsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void removePhoto(String photosetId, String photoId) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_REMOVE_PHOTO));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void removePhoto(String photosetId, String photoId) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_REMOVE_PHOTO));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photoset_id", photosetId));
-        parameters.add(new Parameter("photo_id", photoId));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("photoset_id", photosetId));
+	parameters.add(new Parameter("photo_id", photoId));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
 }

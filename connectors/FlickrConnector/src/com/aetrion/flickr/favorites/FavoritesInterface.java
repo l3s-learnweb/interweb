@@ -28,7 +28,8 @@ import com.aetrion.flickr.util.StringUtilities;
  * @author Anthony Eden
  * @version $Id: FavoritesInterface.java,v 1.17 2009/07/11 20:30:27 x-mago Exp $
  */
-public class FavoritesInterface {
+public class FavoritesInterface
+{
 
     public static final String METHOD_ADD = "flickr.favorites.add";
     public static final String METHOD_GET_LIST = "flickr.favorites.getList";
@@ -39,10 +40,11 @@ public class FavoritesInterface {
     private String sharedSecret;
     private Transport transportAPI;
 
-    public FavoritesInterface(String apiKey, String sharedSecret, Transport transportAPI) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transportAPI = transportAPI;
+    public FavoritesInterface(String apiKey, String sharedSecret, Transport transportAPI)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transportAPI = transportAPI;
     }
 
     /**
@@ -53,80 +55,78 @@ public class FavoritesInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void add(String photoId) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_ADD));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void add(String photoId) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_ADD));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photo_id", photoId));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("photo_id", photoId));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
     /**
      * Get the collection of favorites for the calling user or the specified user ID.
      *
-     * @param userId The optional user ID.  Null value will be ignored.
-     * @param perPage The optional per page value.  Values <= 0 will be ignored.
-     * @param page The page to view.  Values <= 0 will be ignored.
+     * @param userId The optional user ID. Null value will be ignored.
+     * @param perPage The optional per page value. Values <= 0 will be ignored.
+     * @param page The page to view. Values <= 0 will be ignored.
      * @param extras a Set Strings representing extra parameters to send
      * @return The Collection of Photo objects
      * @see com.aetrion.flickr.photos.Extras
      * @throws IOException
      * @throws SAXException
      */
-    public PhotoList getList(String userId, int perPage, int page, Set extras) throws IOException,
-            SAXException, FlickrException {
-        PhotoList photos = new PhotoList();
+    public PhotoList getList(String userId, int perPage, int page, Set extras) throws IOException, SAXException, FlickrException
+    {
+	PhotoList photos = new PhotoList();
 
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_LIST));
-        parameters.add(new Parameter("api_key", apiKey));
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_LIST));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        if (userId != null) {
-            parameters.add(new Parameter("user_id", userId));
-        }
-        if (extras != null) {
-            parameters.add(new Parameter("extras", StringUtilities.join(extras, ",")));
-        }
-        if (perPage > 0) {
-            parameters.add(new Parameter("per_page", new Integer(perPage)));
-        }
-        if (page > 0) {
-            parameters.add(new Parameter("page", new Integer(page)));
-        }
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	if(userId != null)
+	{
+	    parameters.add(new Parameter("user_id", userId));
+	}
+	if(extras != null)
+	{
+	    parameters.add(new Parameter("extras", StringUtilities.join(extras, ",")));
+	}
+	if(perPage > 0)
+	{
+	    parameters.add(new Parameter("per_page", new Integer(perPage)));
+	}
+	if(page > 0)
+	{
+	    parameters.add(new Parameter("page", new Integer(page)));
+	}
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        Element photosElement = response.getPayload();
-        photos.setPage(photosElement.getAttribute("page"));
-		photos.setPages(photosElement.getAttribute("pages"));
-		photos.setPerPage(photosElement.getAttribute("perpage"));
-		photos.setTotal(photosElement.getAttribute("total"));
-        NodeList photoNodes = photosElement.getElementsByTagName("photo");
-        for (int i = 0; i < photoNodes.getLength(); i++) {
-            Element photoElement = (Element) photoNodes.item(i);
-            photos.add(PhotoUtils.createPhoto(photoElement));
-        }
-        return photos;
+	Element photosElement = response.getPayload();
+	photos.setPage(photosElement.getAttribute("page"));
+	photos.setPages(photosElement.getAttribute("pages"));
+	photos.setPerPage(photosElement.getAttribute("perpage"));
+	photos.setTotal(photosElement.getAttribute("total"));
+	NodeList photoNodes = photosElement.getElementsByTagName("photo");
+	for(int i = 0; i < photoNodes.getLength(); i++)
+	{
+	    Element photoElement = (Element) photoNodes.item(i);
+	    photos.add(PhotoUtils.createPhoto(photoElement));
+	}
+	return photos;
     }
 
     /**
@@ -135,8 +135,8 @@ public class FavoritesInterface {
      * This method does not require authentication.
      *
      * @param userId The user ID
-     * @param perPage The optional per page value.  Values <= 0 will be ignored.
-     * @param page The optional page to view.  Values <= 0 will be ignored
+     * @param perPage The optional per page value. Values <= 0 will be ignored.
+     * @param page The optional page to view. Values <= 0 will be ignored
      * @param extras A Set of extra parameters to send
      * @return A Collection of Photo objects
      * @throws IOException
@@ -144,42 +144,47 @@ public class FavoritesInterface {
      * @throws FlickrException
      * @see com.aetrion.flickr.photos.Extras
      */
-    public PhotoList getPublicList(String userId, int perPage, int page, Set extras)
-            throws IOException, SAXException, FlickrException {
-        PhotoList photos = new PhotoList();
+    public PhotoList getPublicList(String userId, int perPage, int page, Set extras) throws IOException, SAXException, FlickrException
+    {
+	PhotoList photos = new PhotoList();
 
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_PUBLIC_LIST));
-        parameters.add(new Parameter("api_key", apiKey));
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_PUBLIC_LIST));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("user_id", userId));
+	parameters.add(new Parameter("user_id", userId));
 
-        if (extras != null) {
-            parameters.add(new Parameter("extras", StringUtilities.join(extras, ",")));
-        }
-        if (perPage > 0) {
-            parameters.add(new Parameter("per_page", new Integer(perPage)));
-        }
-        if (page > 0) {
-            parameters.add(new Parameter("page", new Integer(page)));
-        }
+	if(extras != null)
+	{
+	    parameters.add(new Parameter("extras", StringUtilities.join(extras, ",")));
+	}
+	if(perPage > 0)
+	{
+	    parameters.add(new Parameter("per_page", new Integer(perPage)));
+	}
+	if(page > 0)
+	{
+	    parameters.add(new Parameter("page", new Integer(page)));
+	}
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        Element photosElement = response.getPayload();
-        photos.setPage(photosElement.getAttribute("page"));
-		photos.setPages(photosElement.getAttribute("pages"));
-		photos.setPerPage(photosElement.getAttribute("perpage"));
-		photos.setTotal(photosElement.getAttribute("total"));
-        NodeList photoNodes = photosElement.getElementsByTagName("photo");
-        for (int i = 0; i < photoNodes.getLength(); i++) {
-            Element photoElement = (Element) photoNodes.item(i);
-            photos.add(PhotoUtils.createPhoto(photoElement));
-        }
-        return photos;
+	Element photosElement = response.getPayload();
+	photos.setPage(photosElement.getAttribute("page"));
+	photos.setPages(photosElement.getAttribute("pages"));
+	photos.setPerPage(photosElement.getAttribute("perpage"));
+	photos.setTotal(photosElement.getAttribute("total"));
+	NodeList photoNodes = photosElement.getElementsByTagName("photo");
+	for(int i = 0; i < photoNodes.getLength(); i++)
+	{
+	    Element photoElement = (Element) photoNodes.item(i);
+	    photos.add(PhotoUtils.createPhoto(photoElement));
+	}
+	return photos;
     }
 
     /**
@@ -187,23 +192,20 @@ public class FavoritesInterface {
      *
      * @param photoId The photo id
      */
-    public void remove(String photoId) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_REMOVE));
-        parameters.add(new Parameter("api_key", apiKey));
+    public void remove(String photoId) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_REMOVE));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("photo_id", photoId));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	parameters.add(new Parameter("photo_id", photoId));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
     }
 
 }

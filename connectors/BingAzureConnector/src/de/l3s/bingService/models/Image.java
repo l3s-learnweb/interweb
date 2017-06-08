@@ -1,25 +1,30 @@
 package de.l3s.bingService.models;
 
-public class Image  {
+public class Image
+{
 
-	private String contentSize;
-	
-	private Media media;
+    private String contentSize;
 
-	public String getContentSize() {
-		return contentSize;
-	}
+    private Media media;
 
-	public void setContentSize(String contentSize) {
-		this.contentSize = contentSize;
-	}
+    public String getContentSize()
+    {
+	return contentSize;
+    }
 
-	public Media getMedia() {
-		return media;
-	}
+    public void setContentSize(String contentSize)
+    {
+	this.contentSize = contentSize;
+    }
 
-	public void setMedia(Media media) {
-		this.media = media;
-	}
+    public Media getMedia()
+    {
+	return media;
+    }
+
+    public void setMedia(Media media)
+    {
+	this.media = media;
+    }
 
 }

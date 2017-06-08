@@ -1,6 +1,5 @@
 package de.l3s.interwebj.bean;
 
-
 import java.util.ArrayList;
 
 import javax.faces.application.FacesMessage;
@@ -21,121 +20,93 @@ import de.l3s.interwebj.socialsearch.SocialSearchResultCollector;
 import de.l3s.interwebj.socialsearch.SocialSearchResultItem;
 import de.l3s.interwebj.webutil.FacesUtils;
 
-
 @ManagedBean
 @ViewScoped
 public class CopyOfSocialNetworkBean
-    
+
 {
-	
-	
-	
-	@NotNull
-	private String userid;
-	
-	SocialSearchResult result;
-	String query;
-	
-	public String getQuery() {
-		return query;
-	}
 
+    @NotNull
+    private String userid;
 
+    SocialSearchResult result;
+    String query;
 
+    public String getQuery()
+    {
+	return query;
+    }
 
+    public void setQuery(String query)
+    {
+	this.query = query;
+    }
 
-	public void setQuery(String query) {
-		this.query = query;
-	}
+    public SocialSearchResult getResult()
+    {
+	return result;
+    }
 
+    public void setResult(SocialSearchResult result)
+    {
+	this.result = result;
+    }
 
+    public String getUserid()
+    {
+	return userid;
+    }
 
+    public void setUserid(String userid)
+    {
+	this.userid = userid;
+    }
 
+    public CopyOfSocialNetworkBean()
+    {
+	init();
+    }
 
-	public SocialSearchResult getResult() {
-		return result;
-	}
+    public void init()
+    {
+	Engine engine = Environment.getInstance().getEngine();
 
+    }
 
+    public void save()
+    {
+    }
 
+    public String search()
+    {
 
+	Engine engine = Environment.getInstance().getEngine();
+	InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 
-	public void setResult(SocialSearchResult result) {
-		this.result = result;
-	}
-
-
-
-
-
-	public String getUserid() {
-		return userid;
-	}
-
-
-
-
-
-	public void setUserid(String userid) {
-		this.userid = userid;
-	}
-
-
-
-
-
-	public CopyOfSocialNetworkBean()
+	try
 	{
-		init();
+	    SocialSearchResultCollector collector = engine.getSocialSearchResultsOf(query, principal);
+	    result = collector.retrieve();
 	}
-	
-
-	
-	
-
-	public void init()
+	catch(InterWebException e)
 	{
-		Engine engine = Environment.getInstance().getEngine();
-		
+	    e.printStackTrace();
+	    Environment.logger.severe(e.getMessage());
+	    FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 	}
-	
+	ArrayList<SocialSearchResultItem> resitems = new ArrayList<SocialSearchResultItem>(result.getResultItems());
 
-	public void save()
+	for(SocialSearchResultItem item : resitems)
 	{
+	    System.out.println(item.getUserid());
+	    System.out.println(item.getReason());
+	    System.out.println(item.getStory());
+	    for(String s : item.getEmbedhtmlofphotos())
+	    {
+		System.out.println(s);
+	    }
 	}
-	
-
-	public String search()
-	{
-		
-		Engine engine = Environment.getInstance().getEngine();
-		InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
-		
-		try
-		{
-			SocialSearchResultCollector collector = engine.getSocialSearchResultsOf(query, principal);
-			result = collector.retrieve();
-		}
-		catch (InterWebException e)
-		{
-			e.printStackTrace();
-			Environment.logger.severe(e.getMessage());
-			FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
-		}
-		ArrayList<SocialSearchResultItem> resitems=new ArrayList<SocialSearchResultItem>(result.getResultItems());
-		
-		for(SocialSearchResultItem item: resitems)
-		{
-			System.out.println(item.getUserid());
-			System.out.println(item.getReason());
-			System.out.println(item.getStory());
-			for(String s: item.getEmbedhtmlofphotos())
-			{
-				System.out.println(s);
-			}
-		}
-		return "success";
-	}
-	
+	return "success";
+    }
 
 }

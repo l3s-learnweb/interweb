@@ -35,7 +35,8 @@ import com.aetrion.flickr.util.UrlUtilities;
  * @author Anthony Eden
  * @version $Id: REST.java,v 1.26 2009/07/01 22:07:08 x-mago Exp $
  */
-public class REST extends Transport {
+public class REST extends Transport
+{
 
     private static final String UTF8 = "UTF-8";
     public static final String PATH = "/services/rest/";
@@ -50,13 +51,14 @@ public class REST extends Transport {
      *
      * @throws ParserConfigurationException
      */
-    public REST() throws ParserConfigurationException {
-        setTransportType(REST);
-        setHost(Flickr.DEFAULT_HOST);
-        setPath(PATH);
-        setResponseClass(RESTResponse.class);
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-        builder = builderFactory.newDocumentBuilder();
+    public REST() throws ParserConfigurationException
+    {
+	setTransportType(REST);
+	setHost(Flickr.DEFAULT_HOST);
+	setPath(PATH);
+	setResponseClass(RESTResponse.class);
+	DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+	builder = builderFactory.newDocumentBuilder();
     }
 
     /**
@@ -65,9 +67,10 @@ public class REST extends Transport {
      * @param host The host endpoint
      * @throws ParserConfigurationException
      */
-    public REST(String host) throws ParserConfigurationException {
-        this();
-        setHost(host);
+    public REST(String host) throws ParserConfigurationException
+    {
+	this();
+	setHost(host);
     }
 
     /**
@@ -77,10 +80,11 @@ public class REST extends Transport {
      * @param port The port
      * @throws ParserConfigurationException
      */
-    public REST(String host, int port) throws ParserConfigurationException {
-        this();
-        setHost(host);
-        setPort(port);
+    public REST(String host, int port) throws ParserConfigurationException
+    {
+	this();
+	setHost(host);
+	setPort(port);
     }
 
     /**
@@ -89,10 +93,11 @@ public class REST extends Transport {
      * @param proxyHost
      * @param proxyPort
      */
-    public void setProxy(String proxyHost, int proxyPort) {
-        System.setProperty("http.proxySet", "true");
-        System.setProperty("http.proxyHost", proxyHost);
-        System.setProperty("http.proxyPort", "" + proxyPort);
+    public void setProxy(String proxyHost, int proxyPort)
+    {
+	System.setProperty("http.proxySet", "true");
+	System.setProperty("http.proxyHost", proxyHost);
+	System.setProperty("http.proxyPort", "" + proxyPort);
     }
 
     /**
@@ -103,18 +108,16 @@ public class REST extends Transport {
      * @param username
      * @param password
      */
-    public void setProxy(
-        String proxyHost, int proxyPort,
-        String username, String password
-    ) {
-        setProxy (proxyHost, proxyPort);
-        proxyAuth = true;
-        proxyUser = username;
-        proxyPassword = password;
+    public void setProxy(String proxyHost, int proxyPort, String username, String password)
+    {
+	setProxy(proxyHost, proxyPort);
+	proxyAuth = true;
+	proxyUser = username;
+	proxyPassword = password;
     }
 
     /**
-     * Invoke an HTTP GET request on a remote host.  You must close the InputStream after you are done with.
+     * Invoke an HTTP GET request on a remote host. You must close the InputStream after you are done with.
      *
      * @param path The request path
      * @param parameters The parameters (collection of Parameter objects)
@@ -122,41 +125,52 @@ public class REST extends Transport {
      * @throws IOException
      * @throws SAXException
      */
-    public Response get(String path, List parameters) throws IOException, SAXException {
-        URL url = UrlUtilities.buildUrl(getHost(), getPort(), path, parameters);
-        if (Flickr.debugRequest) System.out.println("GET: " + url);
-        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        if (proxyAuth) {
-            conn.setRequestProperty(
-                "Proxy-Authorization",
-                "Basic " + getProxyCredentials()
-            );
-        }
-        conn.connect();
+    public Response get(String path, List parameters) throws IOException, SAXException
+    {
+	URL url = UrlUtilities.buildUrl(getHost(), getPort(), path, parameters);
+	if(Flickr.debugRequest)
+	    System.out.println("GET: " + url);
+	HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+	conn.setRequestMethod("GET");
+	if(proxyAuth)
+	{
+	    conn.setRequestProperty("Proxy-Authorization", "Basic " + getProxyCredentials());
+	}
+	conn.connect();
 
-        InputStream in = null;
-        try {
-            if (Flickr.debugStream) {
-                in = new DebugInputStream(conn.getInputStream(), System.out);
-            } else {
-                in = conn.getInputStream();
-            }
+	InputStream in = null;
+	try
+	{
+	    if(Flickr.debugStream)
+	    {
+		in = new DebugInputStream(conn.getInputStream(), System.out);
+	    }
+	    else
+	    {
+		in = conn.getInputStream();
+	    }
 
-            Response response = null;
-            synchronized (mutex) {
-                Document document = builder.parse(in);
-                response = (Response) responseClass.newInstance();
-                response.parse(document);
-            }
-            return response;
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e); // TODO: Replace with a better exception
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e); // TODO: Replace with a better exception
-        } finally {
-            IOUtilities.close(in);
-        }
+	    Response response = null;
+	    synchronized(mutex)
+	    {
+		Document document = builder.parse(in);
+		response = (Response) responseClass.newInstance();
+		response.parse(document);
+	    }
+	    return response;
+	}
+	catch(IllegalAccessException e)
+	{
+	    throw new RuntimeException(e); // TODO: Replace with a better exception
+	}
+	catch(InstantiationException e)
+	{
+	    throw new RuntimeException(e); // TODO: Replace with a better exception
+	}
+	finally
+	{
+	    IOUtilities.close(in);
+	}
     }
 
     /**
@@ -169,152 +183,180 @@ public class REST extends Transport {
      * @throws IOException
      * @throws SAXException
      */
-    public Response post(String path, List parameters, boolean multipart) throws IOException, SAXException {
-        // see: AuthUtilities.getSignature()
-        //AuthUtilities.addAuthToken(parameters);
+    public Response post(String path, List parameters, boolean multipart) throws IOException, SAXException
+    {
+	// see: AuthUtilities.getSignature()
+	//AuthUtilities.addAuthToken(parameters);
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        URL url = UrlUtilities.buildPostUrl(getHost(), getPort(), path);
+	RequestContext requestContext = RequestContext.getRequestContext();
+	URL url = UrlUtilities.buildPostUrl(getHost(), getPort(), path);
 
-        HttpURLConnection conn = null;
-        try {
-            String boundary = "---------------------------7d273f7a0d3";
+	HttpURLConnection conn = null;
+	try
+	{
+	    String boundary = "---------------------------7d273f7a0d3";
 
-            conn = (HttpURLConnection) url.openConnection();
+	    conn = (HttpURLConnection) url.openConnection();
 
-            if (proxyAuth) {
-                conn.setRequestProperty(
-                    "Proxy-Authorization",
-                    "Basic " + getProxyCredentials()
-                );
-            }
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            if (multipart) {
-                conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-            }
-            conn.connect();
+	    if(proxyAuth)
+	    {
+		conn.setRequestProperty("Proxy-Authorization", "Basic " + getProxyCredentials());
+	    }
+	    conn.setDoOutput(true);
+	    conn.setRequestMethod("POST");
+	    if(multipart)
+	    {
+		conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+	    }
+	    conn.connect();
 
-            DataOutputStream out = null;
-            try {
-                if (Flickr.debugRequest) {
-                    out = new DataOutputStream(
-                        new DebugOutputStream(
-                            conn.getOutputStream(),
-                            System.out
-                        )
-                    );
-                } else {
-                    out = new DataOutputStream(conn.getOutputStream());
-                }
+	    DataOutputStream out = null;
+	    try
+	    {
+		if(Flickr.debugRequest)
+		{
+		    out = new DataOutputStream(new DebugOutputStream(conn.getOutputStream(), System.out));
+		}
+		else
+		{
+		    out = new DataOutputStream(conn.getOutputStream());
+		}
 
-                // construct the body
-                if (multipart) {
-                    out.writeBytes("--" + boundary + "\r\n");
-                    Iterator iter = parameters.iterator();
-                    while (iter.hasNext()) {
-                        Parameter p = (Parameter) iter.next();
-                        
-                        writeParam(p.getName(), p.getValue(), out, boundary);
-                    }
-/*                    Auth auth = requestContext.getAuth();
-                    if (auth != null) {
-                        writeParam(
-                            "api_sig",
-                            AuthUtilities.getMultipartSignature(sharedSecret, parameters),
-                            out,
-                            boundary
-                        );
-                    } */
-                } else {
-                    Iterator iter = parameters.iterator();
-                    while (iter.hasNext()) {
-                        Parameter p = (Parameter) iter.next();
-                        out.writeBytes(p.getName());
-                        out.writeBytes("=");
-                        try {
-                            out.writeBytes(
-                                URLEncoder.encode(
-                                    String.valueOf(p.getValue()),
-                                    UTF8
-                                )
-                            );
-                        } catch (UnsupportedEncodingException e) {
-                            // Should never happen, but just in case
-                        }
-                        if (iter.hasNext()) {
-                            out.writeBytes("&");
-                        }
-                    }
+		// construct the body
+		if(multipart)
+		{
+		    out.writeBytes("--" + boundary + "\r\n");
+		    Iterator iter = parameters.iterator();
+		    while(iter.hasNext())
+		    {
+			Parameter p = (Parameter) iter.next();
 
-                    Auth auth = requestContext.getAuth();
-                    if (auth != null) {
-                        // will be added at AuthUtilities.addAuthToken()
-                        //out.writeBytes("&auth_token=");
-                        //out.writeBytes(auth.getToken());
-                        //out.writeBytes("&api_sig=");
-                        //out.writeBytes(AuthUtilities.getSignature(parameters));
-                    }
-                }
-                out.flush();
-            } finally {
-                IOUtilities.close(out);
-            }
+			writeParam(p.getName(), p.getValue(), out, boundary);
+		    }
+		    /*                    Auth auth = requestContext.getAuth();
+		    if (auth != null) {
+		        writeParam(
+		            "api_sig",
+		            AuthUtilities.getMultipartSignature(sharedSecret, parameters),
+		            out,
+		            boundary
+		        );
+		    } */
+		}
+		else
+		{
+		    Iterator iter = parameters.iterator();
+		    while(iter.hasNext())
+		    {
+			Parameter p = (Parameter) iter.next();
+			out.writeBytes(p.getName());
+			out.writeBytes("=");
+			try
+			{
+			    out.writeBytes(URLEncoder.encode(String.valueOf(p.getValue()), UTF8));
+			}
+			catch(UnsupportedEncodingException e)
+			{
+			    // Should never happen, but just in case
+			}
+			if(iter.hasNext())
+			{
+			    out.writeBytes("&");
+			}
+		    }
 
-            InputStream in = null;
-            try {
-                if (Flickr.debugStream) {
-                    in = new DebugInputStream(conn.getInputStream(), System.out);
-                } else {
-                    in = conn.getInputStream();
-                }
-                Response response = null;
-                synchronized (mutex) {
-                    Document document = builder.parse(in);
-                    response = (Response) responseClass.newInstance();
-                    response.parse(document);
-                }
-                return response;
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e); // TODO: Replace with a better exception
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e); // TODO: Replace with a better exception
-            } finally {
-                IOUtilities.close(in);
-            }
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
-        }
+		    Auth auth = requestContext.getAuth();
+		    if(auth != null)
+		    {
+			// will be added at AuthUtilities.addAuthToken()
+			//out.writeBytes("&auth_token=");
+			//out.writeBytes(auth.getToken());
+			//out.writeBytes("&api_sig=");
+			//out.writeBytes(AuthUtilities.getSignature(parameters));
+		    }
+		}
+		out.flush();
+	    }
+	    finally
+	    {
+		IOUtilities.close(out);
+	    }
+
+	    InputStream in = null;
+	    try
+	    {
+		if(Flickr.debugStream)
+		{
+		    in = new DebugInputStream(conn.getInputStream(), System.out);
+		}
+		else
+		{
+		    in = conn.getInputStream();
+		}
+		Response response = null;
+		synchronized(mutex)
+		{
+		    Document document = builder.parse(in);
+		    response = (Response) responseClass.newInstance();
+		    response.parse(document);
+		}
+		return response;
+	    }
+	    catch(IllegalAccessException e)
+	    {
+		throw new RuntimeException(e); // TODO: Replace with a better exception
+	    }
+	    catch(InstantiationException e)
+	    {
+		throw new RuntimeException(e); // TODO: Replace with a better exception
+	    }
+	    finally
+	    {
+		IOUtilities.close(in);
+	    }
+	}
+	finally
+	{
+	    if(conn != null)
+	    {
+		conn.disconnect();
+	    }
+	}
     }
 
-    private void writeParam(String name, Object value, DataOutputStream out, String boundary)
-            throws IOException {
-        if (value instanceof InputStream) {
-            out.writeBytes("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"image.jpg\";\r\n");
-            out.writeBytes("Content-Type: image/jpeg" + "\r\n\r\n");
-            InputStream in = (InputStream) value;
-            byte[] buf = new byte[512];
-            int res = -1;
-            while ((res = in.read(buf)) != -1) {
-                out.write(buf);
-            }
-            out.writeBytes("\r\n" + "--" + boundary + "\r\n");
-        } else if (value instanceof byte[]) {
-            out.writeBytes("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"image.jpg\";\r\n");
-            out.writeBytes("Content-Type: image/jpeg" + "\r\n\r\n");
-            out.write((byte[]) value);
-            out.writeBytes("\r\n" + "--" + boundary + "\r\n");
-        } else {
-            out.writeBytes("Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n");
-            out.write(((String) value).getBytes("UTF-8"));
-            out.writeBytes("\r\n" + "--" + boundary + "\r\n");
-        }
+    private void writeParam(String name, Object value, DataOutputStream out, String boundary) throws IOException
+    {
+	if(value instanceof InputStream)
+	{
+	    out.writeBytes("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"image.jpg\";\r\n");
+	    out.writeBytes("Content-Type: image/jpeg" + "\r\n\r\n");
+	    InputStream in = (InputStream) value;
+	    byte[] buf = new byte[512];
+	    int res = -1;
+	    while((res = in.read(buf)) != -1)
+	    {
+		out.write(buf);
+	    }
+	    out.writeBytes("\r\n" + "--" + boundary + "\r\n");
+	}
+	else if(value instanceof byte[])
+	{
+	    out.writeBytes("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"image.jpg\";\r\n");
+	    out.writeBytes("Content-Type: image/jpeg" + "\r\n\r\n");
+	    out.write((byte[]) value);
+	    out.writeBytes("\r\n" + "--" + boundary + "\r\n");
+	}
+	else
+	{
+	    out.writeBytes("Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n");
+	    out.write(((String) value).getBytes("UTF-8"));
+	    out.writeBytes("\r\n" + "--" + boundary + "\r\n");
+	}
     }
 
-    public boolean isProxyAuth() {
-        return proxyAuth;
+    public boolean isProxyAuth()
+    {
+	return proxyAuth;
     }
 
     /**
@@ -323,9 +365,8 @@ public class REST extends Transport {
      *
      * @return credentials
      */
-    public String getProxyCredentials() {
-        return new String(
-            Base64.encode((proxyUser + ":" + proxyPassword).getBytes())
-        );
+    public String getProxyCredentials()
+    {
+	return new String(Base64.encode((proxyUser + ":" + proxyPassword).getBytes()));
     }
 }

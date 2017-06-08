@@ -5,7 +5,6 @@
 // Generated on: 2012.08.10 at 11:20:15 AM CEST 
 //
 
-
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
 import java.math.BigDecimal;
@@ -16,11 +15,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -50,11 +50,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "user"
-})
+@XmlType(name = "", propOrder = { "user" })
 @XmlRootElement(name = "rsp")
-public class LoginResponse {
+public class LoginResponse
+{
 
     @XmlElement(required = true)
     protected LoginResponse.User user;
@@ -67,79 +66,86 @@ public class LoginResponse {
      * Gets the value of the user property.
      * 
      * @return
-     *     possible object is
-     *     {@link LoginResponse.User }
-     *     
+     * 	possible object is
+     *         {@link LoginResponse.User }
+     * 
      */
-    public LoginResponse.User getUser() {
-        return user;
+    public LoginResponse.User getUser()
+    {
+	return user;
     }
 
     /**
      * Sets the value of the user property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link LoginResponse.User }
-     *     
+     *            allowed object is
+     *            {@link LoginResponse.User }
+     * 
      */
-    public void setUser(LoginResponse.User value) {
-        this.user = value;
+    public void setUser(LoginResponse.User value)
+    {
+	this.user = value;
     }
 
     /**
      * Gets the value of the generatedIn property.
      * 
      * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * 	possible object is
+     *         {@link BigDecimal }
+     * 
      */
-    public BigDecimal getGeneratedIn() {
-        return generatedIn;
+    public BigDecimal getGeneratedIn()
+    {
+	return generatedIn;
     }
 
     /**
      * Sets the value of the generatedIn property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     *            allowed object is
+     *            {@link BigDecimal }
+     * 
      */
-    public void setGeneratedIn(BigDecimal value) {
-        this.generatedIn = value;
+    public void setGeneratedIn(BigDecimal value)
+    {
+	this.generatedIn = value;
     }
 
     /**
      * Gets the value of the stat property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getStat() {
-        return stat;
+    public String getStat()
+    {
+	return stat;
     }
 
     /**
      * Sets the value of the stat property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setStat(String value) {
-        this.stat = value;
+    public void setStat(String value)
+    {
+	this.stat = value;
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -157,63 +163,66 @@ public class LoginResponse {
      * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "username"
-    })
-    public static class User {
+    @XmlType(name = "", propOrder = { "username" })
+    public static class User
+    {
 
-        @XmlElement(required = true)
-        protected String username;
-        @XmlAttribute(name = "id")
-        protected Integer id;
+	@XmlElement(required = true)
+	protected String username;
+	@XmlAttribute(name = "id")
+	protected Integer id;
 
-        /**
-         * Gets the value of the username property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getUsername() {
-            return username;
-        }
+	/**
+	 * Gets the value of the username property.
+	 * 
+	 * @return
+	 * 	possible object is
+	 *         {@link String }
+	 * 
+	 */
+	public String getUsername()
+	{
+	    return username;
+	}
 
-        /**
-         * Sets the value of the username property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setUsername(String value) {
-            this.username = value;
-        }
+	/**
+	 * Sets the value of the username property.
+	 * 
+	 * @param value
+	 *            allowed object is
+	 *            {@link String }
+	 * 
+	 */
+	public void setUsername(String value)
+	{
+	    this.username = value;
+	}
 
-        /**
-         * Gets the value of the id property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Integer }
-         *     
-         */
-        public Integer getId() {
-            return id;
-        }
+	/**
+	 * Gets the value of the id property.
+	 * 
+	 * @return
+	 * 	possible object is
+	 *         {@link Integer }
+	 * 
+	 */
+	public Integer getId()
+	{
+	    return id;
+	}
 
-        /**
-         * Sets the value of the id property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Integer }
-         *     
-         */
-        public void setId(Integer value) {
-            this.id = value;
-        }
+	/**
+	 * Sets the value of the id property.
+	 * 
+	 * @param value
+	 *            allowed object is
+	 *            {@link Integer }
+	 * 
+	 */
+	public void setId(Integer value)
+	{
+	    this.id = value;
+	}
 
     }
 

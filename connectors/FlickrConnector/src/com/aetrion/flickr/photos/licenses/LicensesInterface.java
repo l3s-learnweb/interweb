@@ -24,23 +24,21 @@ import org.xml.sax.SAXException;
  *
  * @author Anthony Eden
  */
-public class LicensesInterface {
+public class LicensesInterface
+{
 
-    public static final String METHOD_GET_INFO    = "flickr.photos.licenses.getInfo";
+    public static final String METHOD_GET_INFO = "flickr.photos.licenses.getInfo";
     public static final String METHOD_SET_LICENSE = "flickr.photos.licenses.setLicense";
 
     private String apiKey;
     private String sharedSecret;
     private Transport transportAPI;
 
-    public LicensesInterface(
-        String apiKey,
-        String sharedSecret,
-        Transport transportAPI
-    ) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transportAPI = transportAPI;
+    public LicensesInterface(String apiKey, String sharedSecret, Transport transportAPI)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transportAPI = transportAPI;
     }
 
     /**
@@ -53,27 +51,30 @@ public class LicensesInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public Collection getInfo() throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_INFO));
-        parameters.add(new Parameter("api_key", apiKey));
+    public Collection getInfo() throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_INFO));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        List licenses = new ArrayList();
-        Element licensesElement = response.getPayload();
-        NodeList licenseElements = licensesElement.getElementsByTagName("license");
-        for (int i = 0; i < licenseElements.getLength(); i++) {
-            Element licenseElement = (Element) licenseElements.item(i);
-            License license = new License();
-            license.setId(licenseElement.getAttribute("id"));
-            license.setName(licenseElement.getAttribute("name"));
-            license.setUrl(licenseElement.getAttribute("url"));
-            licenses.add(license);
-        }
-        return licenses;
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	List licenses = new ArrayList();
+	Element licensesElement = response.getPayload();
+	NodeList licenseElements = licensesElement.getElementsByTagName("license");
+	for(int i = 0; i < licenseElements.getLength(); i++)
+	{
+	    Element licenseElement = (Element) licenseElements.item(i);
+	    License license = new License();
+	    license.setId(licenseElement.getAttribute("id"));
+	    license.setName(licenseElement.getAttribute("name"));
+	    license.setUrl(licenseElement.getAttribute("url"));
+	    licenses.add(license);
+	}
+	return licenses;
     }
 
     /**
@@ -87,25 +88,22 @@ public class LicensesInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public void setLicense(String photoId, int licenseId) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_SET_LICENSE));
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.add(new Parameter("photo_id", photoId));
-        parameters.add(new Parameter("license_id", licenseId));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+    public void setLicense(String photoId, int licenseId) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_SET_LICENSE));
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.add(new Parameter("photo_id", photoId));
+	parameters.add(new Parameter("license_id", licenseId));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        // Note: This method requires an HTTP POST request.
-        Response response = transportAPI.post(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        // This method has no specific response - It returns an empty sucess response if it completes without error.
+	// Note: This method requires an HTTP POST request.
+	Response response = transportAPI.post(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	// This method has no specific response - It returns an empty sucess response if it completes without error.
 
     }
 

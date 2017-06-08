@@ -1,60 +1,51 @@
 package de.l3s.interwebj.jaxb.auth;
 
-
 import javax.xml.bind.annotation.*;
 
 import de.l3s.interwebj.*;
-
 
 @XmlRootElement(name = "request_token")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OAuthRequestTokenEntity
 {
-	
-	@XmlElement(name = "oauth_token")
-	protected String oauthToken;
-	@XmlElement(name = "oauth_token_secret")
-	protected String oauthTokenSecret;
-	
 
-	public OAuthRequestTokenEntity()
-	{
-	}
-	
+    @XmlElement(name = "oauth_token")
+    protected String oauthToken;
+    @XmlElement(name = "oauth_token_secret")
+    protected String oauthTokenSecret;
 
-	public OAuthRequestTokenEntity(AuthCredentials authCredentials)
-	{
-		this(authCredentials.getKey(), authCredentials.getSecret());
-	}
-	
+    public OAuthRequestTokenEntity()
+    {
+    }
 
-	public OAuthRequestTokenEntity(String oauthToken, String oauthTokenSecret)
-	{
-		this.oauthToken = oauthToken;
-		this.oauthTokenSecret = oauthTokenSecret;
-	}
-	
+    public OAuthRequestTokenEntity(AuthCredentials authCredentials)
+    {
+	this(authCredentials.getKey(), authCredentials.getSecret());
+    }
 
-	public String getOauthToken()
-	{
-		return oauthToken;
-	}
-	
+    public OAuthRequestTokenEntity(String oauthToken, String oauthTokenSecret)
+    {
+	this.oauthToken = oauthToken;
+	this.oauthTokenSecret = oauthTokenSecret;
+    }
 
-	public String getOauthTokenSecret()
-	{
-		return oauthTokenSecret;
-	}
-	
+    public String getOauthToken()
+    {
+	return oauthToken;
+    }
 
-	public void setOauthToken(String oauthToken)
-	{
-		this.oauthToken = oauthToken;
-	}
-	
+    public String getOauthTokenSecret()
+    {
+	return oauthTokenSecret;
+    }
 
-	public void setOauthTokenSecret(String oauthTokenSecret)
-	{
-		this.oauthTokenSecret = oauthTokenSecret;
-	}
+    public void setOauthToken(String oauthToken)
+    {
+	this.oauthToken = oauthToken;
+    }
+
+    public void setOauthTokenSecret(String oauthTokenSecret)
+    {
+	this.oauthTokenSecret = oauthTokenSecret;
+    }
 }

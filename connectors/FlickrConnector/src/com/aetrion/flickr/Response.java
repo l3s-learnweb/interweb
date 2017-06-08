@@ -12,7 +12,8 @@ import org.w3c.dom.Element;
 /**
  * @author Anthony Eden
  */
-public interface Response {
+public interface Response
+{
 
     void parse(Document document);
 
@@ -21,8 +22,8 @@ public interface Response {
     String getErrorCode();
 
     String getErrorMessage();
-    
+
     Element getPayload();
-    
+
     Collection getPayloadCollection();
 }

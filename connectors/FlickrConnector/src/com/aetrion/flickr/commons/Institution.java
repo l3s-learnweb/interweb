@@ -8,8 +8,9 @@ import java.util.Date;
  * @author mago
  * @version $Id: Institution.java,v 1.2 2009/07/12 22:43:07 x-mago Exp $
  */
-public class Institution {
-	private static final long serialVersionUID = 12L;
+public class Institution
+{
+    private static final long serialVersionUID = 12L;
     String id;
     String name;
     Date dateLaunch;
@@ -17,61 +18,76 @@ public class Institution {
     String licenseUrl;
     String flickrUrl;
 
-    public String getId() {
-        return id;
+    public String getId()
+    {
+	return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setId(String id)
+    {
+	this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getName()
+    {
+	return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name)
+    {
+	this.name = name;
     }
 
-    public Date getDateLaunch() {
-        return dateLaunch;
+    public Date getDateLaunch()
+    {
+	return dateLaunch;
     }
 
-    public void setDateLaunch(Date dateLaunch) {
-        this.dateLaunch = dateLaunch;
+    public void setDateLaunch(Date dateLaunch)
+    {
+	this.dateLaunch = dateLaunch;
     }
 
-    public void setDateLaunch(long date) {
-        setDateLaunch(new Date(date));
+    public void setDateLaunch(long date)
+    {
+	setDateLaunch(new Date(date));
     }
 
-    public void setDateLaunch(String date) {
-        if (date == null || "".equals(date)) return;
-        setDateLaunch(Long.parseLong(date) * (long) 1000);
+    public void setDateLaunch(String date)
+    {
+	if(date == null || "".equals(date))
+	    return;
+	setDateLaunch(Long.parseLong(date) * (long) 1000);
     }
 
-    public String getSiteUrl() {
-        return siteUrl;
+    public String getSiteUrl()
+    {
+	return siteUrl;
     }
 
-    public void setSiteUrl(String siteUrl) {
-        this.siteUrl = siteUrl;
+    public void setSiteUrl(String siteUrl)
+    {
+	this.siteUrl = siteUrl;
     }
 
-    public String getLicenseUrl() {
-        return licenseUrl;
+    public String getLicenseUrl()
+    {
+	return licenseUrl;
     }
 
-    public void setLicenseUrl(String licenseUrl) {
-        this.licenseUrl = licenseUrl;
+    public void setLicenseUrl(String licenseUrl)
+    {
+	this.licenseUrl = licenseUrl;
     }
 
-    public String getFlickrUrl() {
-        return flickrUrl;
+    public String getFlickrUrl()
+    {
+	return flickrUrl;
     }
 
-    public void setFlickrUrl(String flickrUrl) {
-        this.flickrUrl = flickrUrl;
+    public void setFlickrUrl(String flickrUrl)
+    {
+	this.flickrUrl = flickrUrl;
     }
 
 }

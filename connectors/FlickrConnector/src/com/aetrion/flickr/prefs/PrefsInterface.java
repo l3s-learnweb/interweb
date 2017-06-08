@@ -22,7 +22,8 @@ import com.aetrion.flickr.auth.AuthUtilities;
  * @author Martin Goebel
  * @version $Id: PrefsInterface.java,v 1.6 2008/06/28 22:30:04 x-mago Exp $
  */
-public class PrefsInterface {
+public class PrefsInterface
+{
     public static final String METHOD_GET_CONTENT_TYPE = "flickr.prefs.getContentType";
     public static final String METHOD_GET_HIDDEN = "flickr.prefs.getHidden";
     public static final String METHOD_GET_SAFETY_LEVEL = "flickr.prefs.getSafetyLevel";
@@ -39,14 +40,11 @@ public class PrefsInterface {
      * @param apiKey The API key
      * @param transportAPI The Transport interface
      */
-    public PrefsInterface(
-        String apiKey,
-        String sharedSecret,
-        Transport transportAPI
-    ) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transportAPI = transportAPI;
+    public PrefsInterface(String apiKey, String sharedSecret, Transport transportAPI)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transportAPI = transportAPI;
     }
 
     /**
@@ -60,24 +58,21 @@ public class PrefsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public String getContentType() throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_CONTENT_TYPE));
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+    public String getContentType() throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_CONTENT_TYPE));
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        Element personElement = response.getPayload();
-        return personElement.getAttribute("content_type");
+	Element personElement = response.getPayload();
+	return personElement.getAttribute("content_type");
     }
 
     /**
@@ -94,31 +89,31 @@ public class PrefsInterface {
      * @see com.aetrion.flickr.Flickr#PRIVACY_LEVEL_FRIENDS_FAMILY
      * @see com.aetrion.flickr.Flickr#PRIVACY_LEVEL_PRIVATE
      */
-    public int getGeoPerms() throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_GEO_PERMS));
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+    public int getGeoPerms() throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_GEO_PERMS));
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        int perm = -1;
-        Element personElement = response.getPayload();
-        String geoPerms = personElement.getAttribute("geoperms");
-        try {
-            perm = Integer.parseInt(geoPerms);
-        } catch (NumberFormatException e) {
-            throw new FlickrException("0", "Unable to parse geoPermission");
-        }
-        return perm;
+	int perm = -1;
+	Element personElement = response.getPayload();
+	String geoPerms = personElement.getAttribute("geoperms");
+	try
+	{
+	    perm = Integer.parseInt(geoPerms);
+	}
+	catch(NumberFormatException e)
+	{
+	    throw new FlickrException("0", "Unable to parse geoPermission");
+	}
+	return perm;
     }
 
     /**
@@ -129,24 +124,21 @@ public class PrefsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public boolean getHidden() throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_HIDDEN));
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+    public boolean getHidden() throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_HIDDEN));
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        Element personElement = response.getPayload();
-        return personElement.getAttribute("hidden").equals("1") ? true : false ;
+	Element personElement = response.getPayload();
+	return personElement.getAttribute("hidden").equals("1") ? true : false;
     }
 
     /**
@@ -160,24 +152,21 @@ public class PrefsInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public String getSafetyLevel() throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_SAFETY_LEVEL));
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+    public String getSafetyLevel() throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_SAFETY_LEVEL));
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        Element personElement = response.getPayload();
-        return personElement.getAttribute("safety_level");
+	Element personElement = response.getPayload();
+	return personElement.getAttribute("safety_level");
     }
 
     /**
@@ -194,23 +183,20 @@ public class PrefsInterface {
      * @throws FlickrException
      * @return privacyLevel
      */
-    public int getPrivacy() throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_PRIVACY));
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+    public int getPrivacy() throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_PRIVACY));
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
 
-        Element personElement = response.getPayload();
-        return Integer.parseInt(personElement.getAttribute("privacy"));
+	Element personElement = response.getPayload();
+	return Integer.parseInt(personElement.getAttribute("privacy"));
     }
 }

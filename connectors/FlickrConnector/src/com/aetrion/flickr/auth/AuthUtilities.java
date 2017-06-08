@@ -24,7 +24,8 @@ import com.aetrion.flickr.util.UrlUtilities;
  * @author Anthony Eden
  * @version $Id: AuthUtilities.java,v 1.11 2009/11/07 23:23:24 x-mago Exp $
  */
-public class AuthUtilities {
+public class AuthUtilities
+{
 
     /**
      * Get a signature for a list of parameters using the shared secret from the RequestContext.
@@ -33,9 +34,10 @@ public class AuthUtilities {
      * @return The signature String
      * @deprecated
      */
-    public static String getSignature(List parameters) {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        return getSignature(requestContext.getSharedSecret(), parameters);
+    public static String getSignature(List parameters)
+    {
+	RequestContext requestContext = RequestContext.getRequestContext();
+	return getSignature(requestContext.getSharedSecret(), parameters);
     }
 
     /**
@@ -44,9 +46,10 @@ public class AuthUtilities {
      * @return The signature String
      * @deprecated
      */
-    public static String getMultipartSignature(List parameters) {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        return getMultipartSignature(requestContext.getSharedSecret(), parameters);
+    public static String getMultipartSignature(List parameters)
+    {
+	RequestContext requestContext = RequestContext.getRequestContext();
+	return getMultipartSignature(requestContext.getSharedSecret(), parameters);
     }
 
     /**
@@ -56,78 +59,99 @@ public class AuthUtilities {
      * @param params The parameters
      * @return The signature String
      */
-    public static String getSignature(String sharedSecret, List params) {
-        addAuthToken(params);
+    public static String getSignature(String sharedSecret, List params)
+    {
+	addAuthToken(params);
 
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(sharedSecret);
-        Collections.sort(params, new ParameterAlphaComparator());
-        Iterator iter = params.iterator();
-        while (iter.hasNext()) {
-            Parameter param = (Parameter) iter.next();
-            buffer.append(param.getName());
-            buffer.append(param.getValue());
-        }
+	StringBuffer buffer = new StringBuffer();
+	buffer.append(sharedSecret);
+	Collections.sort(params, new ParameterAlphaComparator());
+	Iterator iter = params.iterator();
+	while(iter.hasNext())
+	{
+	    Parameter param = (Parameter) iter.next();
+	    buffer.append(param.getName());
+	    buffer.append(param.getValue());
+	}
 
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            return ByteUtilities.toHexString(md.digest(buffer.toString().getBytes("UTF-8")));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException u) {
-            throw new RuntimeException(u);
-        }
+	try
+	{
+	    MessageDigest md = MessageDigest.getInstance("MD5");
+	    return ByteUtilities.toHexString(md.digest(buffer.toString().getBytes("UTF-8")));
+	}
+	catch(NoSuchAlgorithmException e)
+	{
+	    throw new RuntimeException(e);
+	}
+	catch(UnsupportedEncodingException u)
+	{
+	    throw new RuntimeException(u);
+	}
     }
 
-    public static String getMultipartSignature(String sharedSecret, List params) {
-        List ignoreParameters = new ArrayList();
-        ignoreParameters.add("photo");
+    public static String getMultipartSignature(String sharedSecret, List params)
+    {
+	List ignoreParameters = new ArrayList();
+	ignoreParameters.add("photo");
 
-        addAuthToken(params);
+	addAuthToken(params);
 
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(sharedSecret);
-        Collections.sort(params, new ParameterAlphaComparator());
-        Iterator iter = params.iterator();
-        while (iter.hasNext()) {
-            Parameter param = (Parameter) iter.next();
-            if (!ignoreParameters.contains(param.getName().toLowerCase())) {
-                buffer.append(param.getName());
-                buffer.append(param.getValue());
-            }
-        }
+	StringBuffer buffer = new StringBuffer();
+	buffer.append(sharedSecret);
+	Collections.sort(params, new ParameterAlphaComparator());
+	Iterator iter = params.iterator();
+	while(iter.hasNext())
+	{
+	    Parameter param = (Parameter) iter.next();
+	    if(!ignoreParameters.contains(param.getName().toLowerCase()))
+	    {
+		buffer.append(param.getName());
+		buffer.append(param.getValue());
+	    }
+	}
 
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            return ByteUtilities.toHexString(md.digest(buffer.toString().getBytes("UTF-8")));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException u) {
-            throw new RuntimeException(u);
-        }
+	try
+	{
+	    MessageDigest md = MessageDigest.getInstance("MD5");
+	    return ByteUtilities.toHexString(md.digest(buffer.toString().getBytes("UTF-8")));
+	}
+	catch(NoSuchAlgorithmException e)
+	{
+	    throw new RuntimeException(e);
+	}
+	catch(UnsupportedEncodingException u)
+	{
+	    throw new RuntimeException(u);
+	}
     }
 
     /**
      * Adds the auth_token to the parameter list if it is necessary.
+     * 
      * @param params
      */
-    public static void addAuthToken(List params) {
-        //Checking for the auth_token parameter
-        Iterator it = params.iterator();
-        boolean tokenFlag = false;
-        while (it.hasNext()) {
-            if (((Parameter) it.next()).getName().equals("auth_token")) {
-                tokenFlag = true;
-            }
-        }
+    public static void addAuthToken(List params)
+    {
+	//Checking for the auth_token parameter
+	Iterator it = params.iterator();
+	boolean tokenFlag = false;
+	while(it.hasNext())
+	{
+	    if(((Parameter) it.next()).getName().equals("auth_token"))
+	    {
+		tokenFlag = true;
+	    }
+	}
 
-        if (!tokenFlag) {
-            if (RequestContext.getRequestContext().getAuth() != null) {
-                String authToken = RequestContext.getRequestContext().getAuth().getToken();
-                if(authToken != null && !authToken.equals(""))
-                    params.add(new Parameter("auth_token", authToken));
-            }
-        }
+	if(!tokenFlag)
+	{
+	    if(RequestContext.getRequestContext().getAuth() != null)
+	    {
+		String authToken = RequestContext.getRequestContext().getAuth().getToken();
+		if(authToken != null && !authToken.equals(""))
+		    params.add(new Parameter("auth_token", authToken));
+	    }
+	}
     }
 
     /**
@@ -136,23 +160,29 @@ public class AuthUtilities {
      * @param params
      * @return isAuthenticated
      */
-    public static boolean isAuthenticated(List params) {
-        Iterator it = params.iterator();
-        boolean tokenFlag = false;
-        while (it.hasNext()) {
-            if (((Parameter) it.next()).getName().equals("auth_token")) {
-                tokenFlag = true;
-            }
-        }
+    public static boolean isAuthenticated(List params)
+    {
+	Iterator it = params.iterator();
+	boolean tokenFlag = false;
+	while(it.hasNext())
+	{
+	    if(((Parameter) it.next()).getName().equals("auth_token"))
+	    {
+		tokenFlag = true;
+	    }
+	}
 
-        if (!tokenFlag) {
-            if (RequestContext.getRequestContext().getAuth() != null) {
-                String authToken = RequestContext.getRequestContext().getAuth().getToken();
-                if (authToken != null && !authToken.equals("")) {
-                    tokenFlag = true;
-                }
-            }
-        }
-        return tokenFlag;
+	if(!tokenFlag)
+	{
+	    if(RequestContext.getRequestContext().getAuth() != null)
+	    {
+		String authToken = RequestContext.getRequestContext().getAuth().getToken();
+		if(authToken != null && !authToken.equals(""))
+		{
+		    tokenFlag = true;
+		}
+	    }
+	}
+	return tokenFlag;
     }
 }

@@ -25,7 +25,8 @@ import java.util.List;
  *
  * @author Anthony Eden
  */
-public class AuthInterface {
+public class AuthInterface
+{
 
     public static final String METHOD_CHECK_TOKEN = "flickr.auth.checkToken";
     public static final String METHOD_GET_FROB = "flickr.auth.getFrob";
@@ -42,14 +43,11 @@ public class AuthInterface {
      * @param apiKey The API key
      * @param transport The Transport interface
      */
-    public AuthInterface(
-        String apiKey,
-        String sharedSecret,
-        Transport transport
-    ) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transportAPI = transport;
+    public AuthInterface(String apiKey, String sharedSecret, Transport transport)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transportAPI = transport;
     }
 
     /**
@@ -62,79 +60,78 @@ public class AuthInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public Auth checkToken(String authToken) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_CHECK_TOKEN));
-        parameters.add(new Parameter("api_key", apiKey));
+    public Auth checkToken(String authToken) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_CHECK_TOKEN));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("auth_token", authToken));
+	parameters.add(new Parameter("auth_token", authToken));
 
-        // This method call must be signed.
-        parameters.add(
-            new Parameter(
-                "api_sig",
-                AuthUtilities.getSignature(sharedSecret, parameters)
-            )
-        );
+	// This method call must be signed.
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Auth auth = new Auth();
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Auth auth = new Auth();
 
-        Element authElement = response.getPayload();
-        auth.setToken(XMLUtilities.getChildValue(authElement, "token"));
-        auth.setPermission(Permission.fromString(XMLUtilities.getChildValue(authElement, "perms")));
+	Element authElement = response.getPayload();
+	auth.setToken(XMLUtilities.getChildValue(authElement, "token"));
+	auth.setPermission(Permission.fromString(XMLUtilities.getChildValue(authElement, "perms")));
 
-        Element userElement = XMLUtilities.getChild(authElement, "user");
-        User user = new User();
-        user.setId(userElement.getAttribute("nsid"));
-        user.setUsername(userElement.getAttribute("username"));
-        user.setRealName(userElement.getAttribute("fullname"));
-        auth.setUser(user);
+	Element userElement = XMLUtilities.getChild(authElement, "user");
+	User user = new User();
+	user.setId(userElement.getAttribute("nsid"));
+	user.setUsername(userElement.getAttribute("username"));
+	user.setRealName(userElement.getAttribute("fullname"));
+	auth.setUser(user);
 
-        return auth;
+	return auth;
     }
 
     /**
      * @deprecated
-     * Get the full authentication token for a mini-token.
-     * @param miniToken The mini-token typed in by a user. 
-     * It should be 9 digits long. It may optionally contain dashes.
-     * @return an Auth object containing the full token, permissions and user info. 
+     * 	    Get the full authentication token for a mini-token.
+     * @param miniToken The mini-token typed in by a user.
+     *            It should be 9 digits long. It may optionally contain dashes.
+     * @return an Auth object containing the full token, permissions and user info.
      * @throws IOException
      * @throws SAXException
      * @throws FlickrException
      */
-    public Auth getFullToken(String miniToken) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_FULL_TOKEN));
-        parameters.add(new Parameter("api_key", apiKey));
+    public Auth getFullToken(String miniToken) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_FULL_TOKEN));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("mini_token", miniToken));
+	parameters.add(new Parameter("mini_token", miniToken));
 
-        // This method call must be signed.
-        parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
+	// This method call must be signed.
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Auth auth = new Auth();
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Auth auth = new Auth();
 
-        Element authElement = response.getPayload();
-        auth.setToken(XMLUtilities.getChildValue(authElement, "token"));
-        auth.setPermission(Permission.fromString(XMLUtilities.getChildValue(authElement, "perms")));
+	Element authElement = response.getPayload();
+	auth.setToken(XMLUtilities.getChildValue(authElement, "token"));
+	auth.setPermission(Permission.fromString(XMLUtilities.getChildValue(authElement, "perms")));
 
-        Element userElement = XMLUtilities.getChild(authElement, "user");
-        User user = new User();
-        user.setId(userElement.getAttribute("nsid"));
-        user.setUsername(userElement.getAttribute("username"));
-        user.setRealName(userElement.getAttribute("fullname"));
-        auth.setUser(user);
+	Element userElement = XMLUtilities.getChild(authElement, "user");
+	User user = new User();
+	user.setId(userElement.getAttribute("nsid"));
+	user.setUsername(userElement.getAttribute("username"));
+	user.setRealName(userElement.getAttribute("fullname"));
+	auth.setUser(user);
 
-        return auth;
+	return auth;
     }
 
     /**
@@ -146,19 +143,21 @@ public class AuthInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public String getFrob() throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_FROB));
-        parameters.add(new Parameter("api_key", apiKey));
+    public String getFrob() throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_FROB));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        // This method call must be signed.
-        parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
+	// This method call must be signed.
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        return XMLUtilities.getValue(response.getPayload());
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	return XMLUtilities.getValue(response.getPayload());
     }
 
     /**
@@ -171,36 +170,37 @@ public class AuthInterface {
      * @throws SAXException
      * @throws FlickrException
      */
-    public Auth getToken(String frob) throws IOException, SAXException, FlickrException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("method", METHOD_GET_TOKEN));
-        parameters.add(new Parameter("api_key", apiKey));
+    public Auth getToken(String frob) throws IOException, SAXException, FlickrException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("method", METHOD_GET_TOKEN));
+	parameters.add(new Parameter("api_key", apiKey));
 
-        parameters.add(new Parameter("frob", frob));
+	parameters.add(new Parameter("frob", frob));
 
-        // This method call must be signed.
-        parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
+	// This method call must be signed.
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Auth auth = new Auth();
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Auth auth = new Auth();
 
-        Element authElement = response.getPayload();
-        auth.setToken(XMLUtilities.getChildValue(authElement, "token"));
-        auth.setPermission(Permission.fromString(XMLUtilities.getChildValue(authElement, "perms")));
+	Element authElement = response.getPayload();
+	auth.setToken(XMLUtilities.getChildValue(authElement, "token"));
+	auth.setPermission(Permission.fromString(XMLUtilities.getChildValue(authElement, "perms")));
 
-        Element userElement = XMLUtilities.getChild(authElement, "user");
-        User user = new User();
-        user.setId(userElement.getAttribute("nsid"));
-        user.setUsername(userElement.getAttribute("username"));
-        user.setRealName(userElement.getAttribute("fullname"));
-        auth.setUser(user);
+	Element userElement = XMLUtilities.getChild(authElement, "user");
+	User user = new User();
+	user.setId(userElement.getAttribute("nsid"));
+	user.setUsername(userElement.getAttribute("username"));
+	user.setRealName(userElement.getAttribute("fullname"));
+	auth.setUser(user);
 
-        return auth;
+	return auth;
     }
-
 
     /**
      * Build the authentication URL using the given permission and frob.
@@ -213,20 +213,21 @@ public class AuthInterface {
      * @return The URL
      * @throws MalformedURLException
      */
-    public URL buildAuthenticationUrl(Permission permission, String frob) throws MalformedURLException {
-        List parameters = new ArrayList();
-        parameters.add(new Parameter("api_key", apiKey));
-        parameters.add(new Parameter("perms", permission.toString()));
-        parameters.add(new Parameter("frob", frob));
+    public URL buildAuthenticationUrl(Permission permission, String frob) throws MalformedURLException
+    {
+	List parameters = new ArrayList();
+	parameters.add(new Parameter("api_key", apiKey));
+	parameters.add(new Parameter("perms", permission.toString()));
+	parameters.add(new Parameter("frob", frob));
 
-        // The parameters in the url must be signed
-        parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
+	// The parameters in the url must be signed
+	parameters.add(new Parameter("api_sig", AuthUtilities.getSignature(sharedSecret, parameters)));
 
-        String host = "www.flickr.com";
-        int port = transportAPI.getPort();
-        String path = "/services/auth/";
+	String host = "www.flickr.com";
+	int port = transportAPI.getPort();
+	String path = "/services/auth/";
 
-        return UrlUtilities.buildUrl(host, port, path, parameters);
+	return UrlUtilities.buildUrl(host, port, path, parameters);
     }
 
 }

@@ -16,7 +16,8 @@ import java.util.List;
  * @author Matt Ray
  * @author Anthony Eden
  */
-public abstract class Transport {
+public abstract class Transport
+{
 
     public static final String REST = "REST";
     public static final String SOAP = "SOAP";
@@ -27,32 +28,38 @@ public abstract class Transport {
     private String host;
     private int port = 443;
 
-    public String getHost() {
-        return host;
+    public String getHost()
+    {
+	return host;
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public void setHost(String host)
+    {
+	this.host = host;
     }
 
-    public int getPort() {
-        return port;
+    public int getPort()
+    {
+	return port;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setPort(int port)
+    {
+	this.port = port;
     }
 
-    public String getTransportType() {
-        return transportType;
+    public String getTransportType()
+    {
+	return transportType;
     }
 
-    public void setTransportType(String transport) {
-        this.transportType = transport;
+    public void setTransportType(String transport)
+    {
+	this.transportType = transport;
     }
 
     /**
-     * Invoke an HTTP GET request on a remote host.  You must close the InputStream after you are done with.
+     * Invoke an HTTP GET request on a remote host. You must close the InputStream after you are done with.
      *
      * @param path The request path
      * @param parameters The parameters (collection of Parameter objects)
@@ -71,8 +78,9 @@ public abstract class Transport {
      * @throws IOException
      * @throws SAXException
      */
-    public Response post(String path, List parameters) throws IOException, SAXException {
-        return post(path, parameters, false);
+    public Response post(String path, List parameters) throws IOException, SAXException
+    {
+	return post(path, parameters, false);
     }
 
     /**
@@ -85,32 +93,36 @@ public abstract class Transport {
      * @throws IOException
      * @throws SAXException
      */
-    public abstract Response post(String path, List parameters, boolean multipart) throws IOException,
-            SAXException;
+    public abstract Response post(String path, List parameters, boolean multipart) throws IOException, SAXException;
 
     /**
      * @return Returns the path.
      */
-    public String getPath() {
-        return path;
+    public String getPath()
+    {
+	return path;
     }
 
     /**
      * @param path The path to set.
      */
-    public void setPath(String path) {
-        this.path = path;
+    public void setPath(String path)
+    {
+	this.path = path;
     }
 
-    public Class getResponseClass() {
-        return responseClass;
+    public Class getResponseClass()
+    {
+	return responseClass;
     }
 
-    public void setResponseClass(Class responseClass) {
-        if (responseClass == null) {
-            throw new IllegalArgumentException("The response Class cannot be null");
-        }
-        this.responseClass = responseClass;
+    public void setResponseClass(Class responseClass)
+    {
+	if(responseClass == null)
+	{
+	    throw new IllegalArgumentException("The response Class cannot be null");
+	}
+	this.responseClass = responseClass;
     }
 
 }

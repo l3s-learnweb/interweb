@@ -33,7 +33,8 @@ import com.aetrion.flickr.util.StringUtilities;
  * @author till
  * @version $Id: InterestingnessInterface.java,v 1.9 2009/07/11 20:30:27 x-mago Exp $
  */
-public class InterestingnessInterface {
+public class InterestingnessInterface
+{
 
     public static final String METHOD_GET_LIST = "flickr.interestingness.getList";
 
@@ -44,24 +45,23 @@ public class InterestingnessInterface {
     private static final String KEY_PER_PAGE = "per_page";
     private static final String KEY_PAGE = "page";
 
-    private static final ThreadLocal DATE_FORMATS = new ThreadLocal() {
-        protected synchronized Object initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd");
-        }
+    private static final ThreadLocal DATE_FORMATS = new ThreadLocal()
+    {
+	protected synchronized Object initialValue()
+	{
+	    return new SimpleDateFormat("yyyy-MM-dd");
+	}
     };
 
     private String apiKey;
     private String sharedSecret;
     private Transport transportAPI;
 
-    public InterestingnessInterface(
-        String apiKey,
-        String sharedSecret,
-        Transport transportAPI
-    ) {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        this.transportAPI = transportAPI;
+    public InterestingnessInterface(String apiKey, String sharedSecret, Transport transportAPI)
+    {
+	this.apiKey = apiKey;
+	this.sharedSecret = sharedSecret;
+	this.transportAPI = transportAPI;
     }
 
     /**
@@ -70,7 +70,9 @@ public class InterestingnessInterface {
      * This method does not require authentication.
      *
      * @param date
-     * @param extras A set of Strings controlling the extra information to fetch for each returned record. Currently supported fields are: license, date_upload, date_taken, owner_name, icon_server, original_format, last_update, geo. Set to null or an empty set to not specify any extras.
+     * @param extras A set of Strings controlling the extra information to fetch for each returned record. Currently supported fields are: license,
+     *            date_upload, date_taken, owner_name, icon_server, original_format, last_update, geo. Set to null or an empty set to not specify any
+     *            extras.
      * @param perPage The number of photos to show per page
      * @param page The page offset
      * @return PhotoList
@@ -79,45 +81,52 @@ public class InterestingnessInterface {
      * @throws SAXException
      * @see com.aetrion.flickr.photos.Extras
      */
-    public PhotoList getList(String date, Set extras, int perPage, int page) throws FlickrException, IOException, SAXException {
-        List parameters = new ArrayList();
-        PhotoList photos = new PhotoList();
+    public PhotoList getList(String date, Set extras, int perPage, int page) throws FlickrException, IOException, SAXException
+    {
+	List parameters = new ArrayList();
+	PhotoList photos = new PhotoList();
 
-        parameters.add(new Parameter(KEY_METHOD, METHOD_GET_LIST));
-        parameters.add(new Parameter(KEY_API_KEY, apiKey));
+	parameters.add(new Parameter(KEY_METHOD, METHOD_GET_LIST));
+	parameters.add(new Parameter(KEY_API_KEY, apiKey));
 
-        if (date != null) {
-             parameters.add(new Parameter(KEY_DATE, date));
-        }
+	if(date != null)
+	{
+	    parameters.add(new Parameter(KEY_DATE, date));
+	}
 
-        if (extras != null) {
-            parameters.add(new Parameter(KEY_EXTRAS, StringUtilities.join(extras, ",")));
-        }
+	if(extras != null)
+	{
+	    parameters.add(new Parameter(KEY_EXTRAS, StringUtilities.join(extras, ",")));
+	}
 
-        if (perPage > 0) {
-            parameters.add(new Parameter(KEY_PER_PAGE, String.valueOf(perPage)));
-        }
-        if (page > 0) {
-            parameters.add(new Parameter(KEY_PAGE, String.valueOf(page)));
-        }
+	if(perPage > 0)
+	{
+	    parameters.add(new Parameter(KEY_PER_PAGE, String.valueOf(perPage)));
+	}
+	if(page > 0)
+	{
+	    parameters.add(new Parameter(KEY_PAGE, String.valueOf(page)));
+	}
 
-        Response response = transportAPI.get(transportAPI.getPath(), parameters);
-        if (response.isError()) {
-            throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
-        }
-        Element photosElement = response.getPayload();
-        photos.setPage(photosElement.getAttribute("page"));
-        photos.setPages(photosElement.getAttribute("pages"));
-        photos.setPerPage(photosElement.getAttribute("perpage"));
-        photos.setTotal(photosElement.getAttribute("total"));
+	Response response = transportAPI.get(transportAPI.getPath(), parameters);
+	if(response.isError())
+	{
+	    throw new FlickrException(response.getErrorCode(), response.getErrorMessage());
+	}
+	Element photosElement = response.getPayload();
+	photos.setPage(photosElement.getAttribute("page"));
+	photos.setPages(photosElement.getAttribute("pages"));
+	photos.setPerPage(photosElement.getAttribute("perpage"));
+	photos.setTotal(photosElement.getAttribute("total"));
 
-        NodeList photoNodes = photosElement.getElementsByTagName("photo");
-        for (int i = 0; i < photoNodes.getLength(); i++) {
-            Element photoElement = (Element) photoNodes.item(i);
-            Photo photo = PhotoUtils.createPhoto(photoElement);
-            photos.add(photo);
-        }
-        return photos;
+	NodeList photoNodes = photosElement.getElementsByTagName("photo");
+	for(int i = 0; i < photoNodes.getLength(); i++)
+	{
+	    Element photoElement = (Element) photoNodes.item(i);
+	    Photo photo = PhotoUtils.createPhoto(photoElement);
+	    photos.add(photo);
+	}
+	return photos;
     }
 
     /**
@@ -132,14 +141,15 @@ public class InterestingnessInterface {
      * @throws SAXException
      * @see com.aetrion.flickr.photos.Extras
      */
-    public PhotoList getList(Date date, Set extras, int perPage, int page)
-      throws FlickrException, IOException, SAXException {
-        String dateString = null;
-        if (date != null) {
-            DateFormat df = (DateFormat)DATE_FORMATS.get();
-            dateString = df.format(date);
-        }
-        return getList(dateString, extras, perPage, page);
+    public PhotoList getList(Date date, Set extras, int perPage, int page) throws FlickrException, IOException, SAXException
+    {
+	String dateString = null;
+	if(date != null)
+	{
+	    DateFormat df = (DateFormat) DATE_FORMATS.get();
+	    dateString = df.format(date);
+	}
+	return getList(dateString, extras, perPage, page);
     }
 
     /**
@@ -151,8 +161,9 @@ public class InterestingnessInterface {
      * @throws IOException
      * @throws SAXException
      */
-    public PhotoList getList() throws FlickrException, IOException, SAXException {
-        return getList((String) null, Extras.ALL_EXTRAS, 500, 1);
+    public PhotoList getList() throws FlickrException, IOException, SAXException
+    {
+	return getList((String) null, Extras.ALL_EXTRAS, 500, 1);
     }
 
 }

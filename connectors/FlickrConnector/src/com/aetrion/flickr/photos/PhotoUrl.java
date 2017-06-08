@@ -5,18 +5,21 @@ package com.aetrion.flickr.photos;
 /**
  * @author Anthony Eden
  */
-public class PhotoUrl {
-	private static final long serialVersionUID = 12L;
+public class PhotoUrl
+{
+    private static final long serialVersionUID = 12L;
 
     private String url;
     private String type;
 
-    public String getUrl() {
-        return url;
+    public String getUrl()
+    {
+	return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrl(String url)
+    {
+	this.url = url;
     }
 
     /**
@@ -24,12 +27,14 @@ public class PhotoUrl {
      *
      * @return Type of URL
      */
-    public String getType() {
-        return type;
+    public String getType()
+    {
+	return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setType(String type)
+    {
+	this.type = type;
     }
 
 }

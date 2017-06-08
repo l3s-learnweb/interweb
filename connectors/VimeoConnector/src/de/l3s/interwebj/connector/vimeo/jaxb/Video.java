@@ -5,7 +5,6 @@
 // Generated on: 2012.05.13 at 07:49:56 PM CEST 
 //
 
-
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -18,11 +17,12 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -51,25 +51,16 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "title",
-    "description",
-    "uploadDate",
-    "modifiedDate",
-    "numberOfLikes",
-    "numberOfPlays",
-    "numberOfComments",
-    "duration",
-    "thumbnails"
-})
+@XmlType(name = "", propOrder = { "title", "description", "uploadDate", "modifiedDate", "numberOfLikes", "numberOfPlays", "numberOfComments", "duration", "thumbnails" })
 @XmlRootElement(name = "video")
-public class Video {
-	
+public class Video
+{
+
     @XmlElement(required = true)
     protected String title;
-	@XmlElement(name = "description", required = true)
+    @XmlElement(name = "description", required = true)
     protected String description;
-	@XmlElement(name = "upload_date", required = true)
+    @XmlElement(name = "upload_date", required = true)
     protected String uploadDate;
     @XmlElement(name = "modified_date", required = true)
     protected String modifiedDate;
@@ -106,329 +97,356 @@ public class Video {
      * Gets the value of the title property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getTitle() {
-        return title;
+    public String getTitle()
+    {
+	return title;
     }
 
     /**
      * Sets the value of the title property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setTitle(String value) {
-        this.title = value;
+    public void setTitle(String value)
+    {
+	this.title = value;
     }
 
     /**
      * Gets the value of the uploadDate property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getUploadDate() {
-        return uploadDate;
+    public String getUploadDate()
+    {
+	return uploadDate;
     }
 
     /**
      * Sets the value of the uploadDate property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setUploadDate(String value) {
-        this.uploadDate = value;
+    public void setUploadDate(String value)
+    {
+	this.uploadDate = value;
     }
 
     /**
      * Gets the value of the modifiedDate property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getModifiedDate() {
-        return modifiedDate;
+    public String getModifiedDate()
+    {
+	return modifiedDate;
     }
 
     /**
      * Sets the value of the modifiedDate property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setModifiedDate(String value) {
-        this.modifiedDate = value;
+    public void setModifiedDate(String value)
+    {
+	this.modifiedDate = value;
     }
 
     /**
      * Gets the value of the numberOfLikes property.
      * 
      * @return
-     *     possible object is
-     *     {@link long }
-     *     
+     * 	possible object is
+     *         {@link long }
+     * 
      */
-    public long getNumberOfLikes() {
-        return numberOfLikes;
+    public long getNumberOfLikes()
+    {
+	return numberOfLikes;
     }
 
     /**
      * Sets the value of the numberOfLikes property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link long }
-     *     
+     *            allowed object is
+     *            {@link long }
+     * 
      */
-    public void setNumberOfLikes(int value) {
-        this.numberOfLikes = value;
+    public void setNumberOfLikes(int value)
+    {
+	this.numberOfLikes = value;
     }
 
     /**
      * Gets the value of the numberOfPlays property.
      * 
      * @return
-     *     possible object is
-     *     {@link long }
-     *     
+     * 	possible object is
+     *         {@link long }
+     * 
      */
-    public int getNumberOfPlays() {
-        return numberOfPlays;
+    public int getNumberOfPlays()
+    {
+	return numberOfPlays;
     }
 
     /**
      * Sets the value of the numberOfPlays property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link long }
-     *     
+     *            allowed object is
+     *            {@link long }
+     * 
      */
-    public void setNumberOfPlays(int value) {
-        this.numberOfPlays = value;
+    public void setNumberOfPlays(int value)
+    {
+	this.numberOfPlays = value;
     }
 
     /**
      * Gets the value of the numberOfComments property.
      * 
      * @return
-     *     possible object is
-     *     {@link long }
-     *     
+     * 	possible object is
+     *         {@link long }
+     * 
      */
-    public int getNumberOfComments() {
-        return numberOfComments;
+    public int getNumberOfComments()
+    {
+	return numberOfComments;
     }
 
     /**
      * Sets the value of the numberOfComments property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link long }
-     *     
+     *            allowed object is
+     *            {@link long }
+     * 
      */
-    public void setNumberOfComments(int value) {
-        this.numberOfComments = value;
+    public void setNumberOfComments(int value)
+    {
+	this.numberOfComments = value;
     }
 
-    
-    
     /**
      * Gets the value of the owner property.
      * 
      * @return
-     *     possible object is
-     *     {@link Owner }
-     *     
-     * /
-    public Owner getOwner() {
-        return owner;
+     * 	possible object is
+     *         {@link Owner }
+     * 
+     *         /
+     *         public Owner getOwner() {
+     *         return owner;
+     *         }
+     * 
+     *         /**
+     *         Sets the value of the owner property.
+     * 
+     * @param value
+     *            allowed object is
+     *            {@link Owner }
+     * 
+     *            /
+     *            public void setOwner(Owner value) {
+     *            this.owner = value;
+     *            }
+     */
+
+    public int getDuration()
+    {
+	return duration;
+    }
+
+    public void setDuration(int duration)
+    {
+	this.duration = duration;
     }
 
     /**
-     * Sets the value of the owner property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Owner }
-     *     
-     * /
-    public void setOwner(Owner value) {
-        this.owner = value;
-    }*/
-
-    public int getDuration() {
-		return duration;
-	}
-
-	public void setDuration(int duration) {
-		this.duration = duration;
-	}
-
-	/**
      * Gets the value of the thumbnails property.
      * 
      * @return
-     *     possible object is
-     *     {@link Thumbnails }
-     *     
+     * 	possible object is
+     *         {@link Thumbnails }
+     * 
      */
-    public Thumbnails getThumbnails() {
-        return thumbnails;
+    public Thumbnails getThumbnails()
+    {
+	return thumbnails;
     }
 
     /**
      * Sets the value of the thumbnails property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Thumbnails }
-     *     
+     *            allowed object is
+     *            {@link Thumbnails }
+     * 
      */
-    public void setThumbnails(Thumbnails value) {
-        this.thumbnails = value;
+    public void setThumbnails(Thumbnails value)
+    {
+	this.thumbnails = value;
     }
 
     /**
      * Gets the value of the embedPrivacy property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getEmbedPrivacy() {
-        return embedPrivacy;
+    public String getEmbedPrivacy()
+    {
+	return embedPrivacy;
     }
 
     /**
      * Sets the value of the embedPrivacy property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setEmbedPrivacy(String value) {
-        this.embedPrivacy = value;
+    public void setEmbedPrivacy(String value)
+    {
+	this.embedPrivacy = value;
     }
 
     /**
      * Gets the value of the id property.
      * 
      * @return
-     *     possible object is
-     *     {@link long }
-     *     
+     * 	possible object is
+     *         {@link long }
+     * 
      */
-    public long getId() {
-        return id;
+    public long getId()
+    {
+	return id;
     }
 
     /**
      * Sets the value of the id property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link long }
-     *     
+     *            allowed object is
+     *            {@link long }
+     * 
      */
-    public void setId(long value) {
-        this.id = value;
+    public void setId(long value)
+    {
+	this.id = value;
     }
 
     /**
      * Gets the value of the isHd property.
      * 
      * @return
-     *     possible object is
-     *     {@link long }
-     *     
+     * 	possible object is
+     *         {@link long }
+     * 
      */
-    public long getIsHd() {
-        return isHd;
+    public long getIsHd()
+    {
+	return isHd;
     }
 
     /**
      * Sets the value of the isHd property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link long }
-     *     
+     *            allowed object is
+     *            {@link long }
+     * 
      */
-    public void setIsHd(int value) {
-        this.isHd = value;
+    public void setIsHd(int value)
+    {
+	this.isHd = value;
     }
 
     /**
      * Gets the value of the isTranscoding property.
      * 
      * @return
-     *     possible object is
-     *     {@link long }
-     *     
+     * 	possible object is
+     *         {@link long }
+     * 
      */
-    public long getIsTranscoding() {
-        return isTranscoding;
+    public long getIsTranscoding()
+    {
+	return isTranscoding;
     }
 
     /**
      * Sets the value of the isTranscoding property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link long }
-     *     
+     *            allowed object is
+     *            {@link long }
+     * 
      */
-    public void setIsTranscoding(int value) {
-        this.isTranscoding = value;
+    public void setIsTranscoding(int value)
+    {
+	this.isTranscoding = value;
     }
 
     /**
      * Gets the value of the privacy property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 	possible object is
+     *         {@link String }
+     * 
      */
-    public String getPrivacy() {
-        return privacy;
+    public String getPrivacy()
+    {
+	return privacy;
     }
 
     /**
      * Sets the value of the privacy property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
-    public void setPrivacy(String value) {
-        this.privacy = value;
+    public void setPrivacy(String value)
+    {
+	this.privacy = value;
     }
 
-    public String getDescription() {
-		return description;
-	}
+    public String getDescription()
+    {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description)
+    {
+	this.description = description;
+    }
 }

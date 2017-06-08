@@ -5,7 +5,6 @@
 // Generated on: 2012.05.13 at 07:49:56 PM CEST 
 //
 
-
 package de.l3s.interwebj.connector.vimeo.jaxb;
 
 import java.util.ArrayList;
@@ -18,11 +17,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -43,11 +43,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "video"
-})
+@XmlType(name = "", propOrder = { "video" })
 @XmlRootElement(name = "videos")
-public class Videos {
+public class Videos
+{
 
     @XmlElement(required = true)
     protected List<Video> video;
@@ -71,8 +70,9 @@ public class Videos {
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getVideo().add(newItem);
+     * getVideo().add(newItem);
      * </pre>
      * 
      * 
@@ -82,107 +82,117 @@ public class Videos {
      * 
      * 
      */
-    public List<Video> getVideo() {
-        if (video == null) {
-            video = new ArrayList<Video>();
-        }
-        return this.video;
+    public List<Video> getVideo()
+    {
+	if(video == null)
+	{
+	    video = new ArrayList<Video>();
+	}
+	return this.video;
     }
 
     /**
      * Gets the value of the onThisPage property.
      * 
      * @return
-     *     possible object is
-     *     {@link int }
-     *     
+     * 	possible object is
+     *         {@link int }
+     * 
      */
-    public int getOnThisPage() {
-        return onThisPage;
+    public int getOnThisPage()
+    {
+	return onThisPage;
     }
 
     /**
      * Sets the value of the onThisPage property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link int }
-     *     
+     *            allowed object is
+     *            {@link int }
+     * 
      */
-    public void setOnThisPage(int value) {
-        this.onThisPage = value;
+    public void setOnThisPage(int value)
+    {
+	this.onThisPage = value;
     }
 
     /**
      * Gets the value of the page property.
      * 
      * @return
-     *     possible object is
-     *     {@link int }
-     *     
+     * 	possible object is
+     *         {@link int }
+     * 
      */
-    public int getPage() {
-        return page;
+    public int getPage()
+    {
+	return page;
     }
 
     /**
      * Sets the value of the page property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link int }
-     *     
+     *            allowed object is
+     *            {@link int }
+     * 
      */
-    public void setPage(int value) {
-        this.page = value;
+    public void setPage(int value)
+    {
+	this.page = value;
     }
 
     /**
      * Gets the value of the perpage property.
      * 
      * @return
-     *     possible object is
-     *     {@link int }
-     *     
+     * 	possible object is
+     *         {@link int }
+     * 
      */
-    public int getPerpage() {
-        return perpage;
+    public int getPerpage()
+    {
+	return perpage;
     }
 
     /**
      * Sets the value of the perpage property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link int }
-     *     
+     *            allowed object is
+     *            {@link int }
+     * 
      */
-    public void setPerpage(int value) {
-        this.perpage = value;
+    public void setPerpage(int value)
+    {
+	this.perpage = value;
     }
 
     /**
      * Gets the value of the total property.
      * 
      * @return
-     *     possible object is
-     *     {@link long }
-     *     
+     * 	possible object is
+     *         {@link long }
+     * 
      */
-    public long getTotal() {
-        return total;
+    public long getTotal()
+    {
+	return total;
     }
 
     /**
      * Sets the value of the total property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link long }
-     *     
+     *            allowed object is
+     *            {@link long }
+     * 
      */
-    public void setTotal(long value) {
-        this.total = value;
+    public void setTotal(long value)
+    {
+	this.total = value;
     }
 
 }

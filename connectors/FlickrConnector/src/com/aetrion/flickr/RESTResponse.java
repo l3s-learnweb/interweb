@@ -15,7 +15,8 @@ import org.w3c.dom.Element;
  *
  * @author Anthony Eden
  */
-public class RESTResponse implements Response {
+public class RESTResponse implements Response
+{
 
     private String stat;
     private Collection payload;
@@ -23,49 +24,60 @@ public class RESTResponse implements Response {
     private String errorCode;
     private String errorMessage;
 
-    public void parse(Document document) {
-        Element rspElement = document.getDocumentElement();
-        rspElement.normalize();
-        stat = rspElement.getAttribute("stat");
-        if ("ok".equals(stat)) {
-            // TODO: Verify that the payload is always a single XML node
-            payload = XMLUtilities.getChildElements(rspElement);
-        } else if ("fail".equals(stat)) {
-            Element errElement = (Element) rspElement.getElementsByTagName("err").item(0);
-            errorCode = errElement.getAttribute("code");
-            errorMessage = errElement.getAttribute("msg");
-        }
+    public void parse(Document document)
+    {
+	Element rspElement = document.getDocumentElement();
+	rspElement.normalize();
+	stat = rspElement.getAttribute("stat");
+	if("ok".equals(stat))
+	{
+	    // TODO: Verify that the payload is always a single XML node
+	    payload = XMLUtilities.getChildElements(rspElement);
+	}
+	else if("fail".equals(stat))
+	{
+	    Element errElement = (Element) rspElement.getElementsByTagName("err").item(0);
+	    errorCode = errElement.getAttribute("code");
+	    errorMessage = errElement.getAttribute("msg");
+	}
     }
 
-    public String getStat() {
-        return stat;
+    public String getStat()
+    {
+	return stat;
     }
 
-    public Element getPayload() {
-        Iterator iter = payload.iterator();
-        if (iter.hasNext()) {
-            return (Element) iter.next();
-        } else {
-            throw new RuntimeException("REST response payload has no elements");
-        }
+    public Element getPayload()
+    {
+	Iterator iter = payload.iterator();
+	if(iter.hasNext())
+	{
+	    return (Element) iter.next();
+	}
+	else
+	{
+	    throw new RuntimeException("REST response payload has no elements");
+	}
     }
 
-    public Collection getPayloadCollection() {
-        return payload;
+    public Collection getPayloadCollection()
+    {
+	return payload;
     }
 
-    public boolean isError() {
-        return errorCode != null;
+    public boolean isError()
+    {
+	return errorCode != null;
     }
 
-    public String getErrorCode() {
-        return errorCode;
+    public String getErrorCode()
+    {
+	return errorCode;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public String getErrorMessage()
+    {
+	return errorMessage;
     }
-
-
 
 }

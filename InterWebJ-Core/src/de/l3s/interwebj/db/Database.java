@@ -1,79 +1,52 @@
 package de.l3s.interwebj.db;
 
-
 import java.util.*;
 
 import de.l3s.interwebj.*;
 import de.l3s.interwebj.core.*;
 
-
 public interface Database
 {
-	
-	public InterWebPrincipal authenticate(String userName, String userPassword);
-	
 
-	public void close();
-	
+    public InterWebPrincipal authenticate(String userName, String userPassword);
 
-	public void deleteConnector(String connectorName);
-	
+    public void close();
 
-	public void deleteConsumer(String userName, String consumerName);
-	
+    public void deleteConnector(String connectorName);
 
-	public boolean hasPrincipal(String userName);
-	
+    public void deleteConsumer(String userName, String consumerName);
 
-	public AuthCredentials readConnectorAuthCredentials(String connectorName);
-	
+    public boolean hasPrincipal(String userName);
 
-	public String readConnectorUserId(String connectorName, String userName);
-	
+    public AuthCredentials readConnectorAuthCredentials(String connectorName);
 
-	public Consumer readConsumerByKey(String key);
-	
+    public String readConnectorUserId(String connectorName, String userName);
 
-	public List<Consumer> readConsumers(String userName);
-	
+    public Consumer readConsumerByKey(String key);
 
-	public InterWebPrincipal readPrincipalByKey(String key);
-	
+    public List<Consumer> readConsumers(String userName);
 
-	public InterWebPrincipal readPrincipalByName(String name);
-	
+    public InterWebPrincipal readPrincipalByKey(String key);
 
-	public AuthCredentials readUserAuthCredentials(String connectorName,
-	                                               String userName);
-	
+    public InterWebPrincipal readPrincipalByName(String name);
 
-	public void saveConnector(String connectorName,
-	                          AuthCredentials authCredentials);
-	
+    public AuthCredentials readUserAuthCredentials(String connectorName, String userName);
 
-	public void saveConsumer(String userName, Consumer consumer);
-	
+    public void saveConnector(String connectorName, AuthCredentials authCredentials);
 
-	public void savePrincipal(InterWebPrincipal principal, String password);
-	
+    public void saveConsumer(String userName, Consumer consumer);
 
-	public void saveUserAuthCredentials(String connectorName,
-	                                    String userName,
-	                                    String userId,
-	                                    AuthCredentials authCredentials);
-	
+    public void savePrincipal(InterWebPrincipal principal, String password);
 
-	public void updatePrincipal(InterWebPrincipal principal);
-	
+    public void saveUserAuthCredentials(String connectorName, String userName, String userId, AuthCredentials authCredentials);
 
-	void deleteMediator(String mediator);
-	
+    public void updatePrincipal(InterWebPrincipal principal);
 
-	boolean hasConnector(String connectorName);
-	
+    void deleteMediator(String mediator);
 
-	String readMediator(String userName);
-	
+    boolean hasConnector(String connectorName);
 
-	void saveMediator(String userName, String mediator);
+    String readMediator(String userName);
+
+    void saveMediator(String userName, String mediator);
 }

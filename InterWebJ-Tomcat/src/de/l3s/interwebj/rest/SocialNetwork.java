@@ -1,6 +1,5 @@
 package de.l3s.interwebj.rest;
 
-
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.List;
@@ -35,77 +34,68 @@ import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.util.CoreUtils;
 import de.l3s.interwebj.util.ExpirableMap;
 
-
 @Path("/getsocialnetwork")
-public class SocialNetwork
-    extends Endpoint
+public class SocialNetwork extends Endpoint
 {
-	
-	@Context
-	HttpServletRequest request;
-	@Context
-	private UriInfo uriInfo;
-	
 
-	@GET
-	@Produces(MediaType.APPLICATION_XML)
-	public XMLResponse getSocialNetworkResult(@QueryParam("userid") String userid,@QueryParam("connector") String connectorName)
-	                                  
-	{
-		
-		
-		try
-		{
-			Engine engine = Environment.getInstance().getEngine();
-			InterWebPrincipal principal = getPrincipal();
-			Environment.logger.info("principal: [" + principal + "]");
-			
-			UserSocialNetworkCollector collector = engine.getSocialNetworkOf(userid, principal, connectorName);
-			UserSocialNetworkResult userSocialNetwork = collector.retrieve();
-			
-			ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-			expirableMap.put(userid, userSocialNetwork);
-			//create xml objects to wrap like search response 
-			SocialNetworkResponse socialnetworkresponse = new SocialNetworkResponse(userSocialNetwork);
-			String userName = (principal == null)
-			    ? "anonymous" : principal.getName();
-			socialnetworkresponse.getSocialNetwork().setUser(userid);
-			Environment.logger.info(socialnetworkresponse.getSocialNetwork().getResults().size()
-			                        + " results found  "
-			                       );
-			return socialnetworkresponse;
-		}
-		catch (InterWebException e)
-		{
-			e.printStackTrace();
-			Environment.logger.severe(e.getMessage());
-			return new ErrorResponse(999, e.getMessage());
-		}
-	}
-	
+    @Context
+    HttpServletRequest request;
+    @Context
+    private UriInfo uriInfo;
 
-	
-	private static ErrorResponse checkServices(Query query, String services)
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    public XMLResponse getSocialNetworkResult(@QueryParam("userid") String userid, @QueryParam("connector") String connectorName)
+
+    {
+
+	try
 	{
-		Engine engine = Environment.getInstance().getEngine();
-		if (services == null || services.trim().length() == 0)
-		{
-			List<String> connectorNames = engine.getConnectorNames();
-			for (String connectorName : connectorNames)
-			{
-				query.addConnectorName(connectorName);
-			}
-			return null;
-		}
-		String[] serviceArray = services.split(",");
-		List<String> connectorNames = engine.getConnectorNames();
-		for (String service : serviceArray)
-		{
-			if (connectorNames.contains(service))
-			{
-				query.addConnectorName(service);
-			}
-		}
-		return null;
+	    Engine engine = Environment.getInstance().getEngine();
+	    InterWebPrincipal principal = getPrincipal();
+	    Environment.logger.info("principal: [" + principal + "]");
+
+	    UserSocialNetworkCollector collector = engine.getSocialNetworkOf(userid, principal, connectorName);
+	    UserSocialNetworkResult userSocialNetwork = collector.retrieve();
+
+	    ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
+	    expirableMap.put(userid, userSocialNetwork);
+	    //create xml objects to wrap like search response 
+	    SocialNetworkResponse socialnetworkresponse = new SocialNetworkResponse(userSocialNetwork);
+	    String userName = (principal == null) ? "anonymous" : principal.getName();
+	    socialnetworkresponse.getSocialNetwork().setUser(userid);
+	    Environment.logger.info(socialnetworkresponse.getSocialNetwork().getResults().size() + " results found  ");
+	    return socialnetworkresponse;
 	}
+	catch(InterWebException e)
+	{
+	    e.printStackTrace();
+	    Environment.logger.severe(e.getMessage());
+	    return new ErrorResponse(999, e.getMessage());
+	}
+    }
+
+    private static ErrorResponse checkServices(Query query, String services)
+    {
+	Engine engine = Environment.getInstance().getEngine();
+	if(services == null || services.trim().length() == 0)
+	{
+	    List<String> connectorNames = engine.getConnectorNames();
+	    for(String connectorName : connectorNames)
+	    {
+		query.addConnectorName(connectorName);
+	    }
+	    return null;
+	}
+	String[] serviceArray = services.split(",");
+	List<String> connectorNames = engine.getConnectorNames();
+	for(String service : serviceArray)
+	{
+	    if(connectorNames.contains(service))
+	    {
+		query.addConnectorName(service);
+	    }
+	}
+	return null;
+    }
 }

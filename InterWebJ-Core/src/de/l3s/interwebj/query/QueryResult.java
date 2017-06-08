@@ -1,97 +1,82 @@
 package de.l3s.interwebj.query;
 
-
 import java.io.*;
 import java.util.*;
 
-
-public class QueryResult
-    implements Serializable
+public class QueryResult implements Serializable
 {
-	
-	private static final long serialVersionUID = -2762679444319967129L;
-	
-	private Query query;
-	private List<ResultItem> resultItems;
-	private long elapsedTime;
-	private long createdTime;
-	private long totalResultCount;
-	
 
-	public QueryResult(Query query)
-	{
-		this.query = query;
-		resultItems = new LinkedList<ResultItem>();
-	}
-	
+    private static final long serialVersionUID = -2762679444319967129L;
 
-	public void addQueryResult(QueryResult queryResult)
-	{
-		for (ResultItem resultItem : queryResult.resultItems)
-		{
-			resultItems.add(resultItem);
-		}
-		totalResultCount = totalResultCount + queryResult.getTotalResultCount();
-	}
-	
+    private Query query;
+    private List<ResultItem> resultItems;
+    private long elapsedTime;
+    private long createdTime;
+    private long totalResultCount;
 
-	public void addResultItem(ResultItem resultItem)
-	{
-		resultItems.add(resultItem);
-	}
-	
+    public QueryResult(Query query)
+    {
+	this.query = query;
+	resultItems = new LinkedList<ResultItem>();
+    }
 
-	public long getCreatedTime()
+    public void addQueryResult(QueryResult queryResult)
+    {
+	for(ResultItem resultItem : queryResult.resultItems)
 	{
-		return createdTime;
+	    resultItems.add(resultItem);
 	}
-	
+	totalResultCount = totalResultCount + queryResult.getTotalResultCount();
+    }
 
-	public long getElapsedTime()
-	{
-		return elapsedTime;
-	}
-	
+    public void addResultItem(ResultItem resultItem)
+    {
+	resultItems.add(resultItem);
+    }
 
-	public Query getQuery()
-	{
-		return query;
-	}
-	
+    public long getCreatedTime()
+    {
+	return createdTime;
+    }
 
-	public List<ResultItem> getResultItems()
-	{
-		return resultItems;
-	}
-	
+    public long getElapsedTime()
+    {
+	return elapsedTime;
+    }
 
-	public long getTotalResultCount()
-	{
-		return totalResultCount;
-	}
-	
+    public Query getQuery()
+    {
+	return query;
+    }
 
-	public void setCreatedTime(long createdTime)
-	{
-		this.createdTime = createdTime;
-		query.setUpdated(createdTime);
-	}
-	
+    public List<ResultItem> getResultItems()
+    {
+	return resultItems;
+    }
 
-	public void setElapsedTime(long elapsedTime)
-	{
-		this.elapsedTime = elapsedTime;
-	}
-	
+    public long getTotalResultCount()
+    {
+	return totalResultCount;
+    }
 
-	public void setTotalResultCount(long totalResultCount)
-	{
-		this.totalResultCount = totalResultCount;
-	}
-	
+    public void setCreatedTime(long createdTime)
+    {
+	this.createdTime = createdTime;
+	query.setUpdated(createdTime);
+    }
 
-	public int size()
-	{
-		return resultItems.size();
-	}
+    public void setElapsedTime(long elapsedTime)
+    {
+	this.elapsedTime = elapsedTime;
+    }
+
+    public void setTotalResultCount(long totalResultCount)
+    {
+	this.totalResultCount = totalResultCount;
+    }
+
+    public int size()
+    {
+	return resultItems.size();
+    }
 }

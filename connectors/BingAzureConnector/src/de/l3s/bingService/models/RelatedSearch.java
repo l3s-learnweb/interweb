@@ -2,46 +2,55 @@ package de.l3s.bingService.models;
 
 import de.l3s.bingService.utils.UriUtils;
 
-public class RelatedSearch {
+public class RelatedSearch
+{
 
-	private String text;
+    private String text;
 
-	private String displayText;
+    private String displayText;
 
-	private String webSearchUrl;
+    private String webSearchUrl;
 
-	private String webSearchUrlPingSuffix;
+    private String webSearchUrlPingSuffix;
 
-	public String getText() {
-		return text;
-	}
+    public String getText()
+    {
+	return text;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public void setText(String text)
+    {
+	this.text = text;
+    }
 
-	public String getDisplayText() {
-		return displayText;
-	}
+    public String getDisplayText()
+    {
+	return displayText;
+    }
 
-	public void setDisplayText(String displayText) {
-		this.displayText = displayText;
-	}
+    public void setDisplayText(String displayText)
+    {
+	this.displayText = displayText;
+    }
 
-	public String getWebSearchUrl() {
-		return webSearchUrl;
-	}
+    public String getWebSearchUrl()
+    {
+	return webSearchUrl;
+    }
 
-	public void setWebSearchUrl(String webSearchUrl) {
-		this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
-	}
+    public void setWebSearchUrl(String webSearchUrl)
+    {
+	this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
+    }
 
-	public String getWebSearchUrlPingSuffix() {
-		return webSearchUrlPingSuffix;
-	}
+    public String getWebSearchUrlPingSuffix()
+    {
+	return webSearchUrlPingSuffix;
+    }
 
-	public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix) {
-		this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
-	}
+    public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix)
+    {
+	this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
+    }
 
 }
