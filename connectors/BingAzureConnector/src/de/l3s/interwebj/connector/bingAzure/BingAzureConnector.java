@@ -211,7 +211,7 @@ public class BingAzureConnector extends AbstractServiceConnector
 
     private BingResponse getWeb(Query query, AuthCredentials authCredentials) throws InterWebException, UnsupportedOperationException, IOException
     {
-	int count = query.getResultCount();//>20? query.getResultCount():20; // min 20 results per request
+	int count = query.getResultCount() > 20 ? query.getResultCount() : 20; // min 20 results per request to save money
 
 	BingQuery bingQuery = new BingQuery();
 	bingQuery.setQuery(query.getQuery());
