@@ -95,6 +95,7 @@ public class QueryResultCollector
 	QueryResult queryResult = new QueryResult(query);
 	long startTime = System.currentTimeMillis();
 	queryResult.setCreatedTime(startTime);
+	boolean errorOccurred = false;
 	for(FutureTask<QueryResult> task : tasks)
 	{
 	    try
@@ -113,6 +114,7 @@ public class QueryResultCollector
 	    }
 	    catch(TimeoutException e)
 	    {
+		errorOccurred = true;
 		task.cancel(true);
 		e.printStackTrace();
 		Environment.logger.severe(e.getMessage());
@@ -121,7 +123,8 @@ public class QueryResultCollector
 	queryResult.setElapsedTime(System.currentTimeMillis() - startTime);
 	queryResult = merger.merge(queryResult);
 
-	cache.put(query, queryResult);
+	if(!errorOccurred)
+	    cache.put(query, queryResult);
 
 	return queryResult;
     }

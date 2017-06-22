@@ -217,7 +217,7 @@ public class BingAzureConnector extends AbstractServiceConnector
 	bingQuery.setQuery(query.getQuery());
 	bingQuery.setCount(count);
 	bingQuery.setOffset((query.getPage() - 1) * count);
-	bingQuery.setMarket(createMarket(query.getLanguage()));
+	bingQuery.setMarket(query.getLanguage());//createMarket(query.getLanguage()));
 
 	return new BingApiService(authCredentials.getKey()).getResponseFromBingApi(bingQuery);
 
