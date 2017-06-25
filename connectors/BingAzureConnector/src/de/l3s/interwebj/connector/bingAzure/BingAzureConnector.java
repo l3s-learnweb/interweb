@@ -213,11 +213,15 @@ public class BingAzureConnector extends AbstractServiceConnector
     {
 	int count = query.getResultCount() > 20 ? query.getResultCount() : 20; // min 20 results per request to save money
 
+	String language = query.getLanguage();
+	if(language != null && language.length() == 2)
+	    language = createMarket(language);
+	
 	BingQuery bingQuery = new BingQuery();
 	bingQuery.setQuery(query.getQuery());
 	bingQuery.setCount(count);
 	bingQuery.setOffset((query.getPage() - 1) * count);
-	bingQuery.setMarket(query.getLanguage());//createMarket(query.getLanguage()));
+	bingQuery.setMarket(language);//createMarket(query.getLanguage()));
 
 	return new BingApiService(authCredentials.getKey()).getResponseFromBingApi(bingQuery);
 
