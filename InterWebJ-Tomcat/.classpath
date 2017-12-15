@@ -18,7 +18,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/axis.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/commons-discovery-0.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/jaxrpc.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/json.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/connectors/flickr/lib/saaj.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/InterWebJ-Core"/>
 	<classpathentry kind="lib" path="/InterWebJ-Core/lib/secondstring-20060615.jar"/>
