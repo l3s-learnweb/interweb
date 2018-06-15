@@ -9,8 +9,6 @@ import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
-import de.l3s.interwebj.query.UserSocialNetworkResult;
-import de.l3s.interwebj.socialsearch.SocialSearchQuery;
 
 public interface ServiceConnector
 {
@@ -24,8 +22,6 @@ public interface ServiceConnector
     public abstract AuthCredentials completeAuthentication(Parameters params) throws InterWebException;
 
     public abstract QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException;
-
-    public abstract UserSocialNetworkResult getUserSocialNetwork(String userid, AuthCredentials authCredentials) throws InterWebException;
 
     public abstract AuthCredentials getAuthCredentials();
 
@@ -78,8 +74,6 @@ public interface ServiceConnector
      * @throws InterWebException
      */
     public abstract Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException;
-
-    public abstract de.l3s.interwebj.socialsearch.SocialSearchResult get(SocialSearchQuery query, AuthCredentials authCredentials);
 
     public abstract String generateCallbackUrl(String baseApiUrl, Parameters parameters);
 

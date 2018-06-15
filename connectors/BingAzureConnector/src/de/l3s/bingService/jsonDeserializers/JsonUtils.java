@@ -12,6 +12,8 @@ public class JsonUtils
 
     public static Boolean getBoolean(JsonElement object)
     {
+	if(object == null)
+	    return null;
 	return Boolean.valueOf(object.getAsString());
     }
 }

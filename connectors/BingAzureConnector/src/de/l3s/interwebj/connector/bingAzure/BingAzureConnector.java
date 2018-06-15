@@ -24,9 +24,6 @@ import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
-import de.l3s.interwebj.query.UserSocialNetworkResult;
-import de.l3s.interwebj.socialsearch.SocialSearchQuery;
-import de.l3s.interwebj.socialsearch.SocialSearchResult;
 
 public class BingAzureConnector extends AbstractServiceConnector
 {
@@ -79,11 +76,24 @@ public class BingAzureConnector extends AbstractServiceConnector
 
 	try
 	{
+	    int count = query.getResultCount() > 20 ? query.getResultCount() : 20; // min 20 results per request to save money
+
+	    String language = query.getLanguage();
+	    if(language != null && language.length() == 2)
+		language = createMarket(language);
+
+	    BingQuery bingQuery = new BingQuery();
+	    bingQuery.setQuery(query.getQuery());
+	    bingQuery.setCount(count);
+	    bingQuery.setOffset((query.getPage() - 1) * count);
+	    bingQuery.setMarket(language);//createMarket(query.getLanguage()));
+
+	    BingApiService bingApiService = new BingApiService(authCredentials.getKey());
+	    BingResponse response = bingApiService.getResponseFromBingApi(bingQuery);
+
 	    QueryResult results = new QueryResult(query);
 
 	    long totalResultCount = 0;
-	    BingResponse response = getWeb(query, authCredentials);
-
 	    if(query.getContentTypes().contains(Query.CT_TEXT))
 	    {
 		QueryResult queryResult = new QueryResult(null);
@@ -125,7 +135,7 @@ public class BingAzureConnector extends AbstractServiceConnector
 			Environment.logger.warning("No text results found; response: " + response.getJsonContent());
 		}
 		else
-		    Environment.logger.warning("Result pages are null");
+		    Environment.logger.warning("Result pages are null; Response: " + bingApiService.getRawBingResponse());
 	    }
 
 	    if(query.getContentTypes().contains(Query.CT_IMAGE))
@@ -133,7 +143,7 @@ public class BingAzureConnector extends AbstractServiceConnector
 		ImageHolder images = response.getImages();
 
 		if(images == null)
-		    Environment.logger.warning("images is null");
+		    Environment.logger.warning("images is null for query " + query.getQuery());
 		else
 		{
 		    QueryResult queryResult = new QueryResult(null);
@@ -207,24 +217,6 @@ public class BingAzureConnector extends AbstractServiceConnector
 	{
 	    throw new InterWebException(e);
 	}
-    }
-
-    private BingResponse getWeb(Query query, AuthCredentials authCredentials) throws InterWebException, UnsupportedOperationException, IOException
-    {
-	int count = query.getResultCount() > 20 ? query.getResultCount() : 20; // min 20 results per request to save money
-
-	String language = query.getLanguage();
-	if(language != null && language.length() == 2)
-	    language = createMarket(language);
-	
-	BingQuery bingQuery = new BingQuery();
-	bingQuery.setQuery(query.getQuery());
-	bingQuery.setCount(count);
-	bingQuery.setOffset((query.getPage() - 1) * count);
-	bingQuery.setMarket(language);//createMarket(query.getLanguage()));
-
-	return new BingApiService(authCredentials.getKey()).getResponseFromBingApi(bingQuery);
-
     }
 
     @Override
@@ -354,19 +346,5 @@ public class BingAzureConnector extends AbstractServiceConnector
     public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException
     {
 	throw new InterWebException("not implemented");
-    }
-
-    @Override
-    public UserSocialNetworkResult getUserSocialNetwork(String userid, AuthCredentials authCredentials) throws InterWebException
-    {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
-    @Override
-    public SocialSearchResult get(SocialSearchQuery query, AuthCredentials authCredentials)
-    {
-	// TODO Auto-generated method stub
-	return null;
     }
 }

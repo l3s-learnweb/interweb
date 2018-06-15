@@ -34,17 +34,13 @@ import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.jaxb.ErrorResponse;
 import de.l3s.interwebj.jaxb.OkResponse;
-import de.l3s.interwebj.jaxb.SocialNetworkResponse;
 import de.l3s.interwebj.jaxb.XMLResponse;
 import de.l3s.interwebj.jaxb.services.AuthorizationLinkEntity;
 import de.l3s.interwebj.jaxb.services.AuthorizationLinkResponse;
 import de.l3s.interwebj.jaxb.services.ServiceEntity;
 import de.l3s.interwebj.jaxb.services.ServiceResponse;
 import de.l3s.interwebj.jaxb.services.ServicesResponse;
-import de.l3s.interwebj.query.UserSocialNetworkCollector;
-import de.l3s.interwebj.query.UserSocialNetworkResult;
 import de.l3s.interwebj.util.CoreUtils;
-import de.l3s.interwebj.util.ExpirableMap;
 
 @Path("/users/{user}")
 public class User extends Endpoint
@@ -54,38 +50,7 @@ public class User extends Endpoint
     protected String userName;
     private InterWebPrincipal targetPrincipal;
 
-    @GET
-    @Path("/services/{service}/socialnetwork")
-    @Produces(MediaType.APPLICATION_XML)
-    public XMLResponse getSocialNetworkResult(@QueryParam("userid") String userid, @PathParam("service") String connectorName)
 
-    {
-
-	try
-	{
-	    Engine engine = Environment.getInstance().getEngine();
-	    InterWebPrincipal principal = getPrincipal();
-	    Environment.logger.info("principal: [" + principal + "]");
-
-	    UserSocialNetworkCollector collector = engine.getSocialNetworkOf(userid, principal, connectorName);
-	    UserSocialNetworkResult userSocialNetwork = collector.retrieve();
-
-	    ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-	    expirableMap.put(userid, userSocialNetwork);
-	    //create xml objects to wrap like search response 
-	    SocialNetworkResponse socialnetworkresponse = new SocialNetworkResponse(userSocialNetwork);
-	    // String userName = (principal == null) ? "anonymous" : principal.getName();
-	    socialnetworkresponse.getSocialNetwork().setUser(userid);
-	    Environment.logger.info(socialnetworkresponse.getSocialNetwork().getResults().size() + " results found  ");
-	    return socialnetworkresponse;
-	}
-	catch(InterWebException e)
-	{
-	    e.printStackTrace();
-	    Environment.logger.severe(e.getMessage());
-	    return new ErrorResponse(999, e.getMessage());
-	}
-    }
 
     @POST
     @Path("/services/{service}/auth")

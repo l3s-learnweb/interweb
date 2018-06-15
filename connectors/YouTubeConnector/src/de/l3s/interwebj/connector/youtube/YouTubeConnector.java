@@ -18,13 +18,17 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.googleapis.media.MediaHttpUploader;
+import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -37,10 +41,6 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoListResponse;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.media.MediaHttpUploader;
-import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
-import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
 import com.google.api.services.youtube.model.VideoStatus;
@@ -55,12 +55,9 @@ import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.query.Query;
-import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
-import de.l3s.interwebj.query.UserSocialNetworkResult;
-import de.l3s.interwebj.socialsearch.SocialSearchQuery;
-import de.l3s.interwebj.socialsearch.SocialSearchResult;
+import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.util.CoreUtils;
 
 public class YouTubeConnector extends AbstractServiceConnector
@@ -754,19 +751,5 @@ public class YouTubeConnector extends AbstractServiceConnector
     {
 	// TODO Auto-generated method stub
 	throw new NotImplementedException();
-    }
-
-    @Override
-    public UserSocialNetworkResult getUserSocialNetwork(String userid, AuthCredentials authCredentials) throws InterWebException
-    {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
-    @Override
-    public SocialSearchResult get(SocialSearchQuery query, AuthCredentials authCredentials)
-    {
-	// TODO Auto-generated method stub
-	return null;
     }
 }

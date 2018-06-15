@@ -41,9 +41,6 @@ import de.l3s.interwebj.query.QueryFactory;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
-import de.l3s.interwebj.query.UserSocialNetworkResult;
-import de.l3s.interwebj.socialsearch.SocialSearchQuery;
-import de.l3s.interwebj.socialsearch.SocialSearchResult;
 import de.l3s.interwebj.util.CoreUtils;
 
 public class SlideShareConnector extends AbstractServiceConnector
@@ -406,19 +403,5 @@ public class SlideShareConnector extends AbstractServiceConnector
 	System.out.println(id);
 	String embedded = ssc.getEmbedded(null, "http://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
 	System.out.println(embedded);
-    }
-
-    @Override
-    public UserSocialNetworkResult getUserSocialNetwork(String userid, AuthCredentials authCredentials) throws InterWebException
-    {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
-    @Override
-    public SocialSearchResult get(SocialSearchQuery query, AuthCredentials authCredentials)
-    {
-	// TODO Auto-generated method stub
-	return null;
     }
 }

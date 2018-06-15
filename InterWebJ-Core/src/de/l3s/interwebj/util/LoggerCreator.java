@@ -3,6 +3,7 @@ package de.l3s.interwebj.util;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
@@ -10,6 +11,8 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+
+import com.sun.mail.util.logging.MailHandler;
 
 public class LoggerCreator
 {
@@ -56,10 +59,21 @@ public class LoggerCreator
 	logger.setLevel(Level.ALL);
 	logger.setUseParentHandlers(false);
 	Formatter formatter = new DefaultFormatter();
+
 	Handler consoleHandler = new ConsoleHandler();
 	consoleHandler.setLevel(Level.ALL);
 	consoleHandler.setFormatter(formatter);
 	logger.addHandler(consoleHandler);
+	
+	Properties props = new Properties();
+	props.put("mail.smtp.host", "l3s.de");	
+	props.put("mail.from", "no-reply@l3s.de");
+	props.put("mail.to", "kemkes@l3s.de");
+	props.put("verify", "local");
+	props.put("capacity", "10");	
+	 
+	MailHandler h = new MailHandler(props);
+	h.setLevel(Level.WARNING);
 	return logger;
     }
 }

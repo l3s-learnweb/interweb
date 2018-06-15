@@ -5,7 +5,6 @@ import static de.l3s.interwebj.util.Assertions.notNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -27,7 +26,6 @@ import com.aetrion.flickr.RequestContext;
 import com.aetrion.flickr.auth.Auth;
 import com.aetrion.flickr.auth.AuthInterface;
 import com.aetrion.flickr.auth.Permission;
-import com.aetrion.flickr.contacts.Contact;
 import com.aetrion.flickr.people.User;
 import com.aetrion.flickr.photos.Photo;
 import com.aetrion.flickr.photos.PhotoList;
@@ -45,16 +43,12 @@ import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
-import de.l3s.interwebj.query.ContactFromSocialNetwork;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.Query.SortOrder;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
-import de.l3s.interwebj.query.UserSocialNetworkResult;
-import de.l3s.interwebj.socialsearch.SocialSearchQuery;
-import de.l3s.interwebj.socialsearch.SocialSearchResult;
 import de.l3s.interwebj.util.CoreUtils;
 
 public class FlickrConnector extends AbstractServiceConnector
@@ -708,58 +702,4 @@ public class FlickrConnector extends AbstractServiceConnector
 	return users;
     }
 
-    @Override
-    public UserSocialNetworkResult getUserSocialNetwork(String userid, AuthCredentials authCredentials) throws InterWebException
-    {
-
-	Flickr flickr = createFlickrInstance();
-
-	UserSocialNetworkResult socialnetwork = new UserSocialNetworkResult(userid);
-	try
-	{
-	    if(authCredentials == null)
-		flickr.getContactsInterface().getPublicList(userid);
-	    else
-	    {
-		RequestContext requestContext = RequestContext.getRequestContext();
-		Auth auth = new Auth();
-		requestContext.setAuth(auth);
-		auth.setToken(authCredentials.getKey());
-		auth.setPermission(Permission.READ);
-		flickr = createFlickrInstance();
-		ArrayList<Contact> contactlist = new ArrayList<Contact>(flickr.getContactsInterface().getList());
-		for(Contact contact : contactlist)
-		{
-		    ContactFromSocialNetwork person = new ContactFromSocialNetwork(contact.getUsername(), contact.getId(), 1, "Flickr");
-		    socialnetwork.getResultItems().put(contact.getId(), person);
-		}
-
-	    }
-
-	}
-	catch(IOException e)
-	{
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	catch(SAXException e)
-	{
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	catch(FlickrException e)
-	{
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
-	return socialnetwork;
-    }
-
-    @Override
-    public SocialSearchResult get(SocialSearchQuery query, AuthCredentials authCredentials)
-    {
-	// TODO Auto-generated method stub
-	return null;
-    }
 }

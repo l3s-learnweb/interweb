@@ -14,7 +14,6 @@ import de.l3s.interwebj.webutil.FacesUtils;
 @ApplicationScoped
 public class InterWebJBean
 {
-
     @SuppressWarnings("deprecation")
     public String getBaseUrl()
     {

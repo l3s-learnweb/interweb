@@ -28,12 +28,9 @@ import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.QueryResultCollector;
 import de.l3s.interwebj.query.QueryResultMerger;
 import de.l3s.interwebj.query.ResultItem;
-import de.l3s.interwebj.query.UserSocialNetworkCollector;
-import de.l3s.interwebj.socialsearch.SocialSearchQuery;
-import de.l3s.interwebj.socialsearch.SocialSearchResultCollector;
 import de.l3s.interwebj.util.ExpirableMap;
 import de.l3s.interwebj.util.ExpirationPolicy;
-
+ 
 public class Engine
 {
     private Map<String, ServiceConnector> connectors;
@@ -243,57 +240,7 @@ public class Engine
 	}
 	Environment.logger.info("... uploading done");
 	return null;
-    }
-
-    public UserSocialNetworkCollector getSocialNetworkOf(String userid, Principal principal, String connectorName)
-    {
-	UserSocialNetworkCollector col = new UserSocialNetworkCollector(userid, null);
-	Environment.logger.info("connectorName: [" + connectorName + "]");
-	ServiceConnector connector = getConnector(connectorName);
-	if(connector != null && connector.isRegistered() && isUserAuthenticated(connector, principal))
-	{
-	    Environment.logger.info("authorizing: " + connectorName);
-	    AuthCredentials userAuthCredentials = getUserAuthCredentials(connector, principal);
-
-	    //storing sn from interweb interface				try {
-	    //					result = connector.getUserSocialNetwork(userid,userAuthCredentials);
-	    //					System.out.println(result.toString()+ "size ="+ result.getResultItems().size());
-	    //				} catch (InterWebException e) {
-	    //					// TODO Auto-generated catch block
-	    //					e.printStackTrace();
-	    //				}
-
-	    col.addSocialNetworkRetriever(connector, userAuthCredentials);
-	    Environment.logger.info("done");
-
-	}
-
-	Environment.logger.info("... got social network");
-
-	return col;
-
-    }
-
-    public SocialSearchResultCollector getSocialSearchResultsOf(String query, Principal principal)
-    {
-
-	String connectorName = "Facebook";
-
-	Environment.logger.info(query.toString());
-
-	SocialSearchQuery squery = new SocialSearchQuery(query);
-	SocialSearchResultCollector collector = new SocialSearchResultCollector(squery);
-
-	ServiceConnector connector = getConnector(connectorName);
-	if(connector.isRegistered())
-	{
-	    AuthCredentials authCredentials = getUserAuthCredentials(connector, principal);
-	    collector.addSocialSearchResultRetriever(connector, authCredentials);
-	}
-
-	return collector;
-
-    }
+    }   
 
     private void addConnector(ServiceConnector connector)
     {
