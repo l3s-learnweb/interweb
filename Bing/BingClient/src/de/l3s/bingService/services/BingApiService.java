@@ -158,7 +158,9 @@ public class BingApiService implements BingRequestConstants
 	{
 	    builder.setParameter(PARAMETER_LANGUAGE, bingUrl.getLanguage());
 	}
-	return builder.build();
+	URI uri = builder.build();
+	log.debug("Request Uri {}", uri);
+	return uri;
     }
 
 }
