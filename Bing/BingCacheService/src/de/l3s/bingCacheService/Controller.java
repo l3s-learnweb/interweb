@@ -20,7 +20,6 @@ public class Controller extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Received POST request");
 		//Checks if client has the correct key
 		String key = request.getHeader("Ocp-Apim-Subscription-Key");
 		int clientAllowed = DBManager.instance().checkClientPriveleges(key);
@@ -38,17 +37,20 @@ public class Controller extends HttpServlet {
 			return;
 		}
 
+		//Max length of request allowed in bing
+		if(q.length()>1500){
+			q=q.substring(0,1499);
+		}
+
 		String offset = request.getParameter("offset");
 		String freshness = request.getParameter("freshness");
 		String safeSearch = request.getParameter("safeSearch");
 		String mkt = request.getParameter("mkt");
 		String lang= request.getParameter("setLang");
 
-		System.out.println("Received query with following params. Query: "+q+". Offset: "+offset+".  Freshness: "+freshness+". Safe search: "+safeSearch+". Market: "+mkt+". Language: "+lang);
-		System.out.println("Client key: "+key);
+		log.debug("Received query with following params. Query: "+q+". Offset: "+offset+".  Freshness: "+freshness+". Safe search: "+safeSearch+". Market: "+mkt+". Language: "+lang+". Client key: "+key);
 
 		String queryResponse = getQueryResult(q, mkt, lang, offset, freshness, safeSearch, key, clientAllowed);
-		System.out.println("RESPONSE: "+queryResponse);
 
 		if(queryResponse==null){
 			if(clientAllowed==1){
@@ -101,8 +103,6 @@ public class Controller extends HttpServlet {
 			lang=mkt.split("-")[1];
 		}
 
-		System.out.println("Trying to process query...");
-
 		Response cachedResponse = DBManager.instance().retrieveCachedResult(query, mkt, lang, offset, freshness, safeSearch, clientAllowed);
 
 		//If there is no cached response, checks if client can make paid requests. If yes, makes bing request
@@ -110,28 +110,29 @@ public class Controller extends HttpServlet {
 		//If the cached response exists, but isn't outdated, client cant make bing requests, or the re-issued bing request failed, returs last available response
 		String res;
 		if(cachedResponse==null){
-			System.out.println("Cached response doesnt exist. Checking if client can make requests...");
 			res=null;
 			if(clientAllowed==1){
-				System.out.println("Client allowed to make requests. Attempting...");
 				res=makeQueryToServer(query, mkt, lang, offset, freshness, safeSearch, clientKey);
-				System.out.print("Received response: "+res);
+				log.debug("Query not in cache; response requested and recorded.");
+			}
+			else{
+				log.debug("Query not in cache; client lacks priveleges to request one.");
 			}
 		}
 		else{
-			System.out.println("Cached response exists. Checking freshness...");
 			if(cachedResponse.isExpired() && clientAllowed==1){
-				System.out.println("Expired and client allowed. Attempting...");
 				res=makeQueryToServer(query, mkt, lang, offset, freshness, safeSearch, clientKey);
-				System.out.print("Received response: "+res);
 
 				if(res==null){
-					System.out.print("Received null, returning cached result.");
+					log.debug("Query in cache, but expired; request for a fresher response failed.");
 					res=cachedResponse.getText();
+				}
+				else{
+					log.debug("Query in cache, but expired; fresher response requested and recorded.");
 				}
 			}
 			else{
-				System.out.println("Not expired or client lacks priveleges. Returning cached results.");
+				log.debug("Query in cache. Returning.");
 				res=cachedResponse.getText();
 			}
 		}
@@ -146,7 +147,6 @@ public class Controller extends HttpServlet {
 	private String makeQueryToServer(String query, String mkt, String lang, int offset, String freshness, String safeSearch, String clientKey){
 		String bingResponse = BingApiService.getResponseString(query, mkt, lang, offset,freshness, safeSearch, clientKey);
 		if(bingResponse != null){
-			System.out.println("Request successful, recoring to DB");
 			DBManager.instance().addRequest(query, mkt, lang, offset, freshness, safeSearch, clientKey, bingResponse);
 		}
 

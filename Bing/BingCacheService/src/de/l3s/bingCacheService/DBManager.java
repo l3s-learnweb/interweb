@@ -13,7 +13,6 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 
 import de.l3s.bingCacheService.entity.Response;
-import de.l3s.bingService.services.BingApiService;
 
 public class DBManager {
 
@@ -27,23 +26,10 @@ public class DBManager {
 	private static final String pass="QvkF0hDbKLnTOwgJ";
 	private static final int timeoutDays=30;
 
-	//TODO: This si for debugging purposes, the final version will have it deleted
+	//TODO: This is a debug method. Run this to do actions on the databse, like look at requests, queries etc
 	public static void main(String[] args) throws SQLException{
 		System.out.println("Connection starting:");
 		Connection conn2 = DriverManager.getConnection(connectionString,username,pass);
-
-//		PreparedStatement insert = conn2.prepareStatement("INSERT INTO b_query (query, market, lang, offset, freshness, safeSearch) VALUES ('Testing2','None','EN',0,'None','Moderate')", Statement.RETURN_GENERATED_KEYS);
-//		insert.execute();
-//		ResultSet rrs = insert.getGeneratedKeys();
-//		if(rrs.next()){
-//			System.out.println("Added query #" +rrs.getInt(1));
-//
-//		}
-
-//		DBManager.instance().addRequest("Cat", null,null, 0, null, null, "***REMOVED***", "Test response containing cats");
-		DBManager.instance().updateRequest("Cat", null, null, 0, null, null, "***REMOVED***","BARK BARK BJORK");
-
-//		System.out.println(DBManager.instance().checkClientPriveleges("***REMOVED***"));
 
 		PreparedStatement select = conn2.prepareStatement("SELECT * FROM b_request");
 		ResultSet rs = select.executeQuery();
