@@ -22,6 +22,7 @@ import de.l3s.bingService.models.query.BingQuery;
 public class BingApiService implements BingRequestConstants {
 	private final static Logger log = LogManager.getLogger(BingApiService.class);
 
+	//TODO: Remove this? Since the functionality has moved to controller part
 	private static String readJsonResponseAsString(BufferedReader rd) throws IOException {
 		StringBuilder result = new StringBuilder();
 		String line;
@@ -31,7 +32,6 @@ public class BingApiService implements BingRequestConstants {
 		return result.toString();
 	}
 
-	//TODO: Remove this? Since the functionality has moved to
 	private static HttpUriRequest createRequest(BingQuery bingUrl, String clientKey) {
 		HttpGet request = null;
 		try {
