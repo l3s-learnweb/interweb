@@ -31,6 +31,7 @@ public class BingApiService implements BingRequestConstants {
 		return result.toString();
 	}
 
+	//TODO: Remove this? Since the functionality has moved to
 	private static HttpUriRequest createRequest(BingQuery bingUrl, String clientKey) {
 		HttpGet request = null;
 		try {
@@ -78,7 +79,7 @@ public class BingApiService implements BingRequestConstants {
 		return bingResponse;
 	}
 
-	public static String getResponseString(String query, String mkt, String lang, int offset, String freshness, String safeSearch, String clientKey){
+	public static HttpResponse getResponseString(String query, String mkt, String lang, int offset, String freshness, String safeSearch, String clientKey){
 		BingQuery q = new BingQuery(query, mkt, lang, offset, freshness, safeSearch);
 		HttpUriRequest queryRequest = createRequest(q, clientKey);
 
@@ -87,8 +88,8 @@ public class BingApiService implements BingRequestConstants {
 		HttpResponse response;
 		try {
 			response = client.execute(queryRequest);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-			return readJsonResponseAsString(reader);
+
+			return response;
 
 		} catch (IOException e) {
 			log.error("Error during HTTP request. Error message: ",e);

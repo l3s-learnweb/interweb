@@ -72,6 +72,11 @@ public class DBManager {
 	 * @param allowPaidSearch Whether the client is allowed to make new paid bing searches. Clients that are not allowed to use paid search can still use cached searches.
 	 */
 	public void addClient(String key, String description, int allowPaidSearch){
+		if(conn==null){
+			log.error("Initial server connection error. Serviced must be restarted.");
+			return;
+		}
+
 		try(PreparedStatement insert = conn.prepareStatement("INSERT INTO b_client(`key`,description,allow_paid_requests)  VALUES(?,?,?)")){
 			insert.setString(1, key);
 			insert.setString(2, description);
@@ -94,6 +99,11 @@ public class DBManager {
 	 * @return ID of the inserted query. Returns -1 if an error happens and insertion fails
 	 */
 	public int addQuery(String query, String mrkt, String lang, int offset, String freshness, String safeSearch){
+		if(conn==null){
+			log.error("Initial server connection error. Serviced must be restarted.");
+			return -1;
+		}
+
 		try(PreparedStatement insert = conn.prepareStatement("INSERT INTO b_query (query, market, lang, offset, freshness, safeSearch) VALUES (?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS)){
 			if(lang==null){
 				lang="EN";
@@ -156,6 +166,11 @@ public class DBManager {
 	 * @return ID of the selected query. Returns -1 if no query has been found
 	 */
 	public int getQueryID(String query, String mrkt, String lang, int offset, String freshness, String safeSearch){
+		if(conn==null){
+			log.error("Initial server connection error. Serviced must be restarted.");
+			return -1;
+		}
+
 		try(PreparedStatement select = conn.prepareStatement("SELECT query_id FROM b_query WHERE (query=?) AND ( market=?) AND ( lang=?) AND ( offset=?) AND ( freshness=?) AND ( safeSearch=?)")){
 			if(lang==null){
 				lang="EN";
@@ -213,6 +228,11 @@ public class DBManager {
 	 * @param clientKey Client's unique key
 	 */
 	public void addRequest(String query, String mkt, String lang, int off, String freshness, String safeSearch, String clientKey, String response){
+		if(conn==null){
+			log.error("Initial server connection error. Serviced must be restarted.");
+			return;
+		}
+
 		int clientID = getClientID(clientKey);
 		int queryID = addQuery(query, mkt, lang, off, freshness, safeSearch);
 
@@ -243,6 +263,11 @@ public class DBManager {
 	 * @return Response object containing the json of the results and whether it needs to be updated. Returns null if the result isn't found.
 	 */
 	public Response retrieveCachedResult(String query, String mrkt, String lang, int offset, String freshness, String safeSearch, int clientAllowed){
+		if(conn==null){
+			log.error("Initial server connection error. Serviced must be restarted.");
+			return null;
+		}
+
 		try(PreparedStatement select = conn.prepareStatement("SELECT response, timestamp FROM b_query JOIN b_request ON b_query.query_id = b_request.query_id WHERE (query=?) AND ( market=?) AND ( lang=?) AND ( offset=?) AND ( freshness=?) AND ( safeSearch=?)")){
 			if(lang==null){
 				lang="EN";
@@ -299,6 +324,11 @@ public class DBManager {
 	 * @return 0 if not allowed, 1 if allowed and -1 if client isn't in the database.
 	 */
 	public int checkClientPriveleges(String key){
+		if(conn==null){
+			log.error("Initial server connection error. Serviced must be restarted.");
+			return -1;
+		}
+
 		if(key==null){
 			return -1;
 		}
@@ -322,6 +352,11 @@ public class DBManager {
 	 * @return ID. Returns -1 if ID is not found.
 	 */
 	public int getClientID(String key){
+		if(conn==null){
+			log.error("Initial server connection error. Serviced must be restarted.");
+			return -1;
+		}
+
 		try(PreparedStatement select = conn.prepareStatement("SELECT client_id FROM b_client WHERE `key`=?")){
 			select.setString(1, key);
 			ResultSet rs = select.executeQuery();
@@ -343,6 +378,11 @@ public class DBManager {
 	 * @param response
 	 */
 	public void updateRequest(String query, String mkt, String lang, int off, String freshness, String safeSearch, String clientKey, String response){
+		if(conn==null){
+			log.error("Initial server connection error. Serviced must be restarted.");
+			return;
+		}
+
 		int clientID = getClientID(clientKey);
 		int queryID = getQueryID(query, mkt, lang, off, freshness, safeSearch);
 

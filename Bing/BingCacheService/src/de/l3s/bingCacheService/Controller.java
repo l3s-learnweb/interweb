@@ -1,6 +1,8 @@
 package de.l3s.bingCacheService;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
@@ -8,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 
 import de.l3s.bingCacheService.entity.Response;
@@ -50,7 +54,7 @@ public class Controller extends HttpServlet {
 
 		log.debug("Received query with following params. Query: "+q+". Offset: "+offset+".  Freshness: "+freshness+". Safe search: "+safeSearch+". Market: "+mkt+". Language: "+lang+". Client key: "+key);
 
-		String queryResponse = getQueryResult(q, mkt, lang, offset, freshness, safeSearch, key, clientAllowed);
+		String queryResponse = getQueryResult(q, mkt, lang, offset, freshness, safeSearch, key, clientAllowed, response);
 
 		if(queryResponse==null){
 			if(clientAllowed==1){
@@ -77,8 +81,10 @@ public class Controller extends HttpServlet {
 
 	/**
 	 * Gets query JSON string from the cache.
+	 * @param response
+	 * @throws IOException
 	 */
-	private String getQueryResult(String query, String mkt, String lang, String off, String freshness, String safeSearch, String clientKey, int clientAllowed){
+	private String getQueryResult(String query, String mkt, String lang, String off, String freshness, String safeSearch, String clientKey, int clientAllowed, HttpServletResponse response) throws IOException{
 		int offset;
 
 		try{
@@ -99,9 +105,11 @@ public class Controller extends HttpServlet {
 			if(mkt==null){
 				lang="EN";
 			}
+			else{
+				lang=mkt.split("-")[1];
+			}
 
-			lang=mkt.split("-")[1];
-		}
+			}
 
 		Response cachedResponse = DBManager.instance().retrieveCachedResult(query, mkt, lang, offset, freshness, safeSearch, clientAllowed);
 
@@ -112,7 +120,9 @@ public class Controller extends HttpServlet {
 		if(cachedResponse==null){
 			res=null;
 			if(clientAllowed==1){
-				res=makeQueryToServer(query, mkt, lang, offset, freshness, safeSearch, clientKey);
+				HttpResponse bingResponse = BingApiService.getResponseString(query, mkt, lang, offset,freshness, safeSearch, clientKey);
+				res = readJsonResponseAsString(bingResponse);
+				headersToServletHeaders(response, bingResponse);
 				log.debug("Query not in cache; response requested and recorded.");
 			}
 			else{
@@ -121,7 +131,9 @@ public class Controller extends HttpServlet {
 		}
 		else{
 			if(cachedResponse.isExpired() && clientAllowed==1){
-				res=makeQueryToServer(query, mkt, lang, offset, freshness, safeSearch, clientKey);
+				HttpResponse bingResponse = BingApiService.getResponseString(query, mkt, lang, offset,freshness, safeSearch, clientKey);
+				res = readJsonResponseAsString(bingResponse);
+				headersToServletHeaders(response, bingResponse);
 
 				if(res==null){
 					log.debug("Query in cache, but expired; request for a fresher response failed.");
@@ -141,16 +153,21 @@ public class Controller extends HttpServlet {
 		return res;
 	}
 
-	/**
-	 * Makes query to the BingClient.
-	 */
-	private String makeQueryToServer(String query, String mkt, String lang, int offset, String freshness, String safeSearch, String clientKey){
-		String bingResponse = BingApiService.getResponseString(query, mkt, lang, offset,freshness, safeSearch, clientKey);
-		if(bingResponse != null){
-			DBManager.instance().addRequest(query, mkt, lang, offset, freshness, safeSearch, clientKey, bingResponse);
+	private static void headersToServletHeaders(HttpServletResponse sres,HttpResponse hres){
+		Header[] headers = hres.getAllHeaders();
+		for(Header h: headers){
+			sres.addHeader(h.getName(),h.getValue() );
 		}
+	}
 
-		return bingResponse;
+	private static String readJsonResponseAsString(HttpResponse res) throws IOException {
+		BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent(), "UTF-8"));
+		StringBuilder result = new StringBuilder();
+		String line;
+		while ((line = rd.readLine()) != null) {
+			result.append(line);
+		}
+		return result.toString();
 	}
 
 }
