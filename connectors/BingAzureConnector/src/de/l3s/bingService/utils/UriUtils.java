@@ -28,6 +28,9 @@ public class UriUtils
 	{
 	    Map<String, String> query_pairs = new LinkedHashMap<String, String>();
 	    String query = fullUri.getQuery();
+	    if(query == null)
+		return url;
+	    
 	    String[] pairs = query.split("&");
 	    for(String pair : pairs)
 	    {

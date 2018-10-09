@@ -15,7 +15,7 @@ public interface BingRequestConstants
     public static final String X_MSEDGE_CLIENT_ID_HEADER = "X-MSEdge-ClientID";
     public static final String SCHEME = "https";
     public static final String HOST = "api.cognitive.microsoft.com";
-    public static final String PATH = "/bing/v5.0/search";
+    public static final String PATH = "/bing/v7.0/search";
     public static final String PARAMETER_TEXT_FORMAT = "textFormat";
     public static final String PARAMETER_VALUE_HTML = "HTML";
     public static final String PARAMETER_TEXT_DECORATIONS = "textDecorations";

@@ -27,15 +27,13 @@ public class BingApiService implements BingRequestConstants
     public static void main(String[] args) throws UnsupportedOperationException, IOException
     {
 	BingQuery query = new BingQuery();
-	query.setQuery("auto");
+	query.setQuery("clinton");
 	query.setMarket("en-US");
-	query.setCount(10);
+	query.setCount(60);
 	query.setOffset(0);
 
-	// "6e4a0b0056fd4d308dfc2e54763e1a5c"; kemkes
-	// "2182cb79d51e4fd3a8df9df7982f167c"; maria
-
-	BingResponse response = new BingApiService("195f994bbef145c587ae13df58b33c9a").getResponseFromBingApi(query);
+//195f994bbef145c587ae13df58b33c9a api 5
+	BingResponse response = new BingApiService("***REMOVED***").getResponseFromBingApi(query);
 
 	WebPagesMainHolder pages = response.getWebPages();
 	System.out.println("web pages: " + pages.getTotalEstimatedMatches());
