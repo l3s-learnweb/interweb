@@ -9,22 +9,22 @@ public class Instrumentation
 
     public String getPingUrlBase()
     {
-	return pingUrlBase;
+        return pingUrlBase;
     }
 
     public void setPingUrlBase(String pingUrlBase)
     {
-	this.pingUrlBase = pingUrlBase;
+        this.pingUrlBase = pingUrlBase;
     }
 
     public String getPageLoadPingUrl()
     {
-	return pageLoadPingUrl;
+        return pageLoadPingUrl;
     }
 
     public void setPageLoadPingUrl(String pageLoadPingUrl)
     {
-	this.pageLoadPingUrl = pageLoadPingUrl;
+        this.pageLoadPingUrl = pageLoadPingUrl;
     }
 
 }

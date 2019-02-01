@@ -23,13 +23,13 @@ public class RelatedSearchDeserializer implements JsonDeserializer<RelatedSearch
     @Override
     public RelatedSearch deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-	RelatedSearch relatedSearch = new RelatedSearch();
-	JsonObject jsonObject = json.getAsJsonObject();
-	relatedSearch.setText(getStringValue(jsonObject.get(TEXT)));
-	relatedSearch.setDisplayText(getStringValue(jsonObject.get(DISPLAY_TEXT)));
-	relatedSearch.setWebSearchUrl(getStringValue(jsonObject.get(WEB_SEARCH_URL)));
-	relatedSearch.setWebSearchUrlPingSuffix(getStringValue(jsonObject.get(WEB_SEARCH_URL_PING_SUFFIX)));
-	return relatedSearch;
+        RelatedSearch relatedSearch = new RelatedSearch();
+        JsonObject jsonObject = json.getAsJsonObject();
+        relatedSearch.setText(getStringValue(jsonObject.get(TEXT)));
+        relatedSearch.setDisplayText(getStringValue(jsonObject.get(DISPLAY_TEXT)));
+        relatedSearch.setWebSearchUrl(getStringValue(jsonObject.get(WEB_SEARCH_URL)));
+        relatedSearch.setWebSearchUrlPingSuffix(getStringValue(jsonObject.get(WEB_SEARCH_URL_PING_SUFFIX)));
+        return relatedSearch;
     }
 
 }

@@ -13,32 +13,32 @@ public class NewsHolder
 
     public String getId()
     {
-	return id;
+        return id;
     }
 
     public void setId(String id)
     {
-	this.id = id;
+        this.id = id;
     }
 
     public String getReadLink()
     {
-	return readLink;
+        return readLink;
     }
 
     public void setReadLink(String readLink)
     {
-	this.readLink = readLink;
+        this.readLink = readLink;
     }
 
     public List<New> getValue()
     {
-	return value;
+        return value;
     }
 
     public void setValue(List<New> value)
     {
-	this.value = value;
+        this.value = value;
     }
 
 }

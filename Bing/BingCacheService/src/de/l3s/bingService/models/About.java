@@ -9,28 +9,28 @@ public class About
 
     public String getName()
     {
-	return name;
+        return name;
     }
 
     public void setName(String name)
     {
-	this.name = name;
+        this.name = name;
     }
 
     public String getReadLink()
     {
-	return readLink;
+        return readLink;
     }
 
     public void setReadLink(String readLink)
     {
-	this.readLink = readLink;
+        this.readLink = readLink;
     }
 
     @Override
     public String toString()
     {
-	return "About [name=" + name + ", readLink=" + readLink + "]";
+        return "About [name=" + name + ", readLink=" + readLink + "]";
     }
 
 }

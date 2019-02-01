@@ -9,22 +9,22 @@ public class Image
 
     public String getContentSize()
     {
-	return contentSize;
+        return contentSize;
     }
 
     public void setContentSize(String contentSize)
     {
-	this.contentSize = contentSize;
+        this.contentSize = contentSize;
     }
 
     public Media getMedia()
     {
-	return media;
+        return media;
     }
 
     public void setMedia(Media media)
     {
-	this.media = media;
+        this.media = media;
     }
 
 }

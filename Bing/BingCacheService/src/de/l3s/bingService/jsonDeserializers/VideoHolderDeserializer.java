@@ -28,22 +28,22 @@ public class VideoHolderDeserializer implements JsonDeserializer<VideoHolder>
     @Override
     public VideoHolder deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-	VideoHolder holder = new VideoHolder();
-	JsonObject jsonObject = json.getAsJsonObject();
-	holder.setScenario(getStringValue(jsonObject.get(SCENARIO)));
-	holder.setReadLink(getStringValue(jsonObject.get(READ_LINK)));
-	holder.setWebSearchUrl(getStringValue(jsonObject.get(WEB_SEARCH_URL)));
-	holder.setFamilyFriendly(getBoolean(jsonObject.get(IS_FAMILY_FRIENDLY)));
-	JsonArray videos = jsonObject.getAsJsonArray(VALUE);
-	if(videos != null)
-	{
-	    holder.setValue(new ArrayList<>());
-	    for(JsonElement video : videos)
-	    {
-		holder.getValue().add(context.deserialize(video, Video.class));
-	    }
-	}
-	return holder;
+        VideoHolder holder = new VideoHolder();
+        JsonObject jsonObject = json.getAsJsonObject();
+        holder.setScenario(getStringValue(jsonObject.get(SCENARIO)));
+        holder.setReadLink(getStringValue(jsonObject.get(READ_LINK)));
+        holder.setWebSearchUrl(getStringValue(jsonObject.get(WEB_SEARCH_URL)));
+        holder.setFamilyFriendly(getBoolean(jsonObject.get(IS_FAMILY_FRIENDLY)));
+        JsonArray videos = jsonObject.getAsJsonArray(VALUE);
+        if(videos != null)
+        {
+            holder.setValue(new ArrayList<>());
+            for(JsonElement video : videos)
+            {
+                holder.getValue().add(context.deserialize(video, Video.class));
+            }
+        }
+        return holder;
     }
 
 }

@@ -11,22 +11,22 @@ public class RelatedSearchesHolder
 
     public String getId()
     {
-	return id;
+        return id;
     }
 
     public void setId(String id)
     {
-	this.id = id;
+        this.id = id;
     }
 
     public List<RelatedSearch> getValue()
     {
-	return value;
+        return value;
     }
 
     public void setValue(List<RelatedSearch> value)
     {
-	this.value = value;
+        this.value = value;
     }
 
 }

@@ -29,24 +29,24 @@ public class ImageMainHolderDeserializer implements JsonDeserializer<ImageHolder
     @Override
     public ImageHolder deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-	ImageHolder holder = new ImageHolder();
-	JsonObject jsonObject = json.getAsJsonObject();
-	holder.setId(getStringValue(jsonObject.get(ID)));
-	holder.setDisplayRecipeSourcesBadges(getBoolean(jsonObject.get(DISPLAY_RECIPE_SOURCES_BADGES)));
-	holder.setDisplayShoppingSourcesBadges(getBoolean(jsonObject.get(DISPLAY_SHOPPING_SOURCES_BADGES)));
-	holder.setReadLink(getStringValue(jsonObject.get(READ_LINK)));
-	holder.setWebSearchUrl(getStringValue(jsonObject.get(WEB_SEARCH_URL)));
-	holder.setWebSearchUrlPingSuffix(getStringValue(jsonObject.get(WEB_SEARCH_URL_PING_SUFFIX)));
-	JsonArray images = jsonObject.getAsJsonArray(VALUE);
-	if(images != null)
-	{
-	    holder.setValue(new ArrayList<>());
-	    for(JsonElement image : images)
-	    {
-		holder.getValue().add(context.deserialize(image, Image.class));
-	    }
-	}
-	return holder;
+        ImageHolder holder = new ImageHolder();
+        JsonObject jsonObject = json.getAsJsonObject();
+        holder.setId(getStringValue(jsonObject.get(ID)));
+        holder.setDisplayRecipeSourcesBadges(getBoolean(jsonObject.get(DISPLAY_RECIPE_SOURCES_BADGES)));
+        holder.setDisplayShoppingSourcesBadges(getBoolean(jsonObject.get(DISPLAY_SHOPPING_SOURCES_BADGES)));
+        holder.setReadLink(getStringValue(jsonObject.get(READ_LINK)));
+        holder.setWebSearchUrl(getStringValue(jsonObject.get(WEB_SEARCH_URL)));
+        holder.setWebSearchUrlPingSuffix(getStringValue(jsonObject.get(WEB_SEARCH_URL_PING_SUFFIX)));
+        JsonArray images = jsonObject.getAsJsonArray(VALUE);
+        if(images != null)
+        {
+            holder.setValue(new ArrayList<>());
+            for(JsonElement image : images)
+            {
+                holder.getValue().add(context.deserialize(image, Image.class));
+            }
+        }
+        return holder;
     }
 
 }

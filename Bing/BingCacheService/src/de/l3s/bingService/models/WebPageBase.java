@@ -13,32 +13,32 @@ public class WebPageBase
 
     public String getName()
     {
-	return name;
+        return name;
     }
 
     public void setName(String name)
     {
-	this.name = name;
+        this.name = name;
     }
 
     public String getUrl()
     {
-	return url;
+        return url;
     }
 
     public void setUrl(String url)
     {
-	this.url = UriUtils.splitQuery(url);
+        this.url = UriUtils.splitQuery(url);
     }
 
     public String getUrlPingSuffix()
     {
-	return urlPingSuffix;
+        return urlPingSuffix;
     }
 
     public void setUrlPingSuffix(String urlPingSuffix)
     {
-	this.urlPingSuffix = urlPingSuffix;
+        this.urlPingSuffix = urlPingSuffix;
     }
 
 }

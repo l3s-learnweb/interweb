@@ -21,82 +21,82 @@ public class BingResponse extends Entity
 
     public String getClientId()
     {
-	return clientId;
+        return clientId;
     }
 
     public void setClientId(String type)
     {
-	this.clientId = type;
+        this.clientId = type;
     }
 
     public Instrumentation getInstrumentation()
     {
-	return instrumentation;
+        return instrumentation;
     }
 
     public void setInstrumentation(Instrumentation instrumentation)
     {
-	this.instrumentation = instrumentation;
+        this.instrumentation = instrumentation;
     }
 
     public WebPagesMainHolder getWebPages()
     {
-	return webPages;
+        return webPages;
     }
 
     public void setWebPages(WebPagesMainHolder webPages)
     {
-	this.webPages = webPages;
+        this.webPages = webPages;
     }
 
     public ImageHolder getImages()
     {
-	return images;
+        return images;
     }
 
     public void setImages(ImageHolder images)
     {
-	this.images = images;
+        this.images = images;
     }
 
     public NewsHolder getNews()
     {
-	return news;
+        return news;
     }
 
     public void setNews(NewsHolder news)
     {
-	this.news = news;
+        this.news = news;
     }
 
     public VideoHolder getVideos()
     {
-	return videos;
+        return videos;
     }
 
     public void setVideos(VideoHolder videos)
     {
-	this.videos = videos;
+        this.videos = videos;
     }
 
     public String getQueryId()
     {
-	return queryId;
+        return queryId;
     }
 
     public void setQueryId(String queryId)
     {
-	this.queryId = queryId;
+        this.queryId = queryId;
     }
 
     public String getJsonContent()
     {
-	return jsonContent;
+        return jsonContent;
     }
 
     public void setJsonContent(String jsonContent)
     {
-	this.jsonContent = jsonContent;
+        this.jsonContent = jsonContent;
     }
 
 }

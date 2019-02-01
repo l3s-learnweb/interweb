@@ -19,62 +19,62 @@ public class New extends WebPageBase
 
     public Image getImage()
     {
-	return image;
+        return image;
     }
 
     public void setImage(Image image)
     {
-	this.image = image;
+        this.image = image;
     }
 
     public String getDescription()
     {
-	return description;
+        return description;
     }
 
     public void setDescription(String description)
     {
-	this.description = description;
+        this.description = description;
     }
 
     public List<About> getAbout()
     {
-	return about;
+        return about;
     }
 
     public void setAbout(List<About> about)
     {
-	this.about = about;
+        this.about = about;
     }
 
     public List<Provider> getProviders()
     {
-	return provider;
+        return provider;
     }
 
     public void setProviders(List<Provider> provider)
     {
-	this.provider = provider;
+        this.provider = provider;
     }
 
     public String getDatePublished()
     {
-	return datePublished;
+        return datePublished;
     }
 
     public void setDatePublished(String datePublished)
     {
-	this.datePublished = datePublished;
+        this.datePublished = datePublished;
     }
 
     public String getCategory()
     {
-	return category;
+        return category;
     }
 
     public void setCategory(String category)
     {
-	this.category = category;
+        this.category = category;
     }
 
 }

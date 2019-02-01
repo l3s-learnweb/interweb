@@ -25,20 +25,20 @@ public class NewsHolderDeserializer implements JsonDeserializer<NewsHolder>
     @Override
     public NewsHolder deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-	NewsHolder holder = new NewsHolder();
-	JsonObject jsonObject = json.getAsJsonObject();
-	holder.setId(getStringValue(jsonObject.get(ID)));
-	holder.setReadLink(getStringValue(jsonObject.get(READ_LINK)));
-	JsonArray news = jsonObject.getAsJsonArray(VALUE);
-	if(news != null)
-	{
-	    holder.setValue(new ArrayList<>());
-	    for(JsonElement element : news)
-	    {
-		holder.getValue().add(context.deserialize(element, WebPage.class));
-	    }
-	}
-	return holder;
+        NewsHolder holder = new NewsHolder();
+        JsonObject jsonObject = json.getAsJsonObject();
+        holder.setId(getStringValue(jsonObject.get(ID)));
+        holder.setReadLink(getStringValue(jsonObject.get(READ_LINK)));
+        JsonArray news = jsonObject.getAsJsonArray(VALUE);
+        if(news != null)
+        {
+            holder.setValue(new ArrayList<>());
+            for(JsonElement element : news)
+            {
+                holder.getValue().add(context.deserialize(element, WebPage.class));
+            }
+        }
+        return holder;
     }
 
 }

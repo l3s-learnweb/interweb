@@ -26,21 +26,21 @@ public class WebPageHolderDeserializer implements JsonDeserializer<WebPagesMainH
     @Override
     public WebPagesMainHolder deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-	WebPagesMainHolder holder = new WebPagesMainHolder();
-	JsonObject jsonObject = json.getAsJsonObject();
-	holder.setTotalEstimatedMatches(getStringValue(jsonObject.get(TOTAL_ESTIMATED_MATCHES)));
-	holder.setWebSearchUrl(getStringValue(jsonObject.get(WEB_SEARCH_URL)));
-	holder.setWebSearchUrlPingSuffix(getStringValue(jsonObject.get(WEB_SEARCH_URL_PING_SUFFIX)));
-	JsonArray webPages = jsonObject.getAsJsonArray(VALUE);
-	if(webPages != null)
-	{
-	    holder.setValue(new ArrayList<>());
-	    for(JsonElement webPage : webPages)
-	    {
-		holder.getValue().add(context.deserialize(webPage, WebPage.class));
-	    }
-	}
-	return holder;
+        WebPagesMainHolder holder = new WebPagesMainHolder();
+        JsonObject jsonObject = json.getAsJsonObject();
+        holder.setTotalEstimatedMatches(getStringValue(jsonObject.get(TOTAL_ESTIMATED_MATCHES)));
+        holder.setWebSearchUrl(getStringValue(jsonObject.get(WEB_SEARCH_URL)));
+        holder.setWebSearchUrlPingSuffix(getStringValue(jsonObject.get(WEB_SEARCH_URL_PING_SUFFIX)));
+        JsonArray webPages = jsonObject.getAsJsonArray(VALUE);
+        if(webPages != null)
+        {
+            holder.setValue(new ArrayList<>());
+            for(JsonElement webPage : webPages)
+            {
+                holder.getValue().add(context.deserialize(webPage, WebPage.class));
+            }
+        }
+        return holder;
     }
 
 }

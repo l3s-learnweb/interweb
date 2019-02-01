@@ -23,72 +23,72 @@ public class VideoHolder
 
     public String getId()
     {
-	return id;
+        return id;
     }
 
     public void setId(String id)
     {
-	this.id = id;
+        this.id = id;
     }
 
     public String getReadLink()
     {
-	return readLink;
+        return readLink;
     }
 
     public void setReadLink(String readLink)
     {
-	this.readLink = readLink;
+        this.readLink = readLink;
     }
 
     public String getWebSearchUrl()
     {
-	return webSearchUrl;
+        return webSearchUrl;
     }
 
     public void setWebSearchUrl(String webSearchUrl)
     {
-	this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
+        this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
     }
 
     public String getWebSearchUrlPingSuffix()
     {
-	return webSearchUrlPingSuffix;
+        return webSearchUrlPingSuffix;
     }
 
     public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix)
     {
-	this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
+        this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
     }
 
     public boolean isFamilyFriendly()
     {
-	return isFamilyFriendly;
+        return isFamilyFriendly;
     }
 
     public void setFamilyFriendly(boolean isFamilyFriendly)
     {
-	this.isFamilyFriendly = isFamilyFriendly;
+        this.isFamilyFriendly = isFamilyFriendly;
     }
 
     public List<Video> getValue()
     {
-	return value;
+        return value;
     }
 
     public void setValue(List<Video> value)
     {
-	this.value = value;
+        this.value = value;
     }
 
     public String getScenario()
     {
-	return scenario;
+        return scenario;
     }
 
     public void setScenario(String scenario)
     {
-	this.scenario = scenario;
+        this.scenario = scenario;
     }
 
 }

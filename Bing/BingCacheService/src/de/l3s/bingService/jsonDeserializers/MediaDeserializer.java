@@ -33,22 +33,22 @@ public class MediaDeserializer implements JsonDeserializer<Media>
     @Override
     public Media deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-	Media media = new Media();
-	JsonObject jsonObject = json.getAsJsonObject();
-	media.setContentUrl(getStringValue(jsonObject.get(CONTENT_URL)));
-	media.setDatePublished(getStringValue(jsonObject.get(DATE_PUBLISHED)));
-	media.setEncodingFormat(getStringValue(jsonObject.get(ENCODING_FORMAT)));
-	media.setHeight(getStringValue(jsonObject.get(HEIGHT)));
-	media.setHostPageDisplayUrl(getStringValue(jsonObject.get(HOST_PAGE_DISPLAY_URL)));
-	media.setHostPageUrlPingSuffix(getStringValue(jsonObject.get(HOST_PAGE_URL_PING_SUFFIX)));
-	media.setHostPageUrl(getStringValue(jsonObject.get(HOST_PAGE_URL)));
-	media.setName(getStringValue(jsonObject.get(NAME)));
-	media.setWidth(getStringValue(jsonObject.get(WIDTH)));
-	media.setThumbnailUrl(getStringValue(jsonObject.get(THUMBNAIL_URL)));
-	media.setWebSearchUrl(getStringValue(jsonObject.get(WEB_SEARCH_URL)));
-	media.setWebSearchUrlPingSuffix(getStringValue(jsonObject.get(WEB_SEARCH_URL_PING_SUFFIX)));
-	media.setThumbnail(context.deserialize(jsonObject.getAsJsonObject(THUMBNAIL), Thumbnail.class));
-	return media;
+        Media media = new Media();
+        JsonObject jsonObject = json.getAsJsonObject();
+        media.setContentUrl(getStringValue(jsonObject.get(CONTENT_URL)));
+        media.setDatePublished(getStringValue(jsonObject.get(DATE_PUBLISHED)));
+        media.setEncodingFormat(getStringValue(jsonObject.get(ENCODING_FORMAT)));
+        media.setHeight(getStringValue(jsonObject.get(HEIGHT)));
+        media.setHostPageDisplayUrl(getStringValue(jsonObject.get(HOST_PAGE_DISPLAY_URL)));
+        media.setHostPageUrlPingSuffix(getStringValue(jsonObject.get(HOST_PAGE_URL_PING_SUFFIX)));
+        media.setHostPageUrl(getStringValue(jsonObject.get(HOST_PAGE_URL)));
+        media.setName(getStringValue(jsonObject.get(NAME)));
+        media.setWidth(getStringValue(jsonObject.get(WIDTH)));
+        media.setThumbnailUrl(getStringValue(jsonObject.get(THUMBNAIL_URL)));
+        media.setWebSearchUrl(getStringValue(jsonObject.get(WEB_SEARCH_URL)));
+        media.setWebSearchUrlPingSuffix(getStringValue(jsonObject.get(WEB_SEARCH_URL_PING_SUFFIX)));
+        media.setThumbnail(context.deserialize(jsonObject.getAsJsonObject(THUMBNAIL), Thumbnail.class));
+        return media;
     }
 
 }

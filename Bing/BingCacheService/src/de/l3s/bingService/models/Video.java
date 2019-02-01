@@ -23,82 +23,82 @@ public class Video
 
     public String getDescription()
     {
-	return description;
+        return description;
     }
 
     public void setDescription(String description)
     {
-	this.description = description;
+        this.description = description;
     }
 
     public String getDuration()
     {
-	return duration;
+        return duration;
     }
 
     public void setDuration(String duration)
     {
-	this.duration = duration;
+        this.duration = duration;
     }
 
     public String getMotionThumbnailUrl()
     {
-	return motionThumbnailUrl;
+        return motionThumbnailUrl;
     }
 
     public void setMotionThumbnailUrl(String motionThumbnailUrl)
     {
-	this.motionThumbnailUrl = motionThumbnailUrl;
+        this.motionThumbnailUrl = motionThumbnailUrl;
     }
 
     public String getEmbedHtml()
     {
-	return embedHtml;
+        return embedHtml;
     }
 
     public void setEmbedHtml(String embedHtml)
     {
-	this.embedHtml = embedHtml;
+        this.embedHtml = embedHtml;
     }
 
     public Boolean getAllowHttpsEmbed()
     {
-	return allowHttpsEmbed;
+        return allowHttpsEmbed;
     }
 
     public void setAllowHttpsEmbed(Boolean allowHttpsEmbed)
     {
-	this.allowHttpsEmbed = allowHttpsEmbed;
+        this.allowHttpsEmbed = allowHttpsEmbed;
     }
 
     public String getViewCount()
     {
-	return viewCount;
+        return viewCount;
     }
 
     public void setViewCount(String viewCount)
     {
-	this.viewCount = viewCount;
+        this.viewCount = viewCount;
     }
 
     public List<Publisher> getPublisher()
     {
-	return publisher;
+        return publisher;
     }
 
     public void setPublisher(List<Publisher> publisher)
     {
-	this.publisher = publisher;
+        this.publisher = publisher;
     }
 
     public Media getMedia()
     {
-	return media;
+        return media;
     }
 
     public void setMedia(Media media)
     {
-	this.media = media;
+        this.media = media;
     }
 
 }

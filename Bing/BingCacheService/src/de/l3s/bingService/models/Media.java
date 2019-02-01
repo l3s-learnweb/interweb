@@ -33,139 +33,139 @@ public class Media
 
     public String getName()
     {
-	return name;
+        return name;
     }
 
     public void setName(String name)
     {
-	this.name = name;
+        this.name = name;
     }
 
     public String getWebSearchUrl()
     {
-	return webSearchUrl;
+        return webSearchUrl;
     }
 
     public void setWebSearchUrl(String webSearchUrl)
     {
-	this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
+        this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
     }
 
     public String getWebSearchUrlPingSuffix()
     {
-	return webSearchUrlPingSuffix;
+        return webSearchUrlPingSuffix;
     }
 
     public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix)
     {
-	this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
+        this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
     }
 
     public String getThumbnailUrl()
     {
-	return thumbnailUrl;
+        return thumbnailUrl;
     }
 
     public void setThumbnailUrl(String thumbnailUrl)
     {
-	this.thumbnailUrl = thumbnailUrl;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public String getDatePublished()
     {
-	return datePublished;
+        return datePublished;
     }
 
     public void setDatePublished(String datePublished)
     {
-	this.datePublished = datePublished;
+        this.datePublished = datePublished;
     }
 
     public String getContentUrl()
     {
-	return contentUrl;
+        return contentUrl;
     }
 
     public void setContentUrl(String contentUrl)
     {
-	this.contentUrl = contentUrl;
+        this.contentUrl = contentUrl;
     }
 
     public String getHostPageUrl()
     {
-	return hostPageUrl;
+        return hostPageUrl;
     }
 
     public void setHostPageUrl(String hostPageUrl)
     {
-	this.hostPageUrl = UriUtils.splitQuery(hostPageUrl);
+        this.hostPageUrl = UriUtils.splitQuery(hostPageUrl);
     }
 
     public String getHostPageUrlPingSuffix()
     {
-	return hostPageUrlPingSuffix;
+        return hostPageUrlPingSuffix;
     }
 
     public void setHostPageUrlPingSuffix(String hostPageUrlPingSuffix)
     {
-	this.hostPageUrlPingSuffix = hostPageUrlPingSuffix;
+        this.hostPageUrlPingSuffix = hostPageUrlPingSuffix;
     }
 
     public String getEncodingFormat()
     {
-	return encodingFormat;
+        return encodingFormat;
     }
 
     public void setEncodingFormat(String encodingFormat)
     {
-	this.encodingFormat = encodingFormat;
+        this.encodingFormat = encodingFormat;
     }
 
     public String getHostPageDisplayUrl()
     {
-	return hostPageDisplayUrl;
+        return hostPageDisplayUrl;
     }
 
     public void setHostPageDisplayUrl(String hostPageDisplayUrl)
     {
-	this.hostPageDisplayUrl = hostPageDisplayUrl;
+        this.hostPageDisplayUrl = hostPageDisplayUrl;
     }
 
     public String getWidth()
     {
-	return width;
+        return width;
     }
 
     public void setWidth(String width)
     {
-	this.width = width;
+        this.width = width;
     }
 
     public String getHeight()
     {
-	return height;
+        return height;
     }
 
     public void setHeight(String height)
     {
-	this.height = height;
+        this.height = height;
     }
 
     public Thumbnail getThumbnail()
     {
-	return thumbnail;
+        return thumbnail;
     }
 
     public void setThumbnail(Thumbnail thumbnail)
     {
-	this.thumbnail = thumbnail;
+        this.thumbnail = thumbnail;
     }
 
     @Override
     public String toString()
     {
-	return "Media [name=" + name + ", webSearchUrl=" + webSearchUrl + ", webSearchUrlPingSuffix=" + webSearchUrlPingSuffix + ", thumbnailUrl=" + thumbnailUrl + ", datePublished=" + datePublished + ", contentUrl=" + contentUrl + ", hostPageUrl=" + hostPageUrl
-		+ ", hostPageUrlPingSuffix=" + hostPageUrlPingSuffix + ", encodingFormat=" + encodingFormat + ", hostPageDisplayUrl=" + hostPageDisplayUrl + ", width=" + width + ", height=" + height + ", thumbnail=" + thumbnail + "]";
+        return "Media [name=" + name + ", webSearchUrl=" + webSearchUrl + ", webSearchUrlPingSuffix=" + webSearchUrlPingSuffix + ", thumbnailUrl=" + thumbnailUrl + ", datePublished=" + datePublished + ", contentUrl=" + contentUrl + ", hostPageUrl=" + hostPageUrl
+                + ", hostPageUrlPingSuffix=" + hostPageUrlPingSuffix + ", encodingFormat=" + encodingFormat + ", hostPageDisplayUrl=" + hostPageDisplayUrl + ", width=" + width + ", height=" + height + ", thumbnail=" + thumbnail + "]";
     }
 
 }

@@ -29,24 +29,24 @@ public class VideoDeselializer implements JsonDeserializer<Video>
     @Override
     public Video deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-	Video video = new Video();
-	JsonObject jsonObject = json.getAsJsonObject();
-	video.setMedia(context.deserialize(jsonObject, Media.class));
-	video.setDescription(getStringValue(jsonObject.get(DESCRIPTION)));
-	video.setDuration(getStringValue(jsonObject.get(DURATION)));
-	video.setEmbedHtml(getStringValue(jsonObject.get(EMBED_HTML)));
-	video.setMotionThumbnailUrl(getStringValue(jsonObject.get(MOTION_THUMBNAIL_URL)));
-	video.setViewCount(getStringValue(jsonObject.get(VIEW_COUNT)));
-	JsonArray publishers = jsonObject.getAsJsonArray(PUBLISHER);
-	if(publishers != null)
-	{
-	    video.setPublisher(new ArrayList<>());
-	    for(JsonElement link : publishers)
-	    {
-		video.getPublisher().add(context.deserialize(link, Publisher.class));
-	    }
-	}
-	return video;
+        Video video = new Video();
+        JsonObject jsonObject = json.getAsJsonObject();
+        video.setMedia(context.deserialize(jsonObject, Media.class));
+        video.setDescription(getStringValue(jsonObject.get(DESCRIPTION)));
+        video.setDuration(getStringValue(jsonObject.get(DURATION)));
+        video.setEmbedHtml(getStringValue(jsonObject.get(EMBED_HTML)));
+        video.setMotionThumbnailUrl(getStringValue(jsonObject.get(MOTION_THUMBNAIL_URL)));
+        video.setViewCount(getStringValue(jsonObject.get(VIEW_COUNT)));
+        JsonArray publishers = jsonObject.getAsJsonArray(PUBLISHER);
+        if(publishers != null)
+        {
+            video.setPublisher(new ArrayList<>());
+            for(JsonElement link : publishers)
+            {
+                video.getPublisher().add(context.deserialize(link, Publisher.class));
+            }
+        }
+        return video;
     }
 
 }

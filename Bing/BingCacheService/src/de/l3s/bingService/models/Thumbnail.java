@@ -9,28 +9,28 @@ public class Thumbnail
 
     public String getWidth()
     {
-	return width;
+        return width;
     }
 
     public void setWidth(String width)
     {
-	this.width = width;
+        this.width = width;
     }
 
     public String getHeight()
     {
-	return height;
+        return height;
     }
 
     public void setHeight(String height)
     {
-	this.height = height;
+        this.height = height;
     }
 
     @Override
     public String toString()
     {
-	return "Thumbnail [width=" + width + ", height=" + height + "]";
+        return "Thumbnail [width=" + width + ", height=" + height + "]";
     }
 
 }

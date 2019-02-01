@@ -21,11 +21,11 @@ public class ImageDeserializer implements JsonDeserializer<Image>
     @Override
     public Image deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-	Image image = new Image();
-	JsonObject jsonObject = json.getAsJsonObject();
-	image.setContentSize(getStringValue(jsonObject.get(CONTENT_SIZE)));
-	image.setMedia(context.deserialize(jsonObject, Media.class));
-	return image;
+        Image image = new Image();
+        JsonObject jsonObject = json.getAsJsonObject();
+        image.setContentSize(getStringValue(jsonObject.get(CONTENT_SIZE)));
+        image.setMedia(context.deserialize(jsonObject, Media.class));
+        return image;
     }
 
 }

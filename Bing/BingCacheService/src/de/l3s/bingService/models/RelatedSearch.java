@@ -15,42 +15,42 @@ public class RelatedSearch
 
     public String getText()
     {
-	return text;
+        return text;
     }
 
     public void setText(String text)
     {
-	this.text = text;
+        this.text = text;
     }
 
     public String getDisplayText()
     {
-	return displayText;
+        return displayText;
     }
 
     public void setDisplayText(String displayText)
     {
-	this.displayText = displayText;
+        this.displayText = displayText;
     }
 
     public String getWebSearchUrl()
     {
-	return webSearchUrl;
+        return webSearchUrl;
     }
 
     public void setWebSearchUrl(String webSearchUrl)
     {
-	this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
+        this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
     }
 
     public String getWebSearchUrlPingSuffix()
     {
-	return webSearchUrlPingSuffix;
+        return webSearchUrlPingSuffix;
     }
 
     public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix)
     {
-	this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
+        this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
     }
 
 }

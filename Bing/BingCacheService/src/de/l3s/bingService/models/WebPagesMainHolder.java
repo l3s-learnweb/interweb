@@ -17,41 +17,41 @@ public class WebPagesMainHolder
 
     public String getWebSearchUrl()
     {
-	return webSearchUrl;
+        return webSearchUrl;
     }
 
     public void setWebSearchUrl(String webSearchUrl)
     {
-	this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
+        this.webSearchUrl = UriUtils.splitQuery(webSearchUrl);
     }
 
     public String getWebSearchUrlPingSuffix()
     {
-	return webSearchUrlPingSuffix;
+        return webSearchUrlPingSuffix;
     }
 
     public void setWebSearchUrlPingSuffix(String webSearchUrlPingSuffix)
     {
-	this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
+        this.webSearchUrlPingSuffix = webSearchUrlPingSuffix;
     }
 
     public String getTotalEstimatedMatches()
     {
-	return totalEstimatedMatches;
+        return totalEstimatedMatches;
     }
 
     public void setTotalEstimatedMatches(String totalEstimatedMatches)
     {
-	this.totalEstimatedMatches = totalEstimatedMatches;
+        this.totalEstimatedMatches = totalEstimatedMatches;
     }
 
     public List<WebPage> getValue()
     {
-	return value;
+        return value;
     }
 
     public void setValue(List<WebPage> value)
     {
-	this.value = value;
+        this.value = value;
     }
 }

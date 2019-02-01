@@ -7,13 +7,13 @@ public class JsonUtils
 
     public static String getStringValue(JsonElement jsonElement)
     {
-	return jsonElement != null ? jsonElement.getAsString() : null;
+        return jsonElement != null ? jsonElement.getAsString() : null;
     }
 
     public static Boolean getBoolean(JsonElement object)
     {
-	if(object == null)
-	    return null;
-	return Boolean.valueOf(object.getAsString());
+        if(object == null)
+            return null;
+        return Boolean.valueOf(object.getAsString());
     }
 }

@@ -16,17 +16,17 @@ public enum ResponseFilterParam
 
     ResponseFilterParam(String value)
     {
-	this.setValue(value);
+        this.setValue(value);
     }
 
     public String getValue()
     {
-	return value;
+        return value;
     }
 
     public void setValue(String value)
     {
-	this.value = value.toLowerCase();
+        this.value = value.toLowerCase();
     }
 
 }
