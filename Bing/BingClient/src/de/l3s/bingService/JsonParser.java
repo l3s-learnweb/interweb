@@ -25,13 +25,12 @@ import de.l3s.bingService.models.WebPagesMainHolder;
 
 public class JsonParser
 {
-
     public static BingResponse fromJson(String jsonLine)
-    {
+    {	
 	GsonBuilder builder = new GsonBuilder();
 	registrateAdapters(builder);
 	Gson gson = builder.create();
-	return gson.fromJson(jsonLine, BingResponse.class);
+	return gson.fromJson(jsonLine, BingResponse.class);	
     }
 
     private static void registrateAdapters(GsonBuilder builder)
@@ -47,5 +46,4 @@ public class JsonParser
 	builder.registerTypeAdapter(Video.class, new VideoDeselializer());
 	builder.registerTypeAdapter(VideoHolder.class, new VideoHolderDeserializer());
     }
-
 }

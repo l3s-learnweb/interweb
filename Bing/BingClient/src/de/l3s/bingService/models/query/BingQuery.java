@@ -4,12 +4,11 @@ import de.l3s.bingService.models.Entity;
 
 public class BingQuery extends Entity
 {
-
     private String language;
 
     private String query;
 
-    private int count = 10;
+    private int count = 50;
     private int offset = 0;
 
     private String market;
@@ -125,4 +124,9 @@ public class BingQuery extends Entity
 	this.language = language;
     }
 
+    @Override
+    public String toString()
+    {
+	return "BingQuery [query=" + query + ", market=" + market + ", language=" + language + ", count=" + count + ", offset=" + offset + ", safesearch=" + safesearch + ", freshness=" + freshness + ", responseFilter=" + responseFilter + "]";
+    }    
 }

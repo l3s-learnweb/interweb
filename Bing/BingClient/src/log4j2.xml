@@ -19,10 +19,10 @@
   </Appenders>  
 
   <Loggers>
-  	<Logger name="org.apache" level="error" additivity="false">
+  	<Logger name="org.apache" level="warn" additivity="false">
       <AppenderRef ref="Console"/>
     </Logger>
-  	<Logger name="org.apache" level="error" additivity="false">
+  	<Logger name="org.apache" level="warn" additivity="false">
       <AppenderRef ref="Mail"/>
     </Logger>
     
