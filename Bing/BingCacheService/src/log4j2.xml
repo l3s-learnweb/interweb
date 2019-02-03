@@ -5,24 +5,24 @@
       <PatternLayout pattern="%d{DEFAULT} [%t] %-5level %logger{36}:%L - %msg%n"/>
     </Console>
 
-<!-- 	<SMTP name="Mail" subject="ArchiveSearch Error Log" to="***REMOVED***" -->
-<!-- 		from="***REMOVED***" smtpHost="***REMOVED***" -->
-<!-- 		smtpPort="587" bufferSize="50" smtpUsername="learnweb" -->
-<!-- 		smtpPassword="***REMOVED***"> -->
+	<SMTP name="Mail" subject="ArchiveSearch Error Log" to="***REMOVED***"
+		from="***REMOVED***" smtpHost="***REMOVED***"
+		smtpPort="587" bufferSize="50" smtpUsername="learnweb"
+		smtpPassword="***REMOVED***">
 
-<!-- 		<Filters> -->
-<!-- 			<ThresholdFilter level="ERROR" onMatch="ACCEPT" /> -->
-<!-- 		</Filters> -->
-<!-- 	</SMTP> -->
+		<Filters>
+			<ThresholdFilter level="ERROR" onMatch="ACCEPT" />
+		</Filters>
+	</SMTP>
   </Appenders>
 
   <Loggers>
   	<Logger name="org.apache.commons" level="error" additivity="false">
       <AppenderRef ref="Console"/>
     </Logger>
-<!--   	<Logger name="org.apache.commons" level="error" additivity="false"> -->
-<!--       <AppenderRef ref="Mail"/> -->
-<!--     </Logger> -->
+  	<Logger name="org.apache.commons" level="error" additivity="false">
+      <AppenderRef ref="Mail"/>
+    </Logger>
 
     <Root level="debug">
       <AppenderRef ref="Console"/>

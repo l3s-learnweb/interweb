@@ -1,6 +1,5 @@
 package de.l3s.bingService.services;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,18 +20,6 @@ import de.l3s.bingService.models.query.BingQuery;
 public class BingApiService implements BingRequestConstants
 {
     private final static Logger log = LogManager.getLogger(BingApiService.class);
-
-    //TODO: Remove this? Since the functionality has moved to controller part
-    private static String readJsonResponseAsString(BufferedReader rd) throws IOException
-    {
-        StringBuilder result = new StringBuilder();
-        String line;
-        while((line = rd.readLine()) != null)
-        {
-            result.append(line);
-        }
-        return result.toString();
-    }
 
     private static HttpUriRequest createRequest(BingQuery bingUrl, String clientKey)
     {
@@ -92,9 +79,8 @@ public class BingApiService implements BingRequestConstants
         return bingResponse;
     }
 
-    public static HttpResponse getResponseString(String query, String mkt, String lang, int offset, String freshness, String safeSearch, String clientKey)
+    public static HttpResponse getResponseString(BingQuery q, String clientKey)
     {
-        BingQuery q = new BingQuery(query, mkt, lang, offset, freshness, safeSearch);
         HttpUriRequest queryRequest = createRequest(q, clientKey);
 
         HttpClient client = HttpClientBuilder.create().build();

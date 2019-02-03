@@ -1,7 +1,5 @@
 package de.l3s.bingCacheService.entity;
 
-import java.util.Date;
-
 public class Response
 {
     private String text;

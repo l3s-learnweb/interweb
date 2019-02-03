@@ -10,19 +10,21 @@ import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.l3s.bingCacheService.entity.Response;
+import de.l3s.bingService.models.query.BingQuery;
 
 public class DBManager
 {
 
     private static DBManager instance = null;
-
-    private Logger log = Logger.getLogger(DBManager.class);
+    private final static Logger log = LogManager.getLogger(DBManager.class);
     private Connection conn;
 
-    private static final String connectionString = "jdbc:mysql://learnweb.l3s.uni-hannover.de/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
+    //    private static final String connectionString = "jdbc:mysql://learnweb.l3s.uni-hannover.de/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
+    private static final String connectionString = "jdbc:mysql://localhost/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
     private static final String username = "bing";
     private static final String pass = "QvkF0hDbKLnTOwgJ";
     private static final int timeoutDays = 30;
@@ -76,7 +78,7 @@ public class DBManager
 
     /**
      * Adds a client to the client lists
-     * 
+     *
      * @param key Client key
      * @param description Client description
      * @param allowPaidSearch Whether the client is allowed to make new paid bing searches. Clients that are not allowed to use paid search can still
@@ -106,7 +108,7 @@ public class DBManager
 
     /**
      * Adds a given query to the cache and also logs it into database.
-     * 
+     *
      * @param query Query string
      * @param mrkt String specifying the market. Can be null
      * @param lang String specifying the language. Can be null
@@ -185,7 +187,7 @@ public class DBManager
 
     /**
      * Adds a given query to the cache and also logs it into database.
-     * 
+     *
      * @param query Query string
      * @param mrkt String specifying the market. Can be null
      * @param lang String specifying the language. Can be null
@@ -259,7 +261,7 @@ public class DBManager
 
     /**
      * Adds the specified request to the cache.
-     * 
+     *
      * @param query Query string
      * @param mrkt String specifying the market. Can be null
      * @param lang String specifying the language. Can be null
@@ -268,7 +270,7 @@ public class DBManager
      * @param safeSearch Whether safe search is on. Allowed values: 'Off','Moderate','Strict'
      * @param clientKey Client's unique key
      */
-    public void addRequest(String query, String mkt, String lang, int off, String freshness, String safeSearch, String clientKey, String response)
+    public void addResponse(String query, String mkt, String lang, int off, String freshness, String safeSearch, String clientKey, String response)
     {
         if(conn == null)
         {
@@ -300,7 +302,7 @@ public class DBManager
 
     /**
      * Retrieves cached results by specific arameters.
-     * 
+     *
      * @param query Query string
      * @param mrkt String specifying the market. Can be null
      * @param lang String specifying the language. Can be null
@@ -310,7 +312,7 @@ public class DBManager
      * @param clientAllowed Whether the given client is allowed to make paid requests
      * @return Response object containing the json of the results and whether it needs to be updated. Returns null if the result isn't found.
      */
-    public Response retrieveCachedResult(String query, String mrkt, String lang, int offset, String freshness, String safeSearch, int clientAllowed)
+    public Response retrieveCachedResult(BingQuery bingQuery, int clientAllowed)
     {
         if(conn == null)
         {
@@ -320,32 +322,12 @@ public class DBManager
 
         try(PreparedStatement select = conn.prepareStatement("SELECT response, timestamp FROM b_query JOIN b_request ON b_query.query_id = b_request.query_id WHERE (query=?) AND ( market=?) AND ( lang=?) AND ( offset=?) AND ( freshness=?) AND ( safeSearch=?)"))
         {
-            if(lang == null)
-            {
-                lang = "EN";
-            }
-
-            if(mrkt == null)
-            {
-                mrkt = "None";
-            }
-
-            if(freshness == null)
-            {
-                freshness = "Day";
-            }
-
-            if(safeSearch == null)
-            {
-                safeSearch = "Moderate";
-            }
-
-            select.setString(1, query);
-            select.setString(2, mrkt);
-            select.setString(3, lang);
-            select.setInt(4, offset);
-            select.setString(5, freshness);
-            select.setString(6, safeSearch);
+            select.setString(1, bingQuery.getQuery());
+            select.setString(2, bingQuery.getMarket());
+            select.setString(3, bingQuery.getLanguage());
+            select.setInt(4, bingQuery.getOffset());
+            select.setString(5, bingQuery.getFreshness() == null ? null : bingQuery.getFreshness().name());
+            select.setString(6, bingQuery.getSafesearch().name());
 
             ResultSet rs = select.executeQuery();
 
@@ -380,7 +362,7 @@ public class DBManager
 
     /**
      * Checks by key whether a given client has paid request priveleges.
-     * 
+     *
      * @param key Client's key
      * @return 0 if not allowed, 1 if allowed and -1 if client isn't in the database.
      */
@@ -388,7 +370,7 @@ public class DBManager
     {
         if(conn == null)
         {
-            log.error("Initial server connection error. Serviced must be restarted.");
+            log.error("Initial server connection error. Service must be restarted.");
             return -1;
         }
 
@@ -416,7 +398,7 @@ public class DBManager
 
     /**
      * Gets the id of the client by given search key
-     * 
+     *
      * @param key Client's key
      * @return ID. Returns -1 if ID is not found.
      */
@@ -428,7 +410,7 @@ public class DBManager
             return -1;
         }
 
-        try(PreparedStatement select = conn.prepareStatement("SELECT client_id FROM b_client WHERE `key`=?"))
+        try(PreparedStatement select = conn.prepareStatement("SELECT client_id FROM b_client WHERE `api_key`=?"))
         {
             select.setString(1, key);
             ResultSet rs = select.executeQuery();
@@ -448,7 +430,7 @@ public class DBManager
 
     /**
      * Updates a given request with a fresh search on a new date
-     * 
+     *
      * @param query_id
      * @param client_id
      * @param response

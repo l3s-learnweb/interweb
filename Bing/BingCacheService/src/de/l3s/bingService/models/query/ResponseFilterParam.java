@@ -2,7 +2,6 @@ package de.l3s.bingService.models.query;
 
 public enum ResponseFilterParam
 {
-
     IMAGES("images"),
     VIDEOS("videos"),
     NEWS("news"),
@@ -28,5 +27,4 @@ public enum ResponseFilterParam
     {
         this.value = value.toLowerCase();
     }
-
 }
