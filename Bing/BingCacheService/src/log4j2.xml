@@ -17,10 +17,10 @@
   </Appenders>
 
   <Loggers>
-  	<Logger name="org.apache.commons" level="error" additivity="false">
+  	<Logger name="org.apache" level="error" additivity="false">
       <AppenderRef ref="Console"/>
     </Logger>
-  	<Logger name="org.apache.commons" level="error" additivity="false">
+  	<Logger name="org.apache" level="error" additivity="false">
       <AppenderRef ref="Mail"/>
     </Logger>
 

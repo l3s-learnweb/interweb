@@ -34,7 +34,7 @@ public class BingApiService implements BingRequestConstants
 	BingQuery query = new BingQuery();
 	query.setQuery("obama");
 	query.setMarket("en-US");
-	query.setCount(0);
+	query.setCount(7);
 	query.setOffset(50);
 
 	BingResponse response = new BingApiService("***REMOVED***").getResponseFromBingApi(query);

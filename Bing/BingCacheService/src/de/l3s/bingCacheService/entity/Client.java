@@ -4,7 +4,7 @@ public class Client
 {
     private final int id;
     private final String cacheApiKey; // the key for this service
-    private final String bingApiKey; // the bing key. If null user can only retrieve cache results    
+    private final String bingApiKey; // the bing key. If null user can only retrieve cache results
 
     public Client(int id, String cacheApiKey, String bingApiKey)
     {
@@ -27,5 +27,10 @@ public class Client
     public String getBingApiKey()
     {
         return bingApiKey;
+    }
+
+    public boolean canMakePaidRequests()
+    {
+        return bingApiKey != null;
     }
 }

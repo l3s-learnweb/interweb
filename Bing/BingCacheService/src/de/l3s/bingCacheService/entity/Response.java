@@ -1,34 +1,68 @@
 package de.l3s.bingCacheService.entity;
 
+import java.time.LocalDateTime;
+
 public class Response
 {
-    private String text;
-    private boolean isExpired;
+    private long responseId;
+    private final String response;
+    private final int queryId;
+    private final int clientId;
+    private final LocalDateTime timestamp;
 
-    public String getText()
+    public Response(long responseId, int queryId, int clientId, String response, LocalDateTime timestamp)
     {
-        return text;
+        super();
+        this.responseId = responseId;
+        this.queryId = queryId;
+        this.clientId = clientId;
+        this.response = response;
+        this.timestamp = timestamp;
     }
 
-    public void setText(String text)
+    public Response(String response, int queryId, int clientId)
     {
-        this.text = text;
+        super();
+        this.response = response;
+        this.queryId = queryId;
+        this.clientId = clientId;
+        this.timestamp = LocalDateTime.now();
     }
 
-    public Response(String text, boolean isExpired)
+    public long getResponseId()
     {
-        this.text = text;
-        this.setExpired(isExpired);
+        return responseId;
     }
 
-    public boolean isExpired()
+    public void setResponseId(long responseId)
     {
-        return isExpired;
+        this.responseId = responseId;
     }
 
-    public void setExpired(boolean isExpired)
+    public String getResponse()
     {
-        this.isExpired = isExpired;
+        return response;
+    }
+
+    public int getQueryId()
+    {
+        return queryId;
+    }
+
+    public int getClientId()
+    {
+        return clientId;
+    }
+
+    public LocalDateTime getTimestamp()
+    {
+        return timestamp;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Response [responseId=" + responseId + ", queryId=" + queryId + ", clientId=" + clientId + ", timestamp=" + timestamp + ", response=" + response + "]";
     }
 
 }

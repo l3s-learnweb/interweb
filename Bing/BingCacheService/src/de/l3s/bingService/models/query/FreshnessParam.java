@@ -5,7 +5,8 @@ public enum FreshnessParam
 
     DAY("day"),
     WEEK("week"),
-    MONTH("month");
+    MONTH("month"),
+    UNSPECIFIED("Unspecified");
 
     private String value;
 

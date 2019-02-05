@@ -1,11 +1,7 @@
 package de.l3s.bingService.models;
 
-//import org.springframework.data.annotation.Id;
-
 public abstract class Entity
 {
-
-    // @Id
     private String id;
 
     public String getId()
@@ -16,5 +12,6 @@ public abstract class Entity
     public void setId(String id)
     {
         this.id = id;
+        System.out.println("set id" + id);
     }
 }

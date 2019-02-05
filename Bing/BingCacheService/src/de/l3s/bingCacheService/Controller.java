@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.l3s.bingCacheService.entity.Client;
 import de.l3s.bingCacheService.entity.Response;
 import de.l3s.bingService.models.query.BingQuery;
 import de.l3s.bingService.services.BingApiService;
@@ -26,129 +26,106 @@ public class Controller extends HttpServlet
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        //Checks if client has the correct key
-        String key = request.getHeader("Ocp-Apim-Subscription-Key");
-        int clientAllowed = DBManager.instance().checkClientPriveleges(key);
-
-        if(clientAllowed == -1)
-        {
-            log.error("Subscription key is not found.");
-            response.sendError(403, "Subscription key is not found. This is required to use this service.");
-            return;
-        }
-
-        String query = "irgendwas langes mit vielen zeichen";
-        //request.getParameter("q")
-        log.debug(query);
-        BingQuery bingQuery = null;
         try
         {
-            bingQuery = new BingQuery(query, request.getParameter("mkt"), request.getParameter("setLang"), request.getParameter("offset"), request.getParameter("freshness"), request.getParameter("safeSearch"));
-        }
-        catch(IllegalArgumentException e)
-        {
-            log.error("Invalid parameter: ", e);
-            response.sendError(400, "Invalid parameter: " + e.getMessage());
-            return;
-        }
-        log.debug(query);
+            //Checks if client has the correct key
+            String key = request.getHeader("Ocp-Apim-Subscription-Key");
+            Client client = DBManager.getInstance().getClient(key);
 
-        // validate "offset" parameter
-
-        log.debug("Received query with following params. ");
-
-        String queryResponse = getQueryResult(bingQuery, clientAllowed, response);
-
-        if(queryResponse == null)
-        {
-            if(clientAllowed == 1)
+            if(null == client)
             {
-                log.error("Querry could not be made or retrieved. ");
-                response.sendError(500, "Querry could not be made or retrieved. Please contact the administrators.");
+                log.error("Subscription key is not found.");
+                response.sendError(403, "Subscription key is not found. This is required to use this service.");
+                return;
             }
-            else
+
+            BingQuery bingQuery = null;
+            try
             {
-                log.error("Uncached querry request from client not authorized to make new ones.");
-                response.sendError(403, "Selected query not found in cache. To make out-of-cache queries you need special permission.");
+                bingQuery = new BingQuery(request.getParameter("q"), request.getParameter("mkt"), request.getParameter("setLang"), request.getParameter("offset"), request.getParameter("freshness"), request.getParameter("safeSearch"));
             }
-            return;
+            catch(IllegalArgumentException e)
+            {
+                log.error("Invalid parameter: " + e.getMessage());
+                response.sendError(400, "Invalid parameter: " + e.getMessage());
+                return;
+            }
+            log.debug("Received query with following params: " + bingQuery);
+
+            BingCache cache = BingCache.getInstance();
+
+            Response queryResponse = cache.getLatestResponseByQuery(bingQuery);
+
+            if(queryResponse == null)
+            {
+                if(!client.canMakePaidRequests())
+                {
+                    log.error("Uncached query request from client not authorized to make new ones.");
+                    response.sendError(403, "Selected query not found in cache. To make out-of-cache queries you need special permission.");
+                    return;
+                }
+
+                // TODO check for retry header
+                String rawBingResponse = readJsonResponseAsString(BingApiService.getResponseString(bingQuery, client.getBingApiKey()));
+
+                log.debug("response: " + rawBingResponse);
+
+                queryResponse = new Response(rawBingResponse, bingQuery.getQueryId(), client.getId());
+                DBManager.getInstance().addResponse(queryResponse);
+                cache.put(bingQuery, queryResponse);
+            }
+
+            response.setContentType("application/json");
+            response.getWriter().write(queryResponse.getResponse());
+
+        }
+        catch(Exception e1)
+        {
+            log.fatal("Internal error", e1);
+            response.sendError(500, "Internal error.");
         }
 
-        response.setContentType("application/json");
-        response.getWriter().write(queryResponse);
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        doPost(request, response);
-    }
-
-    /**
-     * Gets query JSON string from the cache.
+    /*
      *
-     * @param response
-     * @throws IOException
-     */
-    private String getQueryResult(BingQuery bingQuery, int clientAllowed, HttpServletResponse response) throws IOException
-    {
-
-        Response cachedResponse = DBManager.instance().retrieveCachedResult(bingQuery, clientAllowed);
+         DBManager dbManager = DBManager.instance();
+        Response cachedResponse = dbManager.getLatestResponseByQueryId(bingQuery);
 
         //If there is no cached response, checks if client can make paid requests. If yes, makes bing request
         //If the cached response exists, checks if it is expired AND if client can make paid requests. If both are yes, makes bing request
-        //If the cached response exists, but isn't outdated, client can't make bing requests, or the re-issued bing request failed, returs last available response
+        //If the cached response exists, but isn't outdated, client can't make bing requests, or the re-issued bing request failed, returns last available response
         String res;
-        if(cachedResponse == null)
+        if(!client.canMakePaidRequests())
         {
-            res = null;
-            if(clientAllowed == 1)
-            {
-                HttpResponse bingResponse = BingApiService.getResponseString(bingQuery, clientKey);
-                res = readJsonResponseAsString(bingResponse);
-                headersToServletHeaders(response, bingResponse);
-                log.debug("Query not in cache; response requested and recorded.");
-            }
-            else
+            if(cachedResponse == null)
             {
                 log.debug("Query not in cache; client lacks priveleges to request one.");
+                return null;
             }
         }
         else
         {
-            if(cachedResponse.isExpired() && clientAllowed == 1)
+            if(cachedResponse == null) // || cachedResponse.isExpired() && clientAllowed == 1)
             {
-                HttpResponse bingResponse = BingApiService.getResponseString(bingQuery, clientKey);
-                res = readJsonResponseAsString(bingResponse);
-                headersToServletHeaders(response, bingResponse);
+                HttpResponse bingResponse = BingApiService.getResponseString(bingQuery, client.getBingApiKey());
+                String newResponse = readJsonResponseAsString(bingResponse);
 
-                if(res == null)
+                if(newResponse != null)
                 {
                     log.debug("Query in cache, but expired; request for a fresher response failed.");
-                    res = cachedResponse.getText();
+                    res = cachedResponse.getResponse();
                 }
                 else
-                {
-                    log.debug("Query in cache, but expired; fresher response requested and recorded.");
-                }
-            }
-            else
-            {
-                log.debug("Query in cache. Returning.");
-                res = cachedResponse.getText();
+                    return null;
             }
         }
 
-        return res;
-    }
-
-    private static void headersToServletHeaders(HttpServletResponse sres, HttpResponse hres)
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        Header[] headers = hres.getAllHeaders();
-        for(Header h : headers)
-        {
-            sres.addHeader(h.getName(), h.getValue());
-        }
+        doPost(request, response);
     }
 
     private static String readJsonResponseAsString(HttpResponse res) throws IOException
