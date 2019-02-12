@@ -22,8 +22,8 @@ public class DBManager
     private final static Logger log = LogManager.getLogger(DBManager.class);
     private Connection conn;
 
-    private static final String connectionString = "jdbc:mysql://learnweb.l3s.uni-hannover.de/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
-    //private static final String connectionString = "jdbc:mysql://localhost/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
+    //private static final String connectionString = "jdbc:mysql://learnweb.l3s.uni-hannover.de/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
+    private static final String connectionString = "jdbc:mysql://localhost/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
     private static final String username = "bing";
     private static final String pass = "QvkF0hDbKLnTOwgJ";
 

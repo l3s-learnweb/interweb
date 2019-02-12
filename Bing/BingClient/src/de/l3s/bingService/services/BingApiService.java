@@ -15,8 +15,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.gson.JsonSyntaxException;
-
 import de.l3s.bingService.JsonParser;
 import de.l3s.bingService.models.BingResponse;
 import de.l3s.bingService.models.Image;
@@ -33,9 +31,9 @@ public class BingApiService implements BingRequestConstants
     {
 	BingQuery query = new BingQuery();
 	query.setQuery("obama");
-	query.setMarket("en-US");
+	query.setMarket("de-DE");
 	query.setCount(7);
-	query.setOffset(50);
+	query.setOffset(0);
 
 	BingResponse response = new BingApiService("***REMOVED***").getResponseFromBingApi(query);
 
@@ -93,7 +91,7 @@ public class BingApiService implements BingRequestConstants
 	{
 	    bingResponse = JsonParser.fromJson(rawBingResponse);
 	}
-	catch(JsonSyntaxException e)
+	catch(Exception e)
 	{
 	    log.fatal("Can't parse response: "+rawBingResponse+"\nFor BingQuery: "+bingQuery);
 	    throw e;

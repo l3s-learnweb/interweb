@@ -3,6 +3,9 @@ package de.l3s.bingCacheService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,6 +25,15 @@ public class Controller extends HttpServlet
 {
     private static final long serialVersionUID = 4824768584324474328L;
     private final static Logger log = LogManager.getLogger(Controller.class);
+
+    private final BingCache cache;
+    private final DBManager dbManager;
+
+    public Controller()
+    {
+        cache = BingCache.getInstance();
+        dbManager = DBManager.getInstance();
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -52,30 +64,23 @@ public class Controller extends HttpServlet
             }
             log.debug("Received query with following params: " + bingQuery);
 
-            BingCache cache = BingCache.getInstance();
-
             Response queryResponse = cache.getLatestResponseByQuery(bingQuery);
 
-            if(queryResponse == null)
+            if(queryResponse == null && !client.canMakePaidRequests())
             {
-                if(!client.canMakePaidRequests())
-                {
-                    log.error("Uncached query request from client not authorized to make new ones.");
-                    response.sendError(403, "Selected query not found in cache. To make out-of-cache queries you need special permission.");
-                    return;
-                }
+                log.error("Uncached query request from client not authorized to make new ones.");
+                response.sendError(403, "Selected query not found in cache. To make out-of-cache queries you need special permission.");
+                return;
+            }
 
-                // TODO check for retry header
-                String rawBingResponse = readJsonResponseAsString(BingApiService.getResponseString(bingQuery, client.getBingApiKey()));
-
-                log.debug("response: " + rawBingResponse);
-
-                queryResponse = new Response(rawBingResponse, bingQuery.getQueryId(), client.getId());
-                DBManager.getInstance().addResponse(queryResponse);
-                cache.put(bingQuery, queryResponse);
+            //if no cached result or result is older than 30 days, issue new request
+            if(queryResponse == null || Duration.between(queryResponse.getTimestamp(), LocalDateTime.now()).toDays() > 30)
+            {
+                queryResponse = getFreshResponseFromBing(bingQuery, client);
             }
 
             response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
             response.getWriter().write(queryResponse.getResponse());
 
         }
@@ -84,7 +89,24 @@ public class Controller extends HttpServlet
             log.fatal("Internal error", e1);
             response.sendError(500, "Internal error.");
         }
+    }
 
+    private Response getFreshResponseFromBing(BingQuery bingQuery, Client client) throws SQLException, IOException
+    {
+        String rawBingResponse = readJsonResponseAsString(BingApiService.getResponseString(bingQuery, client.getBingApiKey()));
+
+        if(rawBingResponse.startsWith("\"_type\": \"ErrorResponse\""))
+        {
+            log.error("Received error; Query: {}; Response: {}", bingQuery, rawBingResponse);
+        }
+        // TODO handle bing errors and  retry header
+        log.debug("response: " + rawBingResponse);
+
+        Response queryResponse = new Response(rawBingResponse, bingQuery.getQueryId(), client.getId());
+        dbManager.addResponse(queryResponse);
+        cache.put(bingQuery, queryResponse);
+
+        return queryResponse;
     }
 
     /*
