@@ -7,10 +7,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import de.l3s.bingCacheService.entity.Client;
 import de.l3s.bingCacheService.entity.Response;
@@ -21,9 +25,10 @@ public class DBManager
     private static DBManager instance = null;
     private final static Logger log = LogManager.getLogger(DBManager.class);
     private Connection conn;
+    private final HashMap<String, Client> clientCache = new HashMap<String, Client>();;
 
-    //private static final String connectionString = "jdbc:mysql://learnweb.l3s.uni-hannover.de/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
-    private static final String connectionString = "jdbc:mysql://localhost/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
+    private static final String connectionString = "jdbc:mysql://learnweb.l3s.uni-hannover.de/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
+    //private static final String connectionString = "jdbc:mysql://localhost/bing?useLegacyDatetimeCode=false&serverTimezone=UTC";
     private static final String username = "bing";
     private static final String pass = "QvkF0hDbKLnTOwgJ";
 
@@ -38,6 +43,16 @@ public class DBManager
 
     private DBManager()
     {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(connectionString);
+        config.setUsername(username);
+        config.setPassword(pass);
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "100");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        HikariDataSource ds = new HikariDataSource(config);
+
         try
         {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -98,7 +113,7 @@ public class DBManager
             select.setInt(4, query.getOffset());
             select.setString(5, query.getFreshness().name());
             select.setString(6, query.getSafesearch().name());
-            log.debug(select);
+            //log.debug(select);
             ResultSet rs = select.executeQuery();
 
             //Returns ID of inserted row OR -1 if failed
@@ -151,18 +166,23 @@ public class DBManager
         if(StringUtils.isBlank(cacheKey))
             return null;
 
-        try(PreparedStatement select = conn.prepareStatement("SELECT client_id, bing_api_key, description FROM b_client WHERE `cache_api_key`=?"))
-        {
-            select.setString(1, cacheKey);
-            ResultSet rs = select.executeQuery();
+        Client client = clientCache.get(cacheKey);
 
-            if(rs.next())
+        if(null == client)
+        {
+            try(PreparedStatement select = conn.prepareStatement("SELECT client_id, bing_api_key, description FROM b_client WHERE `cache_api_key`=?"))
             {
-                return new Client(rs.getInt(1), cacheKey, rs.getString(2));
+                select.setString(1, cacheKey);
+                ResultSet rs = select.executeQuery();
+
+                if(rs.next())
+                {
+                    client = new Client(rs.getInt(1), cacheKey, rs.getString(2));
+                    clientCache.put(cacheKey, client);
+                }
             }
         }
-
-        return null;
+        return client;
     }
 
     /**

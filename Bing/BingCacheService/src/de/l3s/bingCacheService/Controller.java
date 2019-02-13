@@ -31,6 +31,7 @@ public class Controller extends HttpServlet
 
     public Controller()
     {
+        log.debug("Init Controller servlet");
         cache = BingCache.getInstance();
         dbManager = DBManager.getInstance();
     }
@@ -113,7 +114,7 @@ public class Controller extends HttpServlet
      *
          DBManager dbManager = DBManager.instance();
         Response cachedResponse = dbManager.getLatestResponseByQueryId(bingQuery);
-
+    
         //If there is no cached response, checks if client can make paid requests. If yes, makes bing request
         //If the cached response exists, checks if it is expired AND if client can make paid requests. If both are yes, makes bing request
         //If the cached response exists, but isn't outdated, client can't make bing requests, or the re-issued bing request failed, returns last available response
@@ -132,7 +133,7 @@ public class Controller extends HttpServlet
             {
                 HttpResponse bingResponse = BingApiService.getResponseString(bingQuery, client.getBingApiKey());
                 String newResponse = readJsonResponseAsString(bingResponse);
-
+    
                 if(newResponse != null)
                 {
                     log.debug("Query in cache, but expired; request for a fresher response failed.");
@@ -142,7 +143,7 @@ public class Controller extends HttpServlet
                     return null;
             }
         }
-
+    
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException

@@ -29,6 +29,7 @@ public class BingApiService implements BingRequestConstants
 
     public static void main(String[] args) throws UnsupportedOperationException, IOException
     {
+	log.debug("Start");
 	BingQuery query = new BingQuery();
 	query.setQuery("obama");
 	query.setMarket("de-DE");
@@ -43,7 +44,7 @@ public class BingApiService implements BingRequestConstants
 	int counter = 1;
 	for(WebPage page : pages.getValue())
 	{
-	    log.debug(page);
+	   // log.debug(page);
 	    log.debug(counter++);
 	}
 
@@ -55,8 +56,7 @@ public class BingApiService implements BingRequestConstants
 	{
 	    for(Image image : images.getValue())
 	    {
-		log.debug(image.getContentSize());
-		log.debug(image.getMedia());
+		//log.debug(image.getMedia());
 		log.debug(counter++);
 	    }
 	}
