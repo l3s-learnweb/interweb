@@ -15,8 +15,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.imageio.stream.FileImageInputStream;
-
 import org.apache.commons.lang.NotImplementedException;
 
 import com.sun.jersey.api.client.Client;

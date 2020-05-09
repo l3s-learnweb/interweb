@@ -3,7 +3,7 @@ package de.l3s.interwebj.bean;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
-import com.sun.istack.internal.NotNull;
+import com.sun.istack.NotNull;
 
 @ManagedBean
 @RequestScoped

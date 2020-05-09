@@ -7,7 +7,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.model.SelectItem;
 
-import com.sun.istack.internal.NotNull;
+import com.sun.istack.NotNull;
 
 @ManagedBean
 @RequestScoped

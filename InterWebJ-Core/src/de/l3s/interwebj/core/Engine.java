@@ -175,7 +175,8 @@ public class Engine
 	//HashSet<String> linkedConnectors=new HashSet<String>();
 	//linkedConnectors.add("bing");
 
-	boolean isDebug = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+	boolean isDebug = false;
+	// boolean isDebug = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
 	System.out.println("In debug : " + isDebug);
 
 	for(ServiceConnector connector : connectors)

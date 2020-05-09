@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.ws.rs.core.*;
 
+import com.sun.jersey.core.util.Base64;
 import org.apache.commons.codec.digest.*;
 import org.apache.commons.lang.NotImplementedException;
 
@@ -268,10 +269,10 @@ public class InterWebConnector
 	
 
 	@Override
-	public void put(byte[] data,
-	                String contentType,
-	                Parameters params,
-	                AuthCredentials authCredentials)
+	public ResultItem put(byte[] data,
+						  String contentType,
+						  Parameters params,
+						  AuthCredentials authCredentials)
 	    throws InterWebException
 	{
 		notNull(data, "data");
@@ -369,6 +370,7 @@ public class InterWebConnector
 		{
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 

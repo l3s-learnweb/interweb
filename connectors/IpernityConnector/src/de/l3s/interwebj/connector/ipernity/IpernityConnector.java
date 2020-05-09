@@ -535,6 +535,6 @@ public class IpernityConnector extends AbstractServiceConnector
     @Override
     public void revokeAuthentication() throws InterWebException
     {
-	// keine möglichkeit gefunden bei ipernity
+		// keine mÃ¶glichkeit gefunden bei ipernity
     }
 }

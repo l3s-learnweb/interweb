@@ -11,8 +11,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
 
-import com.sun.istack.internal.NotNull;
-
+import com.sun.istack.NotNull;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.core.Engine;
 import de.l3s.interwebj.core.Environment;
