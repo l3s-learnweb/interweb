@@ -29,7 +29,7 @@
         <!-- Connectors -->
         <dependency>
             <groupId>de.l3s.interweb</groupId>
-            <artifactId>connector-bingazure</artifactId>
+            <artifactId>connector-bing</artifactId>
             <version>2.0.0</version>
         </dependency>
         <dependency>

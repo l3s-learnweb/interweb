@@ -1,4 +1,4 @@
-package de.l3s.interwebj.connector.bingAzure;
+package de.l3s.interwebj.connector.bing;
 
 import static de.l3s.interwebj.util.Assertions.notNull;
 
@@ -26,14 +26,14 @@ import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
 
-public class BingAzureConnector extends AbstractServiceConnector
+public class BingConnector extends AbstractServiceConnector
 {
-    public BingAzureConnector()
+    public BingConnector()
     {
     	super("Bing", "http://www.bing.com", new TreeSet<>(Arrays.asList("text", "image")));
     }
 
-    public BingAzureConnector(AuthCredentials consumerAuthCredentials)
+    public BingConnector(AuthCredentials consumerAuthCredentials)
     {
 		this();
 		setAuthCredentials(consumerAuthCredentials);
@@ -49,7 +49,7 @@ public class BingAzureConnector extends AbstractServiceConnector
     @Override
     public ServiceConnector clone()
     {
-	return new BingAzureConnector(getAuthCredentials());
+	return new BingConnector(getAuthCredentials());
     }
 
     @Override

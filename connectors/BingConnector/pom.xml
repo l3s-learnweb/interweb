@@ -11,11 +11,11 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>connector-bingazure</artifactId>
+    <artifactId>connector-bing</artifactId>
     <version>2.0.0</version>
     <packaging>jar</packaging>
 
-    <name>BingAzureConnector</name>
+    <name>BingConnector</name>
 
     <dependencies>
         <dependency>

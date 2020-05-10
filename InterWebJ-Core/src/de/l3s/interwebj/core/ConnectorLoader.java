@@ -6,7 +6,7 @@ import java.util.List;
 public class ConnectorLoader
 {
     private static final String[] CONNECTORS = {
-            "de.l3s.interwebj.connector.bingAzure.BingAzureConnector",
+            "de.l3s.interwebj.connector.bing.BingConnector",
             "de.l3s.interwebj.connector.flickr.FlickrConnector",
             "de.l3s.interwebj.connector.ipernity.IpernityConnector",
             "de.l3s.interwebj.connector.slideshare.SlideShareConnector",
