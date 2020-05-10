@@ -14,18 +14,6 @@ public class Vimeo
 {
     private static final String token = "***REMOVED***";
 
-    public static void main(String[] args) throws Exception
-    {
-	String query = "angela merkel";
-	String pageNumber = "1";
-	String itemsPerPage = "10";
-
-	System.out.println();
-	//System.setProperty("https.protocols", "TLSv1.1");
-	System.exit(0);
-
-    }
-
     private static String HttpRequest(String url) throws Exception
     {
 	URL obj = new URL(url);

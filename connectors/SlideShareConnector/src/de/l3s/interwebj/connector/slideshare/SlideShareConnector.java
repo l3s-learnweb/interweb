@@ -41,7 +41,7 @@ public class SlideShareConnector extends AbstractServiceConnector
 
     public SlideShareConnector()
     {
-		super("SlideShare", "http://www.slideshare.net", new TreeSet<>(Arrays.asList("text", "presentation", "video")));
+		super("SlideShare", "https://www.slideshare.net", new TreeSet<>(Arrays.asList("text", "presentation", "video")));
     }
 
     public SlideShareConnector(AuthCredentials consumerAuthCredentials)
@@ -78,7 +78,7 @@ public class SlideShareConnector extends AbstractServiceConnector
     {
 	notNull(query, "query");
 	QueryResult queryResult = new QueryResult(query);
-	//		WebResource resource = createResource("http://www.slideshare.net/api/2/search_slideshows");
+	//		WebResource resource = createResource("https://www.slideshare.net/api/2/search_slideshows");
 	Client client = Client.create();
 	WebResource resource = client.resource("https://www.slideshare.net/api/2/search_slideshows");
 	resource = resource.queryParam("q", query.getQuery());
@@ -179,7 +179,7 @@ public class SlideShareConnector extends AbstractServiceConnector
 	    throw new InterWebException("URL: [" + url + "] doesn't belong to connector");
 	}
 	Client client = Client.create();
-	WebResource resource = client.resource("http://www.slideshare.net/api/2/get_slideshow");
+	WebResource resource = client.resource("https://www.slideshare.net/api/2/get_slideshow");
 	resource = resource.queryParam("slideshow_url", url);
 
 	ClientResponse response = postQuery(resource);
@@ -201,7 +201,7 @@ public class SlideShareConnector extends AbstractServiceConnector
     {
 	notNull(authCredentials, "authCredentials");
 	Client client = Client.create();
-	WebResource resource = client.resource("http://www.slideshare.net/api/2/get_user_tags");
+	WebResource resource = client.resource("https://www.slideshare.net/api/2/get_user_tags");
 	resource = resource.queryParam("username", authCredentials.getKey());
 	resource = resource.queryParam("password", authCredentials.getSecret());
 
@@ -370,29 +370,5 @@ public class SlideShareConnector extends AbstractServiceConnector
     {
 	// TODO Auto-generated method stub
 	throw new NotImplementedException();
-    }
-
-    public static void main(String[] args) throws Exception
-    {
-	AuthCredentials consumerAuthCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-	SlideShareConnector ssc = new SlideShareConnector(consumerAuthCredentials);
-	QueryFactory queryFactory = new QueryFactory();
-	Query query = queryFactory.createQuery("people");
-	query.addContentType(Query.CT_VIDEO);
-	query.addContentType(Query.CT_IMAGE);
-	query.addContentType(Query.CT_TEXT);
-	query.addContentType(Query.CT_PRESENTATION);
-	query.addContentType(Query.CT_AUDIO);
-	query.addSearchScope(SearchScope.TEXT);
-	query.addSearchScope(SearchScope.TAGS);
-	query.setResultCount(5);
-	//		query.addParam("date_from", "2009-01-01 00:00:00");
-	//		query.addParam("date_till", "2009-06-01 00:00:00");
-	query.setSortOrder(SortOrder.RELEVANCE);
-	QueryResult queryResult = ssc.get(query, null);
-	String id = queryResult.getQuery().getId();
-	System.out.println(id);
-	String embedded = ssc.getEmbedded(null, "http://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
-	System.out.println(embedded);
     }
 }

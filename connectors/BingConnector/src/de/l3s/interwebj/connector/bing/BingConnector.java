@@ -67,8 +67,9 @@ public class BingConnector extends AbstractServiceConnector
 	if(authCredentials == null)
 	    authCredentials = getAuthCredentials(); // we have to use this; authCredentials parameter is null
 
-	String key = (authCredentials != null) ? authCredentials.getKey() : "no";
-	Environment.getInstance().getDatabase().logQuery(key, query.getQuery());
+	// TODO: move this log to core if requires
+	// String key = (authCredentials != null) ? authCredentials.getKey() : "no";
+	// Environment.getInstance().getDatabase().logQuery(key, query.getQuery());
 
 	try
 	{

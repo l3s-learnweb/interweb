@@ -15,52 +15,10 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import de.l3s.bingService.JsonParser;
 import de.l3s.bingService.models.BingResponse;
-import de.l3s.bingService.models.Image;
-import de.l3s.bingService.models.ImageHolder;
-import de.l3s.bingService.models.WebPage;
-import de.l3s.bingService.models.WebPagesMainHolder;
 import de.l3s.bingService.models.query.BingQuery;
 
 public class BingApiService implements BingRequestConstants
 {
-
-    public static void main(String[] args) throws UnsupportedOperationException, IOException
-    {
-	BingQuery query = new BingQuery();
-	query.setQuery("clinton");
-	query.setMarket("en-US");
-	query.setCount(60);
-	query.setOffset(0);
-
-//195f994bbef145c587ae13df58b33c9a api 5
-	BingResponse response = new BingApiService("***REMOVED***").getResponseFromBingApi(query);
-
-	WebPagesMainHolder pages = response.getWebPages();
-	System.out.println("web pages: " + pages.getTotalEstimatedMatches());
-
-	int counter = 1;
-	for(WebPage page : pages.getValue())
-	{
-	    System.out.println(page);
-	    System.out.println(counter++);
-	}
-
-	System.out.println("-----------");
-	ImageHolder images = response.getImages();
-
-	if(images != null)
-	{
-	    for(Image image : images.getValue())
-	    {
-		System.out.println(image.getContentSize());
-		System.out.println(image.getMedia());
-	    }
-	}
-
-	System.out.println(response.getJsonContent());
-
-    }
-
     private String apiKey;
     private String rawBingResponse;
 

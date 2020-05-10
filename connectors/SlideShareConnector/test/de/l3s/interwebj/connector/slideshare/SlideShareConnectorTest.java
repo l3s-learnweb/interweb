@@ -1,0 +1,50 @@
+package de.l3s.interwebj.connector.slideshare;
+
+import de.l3s.interwebj.AuthCredentials;
+import de.l3s.interwebj.InterWebException;
+import de.l3s.interwebj.core.AbstractServiceConnector;
+import de.l3s.interwebj.query.Query;
+import de.l3s.interwebj.query.QueryFactory;
+import de.l3s.interwebj.query.QueryResult;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class SlideShareConnectorTest {
+    private final static String TEST_KEY = "***REMOVED***";
+    private final static String TEST_SECRET = "***REMOVED***";
+
+    private static AbstractServiceConnector connector;
+
+    @BeforeAll
+    public static void initialize() {
+        AuthCredentials consumerAuthCredentials = new AuthCredentials(TEST_KEY, TEST_SECRET);
+        connector = new SlideShareConnector(consumerAuthCredentials);
+    }
+
+    @Test
+    void get() throws InterWebException {
+        QueryFactory queryFactory = new QueryFactory();
+        Query query = queryFactory.createQuery("hello world");
+        query.addContentType(Query.CT_VIDEO);
+        query.addContentType(Query.CT_IMAGE);
+        query.addContentType(Query.CT_TEXT);
+        query.addContentType(Query.CT_PRESENTATION);
+        query.addContentType(Query.CT_AUDIO);
+        query.addSearchScope(Query.SearchScope.TEXT);
+        query.addSearchScope(Query.SearchScope.TAGS);
+        query.setResultCount(5);
+        //		query.addParam("date_from", "2009-01-01 00:00:00");
+        //		query.addParam("date_till", "2009-06-01 00:00:00");
+        query.setSortOrder(Query.SortOrder.RELEVANCE);
+
+        QueryResult queryResult = connector.get(query, null);
+
+        assertEquals(16, queryResult.getResultItems().size());
+        assertTrue(queryResult.getTotalResultCount() > 100);
+
+        String embedded = connector.getEmbedded(null, "https://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
+        System.out.println(embedded);
+    }
+}

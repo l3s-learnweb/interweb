@@ -147,20 +147,4 @@ public class FileAuthStore implements AuthStore
 	}
 
     }
-
-    public static void main(String[] args) throws Exception
-    {
-	FileAuthStore fas = new FileAuthStore(new File(System.getProperty("user.home") + File.separatorChar + "flickrauth"));
-	Auth a = new Auth();
-	User u = new User();
-	u.setId("THISISMYNSID");
-	a.setUser(u);
-	fas.store(a);
-	fas = null;
-
-	fas = new FileAuthStore(new File(System.getProperty("user.home") + File.separatorChar + "flickrauth"));
-	Auth a2 = fas.retrieve("THISISMYNSID");
-
-	System.out.println(a2.getUser().getId());
-    }
 }

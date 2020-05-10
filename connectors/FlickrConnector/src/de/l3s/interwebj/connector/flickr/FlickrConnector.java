@@ -620,15 +620,6 @@ public class FlickrConnector extends AbstractServiceConnector
 	return contentTypes.contains(Query.CT_IMAGE) || contentTypes.contains(Query.CT_VIDEO);
     }
 
-    public static void main(String[] args)
-    {
-	String urlString = "http://flickr.com/photos/46648241@N00/4056831952";
-	URI uri = URI.create(urlString);
-	String path = uri.getPath();
-	String id = path.substring(path.lastIndexOf('/') + 1);
-	System.out.println(id);
-    }
-
     @Override
     public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException
     {
