@@ -9,11 +9,6 @@ public class AuthCredentials implements Serializable
     private String key;
     private String secret;
 
-    public AuthCredentials(String key)
-    {
-        this(key, null);
-    }
-
     public AuthCredentials(String key, String secret)
     {
         if(null == key)

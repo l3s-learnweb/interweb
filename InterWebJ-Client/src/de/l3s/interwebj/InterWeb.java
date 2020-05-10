@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -18,9 +19,7 @@ import com.sun.jersey.oauth.signature.HMAC_SHA1;
 import com.sun.jersey.oauth.signature.OAuthParameters;
 import com.sun.jersey.oauth.signature.OAuthSecrets;
 
-import de.l3s.interwebj.AuthorizationInformation.ServiceInformation;
 import de.l3s.interwebj.jaxb.SearchResponse;
-import de.l3s.interwebj.jaxb.SearchResultEntity;
 
 public class InterWeb implements Serializable
 {
@@ -32,7 +31,7 @@ public class InterWeb implements Serializable
     private final String interwebApiURL;
 
     private AuthCredentials iwToken = null;
-    
+
     public InterWeb(String interwebApiURL, String consumerKey, String consumerSecret)
     {
         this.consumerKey = consumerKey;
@@ -65,6 +64,11 @@ public class InterWeb implements Serializable
         this.iwToken = iwToken;
     }
 
+    public void deleteToken()
+    {
+        setIWToken(null);
+    }
+
     private WebResource createWebResource(String apiPath, AuthCredentials userAuthCredentials)
     {
         String apiUrl = getInterwebApiURL() + apiPath;
@@ -94,98 +98,63 @@ public class InterWeb implements Serializable
         return resource;
     }
 
-    private WebResource createPublicWebResource(String apiPath)
-    {
-        return createWebResource(apiPath, null);
-    }
-
-    public synchronized List<ServiceInformation> getServiceInformation(boolean useCache) throws IllegalResponseException
-    {
-            WebResource resource = createPublicWebResource("services");
-
-            ClientResponse response = resource.get(ClientResponse.class);
-            AuthorizationInformation temp = new AuthorizationInformation(response.getEntityInputStream());
-
-            return temp.getServices();
-    }
-
-    public void deleteToken()
-    {
-        setIWToken(null);
-    }
-
-    public static String getClientResponseContent(ClientResponse response) throws IOException
-    {
-        StringBuilder sb = new StringBuilder();
-        InputStream is = response.getEntityInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-        int c;
-        while((c = br.read()) != -1)
-        {
-            sb.append((char) c);
-        }
-        br.close();
-        return sb.toString();
-    }
-
 
     /**
-     * 
-     * @param query The query string
-     * @param params 
+     * @param query  The query string
+     * @param params see http://athena.l3s.uni-hannover.de:8000/doc/search
      * @return
      * @throws IOException
      * @throws IllegalResponseException
      */
     public SearchResponse search(String query, TreeMap<String, String> params) throws IOException, IllegalResponseException
     {
-        if(null == query || query.length() == 0)
+        if(null == query || query.isEmpty())
         {
             throw new IllegalArgumentException("empty query");
         }
 
         WebResource resource = createWebResource("search", getIWToken());
         resource = resource.queryParam("q", query);
-        for(String key : params.keySet())
+        for(final Map.Entry<String, String> entry : params.entrySet())
         {
-            String value = params.get(key);
-            resource = resource.queryParam(key, value);
+            String value = entry.getValue();
+            resource = resource.queryParam(entry.getKey(), value);
         }
 
         ClientResponse response = resource.get(ClientResponse.class);
 
         if(response.getStatus() != 200)
         {
-            String content = getClientResponseContent(response);
+            String content = responseToString(response);
 
-            log.fatal("Interweb request failes; Error code : " + response.getStatus() + "; for query:" + query + " | " + params + "; response: " + content);
+            log.fatal("Interweb request failed; Error code : " + response.getStatus() + "; for query:" + query + " | " + params + "; response: " + content);
             throw new RuntimeException("Interweb request failed : HTTP error code : " + response.getStatus());
         }
 
         return response.getEntity(SearchResponse.class);
     }
 
-    public static void main(String[] args) throws Exception
+    public static String responseToString(ClientResponse response)
     {
-        TreeMap<String, String> params = new TreeMap<String, String>();
-
-        params.put("media_types", "text"); // ,image
-        params.put("services", "Bing"); // "YouTube,Vimeo"
-        params.put("number_of_results", "10");
-        params.put("page", "1");
-        params.put("language", "de");
-        
-        InterWeb iw = new InterWeb("***REMOVED***/api/", "***REMOVED***", "***REMOVED***");
-
-        SearchResponse response = iw.search("london", params);
-        for(SearchResultEntity result :  response.getQuery().getResults())
+        StringBuilder sb = new StringBuilder();
+        try
         {
-            System.out.println(result.getTitle());
-            System.out.println(result.getUrl());
+            InputStream is = response.getEntityInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+            int c;
+            while((c = br.read()) != -1)
+            {
+                sb.append((char) c);
+            }
+            br.close();
+
+            return sb.toString();
         }
-     
-
+        catch(IOException e)
+        {
+            log.warn("Can't convert response to String", e);
+            return null;
+        }
     }
-
-   
 }

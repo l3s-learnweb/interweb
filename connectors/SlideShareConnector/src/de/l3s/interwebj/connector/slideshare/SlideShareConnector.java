@@ -183,7 +183,7 @@ public class SlideShareConnector extends AbstractServiceConnector
 	resource = resource.queryParam("slideshow_url", url);
 
 	ClientResponse response = postQuery(resource);
-	if(response.getClientResponseStatus() != Status.OK)
+	if(response.getStatus() != 200)
 	{
 	    throw new InterWebException("URL: [" + url + "] doesn't belong to connector [" + getName() + "]");
 	}

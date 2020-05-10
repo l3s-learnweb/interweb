@@ -214,7 +214,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 		search.setQ(query.getQuery());
 	    }
 
-	    search.setMaxResults(new Long(query.getResultCount()));
+	    search.setMaxResults((long) query.getResultCount());
 
 	    if(query.getParam("date_from") != null)
 	    {
@@ -292,7 +292,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 
 	    // To increase efficiency, only retrieve the fields that the application uses.
 	    search.setFields("nextPageToken,pageInfo/totalResults,items(id/videoId)");
-	    search.setMaxResults(new Long(query.getResultCount()));
+	    search.setMaxResults((long) query.getResultCount());
 
 	    // Call the API and print results.
 	    Environment.logger.info("Request url: " + search.buildHttpRequestUrl());

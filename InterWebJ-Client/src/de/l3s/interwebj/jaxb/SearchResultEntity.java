@@ -133,7 +133,10 @@ public class SearchResultEntity
 
     public String getType()
     {
-        return type;
+        if(type.equalsIgnoreCase("text"))
+            this.type = "website";
+
+        return type.toLowerCase();
     }
 
     public String getUrl()
@@ -150,11 +153,6 @@ public class SearchResultEntity
     {
         this.description = description;
     }
-
-    //	public void setEmbedded(String embedded)
-    //	{
-    //		this.embedded = embedded;
-    //	}
 
     public void setIdAtService(String idAtService)
     {
@@ -224,7 +222,7 @@ public class SearchResultEntity
     /**
      * html code, could be flash
      * max width and max height 500px
-     * 
+     *
      * @param embedded
      */
     public void setEmbeddedSize3(String embedded)
@@ -235,7 +233,7 @@ public class SearchResultEntity
     /**
      * html code, could be flash
      * max width and max height 500px
-     * 
+     *
      * @return
      */
     public String getEmbeddedSize3()
@@ -246,7 +244,7 @@ public class SearchResultEntity
     /**
      * html code, only image or text
      * max width and max height 100px
-     * 
+     *
      * @return
      */
     public String getEmbeddedSize1()
@@ -301,7 +299,7 @@ public class SearchResultEntity
 
     /**
      * Url to the best (high resolution) available preview image
-     * 
+     *
      * @return
      */
     public String getImageUrl()
@@ -311,7 +309,7 @@ public class SearchResultEntity
 
     /**
      * Url to the best (high resolution) available preview image
-     * 
+     *
      * @param imageUrl
      */
     public void setImageUrl(String imageUrl)
