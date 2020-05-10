@@ -3,9 +3,7 @@ package de.l3s.interwebj.connector.ipernity;
 import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -21,7 +19,6 @@ import com.sun.jersey.oauth.signature.OAuthSecrets;
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
-import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.connector.ipernity.jaxb.CheckTokenResponse;
 import de.l3s.interwebj.connector.ipernity.jaxb.SearchResponse;
 import de.l3s.interwebj.connector.ipernity.jaxb.SearchResponse.Docs.Doc;
@@ -42,21 +39,21 @@ public class IpernityConnector extends AbstractServiceConnector
     private static final String ACCESS_TOKEN_PATH = "http://www.ipernity.com/apps/oauth/access";
     private static final String IPERNITY_BASE = "http://api.ipernity.com/api/";
 
-    public IpernityConnector(Configuration configuration)
+    public IpernityConnector()
     {
-	this(configuration, null);
+		super("Ipernity", "http://www.ipernity.com", new TreeSet<>(Arrays.asList("image")));
     }
 
-    public IpernityConnector(Configuration configuration, AuthCredentials consumerAuthCredentials)
+    public IpernityConnector(AuthCredentials consumerAuthCredentials)
     {
-	super(configuration);
-	setAuthCredentials(consumerAuthCredentials);
+		this();
+		setAuthCredentials(consumerAuthCredentials);
     }
 
     @Override
     public ServiceConnector clone()
     {
-	return new IpernityConnector(getConfiguration(), getAuthCredentials());
+	return new IpernityConnector(getAuthCredentials());
     }
 
     @Override

@@ -3,8 +3,10 @@ package de.l3s.interwebj.connector.bingAzure;
 import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import de.l3s.bingService.models.BingResponse;
 import de.l3s.bingService.models.Image;
@@ -16,7 +18,6 @@ import de.l3s.bingService.services.BingApiService;
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
-import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
@@ -29,18 +30,13 @@ public class BingAzureConnector extends AbstractServiceConnector
 {
     public BingAzureConnector()
     {
-	super();
+    	super("Bing", "http://www.bing.com", new TreeSet<>(Arrays.asList("text", "image")));
     }
 
-    public BingAzureConnector(Configuration configuration)
+    public BingAzureConnector(AuthCredentials consumerAuthCredentials)
     {
-	this(configuration, null);
-    }
-
-    public BingAzureConnector(de.l3s.interwebj.config.Configuration configuration, AuthCredentials consumerAuthCredentials)
-    {
-	super(configuration);
-	setAuthCredentials(consumerAuthCredentials);
+		this();
+		setAuthCredentials(consumerAuthCredentials);
     }
 
     @Override
@@ -53,7 +49,7 @@ public class BingAzureConnector extends AbstractServiceConnector
     @Override
     public ServiceConnector clone()
     {
-	return new BingAzureConnector(getConfiguration(), getAuthCredentials());
+	return new BingAzureConnector(getAuthCredentials());
     }
 
     @Override

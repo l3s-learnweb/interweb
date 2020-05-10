@@ -166,26 +166,14 @@ public class Engine
 	return getUserAuthCredentials(connector, principal) != null;
     }
 
-    public void loadConnectors(String realPath, String pluginDirPath)
+    public void loadConnectors()
     {
 	init();
 	ConnectorLoader connectorLoader = new ConnectorLoader();
-	List<ServiceConnector> connectors = connectorLoader.load(pluginDirPath);
-
-	//HashSet<String> linkedConnectors=new HashSet<String>();
-	//linkedConnectors.add("bing");
-
-	boolean isDebug = false;
-	// boolean isDebug = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
-	System.out.println("In debug : " + isDebug);
+	List<ServiceConnector> connectors = connectorLoader.load();
 
 	for(ServiceConnector connector : connectors)
 	{
-	    if(isDebug)
-	    {
-		connector = connectorLoader.loadLinkedConnector(realPath, connector.getName());
-	    }
-
 	    addConnector(connector);
 	    if(!database.hasConnector(connector.getName()))
 	    {
@@ -300,7 +288,7 @@ public class Engine
 	authCredentials = database.readConnectorAuthCredentials("flickr");
 	System.out.println(authCredentials);
 	Engine engine = new Engine(database);
-	engine.loadConnectors("", "./connectors");
+	engine.loadConnectors();
 	//String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
 	List<String> connectorNames = engine.getConnectorNames();
 	Environment.logger.info("Searching in connectors: " + connectorNames);

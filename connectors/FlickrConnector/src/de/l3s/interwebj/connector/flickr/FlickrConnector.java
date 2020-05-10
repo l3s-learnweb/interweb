@@ -5,14 +5,7 @@ import static de.l3s.interwebj.util.Assertions.notNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -39,7 +32,6 @@ import com.aetrion.flickr.uploader.Uploader;
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
-import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
@@ -56,16 +48,16 @@ public class FlickrConnector extends AbstractServiceConnector
     private static final String MEDIA_ALL = "all";
     private static final String MEDIA_PHOTOS = "photos";
     private static final String MEDIA_VIDEOS = "videos";
+    
+    public FlickrConnector()
+	{
+		super("Flickr", "http://www.flickr.com", new TreeSet<>(Arrays.asList("image", "video")));
+	}
 
-    public FlickrConnector(Configuration configuration)
+    public FlickrConnector(AuthCredentials consumerAuthCredentials)
     {
-	this(configuration, null);
-    }
-
-    public FlickrConnector(Configuration configuration, AuthCredentials consumerAuthCredentials)
-    {
-	super(configuration);
-	setAuthCredentials(consumerAuthCredentials);
+		this();
+		setAuthCredentials(consumerAuthCredentials);
     }
 
     @Override
@@ -100,7 +92,7 @@ public class FlickrConnector extends AbstractServiceConnector
     @Override
     public ServiceConnector clone()
     {
-	return new FlickrConnector(getConfiguration(), getAuthCredentials());
+	return new FlickrConnector(getAuthCredentials());
     }
 
     @Override

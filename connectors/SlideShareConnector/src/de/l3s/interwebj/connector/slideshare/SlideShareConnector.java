@@ -2,17 +2,11 @@ package de.l3s.interwebj.connector.slideshare;
 
 import static de.l3s.interwebj.util.Assertions.notNull;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +25,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
-import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
@@ -46,15 +39,15 @@ import de.l3s.interwebj.util.CoreUtils;
 public class SlideShareConnector extends AbstractServiceConnector
 {
 
-    public SlideShareConnector(Configuration configuration)
+    public SlideShareConnector()
     {
-	this(configuration, null);
+		super("SlideShare", "http://www.slideshare.net", new TreeSet<>(Arrays.asList("text", "presentation", "video")));
     }
 
-    public SlideShareConnector(Configuration configuration, AuthCredentials consumerAuthCredentials)
+    public SlideShareConnector(AuthCredentials consumerAuthCredentials)
     {
-	super(configuration);
-	setAuthCredentials(consumerAuthCredentials);
+    	this();
+		setAuthCredentials(consumerAuthCredentials);
     }
 
     @Override
@@ -68,7 +61,7 @@ public class SlideShareConnector extends AbstractServiceConnector
     @Override
     public ServiceConnector clone()
     {
-	return new SlideShareConnector(getConfiguration(), getAuthCredentials());
+	return new SlideShareConnector(getAuthCredentials());
     }
 
     @Override
@@ -381,10 +374,8 @@ public class SlideShareConnector extends AbstractServiceConnector
 
     public static void main(String[] args) throws Exception
     {
-	File configFile = new File("connector-config.xml");
-	Configuration configuration = new Configuration(new FileInputStream(configFile));
 	AuthCredentials consumerAuthCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-	SlideShareConnector ssc = new SlideShareConnector(configuration, consumerAuthCredentials);
+	SlideShareConnector ssc = new SlideShareConnector(consumerAuthCredentials);
 	QueryFactory queryFactory = new QueryFactory();
 	Query query = queryFactory.createQuery("people");
 	query.addContentType(Query.CT_VIDEO);

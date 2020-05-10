@@ -8,12 +8,6 @@
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 	<ui:define name="content">
-		<h:form>
-			<h:commandButton action="#{registerServicesBean.reload()}"
-				value="Reload connectors" id="reload_button" />
-			<br />
-			<br />
-		</h:form>
 		<h:outputLabel value="Services with OAuth support:" />
 		<h:form>
 			<h:dataTable value="#{registerServicesBean.connectorWrappers}"

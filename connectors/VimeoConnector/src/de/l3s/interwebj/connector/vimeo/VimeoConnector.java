@@ -3,10 +3,7 @@ package de.l3s.interwebj.connector.vimeo;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.json.JSONArray;
@@ -15,7 +12,6 @@ import org.json.JSONObject;
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
-import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
@@ -28,21 +24,21 @@ import de.l3s.interwebj.util.CoreUtils;
 public class VimeoConnector extends AbstractServiceConnector
 {
 
-    public VimeoConnector(Configuration configuration)
+    public VimeoConnector()
     {
-	this(configuration, null);
+		super("Vimeo", "http://www.vimeo.com", new TreeSet<>(Arrays.asList("video")));
     }
 
-    public VimeoConnector(Configuration configuration, AuthCredentials consumerAuthCredentials)
+    public VimeoConnector(AuthCredentials consumerAuthCredentials)
     {
-	super(configuration);
-	setAuthCredentials(consumerAuthCredentials);
+    	this();
+		setAuthCredentials(consumerAuthCredentials);
     }
 
     @Override
     public ServiceConnector clone()
     {
-	return new VimeoConnector(getConfiguration(), getAuthCredentials());
+	return new VimeoConnector(getAuthCredentials());
     }
 
     @Override

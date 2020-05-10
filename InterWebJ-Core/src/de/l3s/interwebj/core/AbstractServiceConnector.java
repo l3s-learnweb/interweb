@@ -1,34 +1,27 @@
 package de.l3s.interwebj.core;
 
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.NotImplementedException;
 
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
-import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.db.Database;
 
 public abstract class AbstractServiceConnector implements ServiceConnector
 {
 
-    private String name;
-    private String baseUrl;
+    private final String name;
+    private final String baseUrl;
+    private final Set<String> contentTypes;
+
     private AuthCredentials consumerAuthCredentials;
-    private Set<String> contentTypes;
-    private Configuration configuration;
 
-    public AbstractServiceConnector()
-    {
-	// TODO Auto-generated constructor stub
-    }
-
-    public AbstractServiceConnector(Configuration configuration)
-    {
-	this.configuration = configuration;
-	init();
+    public AbstractServiceConnector(String name, String baseUrl, Set<String> contentTypes) {
+        this.name = name;
+        this.baseUrl = baseUrl;
+        this.contentTypes = contentTypes;
     }
 
     @Override
@@ -86,11 +79,6 @@ public abstract class AbstractServiceConnector implements ServiceConnector
     public String getBaseUrl()
     {
 	return baseUrl;
-    }
-
-    public Configuration getConfiguration()
-    {
-	return configuration;
     }
 
     @Override
@@ -166,12 +154,5 @@ public abstract class AbstractServiceConnector implements ServiceConnector
 	}
 
 	throw new InterWebException("Unable to fetch user name from the callback URL");
-    }
-
-    private void init()
-    {
-	name = configuration.getValue("name");
-	baseUrl = configuration.getValue("base-url");
-	contentTypes = new TreeSet<String>(configuration.getValues("content-types.content-type"));
     }
 }

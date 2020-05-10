@@ -70,17 +70,6 @@ public class RegisterServicesBean
 	return "success";
     }
 
-    public String reload()
-    {
-	Environment.logger.info("Reloading installed connectors...");
-	ServletContext servletContext = (ServletContext) FacesUtils.getExternalContext().getContext();
-	String contextRealPath = servletContext.getRealPath("/");
-	String connectorsDirPath = contextRealPath + "WEB-INF/connectors";
-	Engine engine = Environment.getInstance().getEngine();
-	engine.loadConnectors(contextRealPath, connectorsDirPath);
-	return "success";
-    }
-
     public String unregister(ConnectorWrapper connectorWrapper)
     {
 	try

@@ -32,21 +32,10 @@ public class ServletContextLifecycleListener implements ServletContextListener
 	{
 	    configPath = webinfRealPath + "/config_local.xml";
 	}
-	else if(new File("C:\\").exists())
-	{
-	}
-	else if(new File("/data2").exists())
-	{
-	}
-	else
-	{
-	}
 
 	Environment environment = Environment.getInstance(configPath);
 	Environment.logger.info("Starting InterWebJ up...");
-	Engine engine = environment.getEngine();
-	String connectorsDirPath = webinfRealPath + "/connectors";
-	engine.loadConnectors(servletContext.getRealPath(""), connectorsDirPath);
+	environment.getEngine().loadConnectors();
     }
 
 }

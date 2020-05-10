@@ -48,7 +48,6 @@ import com.google.api.services.youtube.model.VideoStatus;
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
-import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.InterWebPrincipal;
@@ -89,15 +88,15 @@ public class YouTubeConnector extends AbstractServiceConnector
 
     private static GoogleAuthorizationCodeFlow flow = null;
 
-    public YouTubeConnector(Configuration configuration)
+    public YouTubeConnector()
     {
-	this(configuration, null);
+		super("YouTube", "http://www.youtube.com", new TreeSet<>(Arrays.asList("video")));
     }
 
-    public YouTubeConnector(Configuration configuration, AuthCredentials consumerAuthCredentials)
+    public YouTubeConnector(AuthCredentials consumerAuthCredentials)
     {
-	super(configuration);
-	setAuthCredentials(consumerAuthCredentials);
+    	this();
+		setAuthCredentials(consumerAuthCredentials);
     }
 
     @Override
@@ -132,7 +131,7 @@ public class YouTubeConnector extends AbstractServiceConnector
     @Override
     public ServiceConnector clone()
     {
-	return new YouTubeConnector(getConfiguration(), getAuthCredentials());
+	return new YouTubeConnector(getAuthCredentials());
     }
 
     @Override
