@@ -1,6 +1,0 @@
-The config file has constants for 
--graph name
--virtuoso connection url
-
-All the changes should be performed here and all the changes will automatically get reflected in rest of the code
-----------------------------------------------------------------------------

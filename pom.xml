@@ -22,13 +22,6 @@
         <module>connectors/SlideShareConnector</module>
         <module>connectors/VimeoConnector</module>
         <module>connectors/YouTubeConnector</module>
-        <!--<module>connectors/BingConnector</module>-->
-        <!--<module>connectors/DbpediaConnector</module>-->
-        <!--<module>connectors/FacebookConnector</module>-->
-        <!--<module>connectors/FedoraConnector</module>-->
-        <!--<module>connectors/GoogleConnector</module>-->
-        <!--<module>connectors/InterWebConnector</module>-->
-        <!--<module>connectors/TedConnector</module>-->
         <module>InterWebJ-Tomcat</module>
         <module>InterwebClient2</module>
         <module>InterWebRestClient</module>
