@@ -94,11 +94,6 @@ public class Services extends Endpoint
 	return serviceEntity;
     }
 
-    public static void main(String[] args) throws Exception
-    {
-	testServices();
-    }
-
     private static AuthorizationEntity createAuthorizationEntity(HttpContext httpContext, ServiceConnector connector, boolean isAuthenticated)
     {
 	AuthorizationEntity authorizationEntity = new AuthorizationEntity();
@@ -123,20 +118,4 @@ public class Services extends Endpoint
 	String method = isAuthenticated ? "DELETE" : "POST";
 	return new AuthorizationLinkEntity(method, link);
     }
-
-    private static void testServices() throws Exception
-    {
-	AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-	//		AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***",
-	//		"***REMOVED***");
-	AuthCredentials userCredentials = null;
-	//		userCredentials = new AuthCredentials("***REMOVED***",
-	//		                                      "***REMOVED***");
-	WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/services", consumerCredentials, userCredentials);
-	System.out.println("querying InterWebJ URL: " + resource.toString());
-	ClientResponse response = resource.get(ClientResponse.class);
-	ServicesResponse servicesResponse = response.getEntity(ServicesResponse.class);
-	System.out.println(servicesResponse);
-    }
-
 }
