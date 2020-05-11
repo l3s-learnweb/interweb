@@ -167,7 +167,6 @@ public class CallbackServlet extends HttpServlet
 	String serviceApiPath = baseUri.toASCIIString() + "api/users/default/services/" + connector.getName();
 	WebResource webResource = Endpoint.createWebResource(serviceApiPath, consumerAuthCredentials, userAuthCredentials);
 	ClientResponse clientResponse = webResource.accept(MediaType.APPLICATION_XML).get(ClientResponse.class);
-	CoreUtils.printClientResponse(clientResponse);
 	ServiceResponse serviceResponse = clientResponse.getEntity(ServiceResponse.class);
 	writeIntoServletResponse(response, serviceResponse);
 	return;

@@ -22,5 +22,26 @@
             <groupId>de.l3s.interweb</groupId>
             <artifactId>interwebj-core</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-multipart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
+            <artifactId>oauth-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
+            <artifactId>oauth-signature</artifactId>
+        </dependency>
     </dependencies>
 </project>

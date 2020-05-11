@@ -52,7 +52,6 @@ import de.l3s.interwebj.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.core.ServiceConnector;
-import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
@@ -722,20 +721,8 @@ public class YouTubeConnector extends AbstractServiceConnector
     @Override
     public InterWebPrincipal getPrincipal(Parameters parameters) throws InterWebException
     {
-	String userName = parameters.get("state");
-
-	if(userName != null)
-	{
-	    Database database = Environment.getInstance().getDatabase();
-	    InterWebPrincipal principal = database.readPrincipalByName(userName);
-	    if(principal == null)
-	    {
-		throw new InterWebException("User [" + userName + "] not found");
-	    }
-	    return principal;
-	}
-
-	throw new InterWebException("Unable to fetch user name from the callback URL");
+		parameters.add(Parameters.IWJ_USER_ID, parameters.get("state"));
+		return super.getPrincipal(parameters);
     }
 
     @Override

@@ -2,7 +2,11 @@ package de.l3s.interwebj.connector.ipernity;
 
 import static de.l3s.interwebj.util.Assertions.notNull;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -206,9 +210,6 @@ public class IpernityConnector extends AbstractServiceConnector
 	    queryResult.addResultItem(resultItem);
 	}
 
-	if(query.getPrivacy() != -1f)
-	    queryResult = Environment.getInstance().getPrivacyClassifier().classify(queryResult, query);
-
 	return queryResult;
     }
 
@@ -266,7 +267,7 @@ public class IpernityConnector extends AbstractServiceConnector
 	{
 	    //resource = resource.queryParam("scope", "http://gdata.youtube.com");
 	    ClientResponse response = resource.get(ClientResponse.class);
-	    String responseContent = CoreUtils.getClientResponseContent(response);
+	    String responseContent = getClientResponseContent(response);
 	    Environment.logger.info("Content: " + responseContent);
 	    params.addQueryParameters(responseContent);
 	    String authUrl = AUTHORIZATION_PATH + "?oauth_token=" + params.get(Parameters.OAUTH_TOKEN);
@@ -324,7 +325,7 @@ public class IpernityConnector extends AbstractServiceConnector
 	    resource.addFilter(filter);
 	    Environment.logger.info("getting ipernity access token: " + resource.toString());
 	    ClientResponse response = resource.get(ClientResponse.class);
-	    String content = CoreUtils.getClientResponseContent(response);
+	    String content = getClientResponseContent(response);
 	    Environment.logger.info("ipernity response: " + content);
 	    params.addQueryParameters(content);
 	    String key = params.get(Parameters.OAUTH_TOKEN);
@@ -398,6 +399,20 @@ public class IpernityConnector extends AbstractServiceConnector
         return resultItem;
     }
     */
+
+	public static String getClientResponseContent(ClientResponse response) throws IOException
+	{
+		StringBuilder sb = new StringBuilder();
+		InputStream is = response.getEntityInputStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+		int c;
+		while((c = br.read()) != -1)
+		{
+			sb.append((char) c);
+		}
+		br.close();
+		return sb.toString();
+	}
 
     @Override
     public String getEmbedded(AuthCredentials authCredentials, String url, int maxWidth, int maxHeight) throws InterWebException

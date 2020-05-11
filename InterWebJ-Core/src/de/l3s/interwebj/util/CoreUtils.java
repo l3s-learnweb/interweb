@@ -1,9 +1,5 @@
 package de.l3s.interwebj.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,11 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.ws.rs.core.MultivaluedMap;
-
-import com.sun.jersey.api.client.ClientResponse;
-
-import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.query.Thumbnail;
 
 public class CoreUtils
@@ -59,20 +50,6 @@ public class CoreUtils
 	return formatDate(DEFAULT_DATE_FORMAT, millis);
     }
 
-    public static String getClientResponseContent(ClientResponse response) throws IOException
-    {
-	StringBuilder sb = new StringBuilder();
-	InputStream is = response.getEntityInputStream();
-	BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-	int c;
-	while((c = br.read()) != -1)
-	{
-	    sb.append((char) c);
-	}
-	br.close();
-	return sb.toString();
-    }
-
     public static long parseDate(DateFormat df, String dateString) throws ParseException
     {
 	return df.parse(dateString).getTime();
@@ -81,17 +58,6 @@ public class CoreUtils
     public static long parseDate(String dateString) throws ParseException
     {
 	return parseDate(DEFAULT_DATE_FORMAT, dateString);
-    }
-
-    public static void printClientResponse(ClientResponse response)
-    {
-	Environment.logger.info("Status: [" + response.getStatus() + "]");
-	Environment.logger.info("Headers:");
-	MultivaluedMap<String, String> headers = response.getHeaders();
-	for(String header : headers.keySet())
-	{
-	    Environment.logger.info("    " + header + ": " + headers.get(header));
-	}
     }
 
     public static String createImageCode(Thumbnail tn, int maxWidth, int maxHeight)

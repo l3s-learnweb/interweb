@@ -3,16 +3,7 @@ package de.l3s.interwebj.query;
 import static de.l3s.interwebj.util.Assertions.notNull;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.google.common.base.Charsets;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
+import java.util.*;
 
 import de.l3s.interwebj.core.Environment;
 
@@ -109,14 +100,10 @@ public class Query implements Serializable
 	return ret;
     }
 
-    @Override
-    public int hashCode()
-    {
-	HashFunction hf = Hashing.md5();
-	HashCode hc = hf.newHasher().putString(query.toLowerCase(), Charsets.UTF_8).putString(language, Charsets.UTF_8).putInt(page).putInt(resultCount).putInt(connectorNames.hashCode()).putInt(contentTypes.hashCode()).hash();
-
-	return hc.asInt();
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(query.toLowerCase(), connectorNames, contentTypes, resultCount, page, language);
+	}
 
     public Query(String id, String query, List<String> contentTypes, Map<String, String> params)
     {
