@@ -12,11 +12,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.core.HttpContext;
 
-import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.core.Engine;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.InterWebPrincipal;

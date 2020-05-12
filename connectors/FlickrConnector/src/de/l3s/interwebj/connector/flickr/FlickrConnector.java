@@ -10,6 +10,8 @@ import java.util.*;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import com.aetrion.flickr.Flickr;
@@ -33,7 +35,6 @@ import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.core.AbstractServiceConnector;
-import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SearchScope;
@@ -45,6 +46,8 @@ import de.l3s.interwebj.util.CoreUtils;
 
 public class FlickrConnector extends AbstractServiceConnector
 {
+	private static final Logger log = LogManager.getLogger(FlickrConnector.class);
+	
     private static final String MEDIA_ALL = "all";
     private static final String MEDIA_PHOTOS = "photos";
     private static final String MEDIA_VIDEOS = "videos";
@@ -83,7 +86,7 @@ public class FlickrConnector extends AbstractServiceConnector
 	}
 	catch(Exception e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	return params;
@@ -108,14 +111,14 @@ public class FlickrConnector extends AbstractServiceConnector
 	{
 	    String frob = params.get("frob");
 	    Flickr flickr = createFlickrInstance();
-	    Environment.logger.info("request token frob: " + frob);
+	    log.info("request token frob: " + frob);
 	    AuthInterface authInterface = flickr.getAuthInterface();
 	    Auth auth = authInterface.getToken(frob);
 	    authCredentials = new AuthCredentials(auth.getToken());
 	}
 	catch(Exception e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	return authCredentials;
@@ -171,17 +174,17 @@ public class FlickrConnector extends AbstractServiceConnector
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	catch(SAXException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	catch(FlickrException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
     }
@@ -218,17 +221,17 @@ public class FlickrConnector extends AbstractServiceConnector
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	catch(SAXException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	catch(FlickrException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
     }
@@ -292,17 +295,17 @@ public class FlickrConnector extends AbstractServiceConnector
 	    }
 	    catch(FlickrException e)
 	    {
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	    }
 	    catch(IOException e)
 	    {
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	    }
 	    catch(SAXException e)
 	    {
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	    }
 	}
@@ -353,7 +356,7 @@ public class FlickrConnector extends AbstractServiceConnector
 	}
 	catch(ParserConfigurationException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
     }
@@ -492,7 +495,7 @@ public class FlickrConnector extends AbstractServiceConnector
 		    }
 		    catch(Exception e)
 		    {
-			e.printStackTrace();
+			log.error(e);
 		    }
 		}
 
@@ -505,7 +508,7 @@ public class FlickrConnector extends AbstractServiceConnector
 		    }
 		    catch(Exception e)
 		    {
-			e.printStackTrace();
+			log.error(e);
 		    }
 		}
 
@@ -561,18 +564,18 @@ public class FlickrConnector extends AbstractServiceConnector
 		    System.err.println("Unknown user");
 		else
 		{
-		    e.printStackTrace();
+		    log.error(e);
 		    throw new InterWebException(e);
 		}
 	    }
 	    catch(IOException e)
 	    {
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	    }
 	    catch(SAXException e)
 	    {
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	    }
 	}

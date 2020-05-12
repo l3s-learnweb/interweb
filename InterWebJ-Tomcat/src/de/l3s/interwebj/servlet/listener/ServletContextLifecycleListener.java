@@ -1,41 +1,34 @@
 package de.l3s.interwebj.servlet.listener;
 
-import java.io.File;
+import java.io.InputStream;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import de.l3s.interwebj.core.Engine;
 import de.l3s.interwebj.core.Environment;
-import de.l3s.interwebj.db.Database;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ServletContextLifecycleListener implements ServletContextListener
 {
+	private static final Logger log = LogManager.getLogger(ServletContextLifecycleListener.class);
 
     @Override
     public void contextDestroyed(ServletContextEvent e)
     {
-	Database database = Environment.getInstance().getDatabase();
-	database.close();
+		Environment.getInstance().getDatabase().close();
     }
 
     @Override
     public void contextInitialized(ServletContextEvent e)
     {
-	ServletContext servletContext = e.getServletContext();
-	String webinfRealPath = servletContext.getRealPath("/WEB-INF");
+		InputStream localProperties = getClass().getClassLoader().getResourceAsStream("config_local.xml");
+		if(localProperties == null)
+			localProperties = getClass().getClassLoader().getResourceAsStream("config.xml");
 
-	String configPath = webinfRealPath + "/config.xml";
-
-	if(new File("E:\\webservicefolder").exists())
-	{
-	    configPath = webinfRealPath + "/config_local.xml";
-	}
-
-	Environment environment = Environment.getInstance(configPath);
-	Environment.logger.info("Starting InterWebJ up...");
-	environment.getEngine().loadConnectors();
+		Environment environment = Environment.getInstance(localProperties);
+		log.info("Starting InterWebJ up...");
+		environment.getEngine().loadConnectors();
     }
 
 }

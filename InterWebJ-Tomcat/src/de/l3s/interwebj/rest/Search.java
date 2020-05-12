@@ -30,10 +30,13 @@ import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.QueryResultCollector;
 import de.l3s.interwebj.util.CoreUtils;
 import de.l3s.interwebj.util.ExpirableMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Path("/search")
 public class Search extends Endpoint
 {
+	private static final Logger log = LogManager.getLogger(Search.class);
 
     @Context
     HttpServletRequest request;
@@ -103,7 +106,7 @@ public class Search extends Endpoint
 	{
 	    Engine engine = Environment.getInstance().getEngine();
 	    InterWebPrincipal principal = getPrincipal();
-	    Environment.logger.info("principal: [" + principal + "]");
+	    log.info("principal: [" + principal + "]");
 
 	    QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
 	    QueryResult queryResult = collector.retrieve();
@@ -113,13 +116,12 @@ public class Search extends Endpoint
 	    SearchResponse searchResponse = new SearchResponse(queryResult);
 	    String userName = (principal == null) ? "anonymous" : principal.getName();
 	    searchResponse.getQuery().setUser(userName);
-	    Environment.logger.info(searchResponse.getQuery().getResults().size() + " results found in " + searchResponse.getQuery().getElapsedTime() + " ms");
+	    log.info(searchResponse.getQuery().getResults().size() + " results found in " + searchResponse.getQuery().getElapsedTime() + " ms");
 	    return searchResponse;
 	}
 	catch(InterWebException e)
 	{
-	    e.printStackTrace();
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
 	    return new ErrorResponse(999, e.getMessage());
 	}
     }
@@ -149,7 +151,7 @@ public class Search extends Endpoint
 	}
 	catch(ParseException e)
 	{
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
 	    return false;
 	}
 	return true;
@@ -245,7 +247,7 @@ public class Search extends Endpoint
 	}
 	catch(NumberFormatException e)
 	{
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
 	}
 	return null;
     }
@@ -265,7 +267,7 @@ public class Search extends Endpoint
 	}
 	catch(NumberFormatException e)
 	{
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
 	}
 	return null;
     }

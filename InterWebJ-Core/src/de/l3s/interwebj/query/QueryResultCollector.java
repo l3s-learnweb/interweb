@@ -14,10 +14,12 @@ import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class QueryResultCollector
-
 {
+	private static final Logger log = LogManager.getLogger(QueryResultCollector.class);
 
     private class QueryResultRetriever implements Callable<QueryResult>
     {
@@ -35,7 +37,7 @@ public class QueryResultCollector
 	public QueryResult call()
 	{
 	    long startTime = System.currentTimeMillis();
-	    Environment.logger.info("[" + connector.getName() + "] Start querying: " + query);
+	    log.info("[" + connector.getName() + "] Start querying: " + query);
 
 	    QueryResult queryResult;
 	    try
@@ -44,12 +46,12 @@ public class QueryResultCollector
 	    }
 	    catch(Throwable e)
 	    {
-		e.printStackTrace();
+		log.error(e);
 		return new QueryResult(query);
 	    }
 
 	    long endTime = System.currentTimeMillis();
-	    Environment.logger.info("[" + connector.getName() + "] Finished. [" + queryResult.getResultItems().size() + " of total " + queryResult.getTotalResultCount() + "] result(s) found in [" + (endTime - startTime) + "] ms");
+	    log.info("[" + connector.getName() + "] Finished. [" + queryResult.getResultItems().size() + " of total " + queryResult.getTotalResultCount() + "] result(s) found in [" + (endTime - startTime) + "] ms");
 	    return queryResult;
 	}
     }
@@ -77,11 +79,11 @@ public class QueryResultCollector
 	QueryResult result = cache.getIfPresent(query);
 	if(result != null)
 	{
-	    Environment.logger.info("Return cached results for: " + query);
+	    log.info("Return cached results for: " + query);
 	    return result;
 	}
 
-	Environment.logger.info("Search for: " + query);
+	log.info("Search for: " + query);
 
 	List<FutureTask<QueryResult>> tasks = new ArrayList<FutureTask<QueryResult>>();
 	for(QueryResultRetriever retriever : retrievers)
@@ -104,20 +106,19 @@ public class QueryResultCollector
 	    }
 	    catch(InterruptedException e)
 	    {
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	    }
 	    catch(ExecutionException e)
 	    {
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	    }
 	    catch(TimeoutException e)
 	    {
 		errorOccurred = true;
 		task.cancel(true);
-		e.printStackTrace();
-		Environment.logger.severe(e.getMessage());
+		log.error(e);
 	    }
 	}
 	queryResult.setElapsedTime(System.currentTimeMillis() - startTime);

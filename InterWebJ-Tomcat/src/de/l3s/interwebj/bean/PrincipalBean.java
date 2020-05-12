@@ -11,11 +11,14 @@ import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.webutil.FacesUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @ManagedBean
 @SessionScoped
 public class PrincipalBean
 {
+	private static final Logger log = LogManager.getLogger(PrincipalBean.class);
 
     public boolean hasRole(String role)
     {
@@ -47,7 +50,7 @@ public class PrincipalBean
 	if(savedRequestUrl != null)
 	{
 	    sessionBean.setSavedRequestUrl(null);
-	    Environment.logger.info("redirecting to: " + savedRequestUrl);
+	    log.info("redirecting to: " + savedRequestUrl);
 	    String contextPath = FacesUtils.getContextPath();
 	    FacesUtils.redirect(contextPath + savedRequestUrl);
 	}

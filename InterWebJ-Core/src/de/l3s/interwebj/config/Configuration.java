@@ -8,9 +8,12 @@ import java.util.List;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Configuration
 {
+	private static final Logger log = LogManager.getLogger(Configuration.class);
 
     private XMLConfiguration configuration;
 
@@ -23,7 +26,7 @@ public class Configuration
 	}
 	catch(ConfigurationException e)
 	{
-	    e.printStackTrace();
+		log.error(e);
 	}
     }
 

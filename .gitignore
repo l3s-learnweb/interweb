@@ -2,5 +2,8 @@
 .idea
 *.iml
 
+# Local files
+config_local.xml
+
 # Java
 target

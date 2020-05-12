@@ -21,10 +21,13 @@ import de.l3s.interwebj.jaxb.SearchResultEntity;
 import de.l3s.interwebj.jaxb.UploadResponse;
 import de.l3s.interwebj.jaxb.XMLResponse;
 import de.l3s.interwebj.query.ResultItem;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Path("/users/default/uploads")
 public class Upload extends Endpoint
 {
+	private static final Logger log = LogManager.getLogger(Upload.class);
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -34,7 +37,7 @@ public class Upload extends Endpoint
     {
 	Engine engine = Environment.getInstance().getEngine();
 	InterWebPrincipal principal = getPrincipal();
-	Environment.logger.info("principal: [" + principal + "]");
+	log.info("principal: [" + principal + "]");
 	Parameters params = new Parameters();
 	if(title != null)
 	{

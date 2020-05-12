@@ -1,7 +1,7 @@
 package de.l3s.interwebj.bean;
 
 import java.io.Serializable;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +9,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.model.UploadedFile;
 
@@ -29,7 +31,7 @@ import de.l3s.interwebj.webutil.FacesUtils;
 @ViewScoped
 public class UploadBean implements Serializable
 {
-
+	private static final Logger log = LogManager.getLogger(UploadBean.class);
     private static final long serialVersionUID = -3906461569264684939L;
 
     private String selectedContentType;
@@ -119,10 +121,10 @@ public class UploadBean implements Serializable
     {
 	UploadedFile uploadedFile = event.getUploadedFile();
 	fileName = uploadedFile.getName();
-	Environment.logger.info("File to upload: " + uploadedFile.getName());
-	Environment.logger.info("Content type: " + uploadedFile.getContentType());
+	log.info("File to upload: " + uploadedFile.getName());
+	log.info("Content type: " + uploadedFile.getContentType());
 	data = uploadedFile.getData();
-	Environment.logger.info("Size: " + data.length);
+	log.info("Size: " + data.length);
     }
 
     public void save()
@@ -166,7 +168,7 @@ public class UploadBean implements Serializable
 
     public void upload() throws InterWebException
     {
-	Environment.logger.info("uploading binary data...");
+	log.info("uploading binary data...");
 	if(data != null && selectedConnectors != null)
 	{
 	    Engine engine = Environment.getInstance().getEngine();
@@ -194,7 +196,7 @@ public class UploadBean implements Serializable
 
     public void uploadText() throws InterWebException
     {
-	Environment.logger.info("text to upload: [" + text + "]");
+	log.info("text to upload: [" + text + "]");
 	if(text != null && selectedConnectors != null)
 	{
 	    Engine engine = Environment.getInstance().getEngine();
@@ -214,7 +216,7 @@ public class UploadBean implements Serializable
 	    }
 	    String privacy = isPublicAccess() ? "0" : "1";
 	    params.add(Parameters.PRIVACY, privacy);
-	    engine.upload(text.getBytes(Charset.forName("UTF-8")), principal, selectedConnectors, selectedContentType, params);
+	    engine.upload(text.getBytes(StandardCharsets.UTF_8), principal, selectedConnectors, selectedContentType, params);
 	    text = null;
 	}
     }

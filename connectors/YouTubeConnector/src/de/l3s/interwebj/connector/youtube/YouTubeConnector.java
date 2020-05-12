@@ -49,7 +49,6 @@ import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.core.AbstractServiceConnector;
-import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
@@ -57,9 +56,13 @@ import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.util.CoreUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class YouTubeConnector extends AbstractServiceConnector
 {
+	private static final Logger log = LogManager.getLogger(YouTubeConnector.class);
+
     private static final String CLIENT_ID = "***REMOVED***";
     private static final String CLIENT_SECRET = "***REMOVED***";
     private static final String API_KEY = "***REMOVED***";
@@ -116,11 +119,11 @@ public class YouTubeConnector extends AbstractServiceConnector
 
 	    params.add(Parameters.AUTHORIZATION_URL, url);
 
-	    Environment.logger.info("requesting url: " + url);
+	    log.info("requesting url: " + url);
 	}
 	catch(Exception e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 
@@ -144,7 +147,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 	}
 
 	String authorizationCode = params.get("code");
-	Environment.logger.info("authorization_code: " + authorizationCode);
+	log.info("authorization_code: " + authorizationCode);
 
 	Credential cred = null;
 
@@ -157,7 +160,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 
@@ -224,7 +227,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 		}
 		catch(Exception e)
 		{
-		    e.printStackTrace();
+		    log.error(e);
 		}
 	    }
 
@@ -237,7 +240,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 		}
 		catch(Exception e)
 		{
-		    e.printStackTrace();
+		    log.error(e);
 		}
 	    }
 
@@ -257,7 +260,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 		}
 		else if(tokens.get(-1) != null && tokens.get(-1).equals("no-more-pages"))
 		{
-		    Environment.logger.warning("No more results for page " + query.getPage());
+		    log.warn("No more results for page " + query.getPage());
 		    return queryResult;
 		}
 		else
@@ -294,7 +297,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 	    search.setMaxResults((long) query.getResultCount());
 
 	    // Call the API and print results.
-	    Environment.logger.info("Request url: " + search.buildHttpRequestUrl());
+	    log.info("Request url: " + search.buildHttpRequestUrl());
 	    SearchListResponse searchResponse = search.execute();
 
 	    // Limiting YouTube data API, see more: http://stackoverflow.com/questions/23255957
@@ -303,12 +306,12 @@ public class YouTubeConnector extends AbstractServiceConnector
 
 	    if(searchResponse.getNextPageToken() != null)
 	    {
-		Environment.logger.info("Next page " + (query.getPage() + 1) + " its token " + searchResponse.getNextPageToken());
+		log.info("Next page " + (query.getPage() + 1) + " its token " + searchResponse.getNextPageToken());
 		tokens.put(query.getPage() + 1, searchResponse.getNextPageToken());
 	    }
 	    else
 	    {
-		Environment.logger.info("No more results");
+		log.info("No more results");
 		tokens.put(-1, "no-more-pages");
 	    }
 
@@ -355,18 +358,18 @@ public class YouTubeConnector extends AbstractServiceConnector
 	catch(GoogleJsonResponseException e)
 	{
 	    //System.err.println("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	catch(IOException e)
 	{
 	    //System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	catch(Throwable e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 
@@ -510,8 +513,8 @@ public class YouTubeConnector extends AbstractServiceConnector
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
     }
@@ -612,19 +615,19 @@ public class YouTubeConnector extends AbstractServiceConnector
 		    switch(uploader.getUploadState())
 		    {
 		    case INITIATION_STARTED:
-			Environment.logger.info("Initiation Started");
+			log.info("Initiation Started");
 			break;
 		    case INITIATION_COMPLETE:
-			Environment.logger.info("Initiation Completed");
+			log.info("Initiation Completed");
 			break;
 		    case MEDIA_IN_PROGRESS:
-			Environment.logger.info("Upload in progress");
+			log.info("Upload in progress");
 			break;
 		    case MEDIA_COMPLETE:
-			Environment.logger.info("Upload Completed!");
+			log.info("Upload Completed!");
 			break;
 		    case NOT_STARTED:
-			Environment.logger.info("Upload Not Started!");
+			log.info("Upload Not Started!");
 			break;
 		    }
 		}
@@ -637,17 +640,17 @@ public class YouTubeConnector extends AbstractServiceConnector
 	}
 	catch(GoogleJsonResponseException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	catch(Throwable e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 

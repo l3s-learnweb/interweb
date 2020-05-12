@@ -5,10 +5,12 @@ import static de.l3s.interwebj.util.Assertions.notNull;
 import java.io.Serializable;
 import java.util.*;
 
-import de.l3s.interwebj.core.Environment;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Query implements Serializable
 {
+	private static final Logger log = LogManager.getLogger(Query.class);
 
     public enum SearchScope
     {
@@ -95,7 +97,7 @@ public class Query implements Serializable
 	if(!query.equalsIgnoreCase(oQuery.query) || page != oQuery.page || resultCount != oQuery.resultCount || !language.equals(oQuery.language))
 	    ret = false;
 
-	Environment.logger.info("equals: " + query + " - " + oQuery.query + ";" + ret);
+	log.info("equals: " + query + " - " + oQuery.query + ";" + ret);
 
 	return ret;
     }

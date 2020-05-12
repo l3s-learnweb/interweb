@@ -28,14 +28,15 @@ import de.l3s.interwebj.jaxb.ErrorResponse;
 import de.l3s.interwebj.jaxb.XMLResponse;
 import de.l3s.interwebj.jaxb.services.ServiceResponse;
 import de.l3s.interwebj.rest.Endpoint;
-import de.l3s.interwebj.util.CoreUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Servlet implementation class Logout
  */
 public class CallbackServlet extends HttpServlet
 {
-
+	private static final Logger log = LogManager.getLogger(CallbackServlet.class);
     private static final long serialVersionUID = 6534209215912582685L;
 
     /**
@@ -49,7 +50,7 @@ public class CallbackServlet extends HttpServlet
     public void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
 
-	Environment.logger.info("query string: [" + request.getQueryString() + "]");
+	log.info("query string: [" + request.getQueryString() + "]");
 
 	Parameters parameters = new Parameters();
 	parameters.addMultivaluedParams(request.getParameterMap());
@@ -68,8 +69,7 @@ public class CallbackServlet extends HttpServlet
 	}
 	catch(InterWebException e)
 	{
-	    e.printStackTrace();
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
 	    parameters.add(Parameters.ERROR, e.getMessage());
 	}
 	if("rest".equals(clientType))
@@ -147,7 +147,7 @@ public class CallbackServlet extends HttpServlet
     private void processRestRequest(HttpServletRequest request, HttpServletResponse response, InterWebPrincipal principal, ServiceConnector connector, Parameters parameters) throws ServletException, IOException
     {
 	String callback = parameters.get(Parameters.CALLBACK);
-	Environment.logger.info("callback: [" + callback + "]");
+	log.info("callback: [" + callback + "]");
 	if(StringUtils.isNotEmpty(callback))
 	{
 	    response.sendRedirect(callback);

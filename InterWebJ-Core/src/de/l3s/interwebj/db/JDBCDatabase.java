@@ -13,16 +13,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.config.Configuration;
 import de.l3s.interwebj.core.Consumer;
-import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.InterWebPrincipal;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class JDBCDatabase implements Database
 {
+	private static final Logger log = LogManager.getLogger(JDBCDatabase.class);
 
     private static final String PSTMT_HAS_PRINCIPAL = "SELECT count(*) FROM iwj_principals WHERE user=?";
     private static final String PSTMT_SELECT_PRINCIPAL_BY_NAME = "SELECT password,email,oauth_key,oauth_secret FROM iwj_principals WHERE user=?";
@@ -63,8 +64,6 @@ public class JDBCDatabase implements Database
 
     private static final String PSTMT_LOG_QUERY = "INSERT DELAYED INTO `iwj_query_log` (`consumer_key`, `query`) VALUES (?,?)";
 
-    private Logger logger;
-
     private Connection dbConnection = null;
     private String connectionUserName = null;
     private String connectionPassword = null;
@@ -86,7 +85,7 @@ public class JDBCDatabase implements Database
     {
 	notNull(userName, "userName");
 	notNull(password, "userPassword");
-	Environment.logger.info("authenticating InterWebJ user [" + userName + "]");
+	log.info("authenticating InterWebJ user [" + userName + "]");
 	InterWebPrincipal dbPrincipal = getPrincipal(userName, password);
 	if(dbPrincipal != null)
 	{
@@ -95,7 +94,7 @@ public class JDBCDatabase implements Database
 	    {
 		dbPrincipal.addRole(role);
 	    }
-	    Environment.logger.info("InterWebJ user [" + userName + "] authenticated");
+	    log.info("InterWebJ user [" + userName + "] authenticated");
 	}
 	return dbPrincipal;
     }
@@ -134,8 +133,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -158,8 +156,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -180,8 +177,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -207,8 +203,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return exists;
@@ -235,8 +230,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return exists;
@@ -270,8 +264,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return authCredentials;
@@ -300,8 +293,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return userId;
@@ -333,8 +325,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return consumer;
@@ -368,8 +359,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return consumers;
@@ -396,8 +386,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return mediator;
@@ -436,8 +425,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return principal;
@@ -479,8 +467,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return principal;
@@ -516,8 +503,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return authCredentials;
@@ -544,8 +530,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -576,8 +561,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -601,8 +585,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -638,8 +621,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -671,8 +653,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -698,8 +679,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -726,8 +706,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -772,8 +751,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return dbPrincipal;
@@ -803,8 +781,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
 	return roles;
@@ -812,7 +789,6 @@ public class JDBCDatabase implements Database
 
     private void init(Configuration configuration)
     {
-	logger = Environment.logger;
 	connectionUserName = configuration.getValue("database.connection.user-name");
 	connectionPassword = configuration.getValue("database.connection.user-password");
 	connectionURL = configuration.getValue("database.connection.url");
@@ -823,8 +799,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	}
 	Runtime.getRuntime().addShutdownHook(new Thread()
 	{
@@ -832,7 +807,7 @@ public class JDBCDatabase implements Database
 	    @Override
 	    public void run()
 	    {
-		logger.info("Shutdown intercepted. Cleaning up Database resources");
+		log.info("Shutdown intercepted. Cleaning up Database resources");
 		close();
 	    }
 	});
@@ -915,7 +890,7 @@ public class JDBCDatabase implements Database
 	}
 	if(dbConnection == null)
 	{
-	    logger.severe("Opening connection to database " + connectionURL + " failed!");
+	    log.error("Opening connection to database " + connectionURL + " failed!");
 	}
 	else
 	{
@@ -943,8 +918,7 @@ public class JDBCDatabase implements Database
 	}
 	catch(SQLException e)
 	{
-	    e.printStackTrace();
-	    logger.severe(e.getMessage());
+	    log.error(e);
 	    close();
 	}
     }
@@ -971,8 +945,7 @@ public class JDBCDatabase implements Database
 	    }
 	    catch(SQLException e)
 	    {
-		e.printStackTrace();
-		logger.severe(e.getMessage());
+		log.error(e);
 	    }
 	}
     }
@@ -987,8 +960,7 @@ public class JDBCDatabase implements Database
 	    }
 	    catch(SQLException e)
 	    {
-		e.printStackTrace();
-		logger.severe(e.getMessage());
+		log.error(e);
 	    }
 	}
     }
@@ -1003,8 +975,7 @@ public class JDBCDatabase implements Database
 	    }
 	    catch(SQLException e)
 	    {
-		e.printStackTrace();
-		logger.severe(e.getMessage());
+		log.error(e);
 	    }
 	}
     }

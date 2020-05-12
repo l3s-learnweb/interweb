@@ -385,7 +385,7 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
 	}
     }
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws InterruptedException
     {
 	ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
 	ExpirationPolicy policy = builder.timeToIdle(1, TimeUnit.SECONDS).build();
@@ -394,14 +394,7 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
 	expirable = new Expirable<String, String>("a", "aaa", policy);
 	map.put(expirable.getKey(), expirable.getValue());
 	System.out.println(map.containsKey("a"));
-	try
-	{
-	    Thread.sleep(1500);
-	}
-	catch(InterruptedException e)
-	{
-	    e.printStackTrace();
-	}
+	Thread.sleep(1500);
 	System.out.println(map.containsKey("a"));
 	//		map.scheduler.shutdownNow();
     };

@@ -8,6 +8,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
+import de.l3s.interwebj.util.CoreUtils;
 import org.apache.commons.lang.StringUtils;
 
 import de.l3s.interwebj.AuthCredentials;
@@ -19,11 +20,14 @@ import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.webutil.FacesUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @ManagedBean
 @RequestScoped
 public class ServicesBean
 {
+	private static final Logger log = LogManager.getLogger(ServicesBean.class);
 
     private Engine engine;
     private Database database;
@@ -73,7 +77,7 @@ public class ServicesBean
 	parameters.add(Parameters.CLIENT_TYPE, "servlet");
 
 	String interwebjCallbackUrl = connector.generateCallbackUrl(baseApiUrl, parameters);
-	Environment.logger.info("interwebjCallbackUrl: [" + interwebjCallbackUrl + "]");
+	log.info("interwebjCallbackUrl: [" + interwebjCallbackUrl + "]");
 	parameters = connector.authenticate(interwebjCallbackUrl, parameters);
 	if(connectorWrapper.getKey() != null)
 	{
@@ -86,7 +90,7 @@ public class ServicesBean
 	String authorizationUrl = parameters.get(Parameters.AUTHORIZATION_URL);
 	if(authorizationUrl != null)
 	{
-	    Environment.logger.info("redirecting to service authorization url: " + authorizationUrl);
+	    log.info("redirecting to service authorization url: " + authorizationUrl);
 	    engine.addPendingAuthorizationConnector(principal, connector, parameters);
 	    try
 	    {
@@ -94,8 +98,7 @@ public class ServicesBean
 	    }
 	    catch(IOException e)
 	    {
-		e.printStackTrace();
-		Environment.logger.severe(e.getMessage());
+		log.error(e);
 		FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 	    }
 	}
@@ -139,7 +142,7 @@ public class ServicesBean
     {
 	ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
 	ServiceConnector connector = connectorWrapper.getConnector();
-	Environment.logger.info("revoking user authentication");
+	log.info("revoking user authentication");
 	engine.setUserAuthCredentials(connector.getName(), principal, null, null);
 	connector.revokeAuthentication();
 	return "success";
@@ -159,8 +162,7 @@ public class ServicesBean
 	}
 	catch(InterWebException e)
 	{
-	    e.printStackTrace();
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
 	    FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 	}
 	return "success";

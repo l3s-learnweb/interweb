@@ -9,7 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -23,7 +24,7 @@ import de.l3s.interwebj.jaxb.SearchResponse;
 
 public class InterWeb implements Serializable
 {
-    private static final Logger log = Logger.getLogger(InterWeb.class);
+    private static final Logger log = LogManager.getLogger(InterWeb.class);
     private static final long serialVersionUID = -1621494088505203391L;
 
     private final String consumerKey;

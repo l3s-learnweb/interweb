@@ -1,7 +1,7 @@
 package de.l3s.interwebj;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -61,16 +61,9 @@ public class Parameters
 
     public void addDecoded(String name, String value)
     {
-	try
-	{
-	    String decodedValue = URLDecoder.decode(value, "UTF-8");
-	    add(name, decodedValue);
+		String decodedValue = URLDecoder.decode(value, StandardCharsets.UTF_8);
+		add(name, decodedValue);
 	}
-	catch(UnsupportedEncodingException shouldNeverOccur)
-	{
-	    shouldNeverOccur.printStackTrace();
-	}
-    }
 
     public void addMultivaluedParams(Map<String, String[]> parameters)
     {

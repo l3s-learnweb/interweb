@@ -2,8 +2,6 @@ package de.l3s.interwebj.rest;
 
 import static de.l3s.interwebj.webutil.RestUtils.throwWebApplicationException;
 
-import java.awt.Desktop;
-import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -16,15 +14,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.oauth.signature.OAuthParameters;
 
-import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.core.Engine;
@@ -41,16 +34,17 @@ import de.l3s.interwebj.jaxb.services.ServiceEntity;
 import de.l3s.interwebj.jaxb.services.ServiceResponse;
 import de.l3s.interwebj.jaxb.services.ServicesResponse;
 import de.l3s.interwebj.util.CoreUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Path("/users/{user}")
 public class User extends Endpoint
 {
+	private static final Logger log = LogManager.getLogger(User.class);
 
     @PathParam("user")
     protected String userName;
     private InterWebPrincipal targetPrincipal;
-
-
 
     @POST
     @Path("/services/{service}/auth")
@@ -81,7 +75,7 @@ public class User extends Endpoint
 	parameters.add(Parameters.IWJ_CONNECTOR_ID, connector.getName());
 	parameters.add(Parameters.CLIENT_TYPE, "rest");
 	String interwebjCallbackUrl = connector.generateCallbackUrl(baseApiUrl, parameters);
-	Environment.logger.info("interwebjCallbackUrl: [" + interwebjCallbackUrl + "]");
+	log.info("interwebjCallbackUrl: [" + interwebjCallbackUrl + "]");
 
 	try
 	{
@@ -102,7 +96,7 @@ public class User extends Endpoint
 	    String authorizationUrl = params.get(Parameters.AUTHORIZATION_URL);
 	    if(authorizationUrl != null)
 	    {
-		Environment.logger.info("redirecting to service authorization url: " + authorizationUrl);
+		log.info("redirecting to service authorization url: " + authorizationUrl);
 		OAuthParameters oauthParameters = getOAuthParameters();
 		params.add(Parameters.CONSUMER_KEY, oauthParameters.getConsumerKey());
 		if(callback != null)
@@ -118,8 +112,7 @@ public class User extends Endpoint
 	}
 	catch(InterWebException e)
 	{
-	    e.printStackTrace();
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
 	    return new ErrorResponse(999, e.getMessage());
 	}
 	return ErrorResponse.AUTHENTICATION_FAILED;
@@ -203,7 +196,7 @@ public class User extends Endpoint
     @Produces(MediaType.APPLICATION_XML)
     public XMLResponse revokeAuthorizationOnService(@PathParam("service") String serviceName)
     {
-	Environment.logger.info("revoking user authentication");
+	log.info("revoking user authentication");
 	InterWebPrincipal principal = getTargetPrincipal();
 	if(principal == null)
 	{
@@ -222,8 +215,7 @@ public class User extends Endpoint
 	}
 	catch(InterWebException e)
 	{
-	    e.printStackTrace();
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
 	    return new ErrorResponse(999, e.getMessage());
 	}
 	HttpContext httpContext = getHttpContext();

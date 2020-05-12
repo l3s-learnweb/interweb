@@ -1,10 +1,15 @@
 package de.l3s.interwebj.core;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConnectorLoader
 {
+    private static final Logger log = LogManager.getLogger(ConnectorLoader.class);
+    
     private static final String[] CONNECTORS = {
             "de.l3s.interwebj.connector.bing.BingConnector",
             "de.l3s.interwebj.connector.flickr.FlickrConnector",
@@ -17,7 +22,7 @@ public class ConnectorLoader
     public List<ServiceConnector> load()
     {
         List<ServiceConnector> connectors = new ArrayList<ServiceConnector>();
-        Environment.logger.info("loading connectors");
+        log.info("loading connectors");
         for (String connectorClassName : CONNECTORS) {
             ServiceConnector connector = loadConnector(connectorClassName);
             if (connector != null) {
@@ -29,17 +34,16 @@ public class ConnectorLoader
 
     private ServiceConnector loadConnector(String className)
     {
-        Environment.logger.info("trying load connector: [" + className + "]");
+        log.info("trying load connector: [" + className + "]");
         try
         {
             ServiceConnector connector = instantiate(className, ServiceConnector.class);
-            Environment.logger.info("Connector [" + connector.getName() + "] successfully loaded");
+            log.info("Connector [" + connector.getName() + "] successfully loaded");
             return connector;
         }
         catch (ReflectiveOperationException e)
         {
-            e.printStackTrace();
-            Environment.logger.severe("No class found for connector [" + className + "]");
+            log.error("No class found for connector [" + className + "]", e);
             return null;
         }
     }

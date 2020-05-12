@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <Property name="INTERWEB_LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{9}:%line - %msg%n</Property>
+        <Property name="INTERWEB_LOG_PATH">${sys:catalina.home:-.}/logs/interweb.log</Property>
+        <Property name="INTERWEB_MAIL_SUBJECT">[Log4J] Error detected on Interweb</Property>
+        <Property name="INTERWEB_MAIL_LOGLEVEL">OFF</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${INTERWEB_LOG_PATTERN}"/>
+        </Console>
+        <RollingFile name="file" append="false" fileName="${env:INTERWEB_LOG_PATH}" filePattern="${env:INTERWEB_LOG_PATH}.%i">
+            <PatternLayout pattern="${INTERWEB_LOG_PATTERN}"/>
+            <SizeBasedTriggeringPolicy size="250 MB"/>
+        </RollingFile>
+        <SMTP name="email" bufferSize="1024" smtpHost="l3s.de"
+              from="no-reply@l3s.de" to="kemkes@l3s.de,astappiev@l3s.de" subject="${env:INTERWEB_MAIL_SUBJECT}">
+            <PatternLayout pattern="${INTERWEB_LOG_PATTERN}"/>
+            <Filters>
+                <ThresholdFilter level="${env:INTERWEB_MAIL_LOGLEVEL}" onMatch="NEUTRAL" onMismatch="DENY"/>
+                <!-- Rate is a number of events per second, current value is 2 messages per 1 hour (1/60/60 * maxBurst) -->
+                <BurstFilter level="OFF" rate="0.00056" maxBurst="2"/>
+            </Filters>
+        </SMTP>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.apache" level="FATAL"/>
+        <Logger name="org.hibernate.validator" level="FATAL"/>
+        <Logger name="solr.client" level="FATAL"/>
+        <Logger name="org.jboss.weld" level="WARN"/>
+        <Logger name="net.bramp.ffmpeg" level="INFO"/>
+        <Root level="DEBUG">
+            <appender-ref ref="console"/>
+            <appender-ref ref="file"/>
+            <appender-ref ref="email"/>
+        </Root>
+    </Loggers>
+</Configuration>

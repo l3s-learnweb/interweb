@@ -19,15 +19,18 @@ import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.core.AbstractServiceConnector;
-import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BingConnector extends AbstractServiceConnector
 {
+	private static final Logger log = LogManager.getLogger(BingConnector.class);
+	
     public BingConnector()
     {
     	super("Bing", "http://www.bing.com", new TreeSet<>(Arrays.asList("text", "image")));
@@ -129,10 +132,10 @@ public class BingConnector extends AbstractServiceConnector
 		    results.addQueryResult(queryResult);
 
 		    if(pages.getValue().size() == 0)
-			Environment.logger.warning("No text results found; response: " + response.getJsonContent());
+				log.warn("No text results found; response: " + response.getJsonContent());
 		}
 		else
-		    Environment.logger.warning("Result pages are null; Response: " + bingApiService.getRawBingResponse());
+		    log.warn("Result pages are null; Response: " + bingApiService.getRawBingResponse());
 	    }
 
 	    if(query.getContentTypes().contains(Query.CT_IMAGE))
@@ -140,7 +143,7 @@ public class BingConnector extends AbstractServiceConnector
 		ImageHolder images = response.getImages();
 
 		if(images == null)
-		    Environment.logger.warning("images is null for query " + query.getQuery());
+		    log.warn("images is null for query " + query.getQuery());
 		else
 		{
 		    QueryResult queryResult = new QueryResult(null);
@@ -148,7 +151,7 @@ public class BingConnector extends AbstractServiceConnector
 		    int index = 1;
 
 		    if(images.getValue().size() == 0)
-			Environment.logger.warning("No image results found; response: " + response.getJsonContent());
+			log.warn("No image results found; response: " + response.getJsonContent());
 
 		    for(Image image : images.getValue())
 		    {
@@ -181,7 +184,7 @@ public class BingConnector extends AbstractServiceConnector
 			}
 			catch(Exception e)
 			{
-			    Environment.logger.warning(e.getMessage());
+			    log.warn(e.getMessage());
 			}
 
 			try
@@ -197,7 +200,7 @@ public class BingConnector extends AbstractServiceConnector
 			}
 			catch(Exception e)
 			{
-			    Environment.logger.warning(e.getMessage());
+			    log.warn(e.getMessage());
 			}
 
 			resultItem.setThumbnails(thumbnails);

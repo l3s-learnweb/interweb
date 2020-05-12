@@ -26,12 +26,14 @@ import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.util.CoreUtils;
 import de.l3s.interwebj.webutil.FacesUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @ManagedBean
 @ViewScoped
 public class SearchBean implements Serializable
 {
-
+	private static final Logger log = LogManager.getLogger(SearchBean.class);
     private static final long serialVersionUID = -4894599353026933768L;
 
     @NotNull
@@ -215,7 +217,7 @@ public class SearchBean implements Serializable
 	}
 	catch(InterWebException e)
 	{
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
 	    FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 	}
 	/* standing queries are never used

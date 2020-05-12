@@ -18,7 +18,6 @@ import org.apache.commons.lang.NotImplementedException;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -30,14 +29,16 @@ import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SearchScope;
 import de.l3s.interwebj.query.Query.SortOrder;
-import de.l3s.interwebj.query.QueryFactory;
 import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.util.CoreUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SlideShareConnector extends AbstractServiceConnector
 {
+	private static final Logger log = LogManager.getLogger(SlideShareConnector.class);
 
     public SlideShareConnector()
     {
@@ -109,7 +110,7 @@ public class SlideShareConnector extends AbstractServiceConnector
 	}
 	catch(Exception e)
 	{
-	    e.printStackTrace();
+		log.error(e);
 	    return queryResult;
 	}
 	queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
@@ -335,7 +336,7 @@ public class SlideShareConnector extends AbstractServiceConnector
 	}
 	catch(ParseException e)
 	{
-	    e.printStackTrace();
+		log.error(e);
 	    throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
 	}
     }

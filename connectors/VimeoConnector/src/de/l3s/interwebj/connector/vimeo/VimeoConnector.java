@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -13,7 +15,6 @@ import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.core.AbstractServiceConnector;
-import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.QueryResult;
@@ -23,6 +24,7 @@ import de.l3s.interwebj.util.CoreUtils;
 
 public class VimeoConnector extends AbstractServiceConnector
 {
+	private static final Logger log = LogManager.getLogger(VimeoConnector.class);
 
     public VimeoConnector()
     {
@@ -80,7 +82,7 @@ public class VimeoConnector extends AbstractServiceConnector
 	}
 	catch(ParseException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
 	}
     }
@@ -159,13 +161,13 @@ public class VimeoConnector extends AbstractServiceConnector
 		}
 		catch(Throwable e)
 		{
-		    Environment.logger.warning("Can't parse entry: " + e.getMessage());
+		    log.warn("Can't parse entry: " + e.getMessage());
 		}
 	    }
 	}
 	catch(Throwable e)
 	{
-	    Environment.logger.warning(e.getMessage());
+	    log.warn(e.getMessage());
 	}
 	return queryResult;
     }

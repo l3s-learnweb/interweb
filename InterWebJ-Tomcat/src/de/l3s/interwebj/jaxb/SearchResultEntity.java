@@ -13,11 +13,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SearchResultEntity
 {
+    private static final Logger log = LogManager.getLogger(SearchResultEntity.class);
 
     @XmlElement(name = "service")
     protected String service;
@@ -78,7 +81,7 @@ public class SearchResultEntity
 
 	if(resultItem == null)
 	{
-	    Environment.logger.severe("Result is null ");
+	    log.error("Result is null ");
 	    return;
 	}
 	setService(resultItem.getServiceName());
@@ -108,7 +111,7 @@ public class SearchResultEntity
 	}
 	else
 	{
-	    Environment.logger.severe("No thumbnails found for " + resultItem.getId() + " in " + resultItem.getConnectorName());
+	    log.error("No thumbnails found for " + resultItem.getId() + " in " + resultItem.getConnectorName());
 	}
 	setThumbnailEntities(thumbnailEntities);
 	//		setEmbedded(resultItem.getEmbedded());

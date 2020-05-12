@@ -3,7 +3,7 @@ package de.l3s.interwebj.webutil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.el.ELResolver;
 import javax.faces.FactoryFinder;
@@ -19,10 +19,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.l3s.interwebj.bean.InterWebJBean;
 import de.l3s.interwebj.bean.SessionBean;
-import de.l3s.interwebj.core.Environment;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FacesUtils
 {
+	private static final Logger log = LogManager.getLogger(FacesUtils.class);
 
     private static abstract class FacesContextWrapper extends FacesContext
     {
@@ -47,9 +49,8 @@ public class FacesUtils
     public static void addGlobalMessage(FacesMessage.Severity severity, Throwable e)
     {
 	ByteArrayOutputStream os = new ByteArrayOutputStream();
-	PrintStream ps = new PrintStream(os, true);
-	e.printStackTrace(ps);
-	String message = new String(os.toByteArray(), Charset.forName("UTF8"));
+	log.error(e);
+	String message = new String(os.toByteArray(), StandardCharsets.UTF_8);
 	addGlobalMessage(severity, message);
     }
 
@@ -100,8 +101,7 @@ public class FacesUtils
 	}
 	catch(Exception e)
 	{
-	    e.printStackTrace();
-	    Environment.logger.severe(e.getMessage());
+	    log.error(e);
 	}
 	return null;
     }

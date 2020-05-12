@@ -27,7 +27,6 @@ import de.l3s.interwebj.connector.ipernity.jaxb.CheckTokenResponse;
 import de.l3s.interwebj.connector.ipernity.jaxb.SearchResponse;
 import de.l3s.interwebj.connector.ipernity.jaxb.SearchResponse.Docs.Doc;
 import de.l3s.interwebj.core.AbstractServiceConnector;
-import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.query.Query;
 import de.l3s.interwebj.query.Query.SortOrder;
@@ -35,9 +34,13 @@ import de.l3s.interwebj.query.QueryResult;
 import de.l3s.interwebj.query.ResultItem;
 import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.util.CoreUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class IpernityConnector extends AbstractServiceConnector
 {
+	private static final Logger log = LogManager.getLogger(IpernityConnector.class);
+
     private static final String REQUEST_TOKEN_PATH = "http://www.ipernity.com/apps/oauth/request";
     private static final String AUTHORIZATION_PATH = "http://www.ipernity.com/apps/oauth/authorize";
     private static final String ACCESS_TOKEN_PATH = "http://www.ipernity.com/apps/oauth/access";
@@ -128,7 +131,7 @@ public class IpernityConnector extends AbstractServiceConnector
 	    }
 	    catch(Exception e)
 	    {
-		e.printStackTrace();
+		log.error(e);
 	    }
 	}
 
@@ -140,7 +143,7 @@ public class IpernityConnector extends AbstractServiceConnector
 	    }
 	    catch(Exception e)
 	    {
-		e.printStackTrace();
+		log.error(e);
 	    }
 	}
 
@@ -150,7 +153,7 @@ public class IpernityConnector extends AbstractServiceConnector
 		String responseContent = CoreUtils.getClientResponseContent(response);
 		System.out.println("search response;:"+ responseContent);
 	} catch (IOException e) {
-		e.printStackTrace();
+		log.error(e);
 	}
 	*/
 
@@ -262,26 +265,26 @@ public class IpernityConnector extends AbstractServiceConnector
 	oauthSecrets.consumerSecret(authCredentials.getSecret());
 	OAuthClientFilter filter = new OAuthClientFilter(client.getProviders(), oauthParams, oauthSecrets);
 	resource.addFilter(filter);
-	Environment.logger.info("querying ipernity request token: " + resource.toString());
+	log.info("querying ipernity request token: " + resource.toString());
 	try
 	{
 	    //resource = resource.queryParam("scope", "http://gdata.youtube.com");
 	    ClientResponse response = resource.get(ClientResponse.class);
 	    String responseContent = getClientResponseContent(response);
-	    Environment.logger.info("Content: " + responseContent);
+		log.info("Content: " + responseContent);
 	    params.addQueryParameters(responseContent);
 	    String authUrl = AUTHORIZATION_PATH + "?oauth_token=" + params.get(Parameters.OAUTH_TOKEN);
-	    Environment.logger.info("requesting url: " + authUrl);
+	    log.info("requesting url: " + authUrl);
 	    params.add(Parameters.AUTHORIZATION_URL, authUrl);
 	}
 	catch(UniformInterfaceException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	return params;
@@ -299,11 +302,11 @@ public class IpernityConnector extends AbstractServiceConnector
 	try
 	{
 	    String oauthToken = params.get(Parameters.OAUTH_TOKEN);
-	    Environment.logger.info("oauth_token: " + oauthToken);
+	    log.info("oauth_token: " + oauthToken);
 	    String oauthTokenSecret = params.get(Parameters.OAUTH_TOKEN_SECRET);
-	    Environment.logger.info("oauth_token_secret: " + oauthTokenSecret);
+	    log.info("oauth_token_secret: " + oauthTokenSecret);
 	    String oauthVerifier = params.get(Parameters.OAUTH_VERIFIER);
-	    Environment.logger.info("oauth_verifier: " + oauthVerifier);
+	    log.info("oauth_verifier: " + oauthVerifier);
 	    Client client = Client.create();
 	    WebResource resource = client.resource(ACCESS_TOKEN_PATH);
 	    AuthCredentials consumerAuthCredentials = getAuthCredentials();
@@ -323,10 +326,10 @@ public class IpernityConnector extends AbstractServiceConnector
 	    oauthSecrets.tokenSecret(oauthTokenSecret);
 	    OAuthClientFilter filter = new OAuthClientFilter(client.getProviders(), oauthParams, oauthSecrets);
 	    resource.addFilter(filter);
-	    Environment.logger.info("getting ipernity access token: " + resource.toString());
+	    log.info("getting ipernity access token: " + resource.toString());
 	    ClientResponse response = resource.get(ClientResponse.class);
 	    String content = getClientResponseContent(response);
-	    Environment.logger.info("ipernity response: " + content);
+	    log.info("ipernity response: " + content);
 	    params.addQueryParameters(content);
 	    String key = params.get(Parameters.OAUTH_TOKEN);
 	    String secret = params.get(Parameters.OAUTH_TOKEN_SECRET);
@@ -334,12 +337,12 @@ public class IpernityConnector extends AbstractServiceConnector
 	}
 	catch(UniformInterfaceException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    log.error(e);
 	    throw new InterWebException(e);
 	}
 	return authCredentials;
@@ -522,22 +525,22 @@ public class IpernityConnector extends AbstractServiceConnector
 	}
 	catch (ServiceException e)
 	{
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	}
 	catch (OAuthException e)
 	{
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	}
 	catch (MalformedURLException e)
 	{
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	}
 	catch (IOException e)
 	{
-		e.printStackTrace();
+		log.error(e);
 		throw new InterWebException(e);
 	}
 	

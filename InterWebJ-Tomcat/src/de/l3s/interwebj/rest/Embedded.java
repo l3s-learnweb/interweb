@@ -10,13 +10,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
@@ -27,10 +22,13 @@ import de.l3s.interwebj.core.ServiceConnector;
 import de.l3s.interwebj.jaxb.EmbeddedResponse;
 import de.l3s.interwebj.jaxb.ErrorResponse;
 import de.l3s.interwebj.jaxb.XMLResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Path("/embedded")
 public class Embedded extends Endpoint
 {
+	private static final Logger log = LogManager.getLogger(Embedded.class);
 
     @Context
     HttpServletRequest request;
@@ -55,7 +53,7 @@ public class Embedded extends Endpoint
 	    {
 		try
 		{
-		    Environment.logger.info("querying connector: " + connector.getName());
+		    log.info("querying connector: " + connector.getName());
 		    embedded = connector.getEmbedded(authCredentials, url, maxWidth, maxHeight);
 		    if(embedded != null)
 		    {
@@ -64,7 +62,7 @@ public class Embedded extends Endpoint
 		}
 		catch(InterWebException e)
 		{
-		    Environment.logger.severe(e.getMessage());
+		    log.error(e);
 		}
 	    }
 	}

@@ -15,9 +15,12 @@ import de.l3s.interwebj.bean.SessionBean;
 import de.l3s.interwebj.core.AccessControll;
 import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.InterWebPrincipal;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SecurityFilter implements Filter
 {
+	private static final Logger log = LogManager.getLogger(SecurityFilter.class);
 
     public static final String LOGIN_PAGE = "/view/login.xhtml";
     public static final String START_PAGE = "/view/index.xhtml";
@@ -47,7 +50,7 @@ public class SecurityFilter implements Filter
 	if(sessionBean == null)
 	{
 	    httpRequest.getSession(true);
-	    Environment.logger.info("WARNING! SessionBean is NULL! Creating and storing new SessionBean instance");
+	    log.info("WARNING! SessionBean is NULL! Creating and storing new SessionBean instance");
 	    sessionBean = new SessionBean();
 	    httpRequest.getSession().setAttribute("sessionBean", sessionBean);
 	}
@@ -57,8 +60,8 @@ public class SecurityFilter implements Filter
 	{
 	    if(!isLoginPage(requestUrl))
 	    {
-		Environment.logger.info("Login required. User: " + principal + " is not authorized to access the resource: " + requestUrl);
-		Environment.logger.info("saving requested URL: " + requestUrl);
+		log.info("Login required. User: " + principal + " is not authorized to access the resource: " + requestUrl);
+		log.info("saving requested URL: " + requestUrl);
 		sessionBean.setSavedRequestUrl(requestUrl);
 		httpResponse.sendRedirect(httpRequest.getContextPath() + LOGIN_PAGE);
 		return;

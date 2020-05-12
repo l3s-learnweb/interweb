@@ -32,9 +32,4 @@ public class InterWebJBean
     {
 	return Environment.getInstance();
     }
-
-    public String getServiceName()
-    {
-	return Environment.INTERWEBJ_SERVICE_NAME;
-    }
 }

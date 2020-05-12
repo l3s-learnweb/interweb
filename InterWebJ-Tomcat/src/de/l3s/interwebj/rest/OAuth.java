@@ -2,9 +2,6 @@ package de.l3s.interwebj.rest;
 
 import static de.l3s.interwebj.webutil.RestUtils.throwWebApplicationException;
 
-import java.awt.Desktop;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URI;
 
 import javax.ws.rs.Consumes;
@@ -16,14 +13,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.oauth.server.OAuthServerRequest;
 import com.sun.jersey.oauth.signature.OAuthParameters;
 
@@ -33,23 +26,25 @@ import de.l3s.interwebj.core.Environment;
 import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.db.Database;
 import de.l3s.interwebj.jaxb.ErrorResponse;
-import de.l3s.interwebj.jaxb.SearchResponse;
 import de.l3s.interwebj.jaxb.XMLResponse;
 import de.l3s.interwebj.jaxb.auth.OAuthAccessTokenResponse;
 import de.l3s.interwebj.jaxb.auth.OAuthRequestTokenResponse;
 import de.l3s.interwebj.util.ExpirableMap;
 import de.l3s.interwebj.util.RandomGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Path("/oauth")
 public class OAuth extends Endpoint
 {
+	private static final Logger log = LogManager.getLogger(OAuth.class);
 
     @GET
     @Path("/OAuthAuthorizeToken")
     @Produces(MediaType.APPLICATION_XML)
     public XMLResponse authorizeToken(@QueryParam("oauth_token") String requestToken, @QueryParam("oauth_callback") String callbackUrl)
     {
-	Environment.logger.info("callbackUrl: [" + callbackUrl + "]");
+	log.info("callbackUrl: [" + callbackUrl + "]");
 	HttpContext httpContext = getHttpContext();
 	URI uri = httpContext.getUriInfo().getBaseUri().resolve("../view/authorize_consumer.xhtml");
 	UriBuilder builder = UriBuilder.fromUri(uri);
@@ -128,7 +123,7 @@ public class OAuth extends Endpoint
 	}
 	AuthCredentials accessToken = RandomGenerator.getInstance().nextOAuthCredentials();
 	principal.setOauthCredentials(accessToken);
-	Environment.logger.info(principal.toString());
+	log.info(principal.toString());
 	database.savePrincipal(principal, password);
 	if(mediator != null)
 	{

@@ -1,11 +1,5 @@
 package de.l3s.interwebj.jaxb;
 
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -43,27 +37,4 @@ public class XMLResponse
 	this.error = error;
     }
 
-    @Override
-    public String toString()
-    {
-	StringBuilder sb = new StringBuilder();
-	try
-	{
-	    JAXBContext context = JAXBContext.newInstance(getClass());
-	    Marshaller m = context.createMarshaller();
-	    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    m.marshal(this, baos);
-	    sb.append(baos.toString("UTF8"));
-	}
-	catch(JAXBException e)
-	{
-	    e.printStackTrace();
-	}
-	catch(UnsupportedEncodingException e)
-	{
-	    e.printStackTrace();
-	}
-	return sb.toString();
-    }
 }
