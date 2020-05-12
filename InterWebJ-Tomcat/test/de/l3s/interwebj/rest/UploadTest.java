@@ -1,53 +1,48 @@
 package de.l3s.interwebj.rest;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.MultiPart;
-import com.sun.jersey.multipart.file.FileDataBodyPart;
 import de.l3s.interwebj.AuthCredentials;
-import de.l3s.interwebj.util.CoreUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.MultiPart;
+import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.junit.jupiter.api.Test;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import java.io.File;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static de.l3s.interwebj.rest.Endpoint.createWebTarget;
 
 class UploadTest {
+    private static final Logger log = LogManager.getLogger(UploadTest.class);
 
     @Test
-    void getQueryResult() {
-        // AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        // AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        //
-        // MultiPart multiPart = new MultiPart();
-        // String title = "the title 1";
-        // String description = "the description 2";
-        // multiPart = multiPart.bodyPart(new FormDataBodyPart("title", title));
-        // multiPart = multiPart.bodyPart(new FormDataBodyPart("description", description));
-        // multiPart = multiPart.bodyPart(new FormDataBodyPart("content_type", "video"));
-        // //File f = new File("C:\\Programmieren\\bild.jpg");
-        // File f = new File("C:\\Programmieren\\anni002.mpg");
-        // multiPart = multiPart.bodyPart(new FileDataBodyPart("data", f, MediaType.MULTIPART_FORM_DATA_TYPE));
-        // multiPart = multiPart.bodyPart(new FormDataBodyPart("data", "the data"));
-        //
-        // //WebResource resource = createWebResource("http://localhost:8080/InterWebJ/api/users/default/uploads", consumerCredentials, userCredentials);
-        // WebResource resource = createWebResource("***REMOVED***_test/api/users/default/uploads", consumerCredentials, userCredentials);
-        // WebResource.Builder builder = resource.type(MediaType.MULTIPART_FORM_DATA);
-        // builder = builder.accept(MediaType.APPLICATION_XML);
-        // log.info("testing upload to interwebj: " + resource.toString());
-        // ClientResponse response = builder.post(ClientResponse.class, multiPart);
-        // multiPart.close();
-        // try
-        // {
-        //     CoreUtils.printClientResponse(response);
-        //     System.out.println(CoreUtils.getClientResponseContent(response));
-        // }
-        // catch(IOException e)
-        // {
-        //     e.printStackTrace();
-        // }
+    void getQueryResult() throws IOException {
+        AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
+        AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
+
+        MultiPart multiPart = new MultiPart();
+        String title = "the title 1";
+        String description = "the description 2";
+        multiPart = multiPart.bodyPart(new FormDataBodyPart("title", title));
+        multiPart = multiPart.bodyPart(new FormDataBodyPart("description", description));
+        multiPart = multiPart.bodyPart(new FormDataBodyPart("content_type", "video"));
+        //File f = new File("C:\\Programmieren\\bild.jpg");
+        File f = new File("C:\\Programmieren\\anni002.mpg");
+        multiPart = multiPart.bodyPart(new FileDataBodyPart("data", f, MediaType.MULTIPART_FORM_DATA_TYPE));
+        multiPart = multiPart.bodyPart(new FormDataBodyPart("data", "the data"));
+
+        WebTarget target = createWebTarget("users/default/uploads", consumerCredentials, userCredentials);
+        log.info("testing upload to interwebj: " + target.toString());
+        Response response = target.request(MediaType.APPLICATION_XML).post(Entity.entity(multiPart, multiPart.getMediaType()));
+        multiPart.close();
+
+        System.out.println(response.readEntity(String.class));
     }
 }

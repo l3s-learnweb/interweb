@@ -1,24 +1,22 @@
 package de.l3s.interwebj.rest;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.jaxb.OkResponse;
 import de.l3s.interwebj.jaxb.services.AuthorizationLinkResponse;
 import de.l3s.interwebj.jaxb.services.ServiceResponse;
 import de.l3s.interwebj.jaxb.services.ServicesResponse;
-import de.l3s.interwebj.util.CoreUtils;
+import de.l3s.interwebj.util.TestUtils;
 import org.junit.jupiter.api.Test;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
-
-import static de.l3s.interwebj.rest.Endpoint.createWebResource;
-import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
 
@@ -26,10 +24,10 @@ class UserTest {
     void testAuthService() throws IOException {
         AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
         AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/users/default/services/" + "InterWeb" + "/auth", consumerCredentials, userCredentials);
+        WebTarget resource = TestUtils.createWebTarget("api/users/default/services/" + "InterWeb" + "/auth", consumerCredentials, userCredentials);
         System.out.println("querying InterWebJ URL: " + resource.toString());
-        ClientResponse response = resource.post(ClientResponse.class);
-        AuthorizationLinkResponse authorizationLinkResponse = response.getEntity(AuthorizationLinkResponse.class);
+        Response response = resource.request().post(Entity.json(null));
+        AuthorizationLinkResponse authorizationLinkResponse = response.readEntity(AuthorizationLinkResponse.class);
         System.out.println(authorizationLinkResponse);
         String location = authorizationLinkResponse.getAuthorizationLinkEntity().getLink();
         System.out.println("redirecting to: [" + location + "]");
@@ -39,60 +37,50 @@ class UserTest {
 
     @Test
     void testRemoveMediator() {
-        AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        AuthCredentials mediatorCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
         AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/users/default/mediator", consumerCredentials, userCredentials);
+        WebTarget resource = TestUtils.createWebTarget("api/users/default/mediator", userCredentials);
         System.out.println("querying InterWebJ URL: " + resource.toString());
-        ClientResponse response = resource.delete(ClientResponse.class);
-        OkResponse servicesResponse = response.getEntity(OkResponse.class);
+        Response response = resource.request().delete();
+        OkResponse servicesResponse = response.readEntity(OkResponse.class);
         System.out.println(servicesResponse);
     }
 
     @Test
     void testRevokeService() {
-        AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/users/default/services/" + "youtube" + "/auth", consumerCredentials, userCredentials);
+        WebTarget resource = TestUtils.createWebTarget("api/users/default/services/" + "youtube" + "/auth");
         System.out.println("querying InterWebJ URL: " + resource.toString());
-        ClientResponse response = resource.delete(ClientResponse.class);
-        ServiceResponse serviceResponse = response.getEntity(ServiceResponse.class);
+        Response response = resource.request().delete();
+        ServiceResponse serviceResponse = response.readEntity(ServiceResponse.class);
         System.out.println(serviceResponse);
     }
 
     @Test
     void testSetMediator() {
-        AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        AuthCredentials mediatorCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
         AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/users/default/mediator", consumerCredentials, userCredentials);
-        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        params.add("mediator_token", mediatorCredentials.getKey());
+        WebTarget resource = TestUtils.createWebTarget("api/users/default/mediator", userCredentials);
+        MultivaluedMap<String, String> params = new MultivaluedHashMap<>();
+        params.add("mediator_token", TestUtils.userCredentials.getKey());
         System.out.println("querying InterWebJ URL: " + resource.toString());
-        ClientResponse response = resource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, params);
-        OkResponse servicesResponse = response.getEntity(OkResponse.class);
+        Response response = resource.request().post(Entity.form(params));
+        OkResponse servicesResponse = response.readEntity(OkResponse.class);
         System.out.println(servicesResponse);
     }
 
     @Test
     void testUserInfo() {
-        AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/users/default", consumerCredentials, userCredentials);
+        WebTarget resource = TestUtils.createWebTarget("api/users/default");
         System.out.println("querying InterWebJ URL: " + resource.toString());
-        ClientResponse response = resource.get(ClientResponse.class);
-        String responseContent = response.getEntity(String.class);
+        Response response = resource.request().get();
+        String responseContent = response.readEntity(String.class);
         System.out.println(responseContent);
     }
 
     @Test
     void testUserService() {
-        AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/users/default/services/" + "flickr", consumerCredentials, userCredentials);
+        WebTarget resource = TestUtils.createWebTarget("api/users/default/services/" + "flickr");
         System.out.println("querying InterWebJ URL: " + resource.toString());
-        ClientResponse response = resource.get(ClientResponse.class);
-        ServiceResponse serviceResponse = response.getEntity(ServiceResponse.class);
+        Response response = resource.request().get();
+        ServiceResponse serviceResponse = response.readEntity(ServiceResponse.class);
         System.out.println(serviceResponse);
     }
 
@@ -102,10 +90,10 @@ class UserTest {
         //		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
         //		                                                      "***REMOVED***");
         AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/users/default/services", consumerCredentials, userCredentials);
+        WebTarget resource = TestUtils.createWebTarget("api/users/default/services", consumerCredentials, userCredentials);
         System.out.println("querying InterWebJ URL: " + resource.toString());
-        ClientResponse response = resource.get(ClientResponse.class);
-        ServicesResponse servicesResponse = response.getEntity(ServicesResponse.class);
+        Response response = resource.request().get();
+        ServicesResponse servicesResponse = response.readEntity(ServicesResponse.class);
         System.out.println(servicesResponse);
     }
 }

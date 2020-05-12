@@ -2,23 +2,10 @@ package de.l3s.interwebj.connector.ipernity;
 
 import static de.l3s.interwebj.util.Assertions.notNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.apache.commons.lang.NotImplementedException;
-
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.oauth.client.OAuthClientFilter;
-import com.sun.jersey.oauth.signature.HMAC_SHA1;
-import com.sun.jersey.oauth.signature.OAuthParameters;
-import com.sun.jersey.oauth.signature.OAuthSecrets;
 
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
@@ -36,6 +23,12 @@ import de.l3s.interwebj.query.Thumbnail;
 import de.l3s.interwebj.util.CoreUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.client.oauth1.*;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Feature;
 
 public class IpernityConnector extends AbstractServiceConnector
 {
@@ -113,7 +106,7 @@ public class IpernityConnector extends AbstractServiceConnector
 	    return queryResult;
 	}
 
-	WebResource resource = createWebResource(IPERNITY_BASE + "doc.search/xml", getAuthCredentials(), null);
+	WebTarget resource = createWebTarget(IPERNITY_BASE + "doc.search/xml", getAuthCredentials(), null);
 
 	resource = resource.queryParam("text", query.getQuery());
 	resource = resource.queryParam("media", "photo"); // TODO media values are : photo, audio, video  query.getContentTypes()  Query.CT_AUDIO
@@ -147,17 +140,7 @@ public class IpernityConnector extends AbstractServiceConnector
 	    }
 	}
 
-	/*
-	ClientResponse response = resource.get(ClientResponse.class);
-	try {
-		String responseContent = CoreUtils.getClientResponseContent(response);
-		System.out.println("search response;:"+ responseContent);
-	} catch (IOException e) {
-		log.error(e);
-	}
-	*/
-
-	SearchResponse sr = resource.get(SearchResponse.class);
+	SearchResponse sr = resource.request().get(SearchResponse.class);
 
 	long totalResultCount = sr.getDocs().getTotal();
 	queryResult.setTotalResultCount(totalResultCount);
@@ -216,136 +199,81 @@ public class IpernityConnector extends AbstractServiceConnector
 	return queryResult;
     }
 
-    public static WebResource createWebResource(String apiUrl, AuthCredentials consumerAuthCredentials, AuthCredentials userAuthCredentials)
+    private static WebTarget createWebTarget(String apiUrl, AuthCredentials consumerAuthCredentials, AuthCredentials userAuthCredentials)
     {
-	Client client = Client.create();
-	WebResource resource = client.resource(apiUrl);
-	OAuthParameters oauthParams = new OAuthParameters();
-	oauthParams.consumerKey(consumerAuthCredentials.getKey());
-	if(userAuthCredentials != null)
-	{
-	    oauthParams.token(userAuthCredentials.getKey());
-	}
-	oauthParams.signatureMethod(HMAC_SHA1.NAME);
-	oauthParams.timestamp();
-	oauthParams.nonce();
-	oauthParams.version();
-	OAuthSecrets oauthSecrets = new OAuthSecrets();
-	oauthSecrets.consumerSecret(consumerAuthCredentials.getSecret());
-	if(userAuthCredentials != null && userAuthCredentials.getSecret() != null)
-	{
-	    oauthSecrets.tokenSecret(userAuthCredentials.getSecret());
-	}
-	OAuthClientFilter filter = new OAuthClientFilter(client.getProviders(), oauthParams, oauthSecrets);
-	resource.addFilter(filter);
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(apiUrl);
 
-	return resource;
+		ConsumerCredentials consumerCredentials = new ConsumerCredentials(consumerAuthCredentials.getKey(), consumerAuthCredentials.getSecret());
+
+		OAuth1Builder.FilterFeatureBuilder filterFeature = OAuth1ClientSupport.builder(consumerCredentials).feature();
+
+		if (userAuthCredentials != null)
+		{
+			AccessToken storedToken = new AccessToken(userAuthCredentials.getKey(), userAuthCredentials.getSecret());
+			filterFeature.accessToken(storedToken);			
+		}
+		target.register(filterFeature.build());
+
+		return target;
     }
 
     @Override
     public Parameters authenticate(String callbackUrl) throws InterWebException
     {
-	if(!isRegistered())
-	{
-	    throw new InterWebException("Service is not yet registered");
-	}
-	Parameters params = new Parameters();
-	Client client = Client.create();
-	WebResource resource = client.resource(REQUEST_TOKEN_PATH);
-	AuthCredentials authCredentials = getAuthCredentials();
-	System.out.println("auth cred" + getAuthCredentials());
-	com.sun.jersey.oauth.signature.OAuthParameters oauthParams = new com.sun.jersey.oauth.signature.OAuthParameters();
-	oauthParams.consumerKey(authCredentials.getKey());
-	oauthParams.signatureMethod(HMAC_SHA1.NAME);
-	oauthParams.timestamp();
-	oauthParams.nonce();
-	oauthParams.callback(callbackUrl);
-	oauthParams.version();
-	OAuthSecrets oauthSecrets = new OAuthSecrets();
-	oauthSecrets.consumerSecret(authCredentials.getSecret());
-	OAuthClientFilter filter = new OAuthClientFilter(client.getProviders(), oauthParams, oauthSecrets);
-	resource.addFilter(filter);
-	log.info("querying ipernity request token: " + resource.toString());
-	try
-	{
-	    //resource = resource.queryParam("scope", "http://gdata.youtube.com");
-	    ClientResponse response = resource.get(ClientResponse.class);
-	    String responseContent = getClientResponseContent(response);
-		log.info("Content: " + responseContent);
-	    params.addQueryParameters(responseContent);
-	    String authUrl = AUTHORIZATION_PATH + "?oauth_token=" + params.get(Parameters.OAUTH_TOKEN);
-	    log.info("requesting url: " + authUrl);
-	    params.add(Parameters.AUTHORIZATION_URL, authUrl);
-	}
-	catch(UniformInterfaceException e)
-	{
-	    log.error(e);
-	    throw new InterWebException(e);
-	}
-	catch(IOException e)
-	{
-	    log.error(e);
-	    throw new InterWebException(e);
-	}
-	return params;
-    }
+		if(!isRegistered())
+		{
+			throw new InterWebException("Service is not yet registered");
+		}
 
-    @Override
-    public AuthCredentials completeAuthentication(Parameters params) throws InterWebException
-    {
-	notNull(params, "params");
-	AuthCredentials authCredentials = null;
-	if(!isRegistered())
-	{
-	    throw new InterWebException("Service is not yet registered");
+		AuthCredentials authCredentials = getAuthCredentials();
+		log.info("auth cred" + authCredentials);
+
+		final ConsumerCredentials consumerCredentials = new ConsumerCredentials(authCredentials.getKey(), authCredentials.getSecret());
+		final OAuth1AuthorizationFlow authFlow = OAuth1ClientSupport.builder(consumerCredentials)
+				.authorizationFlow(REQUEST_TOKEN_PATH, ACCESS_TOKEN_PATH, AUTHORIZATION_PATH)
+				.callbackUri(callbackUrl).build();
+
+		final String authorizationUri = authFlow.start();
+		log.info("requesting url: " + authorizationUri);
+
+		Parameters params = new Parameters();
+		params.add(Parameters.AUTHORIZATION_URL, authorizationUri);
+		return params;
 	}
-	try
+
+	@Override
+	public AuthCredentials completeAuthentication(Parameters params) throws InterWebException
 	{
-	    String oauthToken = params.get(Parameters.OAUTH_TOKEN);
-	    log.info("oauth_token: " + oauthToken);
-	    String oauthTokenSecret = params.get(Parameters.OAUTH_TOKEN_SECRET);
-	    log.info("oauth_token_secret: " + oauthTokenSecret);
-	    String oauthVerifier = params.get(Parameters.OAUTH_VERIFIER);
-	    log.info("oauth_verifier: " + oauthVerifier);
-	    Client client = Client.create();
-	    WebResource resource = client.resource(ACCESS_TOKEN_PATH);
-	    AuthCredentials consumerAuthCredentials = getAuthCredentials();
-	    com.sun.jersey.oauth.signature.OAuthParameters oauthParams = new com.sun.jersey.oauth.signature.OAuthParameters();
-	    oauthParams.version();
-	    oauthParams.nonce();
-	    oauthParams.timestamp();
-	    oauthParams.consumerKey(consumerAuthCredentials.getKey());
-	    if(oauthVerifier != null)
-	    {
-		oauthParams.verifier(oauthVerifier);
-	    }
-	    oauthParams.token(oauthToken);
-	    oauthParams.signatureMethod(HMAC_SHA1.NAME);
-	    OAuthSecrets oauthSecrets = new OAuthSecrets();
-	    oauthSecrets.consumerSecret(consumerAuthCredentials.getSecret());
-	    oauthSecrets.tokenSecret(oauthTokenSecret);
-	    OAuthClientFilter filter = new OAuthClientFilter(client.getProviders(), oauthParams, oauthSecrets);
-	    resource.addFilter(filter);
-	    log.info("getting ipernity access token: " + resource.toString());
-	    ClientResponse response = resource.get(ClientResponse.class);
-	    String content = getClientResponseContent(response);
-	    log.info("ipernity response: " + content);
-	    params.addQueryParameters(content);
-	    String key = params.get(Parameters.OAUTH_TOKEN);
-	    String secret = params.get(Parameters.OAUTH_TOKEN_SECRET);
-	    authCredentials = new AuthCredentials(key, secret);
-	}
-	catch(UniformInterfaceException e)
-	{
-	    log.error(e);
-	    throw new InterWebException(e);
-	}
-	catch(IOException e)
-	{
-	    log.error(e);
-	    throw new InterWebException(e);
-	}
-	return authCredentials;
+		notNull(params, "params");
+
+		if(!isRegistered())
+		{
+			throw new InterWebException("Service is not yet registered");
+		}
+
+		String oauthToken = params.get(Parameters.OAUTH_TOKEN);
+		log.info("oauth_token: " + oauthToken);
+		String oauthTokenSecret = params.get(Parameters.OAUTH_TOKEN_SECRET);
+		log.info("oauth_token_secret: " + oauthTokenSecret);
+		String oauthVerifier = params.get(Parameters.OAUTH_VERIFIER);
+		log.info("oauth_verifier: " + oauthVerifier);
+
+		AuthCredentials authCredentials = getAuthCredentials();
+		log.info("auth cred" + authCredentials);
+
+		final ConsumerCredentials consumerCredentials = new ConsumerCredentials(authCredentials.getKey(), authCredentials.getSecret());
+		final OAuth1AuthorizationFlow authFlow = OAuth1ClientSupport.builder(consumerCredentials)
+				.authorizationFlow(REQUEST_TOKEN_PATH, ACCESS_TOKEN_PATH, AUTHORIZATION_PATH).build();
+
+		log.info("requesting access token");
+		final AccessToken accessToken = authFlow.finish(oauthVerifier);
+
+		log.info("ipernity response: " + accessToken);
+		params.add(Parameters.OAUTH_TOKEN, accessToken.getToken());
+		params.add(Parameters.OAUTH_TOKEN_SECRET, accessToken.getAccessTokenSecret());
+
+		return new AuthCredentials(accessToken.getToken(), accessToken.getAccessTokenSecret());
     }
 
     // alles hier drunter muss noch überarbeitet werden
@@ -403,20 +331,6 @@ public class IpernityConnector extends AbstractServiceConnector
     }
     */
 
-	public static String getClientResponseContent(ClientResponse response) throws IOException
-	{
-		StringBuilder sb = new StringBuilder();
-		InputStream is = response.getEntityInputStream();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-		int c;
-		while((c = br.read()) != -1)
-		{
-			sb.append((char) c);
-		}
-		br.close();
-		return sb.toString();
-	}
-
     @Override
     public String getEmbedded(AuthCredentials authCredentials, String url, int maxWidth, int maxHeight) throws InterWebException
     {
@@ -453,11 +367,9 @@ public class IpernityConnector extends AbstractServiceConnector
     @Override
     public String getUserId(AuthCredentials authCredentials) throws InterWebException
     {
-	WebResource resource = createWebResource(IPERNITY_BASE + "auth.checkToken/xml", getAuthCredentials(), authCredentials);
-
-	CheckTokenResponse response = resource.get(CheckTokenResponse.class);
-
-	return response.getAuth().getUser().getUsername();
+		WebTarget target = createWebTarget(IPERNITY_BASE + "auth.checkToken/xml", getAuthCredentials(), authCredentials);
+		CheckTokenResponse response = target.request().get(CheckTokenResponse.class);
+		return response.getAuth().getUser().getUsername();
     }
 
     @Override

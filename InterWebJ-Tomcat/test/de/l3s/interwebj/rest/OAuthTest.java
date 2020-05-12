@@ -1,16 +1,18 @@
 package de.l3s.interwebj.rest;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.jaxb.SearchResponse;
 import de.l3s.interwebj.jaxb.auth.OAuthAccessTokenResponse;
 import de.l3s.interwebj.jaxb.auth.OAuthRequestTokenResponse;
+import de.l3s.interwebj.util.TestUtils;
 import org.junit.jupiter.api.Test;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -18,37 +20,35 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 
-import static de.l3s.interwebj.rest.Endpoint.createWebResource;
-import static org.junit.jupiter.api.Assertions.*;
-
 class OAuthTest {
 
     @Test
     void testAddUser() {
-        AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/oauth/register", consumerCredentials, null);
-        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        params.add("username", "user2");
+        WebTarget resource = TestUtils.createWebTarget("api/oauth/register", null);
+
+        MultivaluedMap<String, String> params = new MultivaluedHashMap<>();
+        params.add("username", "testuser2020");
         params.add("password", "123456");
         System.out.println("querying InterWebJ URL: " + resource.toString());
-        ClientResponse response = resource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, params);
-        OAuthAccessTokenResponse accessTokenResponse = response.getEntity(OAuthAccessTokenResponse.class);
+
+        Response response = resource.request().post(Entity.form(params));
+        OAuthAccessTokenResponse accessTokenResponse = response.readEntity(OAuthAccessTokenResponse.class);
         System.out.println(accessTokenResponse);
     }
 
     @Test
     void testOauthAuthentication() throws IOException {
-        AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/oauth/OAuthGetRequestToken", consumerCredentials, null);
+        WebTarget resource = TestUtils.createWebTarget("api/oauth/OAuthGetRequestToken", null);
         System.out.println("querying InterWebJ request token: " + resource.toString());
-        ClientResponse response = resource.get(ClientResponse.class);
-        OAuthRequestTokenResponse requestTokenResponse = response.getEntity(OAuthRequestTokenResponse.class);
+
+        Response response = resource.request().get();
+        OAuthRequestTokenResponse requestTokenResponse = response.readEntity(OAuthRequestTokenResponse.class);
         System.out.println(requestTokenResponse);
         String tokenKey = requestTokenResponse.getRequestToken().getOauthToken();
         String tokenSecret = requestTokenResponse.getRequestToken().getOauthTokenSecret();
         AuthCredentials requestTokenAuthCredentials = new AuthCredentials(tokenKey, tokenSecret);
-        URI authorizationUri = URI.create("http://localhost:8181/InterWebJ/api/oauth/OAuthAuthorizeToken" + "?oauth_token=" + tokenKey
-                //		                                  + "&oauth_callback=http://localhost:8181/InterWebJ/view/search.xhtml"
+        URI authorizationUri = URI.create(TestUtils.serverUrl + "api/oauth/OAuthAuthorizeToken" + "?oauth_token=" + tokenKey
+                //		                                  + "&oauth_callback=http://localhost:8080/InterWebJ/view/search.xhtml"
         );
         System.out.println("authorize token url: " + authorizationUri.toASCIIString());
         Desktop.getDesktop().browse(authorizationUri);
@@ -60,10 +60,10 @@ class OAuthTest {
         AuthCredentials accessTokenAuthCredentials = new AuthCredentials(accessToken, accessTokenSecret);
         System.out.println(accessTokenAuthCredentials);
 
-        resource = createWebResource("http://localhost:8181/InterWebJ/api/oauth/OAuthGetAccessToken", consumerCredentials, accessTokenAuthCredentials);
+        resource = TestUtils.createWebTarget("api/oauth/OAuthGetAccessToken", accessTokenAuthCredentials);
         System.out.println("querying InterWebJ access token: " + resource.toString());
-        response = resource.get(ClientResponse.class);
-        OAuthAccessTokenResponse accessTokenResponse = response.getEntity(OAuthAccessTokenResponse.class);
+        response = resource.request().get();
+        OAuthAccessTokenResponse accessTokenResponse = response.readEntity(OAuthAccessTokenResponse.class);
         System.out.println(accessTokenResponse);
         accessToken = accessTokenResponse.getAccessToken().getOauthToken();
         accessTokenSecret = accessTokenResponse.getAccessToken().getOauthTokenSecret();
@@ -73,14 +73,12 @@ class OAuthTest {
 
     @Test
     void testSearch() {
-        AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        WebResource resource = createWebResource("http://localhost:8181/InterWebJ/api/search", consumerCredentials, userCredentials);
+        WebTarget resource = TestUtils.createWebTarget("api/search");
         resource = resource.queryParam("q", "people");
-        resource = resource.queryParam("media_types", "image,video,text,audio");
+        resource = resource.queryParam("media_types", "image,video,text");
         System.out.println("querying InterWebJ URL: " + resource.toString());
-        ClientResponse response = resource.get(ClientResponse.class);
-        SearchResponse searchResponse = response.getEntity(SearchResponse.class);
+        Response response = resource.request().get();
+        SearchResponse searchResponse = response.readEntity(SearchResponse.class);
         System.out.println(searchResponse);
     }
 }

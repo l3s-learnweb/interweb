@@ -15,9 +15,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.oauth.signature.OAuthParameters;
-
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.core.Engine;
@@ -33,9 +30,9 @@ import de.l3s.interwebj.jaxb.services.AuthorizationLinkResponse;
 import de.l3s.interwebj.jaxb.services.ServiceEntity;
 import de.l3s.interwebj.jaxb.services.ServiceResponse;
 import de.l3s.interwebj.jaxb.services.ServicesResponse;
-import de.l3s.interwebj.util.CoreUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.oauth1.signature.OAuth1Parameters;
 
 @Path("/users/{user}")
 public class User extends Endpoint
@@ -68,8 +65,7 @@ public class User extends Endpoint
 
 	    return ErrorResponse.TOKEN_NOT_AUTHORIZED;
 	}
-	HttpContext httpContext = getHttpContext();
-	String baseApiUrl = httpContext.getUriInfo().getBaseUri().resolve("..").toASCIIString();
+	String baseApiUrl = getBaseUri().resolve("..").toASCIIString();
 	Parameters parameters = new Parameters();
 	parameters.add(Parameters.IWJ_USER_ID, principal.getName());
 	parameters.add(Parameters.IWJ_CONNECTOR_ID, connector.getName());
@@ -97,7 +93,7 @@ public class User extends Endpoint
 	    if(authorizationUrl != null)
 	    {
 		log.info("redirecting to service authorization url: " + authorizationUrl);
-		OAuthParameters oauthParameters = getOAuthParameters();
+		OAuth1Parameters oauthParameters = getOAuthParameters();
 		params.add(Parameters.CONSUMER_KEY, oauthParameters.getConsumerKey());
 		if(callback != null)
 		{
@@ -123,8 +119,7 @@ public class User extends Endpoint
     @Produces(MediaType.APPLICATION_XML)
     public XMLResponse getService(@PathParam("service") String serviceName)
     {
-	HttpContext httpContext = getHttpContext();
-	ServiceEntity serviceEntity = Services.createServiceEntity(serviceName, httpContext, getTargetPrincipal());
+	ServiceEntity serviceEntity = Services.createServiceEntity(serviceName, getBaseUri().toASCIIString(), getTargetPrincipal());
 	ServiceResponse serviceResponse = new ServiceResponse();
 	serviceResponse.setServiceEntity(serviceEntity);
 	return serviceResponse;
@@ -135,8 +130,7 @@ public class User extends Endpoint
     @Produces(MediaType.APPLICATION_XML)
     public XMLResponse getServices()
     {
-	HttpContext httpContext = getHttpContext();
-	List<ServiceEntity> serviceEntities = Services.createServiceEntities(httpContext, getTargetPrincipal());
+	List<ServiceEntity> serviceEntities = Services.createServiceEntities(getBaseUri().toASCIIString(), getTargetPrincipal());
 	ServicesResponse servicesResponse = new ServicesResponse();
 	servicesResponse.setServiceEntities(serviceEntities);
 	return servicesResponse;
@@ -218,8 +212,7 @@ public class User extends Endpoint
 	    log.error(e);
 	    return new ErrorResponse(999, e.getMessage());
 	}
-	HttpContext httpContext = getHttpContext();
-	ServiceEntity serviceEntity = Services.createServiceEntity(serviceName, httpContext, principal);
+	ServiceEntity serviceEntity = Services.createServiceEntity(serviceName, getBaseUri().toASCIIString(), principal);
 	serviceEntity.setMessage("Authorization successfully revoked");
 	ServiceResponse serviceResponse = new ServiceResponse();
 	serviceResponse.setServiceEntity(serviceEntity);

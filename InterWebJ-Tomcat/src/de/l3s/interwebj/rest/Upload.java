@@ -1,6 +1,7 @@
 package de.l3s.interwebj.rest;
 
 import java.io.IOException;
+import java.security.Principal;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -8,14 +9,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
-
 import de.l3s.interwebj.InterWebException;
 import de.l3s.interwebj.Parameters;
 import de.l3s.interwebj.core.Engine;
 import de.l3s.interwebj.core.Environment;
-import de.l3s.interwebj.core.InterWebPrincipal;
 import de.l3s.interwebj.jaxb.ErrorResponse;
 import de.l3s.interwebj.jaxb.SearchResultEntity;
 import de.l3s.interwebj.jaxb.UploadResponse;
@@ -23,6 +20,8 @@ import de.l3s.interwebj.jaxb.XMLResponse;
 import de.l3s.interwebj.query.ResultItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 @Path("/users/default/uploads")
 public class Upload extends Endpoint
@@ -33,10 +32,10 @@ public class Upload extends Endpoint
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_XML)
     public XMLResponse getQueryResult(@FormDataParam("title") String title, @FormDataParam("description") String description, @FormDataParam("tags") String tags, @FormDataParam("is_private") String privacy, @FormDataParam("content_type") String contentType,
-	    @FormDataParam("data") FormDataContentDisposition disposition, @FormDataParam("data") byte[] data) throws IOException, InterWebException
+									  @FormDataParam("data") FormDataContentDisposition disposition, @FormDataParam("data") byte[] data) throws IOException, InterWebException
     {
 	Engine engine = Environment.getInstance().getEngine();
-	InterWebPrincipal principal = getPrincipal();
+	Principal principal = getPrincipal();
 	log.info("principal: [" + principal + "]");
 	Parameters params = new Parameters();
 	if(title != null)

@@ -10,16 +10,20 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
+import de.l3s.interwebj.connector.slideshare.jaxb.SearchResponse;
+import de.l3s.interwebj.connector.slideshare.jaxb.SearchResultEntity;
+import de.l3s.interwebj.connector.slideshare.jaxb.TagsResponse;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.NotImplementedException;
-
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
@@ -80,33 +84,33 @@ public class SlideShareConnector extends AbstractServiceConnector
 	notNull(query, "query");
 	QueryResult queryResult = new QueryResult(query);
 	//		WebResource resource = createResource("https://www.slideshare.net/api/2/search_slideshows");
-	Client client = Client.create();
-	WebResource resource = client.resource("https://www.slideshare.net/api/2/search_slideshows");
-	resource = resource.queryParam("q", query.getQuery());
-	resource = resource.queryParam("lang", query.getLanguage());
-	resource = resource.queryParam("page", Integer.toString(query.getPage()));
+	Client client = ClientBuilder.newClient();
+	WebTarget target = client.target("https://www.slideshare.net/api/2/search_slideshows");
+	target = target.queryParam("q", query.getQuery());
+	target = target.queryParam("lang", query.getLanguage());
+	target = target.queryParam("page", Integer.toString(query.getPage()));
 
-	resource = resource.queryParam("items_per_page", Integer.toString(query.getResultCount()));
-	resource = resource.queryParam("sort", createSortOrder(query.getSortOrder()));
+	target = target.queryParam("items_per_page", Integer.toString(query.getResultCount()));
+	target = target.queryParam("sort", createSortOrder(query.getSortOrder()));
 
 	String searchScope = createSearchScope(query.getSearchScopes());
 	if(searchScope != null)
 	{
-	    resource = resource.queryParam("what", searchScope);
+	    target = target.queryParam("what", searchScope);
 	}
 	String fileType = createFileType(query.getContentTypes());
 	if(fileType == null)
 	{
 	    return queryResult;
 	}
-	resource = resource.queryParam("file_type", fileType);
+	target = target.queryParam("file_type", fileType);
 	//		resource = resource.queryParam("detailed", "1");
-	ClientResponse response = postQuery(resource);
+	Response response = postQuery(target);
 
 	SearchResponse sr;
 	try
 	{ // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
-	    sr = response.getEntity(SearchResponse.class);
+	    sr = response.readEntity(SearchResponse.class);
 	}
 	catch(Exception e)
 	{
@@ -179,16 +183,16 @@ public class SlideShareConnector extends AbstractServiceConnector
 	{
 	    throw new InterWebException("URL: [" + url + "] doesn't belong to connector");
 	}
-	Client client = Client.create();
-	WebResource resource = client.resource("https://www.slideshare.net/api/2/get_slideshow");
-	resource = resource.queryParam("slideshow_url", url);
+	Client client = ClientBuilder.newClient();
+	WebTarget target = client.target("https://www.slideshare.net/api/2/get_slideshow");
+	target = target.queryParam("slideshow_url", url);
 
-	ClientResponse response = postQuery(resource);
+	Response response = postQuery(target);
 	if(response.getStatus() != 200)
 	{
 	    throw new InterWebException("URL: [" + url + "] doesn't belong to connector [" + getName() + "]");
 	}
-	SearchResultEntity sre = response.getEntity(SearchResultEntity.class);
+	SearchResultEntity sre = response.readEntity(SearchResultEntity.class);
 	String embedded = sre.getEmbed();
 	embedded = embedded.replaceAll("width:\\d+px", "width:" + maxWidth + "px");
 	embedded = embedded.replaceAll("width=\"\\d+\"", "width=\"" + maxWidth + "\"");
@@ -201,15 +205,15 @@ public class SlideShareConnector extends AbstractServiceConnector
     public String getUserId(AuthCredentials authCredentials) throws InterWebException
     {
 	notNull(authCredentials, "authCredentials");
-	Client client = Client.create();
-	WebResource resource = client.resource("https://www.slideshare.net/api/2/get_user_tags");
-	resource = resource.queryParam("username", authCredentials.getKey());
-	resource = resource.queryParam("password", authCredentials.getSecret());
+	Client client = ClientBuilder.newClient();
+	WebTarget target = client.target("https://www.slideshare.net/api/2/get_user_tags");
+	target = target.queryParam("username", authCredentials.getKey());
+	target = target.queryParam("password", authCredentials.getSecret());
 
-	ClientResponse response = getQuery(resource);
+	Response response = getQuery(target);
 	try
 	{
-	    response.getEntity(TagsResponse.class);
+	    response.readEntity(TagsResponse.class);
 	}
 	catch(Exception e)
 	{
@@ -315,15 +319,15 @@ public class SlideShareConnector extends AbstractServiceConnector
 	return null;
     }
 
-    private ClientResponse getQuery(WebResource resource)
+    private Response getQuery(WebTarget target)
     {
 	AuthCredentials authCredentials = getAuthCredentials();
 	long timestamp = System.currentTimeMillis() / 1000;
 	String toHash = authCredentials.getSecret() + Long.toString(timestamp);
-	resource = resource.queryParam("api_key", authCredentials.getKey());
-	resource = resource.queryParam("ts", Long.toString(timestamp));
-	resource = resource.queryParam("hash", DigestUtils.shaHex(toHash));
-	ClientResponse response = resource.get(ClientResponse.class);
+	target = target.queryParam("api_key", authCredentials.getKey());
+	target = target.queryParam("ts", Long.toString(timestamp));
+	target = target.queryParam("hash", DigestUtils.shaHex(toHash));
+	Response response = target.request().get();
 	return response;
     }
 
@@ -341,22 +345,22 @@ public class SlideShareConnector extends AbstractServiceConnector
 	}
     }
 
-    private ClientResponse postQuery(WebResource resource)
+    private Response postQuery(WebTarget target)
     {
-	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-	return postQuery(resource, params);
+		MultivaluedMap<String, String> params = new MultivaluedHashMap<>();
+		return postQuery(target, params);
     }
 
-    private ClientResponse postQuery(WebResource resource, MultivaluedMap<String, String> params)
+    private Response postQuery(WebTarget target, MultivaluedMap<String, String> params)
     {
-	AuthCredentials authCredentials = getAuthCredentials();
-	long timestamp = System.currentTimeMillis() / 1000;
-	String toHash = authCredentials.getSecret() + Long.toString(timestamp);
-	params.add("api_key", authCredentials.getKey());
-	params.add("ts", Long.toString(timestamp));
-	params.add("hash", DigestUtils.shaHex(toHash));
-	ClientResponse response = resource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, params);
-	return response;
+		AuthCredentials authCredentials = getAuthCredentials();
+		long timestamp = System.currentTimeMillis() / 1000;
+		String toHash = authCredentials.getSecret() + Long.toString(timestamp);
+		params.add("api_key", authCredentials.getKey());
+		params.add("ts", Long.toString(timestamp));
+		params.add("hash", DigestUtils.shaHex(toHash));
+		Response response = target.request().post(Entity.form(params));
+		return response;
     }
 
     @Override

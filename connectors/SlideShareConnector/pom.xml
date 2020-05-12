@@ -29,24 +29,21 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun.jersey</groupId>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-multipart</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
-            <artifactId>oauth-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
-            <artifactId>oauth-signature</artifactId>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-jaxb</artifactId>
         </dependency>
     </dependencies>
 </project>

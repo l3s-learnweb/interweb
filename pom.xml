@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <maven.dependency.log4j.version>2.13.2</maven.dependency.log4j.version>
-        <maven.dependency.jersey.version>1.19.4</maven.dependency.jersey.version>
+        <maven.dependency.jersey2.version>2.30.1</maven.dependency.jersey2.version>
     </properties>
 
     <modules>
@@ -52,21 +52,6 @@
                 <version>1.7</version>
             </dependency>
             <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-digester</groupId>
-                <artifactId>commons-digester</artifactId>
-                <version>1.8.1</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-collections</groupId>
-                <artifactId>commons-collections</artifactId>
-                <version>3.2.1</version>
-            </dependency>
-            <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
                 <version>2.6</version>
@@ -78,54 +63,50 @@
             </dependency>
 
             <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-bundle</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>2.3.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.jersey.containers</groupId>
+                <artifactId>jersey-container-servlet</artifactId>
+                <version>${maven.dependency.jersey2.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-core</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-servlet</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
+                <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-server</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
+                <version>${maven.dependency.jersey2.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey</groupId>
+                <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
+                <version>${maven.dependency.jersey2.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-json</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>${maven.dependency.jersey2.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey.contribs</groupId>
-                <artifactId>jersey-multipart</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-jaxb</artifactId>
+                <version>${maven.dependency.jersey2.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
-                <artifactId>oauth-client</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
+                <groupId>org.glassfish.jersey.security</groupId>
+                <artifactId>oauth1-client</artifactId>
+                <version>${maven.dependency.jersey2.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
-                <artifactId>oauth-server</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
+                <groupId>org.glassfish.jersey.security</groupId>
+                <artifactId>oauth1-server</artifactId>
+                <version>${maven.dependency.jersey2.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
-                <artifactId>oauth-signature</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-multipart</artifactId>
+                <version>${maven.dependency.jersey2.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

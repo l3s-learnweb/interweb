@@ -16,10 +16,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.oauth.server.OAuthServerRequest;
-import com.sun.jersey.oauth.signature.OAuthParameters;
-
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.core.Engine;
 import de.l3s.interwebj.core.Environment;
@@ -45,8 +41,7 @@ public class OAuth extends Endpoint
     public XMLResponse authorizeToken(@QueryParam("oauth_token") String requestToken, @QueryParam("oauth_callback") String callbackUrl)
     {
 	log.info("callbackUrl: [" + callbackUrl + "]");
-	HttpContext httpContext = getHttpContext();
-	URI uri = httpContext.getUriInfo().getBaseUri().resolve("../view/authorize_consumer.xhtml");
+	URI uri = getBaseUri().resolve("../view/authorize_consumer.xhtml");
 	UriBuilder builder = UriBuilder.fromUri(uri);
 	builder = builder.queryParam("oauth_token", requestToken);
 	if(callbackUrl != null)
@@ -63,11 +58,7 @@ public class OAuth extends Endpoint
     @Produces(MediaType.APPLICATION_XML)
     public XMLResponse getAccessToken()
     {
-	HttpContext httpContext = getHttpContext();
-	OAuthServerRequest request = new OAuthServerRequest(httpContext.getRequest());
-	OAuthParameters params = new OAuthParameters();
-	params.readRequest(request);
-	String token = params.getToken();
+	String token = getOAuthParameters().getToken();
 	Engine engine = Environment.getInstance().getEngine();
 	ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
 	expirableMap.remove("access_token:" + token);
@@ -91,11 +82,7 @@ public class OAuth extends Endpoint
 	Engine engine = Environment.getInstance().getEngine();
 	ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
 	expirableMap.put("request_token:" + authCredentials.getKey(), authCredentials);
-	HttpContext httpContext = getHttpContext();
-	OAuthServerRequest request = new OAuthServerRequest(httpContext.getRequest());
-	OAuthParameters params = new OAuthParameters();
-	params.readRequest(request);
-	String consumerKey = params.getConsumerKey();
+	String consumerKey = getOAuthParameters().getConsumerKey();
 	expirableMap.put("consumer_token:" + authCredentials.getKey(), consumerKey);
 	return response;
     }

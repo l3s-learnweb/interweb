@@ -91,39 +91,41 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
-            <artifactId>oauth-client</artifactId>
-            <version>1.19.4</version>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
-            <artifactId>oauth-server</artifactId>
-            <version>1.19.4</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
-            <artifactId>oauth-signature</artifactId>
-            <version>1.19.4</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-multipart</artifactId>
-            <version>1.19.4</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
+            <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>1.19.4</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.jersey</groupId>
+            <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>1.19.4</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>1.19.4</version>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-jaxb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.security</groupId>
+            <artifactId>oauth1-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.security</groupId>
+            <artifactId>oauth1-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
         </dependency>
 
         <dependency>
@@ -131,6 +133,7 @@
             <artifactId>weld-servlet-shaded</artifactId>
             <version>3.1.4.Final</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-servlet-api</artifactId>

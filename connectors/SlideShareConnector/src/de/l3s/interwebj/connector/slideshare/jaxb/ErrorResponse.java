@@ -1,4 +1,4 @@
-package de.l3s.interwebj.connector.slideshare;
+package de.l3s.interwebj.connector.slideshare.jaxb;
 
 import javax.xml.bind.annotation.*;
 

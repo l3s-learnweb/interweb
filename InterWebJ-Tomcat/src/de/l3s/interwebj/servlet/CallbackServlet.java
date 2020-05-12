@@ -3,18 +3,17 @@ package de.l3s.interwebj.servlet;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 
 import de.l3s.interwebj.AuthCredentials;
 import de.l3s.interwebj.InterWebException;
@@ -165,11 +164,10 @@ public class CallbackServlet extends HttpServlet
 	AuthCredentials userAuthCredentials = principal.getOauthCredentials();
 	URI baseUri = URI.create(request.getRequestURL().toString()).resolve(".");
 	String serviceApiPath = baseUri.toASCIIString() + "api/users/default/services/" + connector.getName();
-	WebResource webResource = Endpoint.createWebResource(serviceApiPath, consumerAuthCredentials, userAuthCredentials);
-	ClientResponse clientResponse = webResource.accept(MediaType.APPLICATION_XML).get(ClientResponse.class);
-	ServiceResponse serviceResponse = clientResponse.getEntity(ServiceResponse.class);
+	WebTarget target = Endpoint.createWebTarget(serviceApiPath, consumerAuthCredentials, userAuthCredentials);
+	Response clientResponse = target.request(MediaType.APPLICATION_XML).get();
+	ServiceResponse serviceResponse = clientResponse.readEntity(ServiceResponse.class);
 	writeIntoServletResponse(response, serviceResponse);
-	return;
     }
 
     private void processServletRequest(HttpServletRequest request, HttpServletResponse response, Parameters parameters) throws ServletException, IOException
@@ -195,7 +193,7 @@ public class CallbackServlet extends HttpServlet
 
     private void writeIntoServletResponse(HttpServletResponse servletResponse, XMLResponse xmlResponse) throws IOException
     {
-	byte[] content = xmlResponse.toString().getBytes(Charset.forName("UTF8"));
+	byte[] content = xmlResponse.toString().getBytes(StandardCharsets.UTF_8);
 	OutputStream os = servletResponse.getOutputStream();
 	os.write(content);
 	os.close();

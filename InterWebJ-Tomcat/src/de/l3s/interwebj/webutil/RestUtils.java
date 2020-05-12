@@ -8,11 +8,9 @@ import de.l3s.interwebj.jaxb.ErrorResponse;
 
 public class RestUtils
 {
-
     public static void throwWebApplicationException(ErrorResponse errorResponse)
     {
-	Response response = Response.ok(errorResponse, MediaType.APPLICATION_XML).build();
-	throw new WebApplicationException(response);
+        Response response = Response.ok(errorResponse, MediaType.APPLICATION_XML).build();
+        throw new WebApplicationException(response);
     }
-
 }
