@@ -1,26 +1,26 @@
 package de.l3s.interwebj.connector.ipernity;
 
-import static de.l3s.interwebj.util.Assertions.notNull;
+import static de.l3s.interwebj.core.util.Assertions.notNull;
 
 import java.io.IOException;
 import java.util.*;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
-import de.l3s.interwebj.AuthCredentials;
-import de.l3s.interwebj.InterWebException;
-import de.l3s.interwebj.Parameters;
+import de.l3s.interwebj.core.AuthCredentials;
+import de.l3s.interwebj.core.InterWebException;
+import de.l3s.interwebj.core.Parameters;
 import de.l3s.interwebj.connector.ipernity.jaxb.CheckTokenResponse;
 import de.l3s.interwebj.connector.ipernity.jaxb.SearchResponse;
 import de.l3s.interwebj.connector.ipernity.jaxb.SearchResponse.Docs.Doc;
-import de.l3s.interwebj.core.AbstractServiceConnector;
-import de.l3s.interwebj.core.ServiceConnector;
-import de.l3s.interwebj.query.Query;
-import de.l3s.interwebj.query.Query.SortOrder;
-import de.l3s.interwebj.query.QueryResult;
-import de.l3s.interwebj.query.ResultItem;
-import de.l3s.interwebj.query.Thumbnail;
-import de.l3s.interwebj.util.CoreUtils;
+import de.l3s.interwebj.core.core.AbstractServiceConnector;
+import de.l3s.interwebj.core.core.ServiceConnector;
+import de.l3s.interwebj.core.query.Query;
+import de.l3s.interwebj.core.query.Query.SortOrder;
+import de.l3s.interwebj.core.query.QueryResult;
+import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.Thumbnail;
+import de.l3s.interwebj.core.util.CoreUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.oauth1.*;
@@ -28,7 +28,6 @@ import org.glassfish.jersey.client.oauth1.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Feature;
 
 public class IpernityConnector extends AbstractServiceConnector
 {

@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	id="InterWebJ" version="2.5">
+<web-app version="3.1"
+		 xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 
 	<display-name>InterWebJ</display-name>
-
-	<listener>
-		<listener-class>de.l3s.interwebj.servlet.listener.ServletContextLifecycleListener</listener-class>
-	</listener>
-	<listener>
-		<listener-class>com.sun.faces.config.ConfigureListener</listener-class>
-	</listener>
 
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>
 
-	<welcome-file-list>
-		<welcome-file>view/index.xhtml</welcome-file>
-	</welcome-file-list>
-
 	<context-param>
-		<param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
-		<param-value>resources.application</param-value>
+		<param-name>javax.faces.PROJECT_STAGE</param-name>
+		<param-value>Production</param-value>
+		<!--<param-value>Development</param-value>-->
 	</context-param>
 	<context-param>
 		<param-name>org.richfaces.skin</param-name>
@@ -34,10 +24,43 @@
 		<param-value>enable</param-value>
 	</context-param>
 
+	<servlet>
+		<display-name>Authorization callback</display-name>
+		<servlet-name>callback</servlet-name>
+		<servlet-class>de.l3s.interwebj.tomcat.servlet.CallbackServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>callback</servlet-name>
+		<url-pattern>/callback</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<display-name>InterWebJ Faces Servlet</display-name>
+		<servlet-name>facesServlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>facesServlet</servlet-name>
+		<url-pattern>/view/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<description>Jersey REST API</description>
+		<servlet-name>jersey-servlet</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>de.l3s.interwebj.tomcat.RestApplication</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jersey-servlet</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
+
 	<filter>
 		<display-name>EncodingFilter</display-name>
 		<filter-name>EncodingFilter</filter-name>
-		<filter-class>de.l3s.interwebj.servlet.filter.EncodingFilter</filter-class>
+		<filter-class>de.l3s.interwebj.tomcat.servlet.filter.EncodingFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>EncodingFilter</filter-name>
@@ -46,7 +69,7 @@
 	<filter>
 		<display-name>DisableUrlSessionFilter</display-name>
 		<filter-name>DisableUrlSessionFilter</filter-name>
-		<filter-class>de.l3s.interwebj.servlet.filter.DisableUrlSessionFilter</filter-class>
+		<filter-class>de.l3s.interwebj.tomcat.servlet.filter.DisableUrlSessionFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>DisableUrlSessionFilter</filter-name>
@@ -55,44 +78,19 @@
 	<filter>
 		<display-name>SecurityFilter</display-name>
 		<filter-name>SecurityFilter</filter-name>
-		<filter-class>de.l3s.interwebj.servlet.filter.SecurityFilter</filter-class>
+		<filter-class>de.l3s.interwebj.tomcat.servlet.filter.SecurityFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>SecurityFilter</filter-name>
 		<url-pattern>/view/*</url-pattern>
 	</filter-mapping>
 
-	<servlet>
-		<display-name>callback</display-name>
-		<servlet-name>callback</servlet-name>
-		<servlet-class>de.l3s.interwebj.servlet.CallbackServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>callback</servlet-name>
-		<url-pattern>/callback</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>InterWebJ Faces Servlet</servlet-name>
-		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>InterWebJ Faces Servlet</servlet-name>
-		<url-pattern>/view/*</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<description>Jersey Web Application</description>
-		<servlet-name>jersey-servlet</servlet-name>
-		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-		<init-param>
-			<param-name>javax.ws.rs.Application</param-name>
-			<param-value>de.l3s.interwebj.RestApplication</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>jersey-servlet</servlet-name>
-		<url-pattern>/api/*</url-pattern>
-	</servlet-mapping>
+	<listener>
+		<listener-class>de.l3s.interwebj.tomcat.servlet.listener.ServletContextLifecycleListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>com.sun.faces.config.ConfigureListener</listener-class>
+	</listener>
 
 	<security-constraint>
 		<web-resource-collection>
@@ -116,4 +114,8 @@
 			<transport-guarantee>NONE</transport-guarantee>
 		</user-data-constraint>
 	</security-constraint>
+
+	<welcome-file-list>
+		<welcome-file>view/index.xhtml</welcome-file>
+	</welcome-file-list>
 </web-app>

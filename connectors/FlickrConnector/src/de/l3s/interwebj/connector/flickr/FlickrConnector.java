@@ -1,6 +1,6 @@
 package de.l3s.interwebj.connector.flickr;
 
-import static de.l3s.interwebj.util.Assertions.notNull;
+import static de.l3s.interwebj.core.util.Assertions.notNull;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,7 +9,7 @@ import java.util.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -31,18 +31,18 @@ import com.aetrion.flickr.tags.Tag;
 import com.aetrion.flickr.uploader.UploadMetaData;
 import com.aetrion.flickr.uploader.Uploader;
 
-import de.l3s.interwebj.AuthCredentials;
-import de.l3s.interwebj.InterWebException;
-import de.l3s.interwebj.Parameters;
-import de.l3s.interwebj.core.AbstractServiceConnector;
-import de.l3s.interwebj.core.ServiceConnector;
-import de.l3s.interwebj.query.Query;
-import de.l3s.interwebj.query.Query.SearchScope;
-import de.l3s.interwebj.query.Query.SortOrder;
-import de.l3s.interwebj.query.QueryResult;
-import de.l3s.interwebj.query.ResultItem;
-import de.l3s.interwebj.query.Thumbnail;
-import de.l3s.interwebj.util.CoreUtils;
+import de.l3s.interwebj.core.AuthCredentials;
+import de.l3s.interwebj.core.InterWebException;
+import de.l3s.interwebj.core.Parameters;
+import de.l3s.interwebj.core.core.AbstractServiceConnector;
+import de.l3s.interwebj.core.core.ServiceConnector;
+import de.l3s.interwebj.core.query.Query;
+import de.l3s.interwebj.core.query.Query.SearchScope;
+import de.l3s.interwebj.core.query.Query.SortOrder;
+import de.l3s.interwebj.core.query.QueryResult;
+import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.Thumbnail;
+import de.l3s.interwebj.core.util.CoreUtils;
 
 public class FlickrConnector extends AbstractServiceConnector
 {

@@ -3,12 +3,12 @@ package de.l3s.interwebj.connector.bing;
 import de.l3s.bingService.models.*;
 import de.l3s.bingService.models.query.BingQuery;
 import de.l3s.bingService.services.BingApiService;
-import de.l3s.interwebj.AuthCredentials;
-import de.l3s.interwebj.InterWebException;
-import de.l3s.interwebj.core.AbstractServiceConnector;
-import de.l3s.interwebj.query.Query;
-import de.l3s.interwebj.query.QueryFactory;
-import de.l3s.interwebj.query.QueryResult;
+import de.l3s.interwebj.core.AuthCredentials;
+import de.l3s.interwebj.core.InterWebException;
+import de.l3s.interwebj.core.core.AbstractServiceConnector;
+import de.l3s.interwebj.core.query.Query;
+import de.l3s.interwebj.core.query.QueryFactory;
+import de.l3s.interwebj.core.query.QueryResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

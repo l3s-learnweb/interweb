@@ -2,14 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>de.l3s.interweb</groupId>
         <artifactId>interwebj-parent</artifactId>
         <version>2.0.0</version>
     </parent>
-
-    <modelVersion>4.0.0</modelVersion>
+    
     <artifactId>interwebj-tomcat</artifactId>
+    <version>2.5.0</version>
     <packaging>war</packaging>
 
     <name>InterWebJ-Tomcat</name>
@@ -30,49 +32,43 @@
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-bing</artifactId>
-            <version>2.0.0</version>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-flickr</artifactId>
-            <version>2.0.0</version>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-ipernity</artifactId>
-            <version>2.0.0</version>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-slideshare</artifactId>
-            <version>2.0.0</version>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-vimeo</artifactId>
-            <version>2.0.0</version>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-youtube</artifactId>
-            <version>2.0.0</version>
+            <version>2.5.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
-            <version>${maven.dependency.log4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
             <version>1.6.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.taglibs</groupId>
-            <artifactId>taglibs-standard-impl</artifactId>
-            <version>1.2.5</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>

@@ -4,6 +4,7 @@
 
 # Local files
 config_local.xml
+interweb_local.properties
 
 # Java
 target
