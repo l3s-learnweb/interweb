@@ -3,13 +3,13 @@ package de.l3s.interwebj.tomcat.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
+import javax.inject.Named;
 
 import com.sun.istack.NotNull;
 
-@ManagedBean
+@Named
 @RequestScoped
 public class PermissionBean
 {

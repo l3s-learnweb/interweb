@@ -1,10 +1,11 @@
 package de.l3s.interwebj.tomcat.bean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
@@ -14,10 +15,11 @@ import de.l3s.interwebj.core.core.ServiceConnector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@ManagedBean
+@Named
 @ViewScoped
-public class RegisterServicesBean
+public class RegisterServicesBean implements Serializable
 {
+	private static final long serialVersionUID = 1250989064923740720L;
 	private static final Logger log = LogManager.getLogger(RegisterServicesBean.class);
 
     private List<ConnectorWrapper> connectorWrappers;
@@ -53,7 +55,7 @@ public class RegisterServicesBean
 	return connectorWrapper.getConnector().isRegistered();
     }
 
-    public String register(ConnectorWrapper connectorWrapper)
+    public void register(ConnectorWrapper connectorWrapper)
     {
 	try
 	{
@@ -66,12 +68,11 @@ public class RegisterServicesBean
 	}
 	catch(Exception e)
 	{
-	    return "failed";
+	    log.error(e);
 	}
-	return "success";
     }
 
-    public String unregister(ConnectorWrapper connectorWrapper)
+    public void unregister(ConnectorWrapper connectorWrapper)
     {
 	try
 	{
@@ -83,9 +84,8 @@ public class RegisterServicesBean
 	}
 	catch(Exception e)
 	{
-	    return "failed";
+	    log.error(e);
 	}
-	return "success";
     }
 
 }

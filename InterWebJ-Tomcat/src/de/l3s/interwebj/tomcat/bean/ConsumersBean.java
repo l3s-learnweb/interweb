@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 
@@ -24,7 +24,7 @@ import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@ManagedBean
+@Named
 @RequestScoped
 public class ConsumersBean implements Serializable
 {
@@ -48,7 +48,7 @@ public class ConsumersBean implements Serializable
 	accessToken = (AuthCredentials) expirableMap.get("access_token:" + oauthToken);
     }
 
-    public String addConsumer() throws IOException
+    public void addConsumer() throws IOException
     {
 	Database database = Environment.getInstance().getDatabase();
 	InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
@@ -58,10 +58,9 @@ public class ConsumersBean implements Serializable
 	log.info("consumer: [" + consumer.getName() + "] successfully added");
 	String contextPath = FacesUtils.getContextPath();
 	FacesUtils.redirect(contextPath + "/view/consumers.xhtml");
-	return null;
     }
 
-    public String authorizeConsumer() throws IOException
+    public void authorizeConsumer() throws IOException
     {
 	HttpServletRequest request = FacesUtils.getRequest();
 	String requestToken = request.getParameter("oauth_token");
@@ -102,7 +101,6 @@ public class ConsumersBean implements Serializable
 	    log.info("forwarding to URL: " + url);
 	    FacesUtils.redirect(url);
 	}
-	return null;
     }
 
     public AuthCredentials getAccessToken()
@@ -159,14 +157,13 @@ public class ConsumersBean implements Serializable
 	return Boolean.parseBoolean(request.getParameter("registered"));
     }
 
-    public String newConsumer() throws IOException
+    public void newConsumer() throws IOException
     {
 	String contextPath = FacesUtils.getContextPath();
 	FacesUtils.redirect(contextPath + "/view/add_consumer.xhtml");
-	return null;
     }
 
-    public String revoke(Object consumer) throws InterWebException
+    public void revoke(Object consumer) throws InterWebException
     {
 	String consumerName = ((Consumer) consumer).getName();
 	log.info("revoking consumer [" + consumerName + "]");
@@ -174,7 +171,6 @@ public class ConsumersBean implements Serializable
 	Database database = environment.getDatabase();
 	InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
 	database.deleteConsumer(principal.getName(), consumerName);
-	return null;
     }
 
     public void setDescription(String consumerDescription)

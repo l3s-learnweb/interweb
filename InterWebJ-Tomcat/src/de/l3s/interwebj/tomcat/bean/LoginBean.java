@@ -1,11 +1,11 @@
 package de.l3s.interwebj.tomcat.bean;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
 
 import com.sun.istack.NotNull;
 
-@ManagedBean
+@Named
 @RequestScoped
 public class LoginBean
 {

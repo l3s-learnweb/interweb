@@ -2,6 +2,7 @@ package de.l3s.interwebj.core.query;
 
 import java.io.Serializable;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.TreeSet;
 
 public class ResultItem implements Serializable
@@ -373,4 +374,32 @@ public class ResultItem implements Serializable
 	this.duration = duration;
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ResultItem.class.getSimpleName() + "[", "]")
+                .add("id='" + id + "'")
+                .add("title='" + title + "'")
+                .add("type='" + type + "'")
+                .add("description='" + description + "'")
+                .add("connectorName='" + connectorName + "'")
+                .add("serviceName='" + serviceName + "'")
+                .add("tags='" + tags + "'")
+                .add("url='" + url + "'")
+                .add("thumbnails=" + thumbnails)
+                .add("date='" + date + "'")
+                .add("rank=" + rank)
+                .add("totalResultCount=" + totalResultCount)
+                .add("viewCount=" + viewCount)
+                .add("commentCount=" + commentCount)
+                .add("privacy=" + privacy)
+                .add("privacyConfidence=" + privacyConfidence)
+                .add("duration=" + duration)
+                .add("snippet='" + snippet + "'")
+                .add("embeddedSize1='" + embeddedSize1 + "'")
+                .add("embeddedSize2='" + embeddedSize2 + "'")
+                .add("embeddedSize3='" + embeddedSize3 + "'")
+                .add("embeddedSize4='" + embeddedSize4 + "'")
+                .add("imageUrl='" + imageUrl + "'")
+                .toString();
+    }
 }

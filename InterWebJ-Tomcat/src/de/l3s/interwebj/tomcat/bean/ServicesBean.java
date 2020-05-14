@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,7 +22,7 @@ import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@ManagedBean
+@Named
 @RequestScoped
 public class ServicesBean
 {
@@ -63,7 +63,7 @@ public class ServicesBean
 	}
     }
 
-    public String authenticate(Object obj) throws InterWebException
+    public void authenticate(Object obj) throws InterWebException
     {
 	String baseApiUrl = FacesUtils.getInterWebJBean().getBaseUrl();
 	ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
@@ -101,7 +101,6 @@ public class ServicesBean
 		FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 	    }
 	}
-	return "success";
     }
 
     public List<ConnectorWrapper> getAwaitingConnectorWrappers() throws InterWebException
@@ -137,17 +136,16 @@ public class ServicesBean
 	return connector.isUserRegistrationDataRequired() && !isUserAuthenticated(obj);
     }
 
-    public String revoke(Object obj) throws InterWebException
+    public void revoke(Object obj) throws InterWebException
     {
 	ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
 	ServiceConnector connector = connectorWrapper.getConnector();
 	log.info("revoking user authentication");
 	engine.setUserAuthCredentials(connector.getName(), principal, null, null);
 	connector.revokeAuthentication();
-	return "success";
     }
 
-    public String save(Object obj)
+    public void save(Object obj)
     {
 	ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
 	ServiceConnector connector = connectorWrapper.getConnector();
@@ -164,6 +162,5 @@ public class ServicesBean
 	    log.error(e);
 	    FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
 	}
-	return "success";
     }
 }

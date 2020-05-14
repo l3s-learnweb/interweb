@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <Property name="INTERWEB_LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{1}:%line - %msg%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${INTERWEB_LOG_PATTERN}"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="DEBUG">
+            <appender-ref ref="console"/>
+        </Root>
+    </Loggers>
+</Configuration>

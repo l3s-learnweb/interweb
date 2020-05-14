@@ -1,6 +1,6 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import de.l3s.interwebj.core.AuthCredentials;
+import de.l3s.interwebj.tomcat.TestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -16,16 +16,11 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 
-import static de.l3s.interwebj.tomcat.rest.Endpoint.createWebTarget;
-
 class UploadTest {
     private static final Logger log = LogManager.getLogger(UploadTest.class);
 
     @Test
     void getQueryResult() throws IOException {
-        AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-
         MultiPart multiPart = new MultiPart();
         String title = "the title 1";
         String description = "the description 2";
@@ -37,7 +32,7 @@ class UploadTest {
         multiPart = multiPart.bodyPart(new FileDataBodyPart("data", f, MediaType.MULTIPART_FORM_DATA_TYPE));
         multiPart = multiPart.bodyPart(new FormDataBodyPart("data", "the data"));
 
-        WebTarget target = createWebTarget("users/default/uploads", consumerCredentials, userCredentials);
+        WebTarget target = TestUtils.createWebTarget("users/default/uploads");
         log.info("testing upload to interwebj: " + target.toString());
         Response response = target.request(MediaType.APPLICATION_XML).post(Entity.entity(multiPart, multiPart.getMediaType()));
         multiPart.close();

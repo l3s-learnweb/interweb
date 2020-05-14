@@ -2,22 +2,13 @@ package de.l3s.interwebj.connector.bing;
 
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
-import de.l3s.bingService.models.BingResponse;
-import de.l3s.bingService.models.Image;
-import de.l3s.bingService.models.ImageHolder;
-import de.l3s.bingService.models.WebPage;
-import de.l3s.bingService.models.WebPagesMainHolder;
-import de.l3s.bingService.models.query.BingQuery;
-import de.l3s.bingService.services.BingApiService;
+import com.microsoft.azure.cognitiveservices.search.websearch.BingWebSearchAPI;
+import com.microsoft.azure.cognitiveservices.search.websearch.BingWebSearchManager;
+import com.microsoft.azure.cognitiveservices.search.websearch.models.*;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
-import de.l3s.interwebj.core.Parameters;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.Query;
@@ -27,13 +18,13 @@ import de.l3s.interwebj.core.query.Thumbnail;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class BingConnector extends AbstractServiceConnector
+public class BingConnector extends AbstractServiceConnector implements Cloneable
 {
 	private static final Logger log = LogManager.getLogger(BingConnector.class);
-	
+
     public BingConnector()
     {
-    	super("Bing", "http://www.bing.com", new TreeSet<>(Arrays.asList("text", "image")));
+    	super("Bing", "http://www.bing.com", new TreeSet<>(Arrays.asList("text", "image", "video")));
     }
 
     public BingConnector(AuthCredentials consumerAuthCredentials)
@@ -43,193 +34,193 @@ public class BingConnector extends AbstractServiceConnector
     }
 
     @Override
-    public Parameters authenticate(String callbackUrl) throws InterWebException
-    {
-	// authentication is not supported. do nothing
-	return null;
-    }
-
-    @Override
     public ServiceConnector clone()
     {
-	return new BingConnector(getAuthCredentials());
-    }
-
-    @Override
-    public AuthCredentials completeAuthentication(Parameters params) throws InterWebException
-    {
-	// authentication is not supported. do nothing
-	return null;
+		return new BingConnector(getAuthCredentials());
     }
 
     @Override
     public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException
     {
-	notNull(query, "query");
+		notNull(query, "query");
+	
+		if(authCredentials == null)
+			authCredentials = getAuthCredentials(); // we have to use this; authCredentials parameter is null
 
-	if(authCredentials == null)
-	    authCredentials = getAuthCredentials(); // we have to use this; authCredentials parameter is null
+		// Prepare params
+		int count = Math.max(query.getResultCount(), 20); // min 20 results per request to save money
 
-	// TODO: move this log to core if requires
-	// String key = (authCredentials != null) ? authCredentials.getKey() : "no";
-	// Environment.getInstance().getDatabase().logQuery(key, query.getQuery());
+		String language = query.getLanguage();
+		if(language != null && language.length() == 2)
+			language = createMarket(language);
 
-	try
-	{
-	    int count = query.getResultCount() > 20 ? query.getResultCount() : 20; // min 20 results per request to save money
+		List<AnswerType> answerTypes = new ArrayList<>();
+		for (String contentType : query.getContentTypes())
+		{
+			if (contentType.equals(Query.CT_TEXT))
+				answerTypes.add(AnswerType.WEB_PAGES);
+			else if (contentType.equals(Query.CT_IMAGE))
+				answerTypes.add(AnswerType.IMAGES);
+			else if (contentType.equals(Query.CT_VIDEO))
+				answerTypes.add(AnswerType.VIDEOS);
+		}
 
-	    String language = query.getLanguage();
-	    if(language != null && language.length() == 2)
-		language = createMarket(language);
-
-	    BingQuery bingQuery = new BingQuery();
-	    bingQuery.setQuery(query.getQuery());
-	    bingQuery.setCount(count);
-	    bingQuery.setOffset((query.getPage() - 1) * count);
-	    bingQuery.setMarket(language);//createMarket(query.getLanguage()));
-
-	    BingApiService bingApiService = new BingApiService(authCredentials.getKey());
-	    BingResponse response = bingApiService.getResponseFromBingApi(bingQuery);
-
-	    QueryResult results = new QueryResult(query);
-
-	    long totalResultCount = 0;
-	    if(query.getContentTypes().contains(Query.CT_TEXT))
-	    {
-		QueryResult queryResult = new QueryResult(null);
-
-		WebPagesMainHolder pages = response.getWebPages();
-		int index = 1;
-		int intResultCount = 0;
+		// TODO: move this log to core if requires
+		// String key = (authCredentials != null) ? authCredentials.getKey() : "no";
+		// Environment.getInstance().getDatabase().logQuery(key, query.getQuery());		
+	
 		try
 		{
-		    long totalPages = Long.parseLong(pages.getTotalEstimatedMatches());
-		    totalResultCount += totalPages;
+			// Init Bing Client
+			BingWebSearchAPI client = BingWebSearchManager.authenticate(authCredentials.getKey());
 
-		    if(totalPages > Integer.MAX_VALUE)
-			intResultCount = 2100000000;
-		    else
-			intResultCount = (int) totalPages;
+			// Build query
+			SearchResponse webData = client.bingWebs().search()
+					.withQuery(query.getQuery())
+					.withMarket(language)
+					.withCount(count)
+					.withResponseFilter(answerTypes)
+					.withOffset((query.getPage() - 1) * count)
+					.execute();
+
+			// Results go here
+			QueryResult results = new QueryResult(query);
+
+
+			if (webData != null && webData.webPages() != null && webData.webPages().value() != null && !webData.webPages().value().isEmpty()) {
+				WebWebAnswer webResults = webData.webPages();
+
+				if (webResults.totalEstimatedMatches() != null)
+					results.addTotalResultCount(webResults.totalEstimatedMatches());
+
+				int index = 1;
+				for(WebPage page : webResults.value())
+				{
+					ResultItem resultItem = new ResultItem(getName());
+					resultItem.setType(Query.CT_TEXT);
+					resultItem.setTitle(page.name());
+					resultItem.setDescription(page.snippet());
+					resultItem.setUrl(page.url());
+					resultItem.setRank(index++);
+					resultItem.setDate(page.dateLastCrawled());
+					resultItem.setTotalResultCount(webResults.totalEstimatedMatches());
+
+					results.addResultItem(resultItem);
+				}
+			}
+
+			if (webData != null && webData.images() != null && webData.images().value() != null && !webData.images().value().isEmpty()) {
+				Images imagesResults = webData.images();
+
+				if (imagesResults.totalEstimatedMatches() != null)
+					results.addTotalResultCount(imagesResults.totalEstimatedMatches());
+
+				int index = 1;
+				for(ImageObject image : imagesResults.value())
+				{
+					ResultItem resultItem = new ResultItem(getName());
+					resultItem.setType(Query.CT_IMAGE);
+					resultItem.setTitle(image.name());
+					resultItem.setDescription(image.description());
+					resultItem.setUrl(image.contentUrl());
+					resultItem.setRank(index++);
+
+					Set<Thumbnail> thumbnails = new LinkedHashSet<>();
+
+					try
+					{
+						Thumbnail thumbnail = new Thumbnail(image.thumbnailUrl(), image.thumbnail().width(), image.thumbnail().height());
+
+						if(thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0)
+						{
+							thumbnails.add(thumbnail);
+							resultItem.setEmbeddedSize1("<img src=\"" + thumbnail.getUrl() + "\" height=\"" + thumbnail.getHeight() + "\" width=\"" + thumbnail.getWidth() + "\"/>");
+						}
+					}
+					catch(Exception e)
+					{
+						log.warn(e.getMessage());
+					}
+
+					try
+					{
+						Thumbnail thumbnail = new Thumbnail(image.contentUrl(), image.thumbnail().width(), image.thumbnail().height());
+
+						if(thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0)
+						{
+							thumbnails.add(thumbnail);
+							resultItem.setEmbeddedSize2("<img src=\"" + thumbnail.getUrl() + "\" height=\"" + thumbnail.getHeight() + "\" width=\"" + thumbnail.getWidth() + "\"/>");
+						}
+					}
+					catch(Exception e)
+					{
+						log.warn(e.getMessage());
+					}
+
+					resultItem.setThumbnails(thumbnails);
+					results.addResultItem(resultItem);
+				}
+			}
+
+			if (webData != null && webData.videos() != null && webData.videos().value() != null && !webData.videos().value().isEmpty()) {
+				Videos videosResults = webData.videos();
+
+				if (videosResults.totalEstimatedMatches() != null)
+					results.addTotalResultCount(videosResults.totalEstimatedMatches());
+
+				int index = 1;
+				for(VideoObject video : videosResults.value())
+				{
+					ResultItem resultItem = new ResultItem(getName());
+					resultItem.setType(Query.CT_VIDEO);
+					resultItem.setTitle(video.name());
+					resultItem.setDescription(video.description());
+					resultItem.setUrl(video.contentUrl());
+					resultItem.setRank(index++);
+
+					Set<Thumbnail> thumbnails = new LinkedHashSet<>();
+
+					try
+					{
+						Thumbnail thumbnail = new Thumbnail(video.thumbnailUrl(), video.thumbnail().width(), video.thumbnail().height());
+
+						if(thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0)
+						{
+							thumbnails.add(thumbnail);
+							resultItem.setEmbeddedSize1("<img src=\"" + thumbnail.getUrl() + "\" height=\"" + thumbnail.getHeight() + "\" width=\"" + thumbnail.getWidth() + "\"/>");
+						}
+					}
+					catch(Exception e)
+					{
+						log.warn(e.getMessage());
+					}
+
+					try
+					{
+						Thumbnail thumbnail = new Thumbnail(video.contentUrl(), video.thumbnail().width(), video.thumbnail().height());
+
+						if(thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0)
+						{
+							thumbnails.add(thumbnail);
+							resultItem.setEmbeddedSize2(video.embedHtml());
+						}
+					}
+					catch(Exception e)
+					{
+						log.warn(e.getMessage());
+					}
+
+					resultItem.setThumbnails(thumbnails);
+					results.addResultItem(resultItem);
+				}
+			}
+
+			return results;
 		}
 		catch(Exception e)
 		{
+			throw new InterWebException(e);
 		}
-
-		if(pages != null)
-		{
-		    for(WebPage page : pages.getValue())
-		    {
-			ResultItem resultItem = new ResultItem(getName());
-			resultItem.setType(Query.CT_TEXT);
-			resultItem.setTitle(page.getName());
-			resultItem.setDescription(page.getSnippet());
-			resultItem.setUrl(page.getUrl());
-			resultItem.setRank(index++);
-			resultItem.setTotalResultCount(intResultCount);
-
-			queryResult.addResultItem(resultItem);
-		    }
-		    results.addQueryResult(queryResult);
-
-		    if(pages.getValue().size() == 0)
-				log.warn("No text results found; response: " + response.getJsonContent());
-		}
-		else
-		    log.warn("Result pages are null; Response: " + bingApiService.getRawBingResponse());
-	    }
-
-	    if(query.getContentTypes().contains(Query.CT_IMAGE))
-	    {
-		ImageHolder images = response.getImages();
-
-		if(images == null)
-		    log.warn("images is null for query " + query.getQuery());
-		else
-		{
-		    QueryResult queryResult = new QueryResult(null);
-		    int intResultCount = 100;
-		    int index = 1;
-
-		    if(images.getValue().size() == 0)
-			log.warn("No image results found; response: " + response.getJsonContent());
-
-		    for(Image image : images.getValue())
-		    {
-			ResultItem resultItem = new ResultItem(getName());
-			resultItem.setType(Query.CT_IMAGE);
-			resultItem.setTitle(image.getMedia().getName());
-			resultItem.setUrl(image.getMedia().getContentUrl());
-			resultItem.setRank(index++);
-			resultItem.setTotalResultCount(intResultCount);
-
-			Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-
-			String url = null;
-			Integer width = null;
-			Integer height = null;
-
-			try
-			{
-			    url = image.getMedia().getThumbnailUrl();
-			    width = Integer.parseInt(image.getMedia().getThumbnail().getWidth());
-			    height = Integer.parseInt(image.getMedia().getThumbnail().getHeight());
-
-			    if(url != null && height != null && width != null)
-			    {
-				thumbnails.add(new Thumbnail(url, width, height));
-
-				resultItem.setEmbeddedSize1("<img src=\"" + url + "\" height=\"" + height + "\" width=\"" + width + "\"/>");
-
-			    }
-			}
-			catch(Exception e)
-			{
-			    log.warn(e.getMessage());
-			}
-
-			try
-			{
-			    url = image.getMedia().getContentUrl();
-			    width = Integer.parseInt(image.getMedia().getWidth());
-			    height = Integer.parseInt(image.getMedia().getHeight());
-
-			    if(url != null && height != null && width != null)
-			    {
-				thumbnails.add(new Thumbnail(url, width, height));
-			    }
-			}
-			catch(Exception e)
-			{
-			    log.warn(e.getMessage());
-			}
-
-			resultItem.setThumbnails(thumbnails);
-
-			queryResult.addResultItem(resultItem);
-		    }
-		    results.addQueryResult(queryResult);
-		}
-	    }
-	    results.setTotalResultCount(totalResultCount);
-	    return results;
-	}
-	catch(Exception e)
-	{
-	    throw new InterWebException(e);
-	}
-    }
-
-    @Override
-    public String getEmbedded(AuthCredentials authCredentials, String url, int maxWidth, int maxHeight) throws InterWebException
-    {
-	return null;
-    }
-
-    @Override
-    public String getUserId(AuthCredentials authCredentials) throws InterWebException
-    {
-	// not supported. do nothing
-	return null;
     }
 
     @Override
@@ -256,95 +247,70 @@ public class BingConnector extends AbstractServiceConnector
 	return false;
     }
 
-    @Override
-    public ResultItem put(byte[] data, String contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException
-    {
-	// not supported. do nothing
-	return null;
-    }
-
-    @Override
-    public void revokeAuthentication() throws InterWebException
-    {
-	// not supported. do nothing
-    }
-
     private static String createMarket(String language)
     {
-	if(language.equalsIgnoreCase("ar"))
-	    return "ar-XA";
-	if(language.equalsIgnoreCase("bg"))
-	    return "bg-BG";
-	if(language.equalsIgnoreCase("cs"))
-	    return "cs-CZ";
-	if(language.equalsIgnoreCase("da"))
-	    return "da-DK";
-	if(language.equalsIgnoreCase("de"))
-	    return "de-DE";
-	if(language.equalsIgnoreCase("el"))
-	    return "el-GR";
-	if(language.equalsIgnoreCase("es"))
-	    return "es-ES";
-	if(language.equalsIgnoreCase("et"))
-	    return "et-EE";
-	if(language.equalsIgnoreCase("fi"))
-	    return "fi-FI";
-	if(language.equalsIgnoreCase("fr"))
-	    return "fr-FR";
-	if(language.equalsIgnoreCase("he"))
-	    return "he-IL";
-	if(language.equalsIgnoreCase("hr"))
-	    return "hr-HR";
-	if(language.equalsIgnoreCase("hu"))
-	    return "hu-HU";
-	if(language.equalsIgnoreCase("it"))
-	    return "it-IT";
-	if(language.equalsIgnoreCase("ja"))
-	    return "ja-JP";
-	if(language.equalsIgnoreCase("ko"))
-	    return "ko-KR";
-	if(language.equalsIgnoreCase("lt"))
-	    return "lt-LT";
-	if(language.equalsIgnoreCase("lv"))
-	    return "lv-LV";
-	if(language.equalsIgnoreCase("nb"))
-	    return "nb-NO";
-	if(language.equalsIgnoreCase("nl"))
-	    return "nl-NL";
-	if(language.equalsIgnoreCase("pl"))
-	    return "pl-PL";
-	if(language.equalsIgnoreCase("pt"))
-	    return "pt-PT";
-	if(language.equalsIgnoreCase("ro"))
-	    return "ro-RO";
-	if(language.equalsIgnoreCase("ru"))
-	    return "ru-RU";
-	if(language.equalsIgnoreCase("sk"))
-	    return "sk-SK";
-	if(language.equalsIgnoreCase("sl"))
-	    return "sl-SL";
-	if(language.equalsIgnoreCase("sv"))
-	    return "sv-SE";
-	if(language.equalsIgnoreCase("th"))
-	    return "th-TH";
-	if(language.equalsIgnoreCase("tr"))
-	    return "tr-TR";
-	if(language.equalsIgnoreCase("uk"))
-	    return "uk-UA";
-	if(language.equalsIgnoreCase("zh"))
-	    return "zh-CN";
-	return "en-US";
-    }
-
-    @Override
-    public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException
-    {
-	throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException
-    {
-	throw new InterWebException("not implemented");
+		if(language.equalsIgnoreCase("ar"))
+			return "ar-XA";
+		if(language.equalsIgnoreCase("bg"))
+			return "bg-BG";
+		if(language.equalsIgnoreCase("cs"))
+			return "cs-CZ";
+		if(language.equalsIgnoreCase("da"))
+			return "da-DK";
+		if(language.equalsIgnoreCase("de"))
+			return "de-DE";
+		if(language.equalsIgnoreCase("el"))
+			return "el-GR";
+		if(language.equalsIgnoreCase("es"))
+			return "es-ES";
+		if(language.equalsIgnoreCase("et"))
+			return "et-EE";
+		if(language.equalsIgnoreCase("fi"))
+			return "fi-FI";
+		if(language.equalsIgnoreCase("fr"))
+			return "fr-FR";
+		if(language.equalsIgnoreCase("he"))
+			return "he-IL";
+		if(language.equalsIgnoreCase("hr"))
+			return "hr-HR";
+		if(language.equalsIgnoreCase("hu"))
+			return "hu-HU";
+		if(language.equalsIgnoreCase("it"))
+			return "it-IT";
+		if(language.equalsIgnoreCase("ja"))
+			return "ja-JP";
+		if(language.equalsIgnoreCase("ko"))
+			return "ko-KR";
+		if(language.equalsIgnoreCase("lt"))
+			return "lt-LT";
+		if(language.equalsIgnoreCase("lv"))
+			return "lv-LV";
+		if(language.equalsIgnoreCase("nb"))
+			return "nb-NO";
+		if(language.equalsIgnoreCase("nl"))
+			return "nl-NL";
+		if(language.equalsIgnoreCase("pl"))
+			return "pl-PL";
+		if(language.equalsIgnoreCase("pt"))
+			return "pt-PT";
+		if(language.equalsIgnoreCase("ro"))
+			return "ro-RO";
+		if(language.equalsIgnoreCase("ru"))
+			return "ru-RU";
+		if(language.equalsIgnoreCase("sk"))
+			return "sk-SK";
+		if(language.equalsIgnoreCase("sl"))
+			return "sl-SL";
+		if(language.equalsIgnoreCase("sv"))
+			return "sv-SE";
+		if(language.equalsIgnoreCase("th"))
+			return "th-TH";
+		if(language.equalsIgnoreCase("tr"))
+			return "tr-TR";
+		if(language.equalsIgnoreCase("uk"))
+			return "uk-UA";
+		if(language.equalsIgnoreCase("zh"))
+			return "zh-CN";
+		return "en-US";
     }
 }

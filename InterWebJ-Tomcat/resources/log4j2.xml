@@ -27,9 +27,7 @@
     <Loggers>
         <Logger name="org.apache" level="FATAL"/>
         <Logger name="org.hibernate.validator" level="FATAL"/>
-        <Logger name="solr.client" level="FATAL"/>
         <Logger name="org.jboss.weld" level="WARN"/>
-        <Logger name="net.bramp.ffmpeg" level="INFO"/>
         <Root level="DEBUG">
             <appender-ref ref="console"/>
             <appender-ref ref="file"/>

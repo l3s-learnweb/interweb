@@ -22,10 +22,10 @@
             <groupId>de.l3s.interweb</groupId>
             <artifactId>interwebj-core</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20190722</version>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
 </project>

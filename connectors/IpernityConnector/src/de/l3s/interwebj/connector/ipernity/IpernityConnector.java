@@ -2,7 +2,6 @@ package de.l3s.interwebj.connector.ipernity;
 
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
-import java.io.IOException;
 import java.util.*;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -29,7 +28,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-public class IpernityConnector extends AbstractServiceConnector
+public class IpernityConnector extends AbstractServiceConnector implements Cloneable
 {
 	private static final Logger log = LogManager.getLogger(IpernityConnector.class);
 
@@ -53,18 +52,6 @@ public class IpernityConnector extends AbstractServiceConnector
     public ServiceConnector clone()
     {
 	return new IpernityConnector(getAuthCredentials());
-    }
-
-    @Override
-    public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException
-    {
-	throw new NotImplementedException();
-    }
-
-    @Override
-    public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException
-    {
-	throw new NotImplementedException();
     }
 
     private static String createSortOrder(SortOrder sortOrder)
@@ -218,7 +205,7 @@ public class IpernityConnector extends AbstractServiceConnector
     }
 
     @Override
-    public Parameters authenticate(String callbackUrl) throws InterWebException
+    public Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException
     {
 		if(!isRegistered())
 		{
@@ -456,11 +443,5 @@ public class IpernityConnector extends AbstractServiceConnector
 	}
 	
 	return resultItem;*/
-    }
-
-    @Override
-    public void revokeAuthentication() throws InterWebException
-    {
-		// keine möglichkeit gefunden bei ipernity
     }
 }

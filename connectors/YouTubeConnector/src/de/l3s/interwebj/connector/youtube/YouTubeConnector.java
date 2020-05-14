@@ -15,7 +15,6 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -59,7 +58,7 @@ import de.l3s.interwebj.core.util.CoreUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class YouTubeConnector extends AbstractServiceConnector
+public class YouTubeConnector extends AbstractServiceConnector implements Cloneable
 {
 	private static final Logger log = LogManager.getLogger(YouTubeConnector.class);
 
@@ -355,18 +354,6 @@ public class YouTubeConnector extends AbstractServiceConnector
 	    }
 
 	}
-	catch(GoogleJsonResponseException e)
-	{
-	    //System.err.println("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
-	    log.error(e);
-	    throw new InterWebException(e);
-	}
-	catch(IOException e)
-	{
-	    //System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
-	    log.error(e);
-	    throw new InterWebException(e);
-	}
 	catch(Throwable e)
 	{
 	    log.error(e);
@@ -388,7 +375,7 @@ public class YouTubeConnector extends AbstractServiceConnector
 	resultItem.setType(Query.CT_VIDEO);
 	resultItem.setId(singleVideo.getId());
 	resultItem.setUrl("https://www.youtube.com/watch?v=" + singleVideo.getId());
-	resultItem.setRank(rank++);
+	resultItem.setRank(rank);
 	resultItem.setTotalResultCount(totalResultCount);
 
 	VideoSnippet vSnippet = singleVideo.getSnippet();
@@ -638,16 +625,6 @@ public class YouTubeConnector extends AbstractServiceConnector
 	    resultItem = createResultItem(returnedVideo, 0, 0);
 
 	}
-	catch(GoogleJsonResponseException e)
-	{
-	    log.error(e);
-	    throw new InterWebException(e);
-	}
-	catch(IOException e)
-	{
-	    log.error(e);
-	    throw new InterWebException(e);
-	}
 	catch(Throwable e)
 	{
 	    log.error(e);
@@ -655,12 +632,6 @@ public class YouTubeConnector extends AbstractServiceConnector
 	}
 
 	return resultItem;
-    }
-
-    @Override
-    public void revokeAuthentication() throws InterWebException
-    {
-	// YouTube doesn't provide api for token revokation
     }
 
     @Override
@@ -733,12 +704,5 @@ public class YouTubeConnector extends AbstractServiceConnector
     {
 	parameters.remove(Parameters.IWJ_USER_ID);
 	return baseApiUrl + "callback?" + parameters.toQueryString();
-    }
-
-    @Override
-    public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException
-    {
-	// TODO Auto-generated method stub
-	throw new NotImplementedException();
     }
 }

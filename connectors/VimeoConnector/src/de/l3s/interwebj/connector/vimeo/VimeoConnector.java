@@ -1,19 +1,25 @@
 package de.l3s.interwebj.connector.vimeo;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.apache.commons.lang3.NotImplementedException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
-import de.l3s.interwebj.core.Parameters;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.Query;
@@ -22,9 +28,10 @@ import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
-public class VimeoConnector extends AbstractServiceConnector
+public class VimeoConnector extends AbstractServiceConnector implements Cloneable
 {
 	private static final Logger log = LogManager.getLogger(VimeoConnector.class);
+	private static final String token = "***REMOVED***";
 
     public VimeoConnector()
     {
@@ -43,17 +50,6 @@ public class VimeoConnector extends AbstractServiceConnector
 	return new VimeoConnector(getAuthCredentials());
     }
 
-    @Override
-    public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException
-    {
-	throw new NotImplementedException();
-    }
-
-    @Override
-    public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException
-    {
-	throw new NotImplementedException();
-    }
     /*
     private static String createSortOrder(SortOrder sortOrder)
     {
@@ -104,26 +100,31 @@ public class VimeoConnector extends AbstractServiceConnector
 	    return queryResult;
 	}
 
-	Vimeo vimeo = new Vimeo();
 	try
 	{
-	    JSONObject response = vimeo.searchVideos(query.getQuery(), query.getPage() + "", "" + query.getResultCount());
+		String requestUrl = "https://api.vimeo.com/videos?page=" + query.getPage() + "&per_page=" + query.getResultCount() + "&query=" + URLEncoder.encode(query.getQuery(), StandardCharsets.UTF_8);
+		String response = httpRequest(requestUrl, Map.ofEntries(
+				Map.entry("Accept", "application/vnd.vimeo.*+json; version=3.2"),
+				Map.entry("Authorization", "bearer " + token)
+		));
 
-	    //System.out.println(response.getJson());
+		JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
+
 	    int count = (query.getPage() - 1) * query.getResultCount();
-	    long totalResultCount = response.getLong("total");
+	    long totalResultCount = jsonObject.get("total").getAsLong();
 	    queryResult.setTotalResultCount(totalResultCount);
 
-	    JSONArray data = response.getJSONArray("data");
-	    for(int i = 0; i < data.length(); i++)
+		JsonArray data = jsonObject.getAsJsonArray("data");
+		for (JsonElement element : data)
 	    {
 		try
 		{
-		    JSONObject video = data.getJSONObject(i);
-		    String name = video.getString("name");
-		    String description = video.isNull("description") ? "" : video.getString("description");
-		    int duration = video.getInt("duration");
-		    String link = video.getString("link");
+		    JsonObject video = element.getAsJsonObject();
+		    String name = video.get("name").getAsString();
+		    JsonElement descriptionEl = video.get("description");
+		    String description = descriptionEl == null ? "" : descriptionEl.getAsString();
+		    int duration = video.get("duration").getAsInt();
+		    String link = video.get("link").getAsString();
 
 		    ResultItem resultItem = new ResultItem(getName());
 		    resultItem.setType(Query.CT_VIDEO);
@@ -131,21 +132,21 @@ public class VimeoConnector extends AbstractServiceConnector
 		    resultItem.setTitle(name);
 		    resultItem.setDescription(description);
 		    resultItem.setUrl(link);
-		    resultItem.setDate(CoreUtils.formatDate(parseDate(video.getString("created_time"))));
+		    resultItem.setDate(CoreUtils.formatDate(parseDate(video.get("created_time").getAsString())));
 		    resultItem.setRank(count++);
 		    resultItem.setTotalResultCount(totalResultCount);
 		    //resultItem.setCommentCount(video.getNumberOfComments());
 		    // resultItem.setViewCount(video.getJSONObject("stats").getInt("plays")); plays can be null TODO need to handle it
 		    resultItem.setDuration(duration);
 
-		    JSONArray pictures = video.getJSONObject("pictures").getJSONArray("sizes");
+		    JsonArray pictures = video.getAsJsonObject("pictures").getAsJsonArray("sizes");
 		    Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-		    for(int j = 0; j < pictures.length(); j++)
+		    for(JsonElement elementPic : pictures)
 		    {
-			JSONObject picture = pictures.getJSONObject(j);
-			int width = picture.getInt("width");
-			int height = picture.getInt("height");
-			String pictureURL = picture.getString("link");
+			JsonObject picture = elementPic.getAsJsonObject();
+			int width = picture.get("width").getAsInt();
+			int height = picture.get("height").getAsInt();
+			String pictureURL = picture.get("link").getAsString();
 
 			thumbnails.add(new Thumbnail(pictureURL, width, height));
 
@@ -173,41 +174,6 @@ public class VimeoConnector extends AbstractServiceConnector
     }
 
     @Override
-    public Parameters authenticate(String callbackUrl) throws InterWebException
-    {
-	if(!isRegistered())
-	{
-	    throw new InterWebException("Service is not yet registered");
-	}
-	throw new NotImplementedException();
-
-    }
-
-    @Override
-    public AuthCredentials completeAuthentication(Parameters params) throws InterWebException
-    {
-
-	throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String getEmbedded(AuthCredentials authCredentials, String url, int maxWidth, int maxHeight) throws InterWebException
-    {
-
-	throw new InterWebException("URL: [" + url + "] doesn't belong to connector [" + getName() + "]");
-
-    }
-
-    @Override
-    public String getUserId(AuthCredentials authCredentials) throws InterWebException
-    {
-
-	throw new NotImplementedException();
-
-    }
-
-    @Override
     public boolean isConnectorRegistrationDataRequired()
     {
 	return true;
@@ -225,16 +191,18 @@ public class VimeoConnector extends AbstractServiceConnector
 	return true;
     }
 
-    @Override
-    public ResultItem put(byte[] data, String contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException
-    {
+	private static String httpRequest(String url, Map<String, String> headers) throws IOException, InterruptedException {
+		HttpClient client = HttpClient.newHttpClient();
 
-	throw new NotImplementedException();
+		HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
+		requestBuilder.uri(URI.create(url));
 
-    }
+		if (!headers.isEmpty()) {
+			for (Map.Entry<String, String> entry : headers.entrySet())
+				requestBuilder.header(entry.getKey(), entry.getValue());
+		}
 
-    @Override
-    public void revokeAuthentication() throws InterWebException
-    {
-    }
+		HttpResponse<String> response = client.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+		return response.body();
+	}
 }

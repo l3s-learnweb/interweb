@@ -1,5 +1,6 @@
 package de.l3s.interwebj.core.core;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -58,18 +59,6 @@ public abstract class AbstractServiceConnector implements ServiceConnector
     }
 
     @Override
-    public Parameters authenticate(String callbackUrl) throws InterWebException
-    {
-	throw new NotImplementedException();
-    }
-
-    @Override
-    public Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException
-    {
-	return authenticate(callbackUrl);
-    }
-
-    @Override
     public AuthCredentials getAuthCredentials()
     {
 	return consumerAuthCredentials;
@@ -96,63 +85,51 @@ public abstract class AbstractServiceConnector implements ServiceConnector
     @Override
     public Parameters getRefinedCallbackParameters(Parameters parameters)
     {
-	Parameters refinedParameters = new Parameters();
-	refinedParameters.add(parameters, true);
-	return parameters;
+	    return parameters;
     }
 
     @Override
-    public int hashCode()
-    {
-	final int prime = 31;
-	int result = 1;
-	result = prime * result + ((name == null) ? 0 : name.hashCode());
-	return result;
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     @Override
     public boolean isRegistered()
     {
-	return consumerAuthCredentials != null;
+	    return consumerAuthCredentials != null;
     }
 
     @Override
     public void setAuthCredentials(AuthCredentials consumerAuthCredentials)
     {
-	this.consumerAuthCredentials = consumerAuthCredentials;
+	    this.consumerAuthCredentials = consumerAuthCredentials;
     }
 
     @Override
     public boolean supportContentType(String contentType)
     {
-	return (contentType != null) && contentTypes.contains(contentType);
-    }
-
-    @Override
-    public String generateCallbackUrl(String baseApiUrl, Parameters parameters)
-    {
-	return baseApiUrl + "callback?" + parameters.toQueryString();
+	    return (contentType != null) && contentTypes.contains(contentType);
     }
 
     @Override
     public InterWebPrincipal getPrincipal(Parameters parameters) throws InterWebException
     {
-	for(String parameter : parameters.keySet())
-	{
-	    if(parameter.equals(Parameters.IWJ_USER_ID))
-	    {
-		String userName = parameters.get(parameter);
-
-		Database database = Environment.getInstance().getDatabase();
-		InterWebPrincipal principal = database.readPrincipalByName(userName);
-		if(principal == null)
-		{
-		    throw new InterWebException("User [" + userName + "] not found");
-		}
-		return principal;
-	    }
-	}
-
-	throw new InterWebException("Unable to fetch user name from the callback URL");
+        for(String parameter : parameters.keySet())
+        {
+            if(parameter.equals(Parameters.IWJ_USER_ID))
+            {
+            String userName = parameters.get(parameter);
+    
+            Database database = Environment.getInstance().getDatabase();
+            InterWebPrincipal principal = database.readPrincipalByName(userName);
+            if(principal == null)
+            {
+                throw new InterWebException("User [" + userName + "] not found");
+            }
+            return principal;
+            }
+        }
+    
+        throw new InterWebException("Unable to fetch user name from the callback URL");
     }
 }

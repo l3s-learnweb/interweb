@@ -5,9 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +27,7 @@ import de.l3s.interwebj.tomcat.webutil.FacesUtils;
  * @author olex
  * 
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class UploadBean implements Serializable
 {

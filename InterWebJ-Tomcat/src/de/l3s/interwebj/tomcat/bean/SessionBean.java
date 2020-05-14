@@ -1,14 +1,17 @@
 package de.l3s.interwebj.tomcat.bean;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 
-@ManagedBean
+import java.io.Serializable;
+
+@Named
 @SessionScoped
-public class SessionBean
+public class SessionBean implements Serializable
 {
+    private static final long serialVersionUID = 2772677361579500292L;
 
     private InterWebPrincipal principal;
     private String savedRequestUrl;

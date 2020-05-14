@@ -1,11 +1,13 @@
 package de.l3s.interwebj.tomcat.bean;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.servlet.http.HttpServletRequest;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
@@ -14,10 +16,11 @@ import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@ManagedBean
+@Named
 @SessionScoped
-public class PrincipalBean
+public class PrincipalBean implements Serializable
 {
+	private static final long serialVersionUID = -955620779684197312L;
 	private static final Logger log = LogManager.getLogger(PrincipalBean.class);
 
     public boolean hasRole(String role)
@@ -42,7 +45,7 @@ public class PrincipalBean
 	if(principal == null)
 	{
 	    FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Incorrect login. Please check username and/or password.");
-	    return "failed";
+	    return null;
 	}
 	SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
 	sessionBean.setPrincipal(principal);
@@ -54,7 +57,7 @@ public class PrincipalBean
 	    String contextPath = FacesUtils.getContextPath();
 	    FacesUtils.redirect(contextPath + savedRequestUrl);
 	}
-	return "success";
+	return "index";
     }
 
     public String logout() throws IOException
@@ -63,7 +66,6 @@ public class PrincipalBean
 	sessionBean.setPrincipal(null);
 	HttpServletRequest request = FacesUtils.getRequest();
 	request.getSession(false).invalidate();
-	FacesUtils.getExternalContext().redirect("./index.xhtml");
-	return "success";
+	return "index";
     }
 }

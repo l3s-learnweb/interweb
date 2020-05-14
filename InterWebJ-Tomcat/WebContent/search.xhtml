@@ -1,4 +1,5 @@
 <ui:composition template="/WEB-INF/templates/layout.xhtml"
+				xmlns="http://www.w3.org/1999/xhtml"
 				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 				xmlns:h="http://xmlns.jcp.org/jsf/html"
 				xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -89,7 +90,7 @@
 						<span style="white-space: nowrap;"><img
 							src="#{searchBean.getConnectorBaseUrl(resultItem.connectorName)}/favicon.ico"
 							alt="#{resultItem.connectorName}"
-							style="vertical-align: middle; margin: 3px;" />&nbsp;&nbsp;<h:outputText
+							style="vertical-align: middle; margin: 3px;" />&#160;&#160;<h:outputText
 								value="#{resultItem.serviceName}" /> </span>
 					</rich:column>
 					<rich:column>
@@ -98,7 +99,7 @@
 								<img
 									src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
 									style="vertical-align: middle; margin: 3px;" />
-								<h:outputLink value="#{resultItem.url}" target="_blank">&nbsp;<h:outputText
+								<h:outputLink value="#{resultItem.url}" target="_blank">&#160;<h:outputText
 										value="#{resultItem.title}" escape="false" />
 								</h:outputLink>
 							</h6>
@@ -126,9 +127,9 @@
 									<span
 										style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;">
 										<span style="background-color: #D0EFEF;">Added</span>:
-										#{resultItem.date} &ndash; <span
+										#{resultItem.date} - <span
 										style="background-color: #D0EFEF;">Tags</span>:
-										#{searchBean.getTags(resultItem)} &ndash; <span
+										#{searchBean.getTags(resultItem)} - <span
 										style="background-color: #D0EFEF;">Privacy</span>:
 										#{resultItem.privacy} (#{resultItem.privacyConfidence})
 									</span>

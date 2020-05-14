@@ -85,22 +85,17 @@ public class Query implements Serializable
     private Map<String, String> params;
     private int timeout = 30;
 
-    @Override
-    public boolean equals(Object other)
-    {
-	if(!other.getClass().equals(getClass()))
-	    return false;
-
-	Query oQuery = (Query) other;
-	boolean ret = true;
-
-	if(!query.equalsIgnoreCase(oQuery.query) || page != oQuery.page || resultCount != oQuery.resultCount || !language.equals(oQuery.language))
-	    ret = false;
-
-	log.info("equals: " + query + " - " + oQuery.query + ";" + ret);
-
-	return ret;
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Query query1 = (Query) o;
+		return resultCount == query1.resultCount &&
+				page == query1.page &&
+				query.equalsIgnoreCase(query1.query) &&
+				Objects.equals(contentTypes, query1.contentTypes) &&
+				Objects.equals(language, query1.language);
+	}
 
 	@Override
 	public int hashCode() {
@@ -113,10 +108,7 @@ public class Query implements Serializable
 	notNull(query, "query");
 	notNull(contentTypes, "contentTypes");
 	notNull(params, "params");
-	if(resultCount < 0)
-	{
-	    throw new IllegalArgumentException("Argument [resultCount] = [" + resultCount + "] must not apply condition [< 0]");
-	}
+
 	this.id = id;
 	this.query = query;
 	connectorNames = new ArrayList<String>();
@@ -229,7 +221,7 @@ public class Query implements Serializable
 
     public void setSearchScopes(Set<SearchScope> searchScopes)
     {
-	searchScopes = new HashSet<Query.SearchScope>(searchScopes);
+	this.searchScopes = new HashSet<Query.SearchScope>(searchScopes);
     }
 
     public void setSortOrder(SortOrder sortOrder)

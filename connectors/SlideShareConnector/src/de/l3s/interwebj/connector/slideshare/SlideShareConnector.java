@@ -4,6 +4,7 @@ import static de.l3s.interwebj.core.util.Assertions.notNull;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -18,11 +19,10 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import com.google.common.hash.Hashing;
 import de.l3s.interwebj.connector.slideshare.jaxb.SearchResponse;
 import de.l3s.interwebj.connector.slideshare.jaxb.SearchResultEntity;
 import de.l3s.interwebj.connector.slideshare.jaxb.TagsResponse;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.NotImplementedException;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
@@ -39,7 +39,7 @@ import de.l3s.interwebj.core.util.CoreUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SlideShareConnector extends AbstractServiceConnector
+public class SlideShareConnector extends AbstractServiceConnector implements Cloneable
 {
 	private static final Logger log = LogManager.getLogger(SlideShareConnector.class);
 
@@ -55,7 +55,7 @@ public class SlideShareConnector extends AbstractServiceConnector
     }
 
     @Override
-    public Parameters authenticate(String callbackUrl) throws InterWebException
+    public Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException
     {
 	Parameters params = new Parameters();
 	params.add(Parameters.AUTHORIZATION_URL, callbackUrl);
@@ -246,12 +246,6 @@ public class SlideShareConnector extends AbstractServiceConnector
 	return null;
     }
 
-    @Override
-    public void revokeAuthentication() throws InterWebException
-    {
-	// SlideShare doesn't provide api for token revokation
-    }
-
     private String createFileType(List<String> contentTypes)
     {
 	List<String> fileTypes = new ArrayList<String>();
@@ -325,7 +319,7 @@ public class SlideShareConnector extends AbstractServiceConnector
 	String toHash = authCredentials.getSecret() + Long.toString(timestamp);
 	target = target.queryParam("api_key", authCredentials.getKey());
 	target = target.queryParam("ts", Long.toString(timestamp));
-	target = target.queryParam("hash", DigestUtils.shaHex(toHash));
+	target = target.queryParam("hash", getHash(toHash));
 	Response response = target.request().get();
 	return response;
     }
@@ -357,22 +351,14 @@ public class SlideShareConnector extends AbstractServiceConnector
 		String toHash = authCredentials.getSecret() + Long.toString(timestamp);
 		params.add("api_key", authCredentials.getKey());
 		params.add("ts", Long.toString(timestamp));
-		params.add("hash", DigestUtils.shaHex(toHash));
+		params.add("hash", getHash(toHash));
 		Response response = target.request().post(Entity.form(params));
 		return response;
     }
-
-    @Override
-    public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException
-    {
-	// TODO Auto-generated method stub
-	throw new NotImplementedException();
-    }
-
-    @Override
-    public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException
-    {
-	// TODO Auto-generated method stub
-	throw new NotImplementedException();
-    }
+    
+    @SuppressWarnings({"UnstableApiUsage", "deprecation"})
+	private String getHash(String str)
+	{
+		return Hashing.sha1().hashString(str, StandardCharsets.UTF_8).toString();
+	}
 }

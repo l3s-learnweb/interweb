@@ -1,0 +1,39 @@
+variables:
+  MAVEN_OPTS: "-DproxySet=true -Dhttp.proxyHost=web-proxy.rrzn.uni-hannover.de -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=learnweb.l3s.uni-hannover.de -Dhttps.proxyHost=web-proxy.rrzn.uni-hannover.de -Dhttps.proxyPort=3128 -Dhttps.nonProxyHosts=learnweb.l3s.uni-hannover.de"
+  MAVEN_CLI_OPTS: "-P prod,!local --batch-mode"
+
+stages:
+  - build
+  - deploy
+
+# Build Java sources (includes tests)
+build:
+  stage: build
+  tags:
+    - java
+  script:
+    - mvn $MAVEN_CLI_OPTS install
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+  cache:
+    paths:
+      - InterWebJ-Tomcat/target/InterWebJ-Tomcat.war
+
+# A commit to `master` brunch with message `chore: version release` will be deployed to v3 (later ROOT) instance
+deploy:
+  stage: deploy
+  tags:
+    - java
+  before_script:
+    - cd InterWebJ-Tomcat
+  script:
+    - mvn $MAVEN_CLI_OPTS tomcat7:deploy-only -Dpath=interweb
+  environment:
+    name: prod
+    url: https://learnweb.l3s.uni-hannover.de/interweb
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_COMMIT_TITLE == "chore: version release"'
+  cache:
+    paths:
+      - InterWebJ-Tomcat/target/InterWebJ-Tomcat.war
+    policy: pull

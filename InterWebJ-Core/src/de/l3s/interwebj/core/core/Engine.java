@@ -89,10 +89,9 @@ public class Engine
     public List<String> getConnectorNames()
     {
 	List<String> connectorList = new ArrayList<String>();
-	Set<String> keys = connectors.keySet();
-	for(String key : keys)
+	for(ServiceConnector connector : connectors.values())
 	{
-	    connectorList.add(connectors.get(key).getName().toLowerCase());
+	    connectorList.add(connector.getName().toLowerCase());
 	}
 	return connectorList;
     }
@@ -195,7 +194,7 @@ public class Engine
 	Parameters pendingParameters = getPendingAuthorizationParameters(principal, connector);
 	params.add(pendingParameters, false);
 	AuthCredentials authCredentials = connector.completeAuthentication(params);
-	System.out.println(authCredentials);
+	log.info(authCredentials);
 	String userId = connector.getUserId(authCredentials);
 	log.info("Connector [" + connector.getName() + "] for user [" + principal.getName() + "] authenticated");
 	setUserAuthCredentials(connector.getName(), principal, userId, authCredentials);
@@ -290,7 +289,7 @@ public class Engine
 	principal = database.authenticate("olex", "123456");
 	AuthCredentials authCredentials;
 	authCredentials = database.readConnectorAuthCredentials("flickr");
-	System.out.println(authCredentials);
+	log.info(authCredentials);
 	Engine engine = new Engine(database);
 	engine.loadConnectors();
 	//String[] words = "sound water people live set air follow house mother earth grow cover door tree hard start draw left night real children mark car feet carry idea fish mountain color girl list talk family direct class ship told farm top heard hold reach table ten simple war lay pattern science cold fall fine fly lead dark machine wait star box rest correct pound stood sleep free strong produce inch blue object game heat sit weight".split(" ");
@@ -327,7 +326,7 @@ public class Engine
 	QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
 
 	QueryResult queryResult = collector.retrieve();
-	System.out.println("query: [" + query + "]");
-	System.out.println("elapsed time : [" + queryResult.getElapsedTime() + "]");
+	log.info("query: [" + query + "]");
+	log.info("elapsed time : [" + queryResult.getElapsedTime() + "]");
     }
 }

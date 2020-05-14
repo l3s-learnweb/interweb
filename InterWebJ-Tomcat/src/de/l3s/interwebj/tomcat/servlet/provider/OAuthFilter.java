@@ -1,4 +1,4 @@
-package de.l3s.interwebj.tomcat.servlet.filter;
+package de.l3s.interwebj.tomcat.servlet.provider;
 
 import static de.l3s.interwebj.tomcat.webutil.RestUtils.throwWebApplicationException;
 

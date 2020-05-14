@@ -1,8 +1,8 @@
 package de.l3s.interwebj.tomcat.bean;
 
+import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.inject.Named;
 
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.Environment;
@@ -10,7 +10,7 @@ import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.db.Database;
 import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 
-@ManagedBean
+@Named
 @RequestScoped
 public class UserDataBean
 {
@@ -40,7 +40,7 @@ public class UserDataBean
 	return username;
     }
 
-    public String register() throws InterWebException
+    public void register() throws InterWebException
     {
 	Environment environment = Environment.getInstance();
 	Database database = environment.getDatabase();
@@ -49,9 +49,7 @@ public class UserDataBean
 	    InterWebPrincipal principal = InterWebPrincipal.createDefault(username, email);
 	    database.savePrincipal(principal, password);
 	    FacesUtils.getSessionBean().setPrincipal(principal);
-	    return "success";
 	}
-	return "failed";
     }
 
     public void setEmail(String email)

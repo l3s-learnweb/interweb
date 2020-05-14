@@ -74,7 +74,6 @@ public class Services extends Endpoint
 
     public static ServiceEntity createServiceEntity(String serviceName, String baseUri, Principal principal)
     {
-		List<ServiceEntity> serviceEntities = new ArrayList<ServiceEntity>();
 		Engine engine = Environment.getInstance().getEngine();
 		ServiceConnector connector = engine.getConnector(serviceName);
 		if(connector == null)
@@ -82,7 +81,6 @@ public class Services extends Endpoint
 			throwWebApplicationException(ErrorResponse.UNKNOWN_SERVICE);
 		}
 		ServiceEntity serviceEntity = createServiceEntity(baseUri, principal, connector);
-		serviceEntities.add(serviceEntity);
 		return serviceEntity;
     }
 

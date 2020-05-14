@@ -141,12 +141,7 @@ public class User extends Endpoint
     public String getUserName()
     {
 	InterWebPrincipal targetPrincipal = getTargetPrincipal();
-	if(targetPrincipal != null)
-	{
-	    return targetPrincipal.getName();
-	}
-	throwWebApplicationException(ErrorResponse.NO_USER);
-	return null;
+	return targetPrincipal.getName();
     }
 
     @POST

@@ -3,13 +3,15 @@ package de.l3s.interwebj.core.core;
 import static de.l3s.interwebj.core.util.Assertions.notEmpty;
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 import de.l3s.interwebj.core.AuthCredentials;
 
-public class InterWebPrincipal implements java.security.Principal
+public class InterWebPrincipal implements java.security.Principal, Serializable
 {
+	private static final long serialVersionUID = 3491812866957391163L;
 
     public static final String DEFAULT_ROLE = "default";
     public static final String MANAGER_ROLE = "manager";
@@ -110,7 +112,6 @@ public class InterWebPrincipal implements java.security.Principal
 
     public boolean hasRole(String role)
     {
-	//		Environment.logger.debug("user roles: " + roles);
 	if(role == null)
 	{
 	    return false;

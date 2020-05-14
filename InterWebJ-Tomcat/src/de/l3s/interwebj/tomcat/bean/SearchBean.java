@@ -7,9 +7,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.sun.istack.NotNull;
 import de.l3s.interwebj.core.InterWebException;
@@ -29,7 +29,7 @@ import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class SearchBean implements Serializable
 {
@@ -192,7 +192,7 @@ public class SearchBean implements Serializable
     {
     }
 
-    public String search()
+    public void search()
     {
 	QueryFactory queryFactory = new QueryFactory();
 	Query query = queryFactory.createQuery(this.query, selectedContentTypes);
@@ -225,7 +225,6 @@ public class SearchBean implements Serializable
 	expirableMap.put(queryResult.getQuery().getId(), queryResult);
 	*/
 	this.queryResult = queryResult;
-	return "success";
     }
 
     public void setQuery(String query)
