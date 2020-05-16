@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter
+        xmlns="https://github.com/spotbugs/filter/3.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+    <!-- Ignore false positive NP checks in try-with-resources: https://github.com/spotbugs/spotbugs/issues/259 -->
+    <Match>
+        <Or>
+            <!--<Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>-->
+            <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
+        </Or>
+    </Match>
+    <!-- Singleton pattern used by Learnweb class and others are considered as anti-pattern nowadays -->
+    <Match>
+        <Bug pattern="LI_LAZY_INIT_STATIC"/>
+    </Match>
+    <!-- We ignore return value of many executeQuery() calls -->
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
+    </Match>
+    <!-- Date is mutable object value of which can be changed by untrusted source -->
+    <Match>
+        <Or>
+            <Bug pattern="EI_EXPOSE_REP"/>
+            <Bug pattern="EI_EXPOSE_REP2"/>
+        </Or>
+    </Match>
+    <!-- TODO: We have hundreds of unclosed ResultSets and Statements -->
+    <Match>
+        <Or>
+            <Bug pattern="ODR_OPEN_DATABASE_RESOURCE"/>
+            <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
+            <Bug pattern="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE"/>
+        </Or>
+    </Match>
+    <!-- We need to create Learnweb if internal methods calls to Learnweb.getInstance() -->
+    <Match>
+        <Local name="learnweb"/>
+        <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+    </Match>
+    <!-- TODO: clone method does not call super.clone() -->
+    <Match>
+        <Bug pattern="CN_IDIOM_NO_SUPER_CALL"/>
+    </Match>
+    <!-- TODO: WaybackUrlManager has hardcoded path to log file -->
+    <Match>
+        <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+    </Match>
+    <!-- TODO: Resource castes to GlossaryResource -->
+    <Match>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
+    <!-- We do not preform check if file was deleted -->
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+    </Match>
+    <!-- This class use methods from parent class and can be static -->
+    <Match class="de.l3s.learnweb.resource.Resource$MetadataMapWrapper">
+        <Bug pattern="SE_INNER_CLASS"/>
+    </Match>
+</FindBugsFilter>
