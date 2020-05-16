@@ -37,30 +37,30 @@ public class ServicesBean
 
     public ServicesBean() throws InterWebException
     {
-	engine = Environment.getInstance().getEngine();
-	database = Environment.getInstance().getDatabase();
-	principal = FacesUtils.getSessionBean().getPrincipal();
-	connectorWrappers = new ArrayList<ConnectorWrapper>();
-	awaitingConnectorWrappers = new ArrayList<ConnectorWrapper>();
-	for(ServiceConnector connector : engine.getConnectors())
-	{
-	    if(connector.isRegistered() && connector.isUserRegistrationRequired())
-	    {
-		ConnectorWrapper connectorWrapper = new ConnectorWrapper();
-		connectorWrapper.setConnector(connector);
-		connectorWrappers.add(connectorWrapper);
-		if(!isUserAuthenticated(connectorWrapper))
+		engine = Environment.getInstance().getEngine();
+		database = Environment.getInstance().getDatabase();
+		principal = FacesUtils.getSessionBean().getPrincipal();
+		connectorWrappers = new ArrayList<ConnectorWrapper>();
+		awaitingConnectorWrappers = new ArrayList<ConnectorWrapper>();
+		for(ServiceConnector connector : engine.getConnectors())
 		{
-		    awaitingConnectorWrappers.add(connectorWrapper);
+			if(connector.isRegistered() && connector.isUserRegistrationRequired())
+			{
+			ConnectorWrapper connectorWrapper = new ConnectorWrapper();
+			connectorWrapper.setConnector(connector);
+			connectorWrappers.add(connectorWrapper);
+			if(!isUserAuthenticated(connectorWrapper))
+			{
+				awaitingConnectorWrappers.add(connectorWrapper);
+			}
+			}
 		}
-	    }
-	}
-	Parameters parameters = new Parameters();
-	parameters.addMultivaluedParams(FacesUtils.getRequest().getParameterMap());
-	if(parameters.hasParameter(Parameters.ERROR))
-	{
-	    error = parameters.get(Parameters.ERROR);
-	}
+		Parameters parameters = new Parameters();
+		parameters.addMultivaluedParams(FacesUtils.getRequest().getParameterMap());
+		if(parameters.hasParameter(Parameters.ERROR))
+		{
+			error = parameters.get(Parameters.ERROR);
+		}
     }
 
     public void authenticate(Object obj) throws InterWebException

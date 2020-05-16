@@ -35,7 +35,6 @@ public class Environment
 		catch(Exception e)
 		{
 			log.error("Unable to load configuration file", e);
-			System.exit(-1);
 		}
     }
 

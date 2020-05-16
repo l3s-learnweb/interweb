@@ -67,16 +67,16 @@ public class Parameters
 
     public void addMultivaluedParams(Map<String, String[]> parameters)
     {
-	for(String name : parameters.keySet())
-	{
-	    String[] values = parameters.get(name);
-	    String value = null;
-	    if(values != null && values.length > 0)
-	    {
-		value = values[0];
-	    }
-	    add(name, value);
-	}
+		for(Map.Entry<String, String[]> entry : parameters.entrySet())
+		{
+			String[] values = entry.getValue();
+			String value = null;
+			if(values != null && values.length > 0)
+			{
+				value = values[0];
+			}
+			add(entry.getKey(), value);
+		}
     }
 
     public void addQueryParameters(String query)
@@ -134,18 +134,17 @@ public class Parameters
 
     public String toQueryString()
     {
-	StringBuilder sb = new StringBuilder();
-	for(Iterator<String> iterator = parameters.keySet().iterator(); iterator.hasNext();)
-	{
-	    String name = iterator.next();
-	    String value = parameters.get(name);
-	    sb.append(name).append("=").append(value);
-	    if(iterator.hasNext())
-	    {
-		sb.append('&');
-	    }
-	}
-	return sb.toString();
+		StringBuilder sb = new StringBuilder();
+		for(Iterator<Map.Entry<String, String>> iterator = parameters.entrySet().iterator(); iterator.hasNext();)
+		{
+			Map.Entry<String, String> entry = iterator.next();
+			sb.append(entry.getKey()).append("=").append(entry.getValue());
+			if(iterator.hasNext())
+			{
+				sb.append('&');
+			}
+		}
+		return sb.toString();
     }
 
     @Override

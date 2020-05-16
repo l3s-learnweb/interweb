@@ -81,12 +81,6 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
      */
     private static final List<String> SCOPES = Arrays.asList("https://www.googleapis.com/auth/youtube.upload", "profile", "https://www.googleapis.com/auth/youtube");
 
-    /**
-     * Define a global instance of a Youtube object, which will be used
-     * to make YouTube Data API requests.
-     */
-    private static YouTube youtube = null;
-
     private static GoogleAuthorizationCodeFlow flow = null;
 
     public YouTubeConnector()
@@ -185,12 +179,7 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
 	{
 	    // This object is used to make YouTube Data API requests. The last argument is required, but since we don't need anything
 	    // initialized when the HttpRequest is initialized, we override the interface and provide a no-op function.
-	    youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer()
-	    {
-		public void initialize(HttpRequest request) throws IOException
-		{
-		}
-	    }).setApplicationName("Interweb").build();
+		YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, request -> {}).setApplicationName("Interweb").build();
 
 	    // Define the API request for retrieving search results.
 	    YouTube.Search.List search = youtube.search().list("id");
@@ -490,20 +479,20 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
     @Override
     public String getUserId(AuthCredentials authCredentials) throws InterWebException
     {
-	try
-	{
-	    youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials)).setApplicationName("Interweb").build();
-
-	    ChannelListResponse channelListResponse = youtube.channels().list("id,contentDetails").setMine(true).setFields("items(contentDetails/relatedPlaylists/uploads,id)").execute();
-
-	    return channelListResponse.getItems().get(0).getId();
-	}
-	catch(IOException e)
-	{
-	    log.error(e);
-	    log.error(e);
-	    throw new InterWebException(e);
-	}
+		try
+		{
+			YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials)).setApplicationName("Interweb").build();
+	
+			ChannelListResponse channelListResponse = youtube.channels().list("id,contentDetails").setMine(true).setFields("items(contentDetails/relatedPlaylists/uploads,id)").execute();
+	
+			return channelListResponse.getItems().get(0).getId();
+		}
+		catch(IOException e)
+		{
+			log.error(e);
+			log.error(e);
+			throw new InterWebException(e);
+		}
     }
 
     @Override
@@ -544,7 +533,7 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
 
 	try
 	{
-	    youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials)).setApplicationName("Interweb").build();
+		YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials)).setApplicationName("Interweb").build();
 
 	    Video videoObjectDefiningMetadata = new Video();
 
@@ -601,21 +590,23 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
 		{
 		    switch(uploader.getUploadState())
 		    {
-		    case INITIATION_STARTED:
-			log.info("Initiation Started");
-			break;
-		    case INITIATION_COMPLETE:
-			log.info("Initiation Completed");
-			break;
-		    case MEDIA_IN_PROGRESS:
-			log.info("Upload in progress");
-			break;
-		    case MEDIA_COMPLETE:
-			log.info("Upload Completed!");
-			break;
-		    case NOT_STARTED:
-			log.info("Upload Not Started!");
-			break;
+				case INITIATION_STARTED:
+					log.info("Initiation Started");
+					break;
+				case INITIATION_COMPLETE:
+					log.info("Initiation Completed");
+					break;
+				case MEDIA_IN_PROGRESS:
+					log.info("Upload in progress");
+					break;
+				case MEDIA_COMPLETE:
+					log.info("Upload Completed!");
+					break;
+				case NOT_STARTED:
+					log.info("Upload Not Started!");
+					break;
+				default:
+					log.error("Unknown upload state");
 		    }
 		}
 	    };
@@ -640,12 +631,7 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
 	if(maxCount < 1)
 	    return null;
 
-	youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer()
-	{
-	    public void initialize(HttpRequest request) throws IOException
-	    {
-	    }
-	}).setApplicationName("Interweb").build();
+	YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, request -> {}).setApplicationName("Interweb").build();
 
 	ChannelListResponse channelListResponse = youtube.channels().list("id").setKey(API_KEY).setForUsername(username).setFields("items(id)").execute();
 

@@ -187,10 +187,6 @@ public class User extends Endpoint
     {
 	log.info("revoking user authentication");
 	InterWebPrincipal principal = getTargetPrincipal();
-	if(principal == null)
-	{
-	    return ErrorResponse.NO_TOKEN_GIVEN;
-	}
 	Engine engine = Environment.getInstance().getEngine();
 	ServiceConnector connector = engine.getConnector(serviceName);
 	if(connector == null)

@@ -100,19 +100,18 @@ public class JDBCDatabase implements Database
     @Override
     public void close()
     {
-	silentCloseResultSet(rs);
-	rs = null;
-	if(preparedStatements != null)
-	{
-	    for(String key : preparedStatements.keySet())
-	    {
-		Statement stmt = preparedStatements.get(key);
-		silentCloseStatement(stmt);
-	    }
-	    preparedStatements = null;
-	}
-	silentCloseConnection(dbConnection);
-	dbConnection = null;
+		silentCloseResultSet(rs);
+		rs = null;
+		if(preparedStatements != null)
+		{
+			for(PreparedStatement stmt : preparedStatements.values())
+			{
+				silentCloseStatement(stmt);
+			}
+			preparedStatements = null;
+		}
+		silentCloseConnection(dbConnection);
+		dbConnection = null;
     }
 
     @Override

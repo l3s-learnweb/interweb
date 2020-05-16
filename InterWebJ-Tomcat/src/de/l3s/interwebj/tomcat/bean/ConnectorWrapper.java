@@ -2,12 +2,8 @@ package de.l3s.interwebj.tomcat.bean;
 
 import de.l3s.interwebj.core.core.ServiceConnector;
 
-import java.io.Serializable;
-
-public class ConnectorWrapper implements Serializable
+public class ConnectorWrapper
 {
-    private static final long serialVersionUID = 8378143922412889383L;
-
     private ServiceConnector connector;
     private String key;
     private String secret;

@@ -86,19 +86,13 @@ public class TokenStorage
 	}
     }
 
-    public static TokenStorage getInstance()
+    public static synchronized TokenStorage getInstance()
     {
-	if(instance == null)
-	{
-	    synchronized(TokenStorage.class)
-	    {
 		if(instance == null)
 		{
-		    instance = new TokenStorage();
+			instance = new TokenStorage();
 		}
-	    }
-	}
 
-	return instance;
+		return instance;
     }
 }
