@@ -58,7 +58,7 @@
 
     <!-- Checks that a package-info.java file exists for each package.     -->
     <!-- See https://checkstyle.org/config_javadoc.html#JavadocPackage -->
-    <module name="JavadocPackage"/>
+    <!--<module name="JavadocPackage"/> Changed: do not require package-info.java and Javadoc for each package -->
 
     <!-- Checks whether files end with a new line.                        -->
     <!-- See https://checkstyle.org/config_misc.html#NewlineAtEndOfFile -->
@@ -72,7 +72,7 @@
     <!-- See https://checkstyle.org/config_sizes.html -->
     <module name="FileLength"/>
     <module name="LineLength">
-        <property name="max" value="150"/>
+        <property name="max" value="160"/> <!-- Changed: default is 80 -->
         <property name="fileExtensions" value="java"/>
     </module>
 
@@ -101,16 +101,27 @@
         <!-- Checks for Javadoc comments.                     -->
         <!-- See https://checkstyle.org/config_javadoc.html -->
         <module name="InvalidJavadocPosition"/>
-        <module name="JavadocMethod"/>
+        <module name="JavadocMethod"> <!-- Changed: copied from Google, require doc only for public, do not require describing each param -->
+            <property name="scope" value="public"/>
+            <property name="allowMissingParamTags" value="true"/>
+            <property name="allowMissingReturnTag" value="true"/>
+            <property name="allowedAnnotations" value="Override, Test"/>
+        </module>
         <module name="JavadocType"/>
+        <!--<module name="JavadocVariable"/> Changed: we don't require Javadoc for each defined variable-->
         <module name="JavadocStyle"/>
-        <module name="MissingJavadocMethod">
-            <property name="allowMissingPropertyJavadoc" value="true"/>
+        <module name="MissingJavadocMethod"> <!-- Changed: copied from Google -->
+            <property name="scope" value="public"/>
+            <property name="minLineCount" value="2"/>
+            <property name="allowedAnnotations" value="Override, Test"/>
+            <property name="allowMissingPropertyJavadoc" value="true"/> <!-- Changed: do not require Javadoc for getters/setters -->
         </module>
 
         <!-- Checks for Naming Conventions.                  -->
         <!-- See https://checkstyle.org/config_naming.html -->
-        <module name="ConstantName"/>
+        <module name="ConstantName">
+            <property name="format" value="^log(ger)?$|^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/> <!-- Changed: allow log/logger to be static lowercase -->
+        </module>
         <module name="LocalFinalVariableName"/>
         <module name="LocalVariableName"/>
         <module name="MemberName"/>
@@ -164,10 +175,13 @@
         <!-- See https://checkstyle.org/config_coding.html -->
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
-        <module name="HiddenField"/>
+        <module name="HiddenField"> <!-- Changed: allow in setters and constructors -->
+            <property name="ignoreSetter" value="true"/>
+            <property name="ignoreConstructorParameter" value="true"/>
+        </module>
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
-        <module name="MagicNumber"/>
+        <!--<module name="MagicNumber"/> Change: removed inspection -->
         <module name="MissingSwitchDefault"/>
         <module name="MultipleVariableDeclarations"/>
         <module name="SimplifyBooleanExpression"/>
