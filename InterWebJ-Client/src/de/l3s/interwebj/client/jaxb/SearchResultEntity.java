@@ -10,8 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SearchResultEntity
-{
+public class SearchResultEntity {
 
     @XmlElement(name = "service")
     protected String service;
@@ -62,282 +61,223 @@ public class SearchResultEntity
     @XmlElement(name = "snippet")
     private String snippet;
 
-    public SearchResultEntity()
-    {
+    public SearchResultEntity() {
     }
 
-    public String getDate()
-    {
+    public String getDate() {
         return date;
     }
 
-    public String getDescription()
-    {
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    //public String getEmbedded() {
+    //    return embedded;
+    //}
+
+    public String getDescription() {
         return description;
     }
 
-    //	public String getEmbedded()
-    //	{
-    //		return embedded;
-    //	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getIdAtService()
-    {
+    public String getIdAtService() {
         return idAtService;
     }
 
-    public String getImage()
-    {
+    public void setIdAtService(String idAtService) {
+        this.idAtService = idAtService;
+    }
+
+    public String getImage() {
         return image;
     }
 
-    public int getNumberOfComments()
-    {
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public int getNumberOfComments() {
         return numberOfComments;
     }
 
-    public int getNumberOfViews()
-    {
+    public void setNumberOfComments(int numberOfComments) {
+        this.numberOfComments = numberOfComments;
+    }
+
+    public int getNumberOfViews() {
         return numberOfViews;
     }
 
-    public int getRankAtService()
-    {
+    public void setNumberOfViews(int numberOfViews) {
+        this.numberOfViews = numberOfViews;
+    }
+
+    public int getRankAtService() {
         return rankAtService;
     }
 
-    public String getService()
-    {
+    public void setRankAtService(int rankAtService) {
+        this.rankAtService = rankAtService;
+    }
+
+    public String getService() {
         return service;
     }
 
-    public String getTags()
-    {
+    public void setService(String service) {
+        this.service = service;
+    }
+
+    public String getTags() {
         return tags;
     }
 
-    public List<ThumbnailEntity> getThumbnailEntities()
-    {
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public List<ThumbnailEntity> getThumbnailEntities() {
         return thumbnailEntities;
     }
 
-    public String getTitle()
-    {
+    public void setThumbnailEntities(List<ThumbnailEntity> thumbnailEntities) {
+        this.thumbnailEntities = thumbnailEntities;
+    }
+
+    public String getTitle() {
         return title;
     }
 
-    public long getTotalResultsAtService()
-    {
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public long getTotalResultsAtService() {
         return totalResultsAtService;
     }
 
-    public String getType()
-    {
-        if(type.equalsIgnoreCase("text"))
+    public void setTotalResultsAtService(long totalResultsAtService) {
+        this.totalResultsAtService = totalResultsAtService;
+    }
+
+    public String getType() {
+        if (type.equalsIgnoreCase("text")) {
             this.type = "website";
+        }
 
         return type.toLowerCase();
     }
 
-    public String getUrl()
-    {
-        return url;
-    }
-
-    public void setDate(String date)
-    {
-        this.date = date;
-    }
-
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
-
-    public void setIdAtService(String idAtService)
-    {
-        this.idAtService = idAtService;
-    }
-
-    public void setImage(String image)
-    {
-        this.image = image;
-    }
-
-    public void setNumberOfComments(int numberOfComments)
-    {
-        this.numberOfComments = numberOfComments;
-    }
-
-    public void setNumberOfViews(int numberOfViews)
-    {
-        this.numberOfViews = numberOfViews;
-    }
-
-    public void setRankAtService(int rankAtService)
-    {
-        this.rankAtService = rankAtService;
-    }
-
-    public void setService(String service)
-    {
-        this.service = service;
-    }
-
-    public void setTags(String tags)
-    {
-        this.tags = tags;
-    }
-
-    public void setThumbnailEntities(List<ThumbnailEntity> thumbnailEntities)
-    {
-        this.thumbnailEntities = thumbnailEntities;
-    }
-
-    public void setTitle(String title)
-    {
-        this.title = title;
-    }
-
-    public void setTotalResultsAtService(long totalResultsAtService)
-    {
-        this.totalResultsAtService = totalResultsAtService;
-    }
-
-    public void setType(String type)
-    {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public void setUrl(String url)
-    {
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
         this.url = url;
     }
 
-    public void setViews(int numberOfViews)
-    {
+    public void setViews(int numberOfViews) {
         this.numberOfViews = numberOfViews;
     }
 
     /**
-     * html code, could be flash
-     * max width and max height 500px
-     *
-     * @param embedded
+     * html code, could be flash, max width and max height 500px.
      */
-    public void setEmbeddedSize3(String embedded)
-    {
-        this.embeddedSize3 = embedded;
-    }
-
-    /**
-     * html code, could be flash
-     * max width and max height 500px
-     *
-     * @return
-     */
-    public String getEmbeddedSize3()
-    {
+    public String getEmbeddedSize3() {
         return embeddedSize3;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 100px
-     *
-     * @return
+     * html code, could be flash, max width and max height 500px.
      */
-    public String getEmbeddedSize1()
-    {
+    public void setEmbeddedSize3(String embedded) {
+        this.embeddedSize3 = embedded;
+    }
+
+    /**
+     * html code, only image or text, max width and max height 100px.
+     */
+    public String getEmbeddedSize1() {
         return embeddedSize1;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 100px
+     * html code, only image or text, max width and max height 100px.
      */
-    public void setEmbeddedSize1(String embeddedSize1)
-    {
+    public void setEmbeddedSize1(String embeddedSize1) {
         this.embeddedSize1 = embeddedSize1;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 240px
+     * html code, only image or text, max width and max height 240px.
      */
-    public String getEmbeddedSize2()
-    {
+    public String getEmbeddedSize2() {
         return embeddedSize2;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 240px
+     * html code, only image or text, max width and max height 240px.
      */
-    public void setEmbeddedSize2(String embeddedSize2)
-    {
+    public void setEmbeddedSize2(String embeddedSize2) {
         this.embeddedSize2 = embeddedSize2;
     }
 
     /**
-     * html code, could be flash
-     * max width and max height 100%
+     * html code, could be flash, max width and max height 100%.
      */
-    public String getEmbeddedSize4()
-    {
+    public String getEmbeddedSize4() {
         return embeddedSize4;
     }
 
     /**
-     * html code, could be flash
-     * max width and max height 100%
+     * html code, could be flash, max width and max height 100%.
      */
-    public void setEmbeddedSize4(String embeddedSize4)
-    {
+    public void setEmbeddedSize4(String embeddedSize4) {
         this.embeddedSize4 = embeddedSize4;
     }
 
     /**
-     * Url to the best (high resolution) available preview image
-     *
-     * @return
+     * Url to the best (high resolution) available preview image.
      */
-    public String getImageUrl()
-    {
+    public String getImageUrl() {
         return imageUrl;
     }
 
     /**
-     * Url to the best (high resolution) available preview image
-     *
-     * @param imageUrl
+     * Url to the best (high resolution) available preview image.
      */
-    public void setImageUrl(String imageUrl)
-    {
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public String getSnippet()
-    {
+    public String getSnippet() {
         return snippet;
     }
 
-    public int getDuration()
-    {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration)
-    {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
     @Override
-    public String toString()
-    {
-        return "SearchResultEntity [service=" + service + ", idAtService=" + idAtService + ", type=" + type + ", title=" + title + ", description=" + description + ", url=" + url + ", image=" + image + ", thumbnailEntities=" + thumbnailEntities + ", date=" + date + ", tags="
-                + tags + ", rankAtService=" + rankAtService + ", totalResultsAtService=" + totalResultsAtService + ", numberOfViews=" + numberOfViews + ", numberOfComments=" + numberOfComments + ", privacy=" + privacy + ", privacyConfidence=" + privacyConfidence
-                + ", embeddedSize1=" + embeddedSize1 + ", embeddedSize2=" + embeddedSize2 + ", embeddedSize3=" + embeddedSize3 + ", embeddedSize4=" + embeddedSize4 + ", imageUrl=" + imageUrl + ", duration=" + duration + ", snippet=" + snippet + "]";
+    public String toString() {
+        return "SearchResultEntity [service=" + service + ", idAtService=" + idAtService + ", type=" + type + ", title=" + title
+            + ", description=" + description + ", url=" + url + ", image=" + image + ", thumbnailEntities=" + thumbnailEntities + ", date=" + date
+            + ", tags=" + tags + ", rankAtService=" + rankAtService + ", totalResultsAtService=" + totalResultsAtService + ", numberOfViews=" + numberOfViews
+            + ", numberOfComments=" + numberOfComments + ", privacy=" + privacy + ", privacyConfidence=" + privacyConfidence
+            + ", embeddedSize1=" + embeddedSize1 + ", embeddedSize2=" + embeddedSize2 + ", embeddedSize3=" + embeddedSize3
+            + ", embeddedSize4=" + embeddedSize4 + ", imageUrl=" + imageUrl + ", duration=" + duration + ", snippet=" + snippet + "]";
     }
 
 }

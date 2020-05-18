@@ -1,11 +1,12 @@
 package de.l3s.interwebj.tomcat;
 
-import de.l3s.interwebj.tomcat.servlet.provider.OAuthFilter;
+import javax.ws.rs.ApplicationPath;
+
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.oauth1.signature.OAuth1SignatureFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import javax.ws.rs.ApplicationPath;
+import de.l3s.interwebj.tomcat.servlet.provider.OAuthFilter;
 
 @ApplicationPath("/api")
 public class RestApplication extends ResourceConfig {

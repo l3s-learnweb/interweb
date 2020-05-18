@@ -6,8 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ErrorResponse extends XMLResponse
-{
+public class ErrorResponse extends XMLResponse {
 
     public static final ErrorResponse NO_CONSUMER_KEY_GIVEN = new ErrorResponse(101, "No consumer key given");
     public static final ErrorResponse NO_TOKEN_GIVEN = new ErrorResponse(102, "No token given");
@@ -39,14 +38,12 @@ public class ErrorResponse extends XMLResponse
     public static final ErrorResponse FILE_NOT_ACCEPTED = new ErrorResponse(401, "The services did not accept the file");
     public static final ErrorResponse NO_SERVICE_FOR_FILE = new ErrorResponse(402, "No service of the user can process the file");
 
-    public ErrorResponse()
-    {
-	stat = XMLResponse.FAILED;
+    public ErrorResponse() {
+        stat = XMLResponse.FAILED;
     }
 
-    public ErrorResponse(int code, String message)
-    {
-	this();
-	error = new ErrorEntity(code, message);
+    public ErrorResponse(int code, String message) {
+        this();
+        error = new ErrorEntity(code, message);
     }
 }

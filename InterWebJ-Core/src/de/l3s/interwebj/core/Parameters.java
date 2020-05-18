@@ -2,13 +2,11 @@ package de.l3s.interwebj.core;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class Parameters
-{
+public class Parameters {
 
     public static final String AUTHORIZATION_URL = "authorization_url";
     public static final String USER_KEY = "user_key";
@@ -33,129 +31,105 @@ public class Parameters
 
     private Map<String, String> parameters;
 
-    public Parameters()
-    {
-	parameters = new TreeMap<String, String>();
+    public Parameters() {
+        parameters = new TreeMap<String, String>();
     }
 
-    public void add(Map<String, String> parameters)
-    {
-	this.parameters.putAll(parameters);
+    public void add(Map<String, String> parameters) {
+        this.parameters.putAll(parameters);
     }
 
-    public void add(Parameters parameters, boolean replace)
-    {
-	for(String parameter : parameters.keySet())
-	{
-	    if(replace || !this.parameters.containsKey(parameter))
-	    {
-		this.parameters.put(parameter, parameters.get(parameter));
-	    }
-	}
+    public void add(Parameters parameters, boolean replace) {
+        for (String parameter : parameters.keySet()) {
+            if (replace || !this.parameters.containsKey(parameter)) {
+                this.parameters.put(parameter, parameters.get(parameter));
+            }
+        }
     }
 
-    public void add(String name, String value)
-    {
-	parameters.put(name, value);
+    public void add(String name, String value) {
+        parameters.put(name, value);
     }
 
-    public void addDecoded(String name, String value)
-    {
-		String decodedValue = URLDecoder.decode(value, StandardCharsets.UTF_8);
-		add(name, decodedValue);
-	}
-
-    public void addMultivaluedParams(Map<String, String[]> parameters)
-    {
-		for(Map.Entry<String, String[]> entry : parameters.entrySet())
-		{
-			String[] values = entry.getValue();
-			String value = null;
-			if(values != null && values.length > 0)
-			{
-				value = values[0];
-			}
-			add(entry.getKey(), value);
-		}
+    public void addDecoded(String name, String value) {
+        String decodedValue = URLDecoder.decode(value, StandardCharsets.UTF_8);
+        add(name, decodedValue);
     }
 
-    public void addQueryParameters(String query)
-    {
-	int startQueryIndex = query.indexOf("?") == -1 ? 0 : query.indexOf("?") + 1;
-	query = query.substring(startQueryIndex);
-	String[] params = query.split("&");
-	for(String param : params)
-	{
-	    String[] paramPair = param.split("=");
-	    String name = paramPair[0];
-	    String value = null;
-	    if(paramPair.length > 1)
-	    {
-		value = paramPair[1];
-	    }
-	    addDecoded(name, value);
-	}
+    public void addMultivaluedParams(Map<String, String[]> parameters) {
+        for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
+            String[] values = entry.getValue();
+            String value = null;
+            if (values != null && values.length > 0) {
+                value = values[ 0 ];
+            }
+            add(entry.getKey(), value);
+        }
     }
 
-    public boolean containsKey(String name)
-    {
-	return parameters.containsKey(name);
+    public void addQueryParameters(String query) {
+        int startQueryIndex = query.indexOf("?") == -1 ? 0 : query.indexOf("?") + 1;
+        query = query.substring(startQueryIndex);
+        String[] params = query.split("&");
+        for (String param : params) {
+            String[] paramPair = param.split("=");
+            String name = paramPair[ 0 ];
+            String value = null;
+            if (paramPair.length > 1) {
+                value = paramPair[ 1 ];
+            }
+            addDecoded(name, value);
+        }
     }
 
-    public String get(String name)
-    {
-	return parameters.get(name);
+    public boolean containsKey(String name) {
+        return parameters.containsKey(name);
     }
 
-    public String get(String name, String defaultValue)
-    {
-	String value = get(name);
-	if(value == null)
-	{
-	    return defaultValue;
-	}
-	return value;
+    public String get(String name) {
+        return parameters.get(name);
     }
 
-    public boolean hasParameter(String key)
-    {
-	return parameters.containsKey(key);
+    public String get(String name, String defaultValue) {
+        String value = get(name);
+        if (value == null) {
+            return defaultValue;
+        }
+        return value;
     }
 
-    public Set<String> keySet()
-    {
-	return parameters.keySet();
+    public boolean hasParameter(String key) {
+        return parameters.containsKey(key);
     }
 
-    public String remove(String name)
-    {
-	return parameters.remove(name);
+    public Set<String> keySet() {
+        return parameters.keySet();
     }
 
-    public String toQueryString()
-    {
-		StringBuilder sb = new StringBuilder();
-		for(Iterator<Map.Entry<String, String>> iterator = parameters.entrySet().iterator(); iterator.hasNext();)
-		{
-			Map.Entry<String, String> entry = iterator.next();
-			sb.append(entry.getKey()).append("=").append(entry.getValue());
-			if(iterator.hasNext())
-			{
-				sb.append('&');
-			}
-		}
-		return sb.toString();
+    public String remove(String name) {
+        return parameters.remove(name);
+    }
+
+    public String toQueryString() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            sb.append(entry.getKey()).append("=").append(entry.getValue()).append('&');
+        }
+
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        return sb.toString();
     }
 
     @Override
-    public String toString()
-    {
-	StringBuilder builder = new StringBuilder();
-	builder.append("Parameters ");
-	if(parameters != null)
-	{
-	    builder.append(parameters);
-	}
-	return builder.toString();
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Parameters ");
+        if (parameters != null) {
+            builder.append(parameters);
+        }
+        return builder.toString();
     }
 }

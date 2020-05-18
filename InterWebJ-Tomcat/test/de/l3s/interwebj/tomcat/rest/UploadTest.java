@@ -1,6 +1,13 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import de.l3s.interwebj.tomcat.TestUtils;
+import java.io.File;
+import java.io.IOException;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -8,13 +15,7 @@ import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import java.io.File;
-import java.io.IOException;
+import de.l3s.interwebj.tomcat.TestUtils;
 
 class UploadTest {
     private static final Logger log = LogManager.getLogger(UploadTest.class);

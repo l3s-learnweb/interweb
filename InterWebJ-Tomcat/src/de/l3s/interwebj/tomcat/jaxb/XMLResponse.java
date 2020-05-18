@@ -6,8 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XMLResponse
-{
+public class XMLResponse {
 
     public static final String OK = "ok";
     public static final String FAILED = "fail";
@@ -17,24 +16,20 @@ public class XMLResponse
     @XmlElement(name = "error")
     protected ErrorEntity error;
 
-    public XMLResponse()
-    {
-	stat = OK;
+    public XMLResponse() {
+        stat = OK;
     }
 
-    public ErrorEntity getError()
-    {
-	return error;
+    public ErrorEntity getError() {
+        return error;
     }
 
-    public String getStat()
-    {
-	return stat;
+    public void setError(ErrorEntity error) {
+        this.error = error;
     }
 
-    public void setError(ErrorEntity error)
-    {
-	this.error = error;
+    public String getStat() {
+        return stat;
     }
 
 }

@@ -9,24 +9,20 @@ import de.l3s.interwebj.tomcat.jaxb.XMLResponse;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AuthorizationLinkResponse extends XMLResponse
-{
+public class AuthorizationLinkResponse extends XMLResponse {
 
     @XmlElement(name = "link")
     protected AuthorizationLinkEntity authorizationLinkEntity;
 
-    public AuthorizationLinkResponse()
-    {
+    public AuthorizationLinkResponse() {
     }
 
-    public AuthorizationLinkEntity getAuthorizationLinkEntity()
-    {
-	return authorizationLinkEntity;
+    public AuthorizationLinkEntity getAuthorizationLinkEntity() {
+        return authorizationLinkEntity;
     }
 
-    public void setAuthorizationLinkEntity(AuthorizationLinkEntity authorizationLinkEntity)
-    {
-	this.authorizationLinkEntity = authorizationLinkEntity;
+    public void setAuthorizationLinkEntity(AuthorizationLinkEntity authorizationLinkEntity) {
+        this.authorizationLinkEntity = authorizationLinkEntity;
     }
 
 }

@@ -9,24 +9,20 @@ import de.l3s.interwebj.tomcat.jaxb.XMLResponse;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ServiceResponse extends XMLResponse
-{
+public class ServiceResponse extends XMLResponse {
 
     @XmlElement(name = "service")
     protected ServiceEntity serviceEntity;
 
-    public ServiceResponse()
-    {
+    public ServiceResponse() {
     }
 
-    public ServiceEntity getServiceEntity()
-    {
-	return serviceEntity;
+    public ServiceEntity getServiceEntity() {
+        return serviceEntity;
     }
 
-    public void setServiceEntity(ServiceEntity serviceEntity)
-    {
-	this.serviceEntity = serviceEntity;
+    public void setServiceEntity(ServiceEntity serviceEntity) {
+        this.serviceEntity = serviceEntity;
     }
 
 }

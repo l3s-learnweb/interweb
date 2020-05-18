@@ -3,15 +3,12 @@ package de.l3s.interwebj.core.core;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
 import de.l3s.interwebj.core.db.Database;
 
-public abstract class AbstractServiceConnector implements ServiceConnector
-{
+public abstract class AbstractServiceConnector implements ServiceConnector {
 
     private final String name;
     private final String baseUrl;
@@ -29,63 +26,55 @@ public abstract class AbstractServiceConnector implements ServiceConnector
     public abstract ServiceConnector clone();
 
     @Override
-    public boolean equals(Object obj)
-    {
-	if(this == obj)
-	{
-	    return true;
-	}
-	if(obj == null)
-	{
-	    return false;
-	}
-	if(getClass() != obj.getClass())
-	{
-	    return false;
-	}
-	AbstractServiceConnector other = (AbstractServiceConnector) obj;
-	if(name == null)
-	{
-	    if(other.name != null)
-	    {
-		return false;
-	    }
-	}
-	else if(!name.equals(other.name))
-	{
-	    return false;
-	}
-	return true;
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AbstractServiceConnector other = (AbstractServiceConnector) obj;
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
-    public AuthCredentials getAuthCredentials()
-    {
-	return consumerAuthCredentials;
+    public AuthCredentials getAuthCredentials() {
+        return consumerAuthCredentials;
     }
 
     @Override
-    public String getBaseUrl()
-    {
-	return baseUrl;
+    public void setAuthCredentials(AuthCredentials authCredentials) {
+        this.consumerAuthCredentials = authCredentials;
     }
 
     @Override
-    public Set<String> getContentTypes()
-    {
-	return contentTypes;
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
     @Override
-    public String getName()
-    {
-	return name;
+    public Set<String> getContentTypes() {
+        return contentTypes;
     }
 
     @Override
-    public Parameters getRefinedCallbackParameters(Parameters parameters)
-    {
-	    return parameters;
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Parameters getRefinedCallbackParameters(Parameters parameters) {
+        return parameters;
     }
 
     @Override
@@ -94,42 +83,30 @@ public abstract class AbstractServiceConnector implements ServiceConnector
     }
 
     @Override
-    public boolean isRegistered()
-    {
-	    return consumerAuthCredentials != null;
+    public boolean isRegistered() {
+        return consumerAuthCredentials != null;
     }
 
     @Override
-    public void setAuthCredentials(AuthCredentials consumerAuthCredentials)
-    {
-	    this.consumerAuthCredentials = consumerAuthCredentials;
+    public boolean supportContentType(String contentType) {
+        return (contentType != null) && contentTypes.contains(contentType);
     }
 
     @Override
-    public boolean supportContentType(String contentType)
-    {
-	    return (contentType != null) && contentTypes.contains(contentType);
-    }
+    public InterWebPrincipal getPrincipal(Parameters parameters) throws InterWebException {
+        for (String parameter : parameters.keySet()) {
+            if (parameter.equals(Parameters.IWJ_USER_ID)) {
+                String userName = parameters.get(parameter);
 
-    @Override
-    public InterWebPrincipal getPrincipal(Parameters parameters) throws InterWebException
-    {
-        for(String parameter : parameters.keySet())
-        {
-            if(parameter.equals(Parameters.IWJ_USER_ID))
-            {
-            String userName = parameters.get(parameter);
-    
-            Database database = Environment.getInstance().getDatabase();
-            InterWebPrincipal principal = database.readPrincipalByName(userName);
-            if(principal == null)
-            {
-                throw new InterWebException("User [" + userName + "] not found");
-            }
-            return principal;
+                Database database = Environment.getInstance().getDatabase();
+                InterWebPrincipal principal = database.readPrincipalByName(userName);
+                if (principal == null) {
+                    throw new InterWebException("User [" + userName + "] not found");
+                }
+                return principal;
             }
         }
-    
+
         throw new InterWebException("Unable to fetch user name from the callback URL");
     }
 }

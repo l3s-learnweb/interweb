@@ -10,15 +10,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.l3s.interwebj.core.query.ResultItem;
-import de.l3s.interwebj.core.query.Thumbnail;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.Thumbnail;
+
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SearchResultEntity
-{
+public class SearchResultEntity {
     private static final Logger log = LogManager.getLogger(SearchResultEntity.class);
 
     @XmlElement(name = "service")
@@ -70,323 +70,256 @@ public class SearchResultEntity
     @XmlElement(name = "snippet")
     private String snippet;
 
-    public SearchResultEntity()
-    {
+    public SearchResultEntity() {
     }
 
-    public SearchResultEntity(ResultItem resultItem)
-    {
-	this();
+    public SearchResultEntity(ResultItem resultItem) {
+        this();
 
-	if(resultItem == null)
-	{
-	    log.error("Result is null ");
-	    return;
-	}
-	setService(resultItem.getServiceName());
-	setIdAtService(resultItem.getId());
-	setType(resultItem.getType());
-	setTitle(resultItem.getTitle());
-	String description = resultItem.getDescription();
-	if(description == null)
-	    description = "no desc";
-	setDescription(resultItem.getDescription());
+        if (resultItem == null) {
+            log.error("Result is null ");
+            return;
+        }
+        setService(resultItem.getServiceName());
+        setIdAtService(resultItem.getId());
+        setType(resultItem.getType());
+        setTitle(resultItem.getTitle());
+        String description = resultItem.getDescription();
+        if (description == null) {
+            description = "no desc";
+        }
+        setDescription(resultItem.getDescription());
 
-	setUrl(resultItem.getUrl());
-	Set<Thumbnail> thumbnails = resultItem.getThumbnails();
-	List<ThumbnailEntity> thumbnailEntities = new ArrayList<ThumbnailEntity>();
-	if(thumbnails != null)
-	{
-	    int i = 0;
-	    for(Thumbnail thumbnail : thumbnails)
-	    {
-		if(i == 1)
-		{
-		    setImage(thumbnail.getUrl());
-		}
-		i++;
-		thumbnailEntities.add(new ThumbnailEntity(thumbnail));
-	    }
-	}
-	else
-	{
-	    log.error("No thumbnails found for " + resultItem.getId() + " in " + resultItem.getConnectorName());
-	}
-	setThumbnailEntities(thumbnailEntities);
-	//		setEmbedded(resultItem.getEmbedded());
-	setDate(resultItem.getDate());
-	setTags(resultItem.getTags());
-	setRankAtService(resultItem.getRank());
-	setTotalResultsAtService(resultItem.getTotalResultCount());
-	setViews(resultItem.getViewCount());
-	setNumberOfComments(resultItem.getCommentCount());
-	setNumberOfViews(resultItem.getViewCount());
-	setEmbeddedSize1(resultItem.getEmbeddedSize1());
-	setEmbeddedSize2(resultItem.getEmbeddedSize2());
-	setEmbeddedSize3(resultItem.getEmbeddedSize3());
-	setEmbeddedSize4(resultItem.getEmbeddedSize4());
-	setImageUrl(resultItem.getImageUrl());
-	this.snippet = resultItem.getSnippet();
-	this.privacy = resultItem.getPrivacy();
-	this.privacyConfidence = resultItem.getPrivacyConfidence();
-	this.duration = resultItem.getDuration();
+        setUrl(resultItem.getUrl());
+        Set<Thumbnail> thumbnails = resultItem.getThumbnails();
+        List<ThumbnailEntity> thumbnailEntities = new ArrayList<ThumbnailEntity>();
+        if (thumbnails != null) {
+            int i = 0;
+            for (Thumbnail thumbnail : thumbnails) {
+                if (i == 1) {
+                    setImage(thumbnail.getUrl());
+                }
+                i++;
+                thumbnailEntities.add(new ThumbnailEntity(thumbnail));
+            }
+        } else {
+            log.error("No thumbnails found for " + resultItem.getId() + " in " + resultItem.getConnectorName());
+        }
+        setThumbnailEntities(thumbnailEntities);
+        //setEmbedded(resultItem.getEmbedded());
+        setDate(resultItem.getDate());
+        setTags(resultItem.getTags());
+        setRankAtService(resultItem.getRank());
+        setTotalResultsAtService(resultItem.getTotalResultCount());
+        setViews(resultItem.getViewCount());
+        setNumberOfComments(resultItem.getCommentCount());
+        setNumberOfViews(resultItem.getViewCount());
+        setEmbeddedSize1(resultItem.getEmbeddedSize1());
+        setEmbeddedSize2(resultItem.getEmbeddedSize2());
+        setEmbeddedSize3(resultItem.getEmbeddedSize3());
+        setEmbeddedSize4(resultItem.getEmbeddedSize4());
+        setImageUrl(resultItem.getImageUrl());
+        this.snippet = resultItem.getSnippet();
+        this.privacy = resultItem.getPrivacy();
+        this.privacyConfidence = resultItem.getPrivacyConfidence();
+        this.duration = resultItem.getDuration();
     }
 
-    public String getDate()
-    {
-	return date;
+    public String getDate() {
+        return date;
     }
 
-    public String getDescription()
-    {
-	return description;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    //	public String getEmbedded()
-    //	{
-    //		return embedded;
-    //	}
+    //public String getEmbedded() {
+    //    return embedded;
+    //}
 
-    public String getIdAtService()
-    {
-	return idAtService;
+    public String getDescription() {
+        return description;
     }
 
-    public String getImage()
-    {
-	return image;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public int getNumberOfComments()
-    {
-	return numberOfComments;
+    public String getIdAtService() {
+        return idAtService;
     }
 
-    public int getNumberOfViews()
-    {
-	return numberOfViews;
+    public void setIdAtService(String idAtService) {
+        this.idAtService = idAtService;
     }
 
-    public int getRankAtService()
-    {
-	return rankAtService;
+    public String getImage() {
+        return image;
     }
 
-    public String getService()
-    {
-	return service;
+    public void setImage(String image) {
+        this.image = image;
     }
 
-    public String getTags()
-    {
-	return tags;
+    public int getNumberOfComments() {
+        return numberOfComments;
     }
 
-    public List<ThumbnailEntity> getThumbnailEntities()
-    {
-	return thumbnailEntities;
+    public void setNumberOfComments(int numberOfComments) {
+        this.numberOfComments = numberOfComments;
     }
 
-    public String getTitle()
-    {
-	return title;
+    public int getNumberOfViews() {
+        return numberOfViews;
     }
 
-    public long getTotalResultsAtService()
-    {
-	return totalResultsAtService;
+    public void setNumberOfViews(int numberOfViews) {
+        this.numberOfViews = numberOfViews;
     }
 
-    public String getType()
-    {
-	return type;
+    public int getRankAtService() {
+        return rankAtService;
     }
 
-    public String getUrl()
-    {
-	return url;
+    public void setRankAtService(int rankAtService) {
+        this.rankAtService = rankAtService;
     }
 
-    public void setDate(String date)
-    {
-	this.date = date;
+    public String getService() {
+        return service;
     }
 
-    public void setDescription(String description)
-    {
-	this.description = description;
+    public void setService(String service) {
+        this.service = service;
     }
 
-    //	public void setEmbedded(String embedded)
-    //	{
-    //		this.embedded = embedded;
-    //	}
+    //public void setEmbedded(String embedded) {
+    //    this.embedded = embedded;
+    //}
 
-    public void setIdAtService(String idAtService)
-    {
-	this.idAtService = idAtService;
+    public String getTags() {
+        return tags;
     }
 
-    public void setImage(String image)
-    {
-	this.image = image;
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
-    public void setNumberOfComments(int numberOfComments)
-    {
-	this.numberOfComments = numberOfComments;
+    public List<ThumbnailEntity> getThumbnailEntities() {
+        return thumbnailEntities;
     }
 
-    public void setNumberOfViews(int numberOfViews)
-    {
-	this.numberOfViews = numberOfViews;
+    public void setThumbnailEntities(List<ThumbnailEntity> thumbnailEntities) {
+        this.thumbnailEntities = thumbnailEntities;
     }
 
-    public void setRankAtService(int rankAtService)
-    {
-	this.rankAtService = rankAtService;
+    public String getTitle() {
+        return title;
     }
 
-    public void setService(String service)
-    {
-	this.service = service;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setTags(String tags)
-    {
-	this.tags = tags;
+    public long getTotalResultsAtService() {
+        return totalResultsAtService;
     }
 
-    public void setThumbnailEntities(List<ThumbnailEntity> thumbnailEntities)
-    {
-	this.thumbnailEntities = thumbnailEntities;
+    public void setTotalResultsAtService(long totalResultsAtService) {
+        this.totalResultsAtService = totalResultsAtService;
     }
 
-    public void setTitle(String title)
-    {
-	this.title = title;
+    public String getType() {
+        return type;
     }
 
-    public void setTotalResultsAtService(long totalResultsAtService)
-    {
-	this.totalResultsAtService = totalResultsAtService;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public void setType(String type)
-    {
-	this.type = type;
+    public String getUrl() {
+        return url;
     }
 
-    public void setUrl(String url)
-    {
-	this.url = url;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public void setViews(int numberOfViews)
-    {
-	this.numberOfViews = numberOfViews;
+    public void setViews(int numberOfViews) {
+        this.numberOfViews = numberOfViews;
     }
 
     /**
-     * html code, could be flash
-     * max width and max height 500px
-     * 
-     * @param embedded
+     * html code, could be flash, max width and max height 500px.
      */
-    public void setEmbeddedSize3(String embedded)
-    {
-	this.embeddedSize3 = embedded;
+    public String getEmbeddedSize3() {
+        return embeddedSize3;
     }
 
     /**
-     * html code, could be flash
-     * max width and max height 500px
-     * 
-     * @return
+     * html code, could be flash, max width and max height 500px.
      */
-    public String getEmbeddedSize3()
-    {
-	return embeddedSize3;
+    public void setEmbeddedSize3(String embedded) {
+        this.embeddedSize3 = embedded;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 100px
-     * 
-     * @return
+     * html code, only image or text, max width and max height 100px.
      */
-    public String getEmbeddedSize1()
-    {
-	return embeddedSize1;
+    public String getEmbeddedSize1() {
+        return embeddedSize1;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 100px
+     * html code, only image or text, max width and max height 100px.
      */
-    public void setEmbeddedSize1(String embeddedSize1)
-    {
-	this.embeddedSize1 = embeddedSize1;
+    public void setEmbeddedSize1(String embeddedSize1) {
+        this.embeddedSize1 = embeddedSize1;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 240px
+     * html code, only image or text, max width and max height 240px.
      */
-    public String getEmbeddedSize2()
-    {
-	return embeddedSize2;
+    public String getEmbeddedSize2() {
+        return embeddedSize2;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 240px
+     * html code, only image or text, max width and max height 240px.
      */
-    public void setEmbeddedSize2(String embeddedSize2)
-    {
-	this.embeddedSize2 = embeddedSize2;
+    public void setEmbeddedSize2(String embeddedSize2) {
+        this.embeddedSize2 = embeddedSize2;
     }
 
     /**
-     * html code, could be flash
-     * max width and max height 100%
+     * html code, could be flash, max width and max height 100%.
      */
-    public String getEmbeddedSize4()
-    {
-	return embeddedSize4;
+    public String getEmbeddedSize4() {
+        return embeddedSize4;
     }
 
     /**
-     * html code, could be flash
-     * max width and max height 100%
+     * html code, could be flash, max width and max height 100%.
      */
-    public void setEmbeddedSize4(String embeddedSize4)
-    {
-	this.embeddedSize4 = embeddedSize4;
+    public void setEmbeddedSize4(String embeddedSize4) {
+        this.embeddedSize4 = embeddedSize4;
     }
 
     /**
-     * Url to the best (high resolution) available preview image
-     * 
-     * @return
+     * Url to the best (high resolution) available preview image.
      */
-    public String getImageUrl()
-    {
-	return imageUrl;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     /**
-     * Url to the best (high resolution) available preview image
-     * 
-     * @param imageUrl
+     * Url to the best (high resolution) available preview image.
      */
-    public void setImageUrl(String imageUrl)
-    {
-	this.imageUrl = imageUrl;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-    public String getSnippet()
-    {
-	return snippet;
+    public String getSnippet() {
+        return snippet;
     }
 }

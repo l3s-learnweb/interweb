@@ -7,28 +7,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UploadResponse extends XMLResponse
-{
+public class UploadResponse extends XMLResponse {
     @XmlElement(name = "result")
     protected SearchResultEntity result;
 
-    public UploadResponse()
-    {
+    public UploadResponse() {
     }
 
-    public UploadResponse(SearchResultEntity result)
-    {
-	this.result = result;
+    public UploadResponse(SearchResultEntity result) {
+        this.result = result;
     }
 
-    public SearchResultEntity getResult()
-    {
-	return result;
+    public SearchResultEntity getResult() {
+        return result;
     }
 
-    public void setResult(SearchResultEntity result)
-    {
-	this.result = result;
+    public void setResult(SearchResultEntity result) {
+        this.result = result;
     }
 
 }

@@ -1,10 +1,11 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import de.l3s.interwebj.tomcat.TestUtils;
-import de.l3s.interwebj.tomcat.jaxb.services.ServicesResponse;
+import javax.ws.rs.client.WebTarget;
+
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.client.WebTarget;
+import de.l3s.interwebj.tomcat.TestUtils;
+import de.l3s.interwebj.tomcat.jaxb.services.ServicesResponse;
 
 class ServicesTest {
     @Test

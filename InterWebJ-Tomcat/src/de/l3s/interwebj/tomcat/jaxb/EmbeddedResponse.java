@@ -7,29 +7,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EmbeddedResponse extends XMLResponse
-{
+public class EmbeddedResponse extends XMLResponse {
 
     @XmlElement(name = "embedded")
     protected String embedded;
 
-    public EmbeddedResponse()
-    {
+    public EmbeddedResponse() {
     }
 
-    public EmbeddedResponse(String embedded)
-    {
-	this.embedded = embedded;
+    public EmbeddedResponse(String embedded) {
+        this.embedded = embedded;
     }
 
-    public String getEmbedded()
-    {
-	return embedded;
+    public String getEmbedded() {
+        return embedded;
     }
 
-    public void setEmbedded(String embedded)
-    {
-	this.embedded = embedded;
+    public void setEmbedded(String embedded) {
+        this.embedded = embedded;
     }
 
 }

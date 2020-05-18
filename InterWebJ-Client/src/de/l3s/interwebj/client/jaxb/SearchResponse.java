@@ -7,23 +7,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SearchResponse extends XMLResponse
-{
+public class SearchResponse extends XMLResponse {
 
     @XmlElement(name = "query")
     protected SearchQueryEntity query;
 
-    public SearchResponse()
-    {
+    public SearchResponse() {
     }
 
-    public SearchQueryEntity getQuery()
-    {
+    public SearchQueryEntity getQuery() {
         return query;
     }
 
-    public void setQuery(SearchQueryEntity query)
-    {
+    public void setQuery(SearchQueryEntity query) {
         this.query = query;
     }
 }

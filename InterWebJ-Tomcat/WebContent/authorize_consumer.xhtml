@@ -4,7 +4,7 @@
 				xmlns:h="http://xmlns.jcp.org/jsf/html"
 				xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-	<ui:define name="content">
+    <ui:define name="content">
 		<h:panelGroup
 			rendered="#{!consumersBean.registered and !empty consumersBean.authorizationConsumer.name}">
 			<p>
@@ -37,6 +37,6 @@
 					style="font-weight: bold;" />
 			</h:panelGrid>
 		</h:panelGroup>
-	</ui:define>
+    </ui:define>
 
 </ui:composition>

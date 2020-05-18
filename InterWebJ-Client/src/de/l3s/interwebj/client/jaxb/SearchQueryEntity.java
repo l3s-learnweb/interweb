@@ -12,8 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "query")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SearchQueryEntity
-{
+public class SearchQueryEntity {
 
     @XmlAttribute(name = "id")
     protected String id;
@@ -43,143 +42,115 @@ public class SearchQueryEntity
     @XmlElement(name = "result")
     protected List<SearchResultEntity> results;
 
-    public SearchQueryEntity()
-    {
+    public SearchQueryEntity() {
         results = new ArrayList<SearchResultEntity>();
     }
 
-    public void addResult(SearchResultEntity result)
-    {
+    public void addResult(SearchResultEntity result) {
         results.add(result);
     }
 
-    public String getDateFrom()
-    {
+    public String getDateFrom() {
         return dateFrom;
     }
 
-    public String getDateTill()
-    {
-        return dateTill;
-    }
-
-    public String getElapsedTime()
-    {
-        return elapsedTime;
-    }
-
-    public String getId()
-    {
-        return id;
-    }
-
-    public String getLink()
-    {
-        return link;
-    }
-
-    public String getMediaTypes()
-    {
-        return mediaTypes;
-    }
-
-    public int getNumberOfResults()
-    {
-        return numberOfResults;
-    }
-
-    public String getQueryString()
-    {
-        return queryString;
-    }
-
-    public String getRanking()
-    {
-        return ranking;
-    }
-
-    public List<SearchResultEntity> getResults()
-    {
-        return results;
-    }
-
-    public String getSearchIn()
-    {
-        return searchIn;
-    }
-
-    public String getUpdated()
-    {
-        return updated;
-    }
-
-    public String getUser()
-    {
-        return user;
-    }
-
-    public void setDateFrom(String dateFrom)
-    {
+    public void setDateFrom(String dateFrom) {
         this.dateFrom = dateFrom;
     }
 
-    public void setDateTill(String dateTill)
-    {
+    public String getDateTill() {
+        return dateTill;
+    }
+
+    public void setDateTill(String dateTill) {
         this.dateTill = dateTill;
     }
 
-    public void setElapsedTime(String elapsedTime)
-    {
+    public String getElapsedTime() {
+        return elapsedTime;
+    }
+
+    public void setElapsedTime(String elapsedTime) {
         this.elapsedTime = elapsedTime;
     }
 
-    public void setId(String id)
-    {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
         this.id = id;
     }
 
-    public void setLink(String link)
-    {
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
         this.link = link;
     }
 
-    public void setMediaTypes(String mediaTypes)
-    {
+    public String getMediaTypes() {
+        return mediaTypes;
+    }
+
+    public void setMediaTypes(String mediaTypes) {
         this.mediaTypes = mediaTypes;
     }
 
-    public void setNumberOfResults(int numberOfResults)
-    {
+    public int getNumberOfResults() {
+        return numberOfResults;
+    }
+
+    public void setNumberOfResults(int numberOfResults) {
         this.numberOfResults = numberOfResults;
     }
 
-    public void setQueryString(String queryString)
-    {
+    public String getQueryString() {
+        return queryString;
+    }
+
+    public void setQueryString(String queryString) {
         this.queryString = queryString;
     }
 
-    public void setRanking(String ranking)
-    {
+    public String getRanking() {
+        return ranking;
+    }
+
+    public void setRanking(String ranking) {
         this.ranking = ranking;
     }
 
-    public void setResults(List<SearchResultEntity> results)
-    {
+    public List<SearchResultEntity> getResults() {
+        return results;
+    }
+
+    public void setResults(List<SearchResultEntity> results) {
         this.results = results;
     }
 
-    public void setSearchIn(String searchIn)
-    {
+    public String getSearchIn() {
+        return searchIn;
+    }
+
+    public void setSearchIn(String searchIn) {
         this.searchIn = searchIn;
     }
 
-    public void setUpdated(String updated)
-    {
+    public String getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(String updated) {
         this.updated = updated;
     }
 
-    public void setUser(String user)
-    {
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
         this.user = user;
     }
 }

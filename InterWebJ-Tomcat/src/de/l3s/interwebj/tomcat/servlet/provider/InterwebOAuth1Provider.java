@@ -1,17 +1,19 @@
 package de.l3s.interwebj.tomcat.servlet.provider;
 
-import de.l3s.interwebj.core.core.Consumer;
-import de.l3s.interwebj.core.core.Environment;
-import de.l3s.interwebj.core.core.InterWebPrincipal;
-import de.l3s.interwebj.core.db.Database;
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.glassfish.jersey.server.oauth1.OAuth1Consumer;
 import org.glassfish.jersey.server.oauth1.OAuth1Provider;
 import org.glassfish.jersey.server.oauth1.OAuth1Token;
 
-import javax.ws.rs.core.MultivaluedMap;
-import java.security.Principal;
-import java.util.List;
-import java.util.Map;
+import de.l3s.interwebj.core.core.Consumer;
+import de.l3s.interwebj.core.core.Environment;
+import de.l3s.interwebj.core.core.InterWebPrincipal;
+import de.l3s.interwebj.core.db.Database;
 
 public class InterwebOAuth1Provider implements OAuth1Provider {
 
@@ -82,7 +84,7 @@ public class InterwebOAuth1Provider implements OAuth1Provider {
 
     public static class InterwebConsumer implements OAuth1Consumer {
         private final Consumer consumer;
-        
+
         public InterwebConsumer(Consumer consumer) {
             this.consumer = consumer;
         }

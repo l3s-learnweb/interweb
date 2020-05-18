@@ -49,6 +49,10 @@
         <property name="fileNamePattern" value="module\-info\.java$"/>
     </module>
 
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value="(\.idea|\.settings|target)"/>
+    </module>
+
     <!-- https://checkstyle.org/config_filters.html#SuppressionFilter -->
     <module name="SuppressionFilter">
         <property name="file" value="${org.checkstyle.sun.suppressionfilter.config}"
@@ -66,14 +70,16 @@
 
     <!-- Checks that property files contain the same keys.         -->
     <!-- See https://checkstyle.org/config_misc.html#Translation -->
-    <module name="Translation"/>
+    <!--<module name="Translation"/> Changed: the filter can't check for `xy` lang -->
 
     <!-- Checks for Size Violations.                    -->
     <!-- See https://checkstyle.org/config_sizes.html -->
-    <module name="FileLength"/>
+    <!--<module name="FileLength"/> Changed: disable inspection -->
     <module name="LineLength">
+        <property name="severity" value="ignore"/> <!-- Changed: decreased severity TODO: remove ignore -->
         <property name="max" value="160"/> <!-- Changed: default is 80 -->
         <property name="fileExtensions" value="java"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/> <!-- Changed: copied from Google -->
     </module>
 
     <!-- Checks for whitespace                               -->
@@ -102,17 +108,22 @@
         <!-- See https://checkstyle.org/config_javadoc.html -->
         <module name="InvalidJavadocPosition"/>
         <module name="JavadocMethod"> <!-- Changed: copied from Google, require doc only for public, do not require describing each param -->
+            <property name="severity" value="ignore"/> <!-- Changed: decreased severity TODO: remove ignore -->
             <property name="scope" value="public"/>
             <property name="allowMissingParamTags" value="true"/>
             <property name="allowMissingReturnTag" value="true"/>
             <property name="allowedAnnotations" value="Override, Test"/>
         </module>
-        <module name="JavadocType"/>
+        <!--<module name="JavadocType"/> Changed: it looks like mostly this comments makes no sense -->
         <!--<module name="JavadocVariable"/> Changed: we don't require Javadoc for each defined variable-->
-        <module name="JavadocStyle"/>
-        <module name="MissingJavadocMethod"> <!-- Changed: copied from Google -->
+        <module name="JavadocStyle">
+            <property name="severity" value="warning"/> <!-- Changed: decreased severity -->
+            <property name="endOfSentenceFormat" value="([.?!:][ \t\n\r\f])|([.?!:]$)"/>
+        </module>
+        <module name="MissingJavadocMethod">
+            <property name="severity" value="ignore"/> <!-- Changed: decreased severity TODO: remove ignore -->
             <property name="scope" value="public"/>
-            <property name="minLineCount" value="2"/>
+            <property name="minLineCount" value="5"/>
             <property name="allowedAnnotations" value="Override, Test"/>
             <property name="allowMissingPropertyJavadoc" value="true"/> <!-- Changed: do not require Javadoc for getters/setters -->
         </module>
@@ -120,7 +131,8 @@
         <!-- Checks for Naming Conventions.                  -->
         <!-- See https://checkstyle.org/config_naming.html -->
         <module name="ConstantName">
-            <property name="format" value="^log(ger)?$|^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/> <!-- Changed: allow log/logger to be static lowercase -->
+            <property name="severity" value="ignore"/> <!-- Changed: decreased severity TODO: remove ignore -->
+            <property name="format" value="^log$|^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/> <!-- Changed: allow log/logger to be static lowercase -->
         </module>
         <module name="LocalFinalVariableName"/>
         <module name="LocalVariableName"/>
@@ -133,7 +145,9 @@
 
         <!-- Checks for imports                              -->
         <!-- See https://checkstyle.org/config_import.html -->
-        <module name="AvoidStarImport"/>
+        <module name="AvoidStarImport">
+            <property name="allowStaticMemberImports" value="true"/> <!-- Changed: allow static -->
+        </module>
         <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
         <module name="RedundantImport"/>
         <module name="UnusedImports">
@@ -142,8 +156,12 @@
 
         <!-- Checks for Size Violations.                    -->
         <!-- See https://checkstyle.org/config_sizes.html -->
-        <module name="MethodLength"/>
-        <module name="ParameterNumber"/>
+        <module name="MethodLength">
+            <property name="severity" value="warning"/> <!-- Changed: decreased severity -->
+        </module>
+        <module name="ParameterNumber">
+            <property name="severity" value="warning"/> <!-- Changed: decreased severity -->
+        </module>
 
         <!-- Checks for whitespace                               -->
         <!-- See https://checkstyle.org/config_whitespace.html -->
@@ -152,11 +170,22 @@
         <module name="MethodParamPad"/>
         <module name="NoWhitespaceAfter"/>
         <module name="NoWhitespaceBefore"/>
-        <module name="OperatorWrap"/>
+        <module name="OperatorWrap"> <!-- Changed: copied from google and removed PLUS token -->
+            <property name="option" value="NL"/>
+            <property name="tokens"
+                      value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR,
+                      LT, MINUS, MOD, NOT_EQUAL, QUESTION, SL, SR, STAR, METHOD_REF "/>
+        </module>
         <module name="ParenPad"/>
         <module name="TypecastParenPad"/>
         <module name="WhitespaceAfter"/>
-        <module name="WhitespaceAround"/>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyLambdas" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+        </module>
 
         <!-- Modifier Checks                                    -->
         <!-- See https://checkstyle.org/config_modifiers.html -->
@@ -175,10 +204,7 @@
         <!-- See https://checkstyle.org/config_coding.html -->
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
-        <module name="HiddenField"> <!-- Changed: allow in setters and constructors -->
-            <property name="ignoreSetter" value="true"/>
-            <property name="ignoreConstructorParameter" value="true"/>
-        </module>
+        <!--<module name="HiddenField"/> Changed: removed inspection -->
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
         <!--<module name="MagicNumber"/> Change: removed inspection -->
@@ -189,17 +215,17 @@
 
         <!-- Checks for class design                         -->
         <!-- See https://checkstyle.org/config_design.html -->
-        <module name="DesignForExtension"/>
+        <!--<module name="DesignForExtension"/> Changed: removed inspection -->
         <module name="FinalClass"/>
-        <module name="HideUtilityClassConstructor"/>
+        <!--<module name="HideUtilityClassConstructor"/> Changed: removed inspection-->
         <module name="InterfaceIsType"/>
-        <module name="VisibilityModifier"/>
+        <!--<module name="VisibilityModifier"/> Changed: removed inspection-->
 
         <!-- Miscellaneous other checks.                   -->
         <!-- See https://checkstyle.org/config_misc.html -->
         <module name="ArrayTypeStyle"/>
-        <module name="FinalParameters"/>
-        <module name="TodoComment"/>
+        <!--<module name="FinalParameters"/> Changed: removed inspection-->
+        <!--<module name="TodoComment"/> Changed: removed inspection -->
         <module name="UpperEll"/>
 
         <!-- https://checkstyle.org/config_filters.html#SuppressionXpathFilter -->
@@ -209,6 +235,56 @@
             <property name="optional" value="true"/>
         </module>
 
+        <!-- Changed: below additional rules from Google-preset -->
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="0"/>
+            <property name="caseIndent" value="4"/>
+            <property name="throwsIndent" value="4"/>
+            <property name="lineWrappingIndentation" value="4"/>
+            <property name="arrayInitIndent" value="4"/>
+        </module>
+        <module name="CommentsIndentation">
+            <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>
+        </module>
+        <module name="OverloadMethodsDeclarationOrder"/>
+        <module name="OuterTypeFilename"/>
+        <module name="NonEmptyAtclauseDescription"/>
+        <module name="AtclauseOrder"/>
+        <module name="ImportOrder">
+            <property name="groups" value="java,javax,org,com"/>
+            <property name="ordered" value="true"/>
+            <property name="separated" value="true"/>
+            <property name="option" value="top"/>
+            <property name="caseSensitive" value="true"/>
+            <property name="sortStaticImportsAlphabetically" value="true"/>
+            <property name="useContainerOrderingForStatic" value="true"/>
+        </module>
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expected|ignore"/>
+        </module>
+        <module name="LambdaParameterName"/>
+        <module name="CatchParameterName"/>
+        <module name="OneTopLevelClass"/>
+        <module name="NoLineWrap"/>
+        <module name="EmptyLineSeparator">
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapDot"/>
+            <property name="tokens" value="DOT"/>
+            <property name="option" value="nl"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapComma"/>
+            <property name="tokens" value="COMMA"/>
+            <property name="option" value="EOL"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapMethodRef"/>
+            <property name="tokens" value="METHOD_REF"/>
+            <property name="option" value="nl"/>
+        </module>
     </module>
 
 </module>

@@ -5,14 +5,12 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.TreeSet;
 
-public class ResultItem implements Serializable
-{
+public class ResultItem implements Serializable {
 
-    private static final int MAX_TITLE_LENGTH = 256;
-    private static final int MAX_DESCRIPTION_LENGTH = 1024;
     public static final int DEFAULT_EMBEDDED_WIDTH = 500;
     public static final int DEFAULT_EMBEDDED_HEIGHT = 375;
-
+    private static final int MAX_TITLE_LENGTH = 256;
+    private static final int MAX_DESCRIPTION_LENGTH = 1024;
     private static final long serialVersionUID = 9111067008513145675L;
 
     private String id;
@@ -40,338 +38,265 @@ public class ResultItem implements Serializable
 
     private String imageUrl;
 
-    public ResultItem(String connectorName)
-    {
-	this.connectorName = connectorName;
-	serviceName = connectorName;
-	thumbnails = new TreeSet<Thumbnail>();
+    public ResultItem(String connectorName) {
+        this.connectorName = connectorName;
+        serviceName = connectorName;
+        thumbnails = new TreeSet<Thumbnail>();
     }
 
-    public int getCommentCount()
-    {
-	return commentCount;
+    public int getCommentCount() {
+        return commentCount;
     }
 
-    public String getConnectorName()
-    {
-	return connectorName;
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
     }
 
-    public String getDate()
-    {
-	return date;
+    public String getConnectorName() {
+        return connectorName;
     }
 
-    public String getDescription()
-    {
-	return description;
+    public String getDate() {
+        return date;
     }
 
-    public String getId()
-    {
-	return id;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public int getRank()
-    {
-	return rank;
+    public String getDescription() {
+        return description;
     }
 
-    public String getServiceName()
-    {
-	return serviceName;
+    public void setDescription(String description) {
+        if (description == null) {
+            return;
+        }
+        description = description.trim();
+        //description = unescape(description); TODO testen ob wirklich überflüssig
+        if (description.length() > MAX_DESCRIPTION_LENGTH) {
+            int cutIndex = description.lastIndexOf(' ', MAX_DESCRIPTION_LENGTH);
+            if (cutIndex == -1) {
+                cutIndex = MAX_DESCRIPTION_LENGTH;
+            }
+            description = description.substring(0, cutIndex) + "...";
+        }
+        this.description = description;
     }
 
-    public String getTags()
-    {
-	return tags;
+    public String getId() {
+        return id;
     }
 
-    public String getSnippet()
-    {
-	return snippet;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public Thumbnail getThumbnail(int maxWidth, int maxHeight)
-    {
-	Set<Thumbnail> thumbnails = getThumbnails();
-	if(thumbnails == null)
-	{
-	    return null;
-	}
-	Thumbnail thumbnail = null;
-	for(Thumbnail t : thumbnails)
-	{
-	    if(thumbnail == null || t.getWidth() <= maxWidth && t.getHeight() <= maxHeight)
-	    {
-		thumbnail = t;
-	    }
-	}
-	return thumbnail;
+    public int getRank() {
+        return rank;
     }
 
-    public Set<Thumbnail> getThumbnails()
-    {
-	return thumbnails;
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 
-    public String getTitle()
-    {
-	return title;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public long getTotalResultCount()
-    {
-	return totalResultCount;
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
-    public String getType()
-    {
-	return type;
+    public String getTags() {
+        return tags;
     }
 
-    public String getUrl()
-    {
-	return url;
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
-    public int getViewCount()
-    {
-	return viewCount;
+    public String getSnippet() {
+        return snippet;
     }
 
-    public void setCommentCount(int commentCount)
-    {
-	this.commentCount = commentCount;
+    public void setSnippet(String snippet) {
+        if (snippet == null) {
+            return;
+        }
+
+        this.snippet = snippet;
+
     }
 
-    public void setDate(String date)
-    {
-	this.date = date;
+    public Thumbnail getThumbnail(int maxWidth, int maxHeight) {
+        Set<Thumbnail> thumbnails = getThumbnails();
+        if (thumbnails == null) {
+            return null;
+        }
+        Thumbnail thumbnail = null;
+        for (Thumbnail t : thumbnails) {
+            if (thumbnail == null || t.getWidth() <= maxWidth && t.getHeight() <= maxHeight) {
+                thumbnail = t;
+            }
+        }
+        return thumbnail;
     }
 
-    public void setDescription(String description)
-    {
-	if(description == null)
-	{
-	    return;
-	}
-	description = description.trim();
-	//description = unescape(description); TODO testen ob wirklich überflüssig
-	if(description.length() > MAX_DESCRIPTION_LENGTH)
-	{
-	    int cutIndex = description.lastIndexOf(' ', MAX_DESCRIPTION_LENGTH);
-	    if(cutIndex == -1)
-	    {
-		cutIndex = MAX_DESCRIPTION_LENGTH;
-	    }
-	    description = description.substring(0, cutIndex) + "...";
-	}
-	this.description = description;
+    public Set<Thumbnail> getThumbnails() {
+        return thumbnails;
     }
 
-    public void setSnippet(String snippet)
-    {
-	if(snippet == null)
-	{
-	    return;
-	}
+    public void setThumbnails(Set<Thumbnail> thumbnails) {
+        this.thumbnails = thumbnails;
+    }
 
-	this.snippet = snippet;
+    public String getTitle() {
+        return title;
+    }
 
+    public void setTitle(String title) {
+        if (title == null) {
+            return;
+        }
+        title = title.trim();
+        //title = unescape(title); TODO testen ob wirklich überflüssig
+        if (title.length() > MAX_TITLE_LENGTH) {
+            int cutIndex = title.lastIndexOf(' ', MAX_TITLE_LENGTH);
+            if (cutIndex == -1) {
+                cutIndex = MAX_TITLE_LENGTH;
+            }
+            title = title.substring(0, cutIndex) + "...";
+        }
+        this.title = title;
+    }
+
+    public long getTotalResultCount() {
+        return totalResultCount;
+    }
+
+    public void setTotalResultCount(long totalResultCount) {
+        this.totalResultCount = totalResultCount;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public int getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(int viewCount) {
+        this.viewCount = viewCount;
     }
 
     /**
-     * html code, could be flash
-     * max width and max height 500px
-     * 
-     * @param embedded
+     * html code, only image or text, max width and max height 100px.
      */
-    public void setEmbeddedSize3(String embedded)
-    {
-	this.embeddedSize3 = embedded;
+    public String getEmbeddedSize1() {
+        return embeddedSize1;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 100px
-     * 
+     * html code, only image or text, max width and max height 100px.
+     */
+    public void setEmbeddedSize1(String embeddedSize1) {
+        this.embeddedSize1 = embeddedSize1;
+    }
+
+    /**
+     * html code, only image or text, max width and max height 240px.
+     */
+    public String getEmbeddedSize2() {
+        return embeddedSize2;
+    }
+
+    /**
+     * html code, only image or text, max width and max height 240px.
+     */
+    public void setEmbeddedSize2(String embeddedSize2) {
+        this.embeddedSize2 = embeddedSize2;
+    }
+
+    /**
+     * html code, could be flash, max width and max height 500px.
+     *
      * @return
      */
-    public String getEmbeddedSize1()
-    {
-	return embeddedSize1;
+    public String getEmbeddedSize3() {
+        return embeddedSize3;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 100px
+     * html code, could be flash, max width and max height 500px.
      */
-    public void setEmbeddedSize1(String embeddedSize1)
-    {
-	this.embeddedSize1 = embeddedSize1;
+    public void setEmbeddedSize3(String embedded) {
+        this.embeddedSize3 = embedded;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 240px
+     * html code, could be flash, max width and max height 100%.
      */
-    public String getEmbeddedSize2()
-    {
-	return embeddedSize2;
+    public String getEmbeddedSize4() {
+        return embeddedSize4;
     }
 
     /**
-     * html code, only image or text
-     * max width and max height 240px
+     * html code, could be flash, max width and max height 100%.
      */
-    public void setEmbeddedSize2(String embeddedSize2)
-    {
-	this.embeddedSize2 = embeddedSize2;
+    public void setEmbeddedSize4(String embeddedSize4) {
+        this.embeddedSize4 = embeddedSize4;
     }
 
     /**
-     * html code, could be flash
-     * max width and max height 500px
-     * 
-     * @return
+     * Url to the best (high resolution) available preview image.
      */
-    public String getEmbeddedSize3()
-    {
-	return embeddedSize3;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     /**
-     * html code, could be flash
-     * max width and max height 100%
+     * Url to the best (high resolution) available preview image.
      */
-    public String getEmbeddedSize4()
-    {
-	return embeddedSize4;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-    /**
-     * html code, could be flash
-     * max width and max height 100%
-     */
-    public void setEmbeddedSize4(String embeddedSize4)
-    {
-	this.embeddedSize4 = embeddedSize4;
+    public double getPrivacy() {
+        return privacy;
     }
 
-    /**
-     * Url to the best (high resolution) available preview image
-     * 
-     * @return
-     */
-    public String getImageUrl()
-    {
-	return imageUrl;
+    public void setPrivacy(double privacy) {
+        this.privacy = privacy;
     }
 
-    /**
-     * Url to the best (high resolution) available preview image
-     * 
-     * @param imageUrl
-     */
-    public void setImageUrl(String imageUrl)
-    {
-	this.imageUrl = imageUrl;
+    public int getPrivacyConfidence() {
+        return privacyConfidence;
     }
 
-    public void setId(String id)
-    {
-	this.id = id;
+    public void setPrivacyConfidence(int privacyConfidence) {
+        this.privacyConfidence = privacyConfidence;
     }
 
-    public void setRank(int rank)
-    {
-	this.rank = rank;
+    public int getDuration() {
+        return duration;
     }
 
-    public void setServiceName(String serviceName)
-    {
-	this.serviceName = serviceName;
-    }
-
-    public void setTags(String tags)
-    {
-	this.tags = tags;
-    }
-
-    public void setThumbnails(Set<Thumbnail> thumbnails)
-    {
-	this.thumbnails = thumbnails;
-    }
-
-    public void setTitle(String title)
-    {
-	if(title == null)
-	{
-	    return;
-	}
-	title = title.trim();
-	//title = unescape(title); TODO testen ob wirklich überflüssig
-	if(title.length() > MAX_TITLE_LENGTH)
-	{
-	    int cutIndex = title.lastIndexOf(' ', MAX_TITLE_LENGTH);
-	    if(cutIndex == -1)
-	    {
-		cutIndex = MAX_TITLE_LENGTH;
-	    }
-	    title = title.substring(0, cutIndex) + "...";
-	}
-	this.title = title;
-    }
-
-    public void setTotalResultCount(long totalResultCount)
-    {
-	this.totalResultCount = totalResultCount;
-    }
-
-    public void setType(String type)
-    {
-	this.type = type;
-    }
-
-    public void setUrl(String url)
-    {
-	this.url = url;
-    }
-
-    public void setViewCount(int viewCount)
-    {
-	this.viewCount = viewCount;
-    }
-
-    public double getPrivacy()
-    {
-	return privacy;
-    }
-
-    public void setPrivacy(double privacy)
-    {
-	this.privacy = privacy;
-    }
-
-    public int getPrivacyConfidence()
-    {
-	return privacyConfidence;
-    }
-
-    public void setPrivacyConfidence(int privacyConfidence)
-    {
-	this.privacyConfidence = privacyConfidence;
-    }
-
-    public int getDuration()
-    {
-	return duration;
-    }
-
-    public void setDuration(int duration)
-    {
-	this.duration = duration;
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     @Override

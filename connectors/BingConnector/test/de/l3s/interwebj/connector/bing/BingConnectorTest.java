@@ -1,5 +1,12 @@
 package de.l3s.interwebj.connector.bing;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
@@ -7,18 +14,12 @@ import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
 import de.l3s.interwebj.core.query.QueryResult;
 import de.l3s.interwebj.core.query.ResultItem;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class BingConnectorTest {
     private static final Logger log = LogManager.getLogger(BingConnectorTest.class);
-    
-    private final static String TEST_KEY = "***REMOVED***";
-    private final static String TEST_SECRET = "";
+
+    private static final  String TEST_KEY = "***REMOVED***";
+    private static final  String TEST_SECRET = "";
 
     private static AbstractServiceConnector connector;
 
@@ -41,8 +42,7 @@ class BingConnectorTest {
 
         QueryResult queryResult = connector.get(query, null);
 
-        for (ResultItem res : queryResult.getResultItems())
-        {
+        for (ResultItem res : queryResult.getResultItems()) {
             log.info("{}: {}", res.getRank(), res.toString());
         }
 

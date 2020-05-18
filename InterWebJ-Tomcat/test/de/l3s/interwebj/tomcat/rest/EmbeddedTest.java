@@ -1,14 +1,15 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import de.l3s.interwebj.tomcat.TestUtils;
-import de.l3s.interwebj.tomcat.jaxb.EmbeddedResponse;
-import org.junit.jupiter.api.Test;
-
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+
+import org.junit.jupiter.api.Test;
+
+import de.l3s.interwebj.tomcat.TestUtils;
+import de.l3s.interwebj.tomcat.jaxb.EmbeddedResponse;
 
 class EmbeddedTest {
 

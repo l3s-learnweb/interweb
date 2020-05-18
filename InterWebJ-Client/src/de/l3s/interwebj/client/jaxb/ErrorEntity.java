@@ -1,57 +1,51 @@
 package de.l3s.interwebj.client.jaxb;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "error")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ErrorEntity
-{
+public class ErrorEntity {
 
     @XmlAttribute(name = "code")
     protected int code;
     @XmlAttribute(name = "message")
     protected String message;
 
-    public ErrorEntity()
-    {
+    public ErrorEntity() {
     }
 
-    public ErrorEntity(int code, String message)
-    {
+    public ErrorEntity(int code, String message) {
         this();
         this.code = code;
         this.message = message;
     }
 
-    public int getCode()
-    {
+    public int getCode() {
         return code;
     }
 
-    public String getMessage()
-    {
-        return message;
-    }
-
-    public void setCode(int code)
-    {
+    public void setCode(int code) {
         this.code = code;
     }
 
-    public void setMessage(String message)
-    {
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
         this.message = message;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("ResponseError [code=");
         builder.append(code);
         builder.append(", ");
-        if(message != null)
-        {
+        if (message != null) {
             builder.append("message=");
             builder.append(message);
         }

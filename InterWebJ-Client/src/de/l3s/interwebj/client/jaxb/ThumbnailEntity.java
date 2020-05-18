@@ -8,8 +8,7 @@ import javax.xml.bind.annotation.XmlValue;
 
 @XmlRootElement(name = "thumbnail")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ThumbnailEntity
-{
+public class ThumbnailEntity {
 
     @XmlAttribute(name = "width")
     protected int width;
@@ -18,50 +17,41 @@ public class ThumbnailEntity
     @XmlValue
     protected String url;
 
-    public ThumbnailEntity()
-    {
+    public ThumbnailEntity() {
     }
 
-    public ThumbnailEntity(String url, int width, int height)
-    {
+    public ThumbnailEntity(String url, int width, int height) {
         this.url = url;
         this.width = width;
         this.height = height;
     }
 
-    public int getHeight()
-    {
+    public int getHeight() {
         return height;
     }
 
-    public String getUrl()
-    {
-        return url;
-    }
-
-    public int getWidth()
-    {
-        return width;
-    }
-
-    public void setHeight(int height)
-    {
+    public void setHeight(int height) {
         this.height = height;
     }
 
-    public void setUrl(String url)
-    {
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
         this.url = url;
     }
 
-    public void setWidth(int width)
-    {
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
         this.width = width;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "ThumbnailEntity [width=" + width + ", height=" + height + ", url=" + url + "]";
     }
 

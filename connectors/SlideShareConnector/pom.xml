@@ -10,7 +10,7 @@
         <version>2.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    
+
     <artifactId>connector-slideshare</artifactId>
     <version>2.5.0</version>
     <packaging>jar</packaging>

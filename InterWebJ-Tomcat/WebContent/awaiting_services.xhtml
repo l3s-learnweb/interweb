@@ -4,14 +4,14 @@
 				xmlns:h="http://xmlns.jcp.org/jsf/html"
 				xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-	<ui:define name="content">
+    <ui:define name="content">
 		<h:panelGroup
 			rendered="#{servicesBean.awaitingConnectorWrappers.size() == 0}">
-	There are no awaiting authorization connectors
-	</h:panelGroup>
+    There are no awaiting authorization connectors
+    </h:panelGroup>
 		<h:panelGroup
 			rendered="#{servicesBean.awaitingConnectorWrappers.size() > 0}">
-	The list of awaiting authorization connectors:
+    The list of awaiting authorization connectors:
 		<h:form>
 				<h:dataTable var="connectorWrapper"
 					value="#{servicesBean.awaitingConnectorWrappers}" cellpadding="10">
@@ -44,6 +44,6 @@
 				</h:dataTable>
 			</h:form>
 		</h:panelGroup>
-	</ui:define>
+    </ui:define>
 
 </ui:composition>

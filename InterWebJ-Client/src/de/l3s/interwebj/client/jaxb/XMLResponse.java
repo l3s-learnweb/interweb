@@ -3,12 +3,16 @@ package de.l3s.interwebj.client.jaxb;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
-import javax.xml.bind.*;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XMLResponse
-{
+public class XMLResponse {
 
     public static final String OK = "ok";
     public static final String FAILED = "fail";
@@ -18,41 +22,33 @@ public class XMLResponse
     @XmlElement(name = "error")
     protected ErrorEntity error;
 
-    public XMLResponse()
-    {
+    public XMLResponse() {
         stat = OK;
     }
 
-    public ErrorEntity getError()
-    {
+    public ErrorEntity getError() {
         return error;
     }
 
-    public String getStat()
-    {
-        return stat;
-    }
-
-    public void setError(ErrorEntity error)
-    {
+    public void setError(ErrorEntity error) {
         this.error = error;
     }
 
+    public String getStat() {
+        return stat;
+    }
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        try
-        {
+        try {
             JAXBContext context = JAXBContext.newInstance(getClass());
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             m.marshal(this, baos);
             sb.append(baos.toString(StandardCharsets.UTF_8));
-        }
-        catch(JAXBException e)
-        {
+        } catch (JAXBException e) {
             sb.append("Interweb processing error: ").append(e.getMessage());
         }
         return sb.toString();

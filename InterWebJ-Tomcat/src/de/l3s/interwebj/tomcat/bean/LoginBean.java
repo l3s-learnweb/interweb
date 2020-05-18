@@ -7,31 +7,26 @@ import com.sun.istack.NotNull;
 
 @Named
 @RequestScoped
-public class LoginBean
-{
+public class LoginBean {
 
     @NotNull
     private String username;
     @NotNull
     private String password;
 
-    public String getPassword()
-    {
-	return password;
+    public String getPassword() {
+        return password;
     }
 
-    public String getUsername()
-    {
-	return username;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public void setPassword(String password)
-    {
-	this.password = password;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUsername(String userName)
-    {
-	username = userName;
+    public void setUsername(String userName) {
+        username = userName;
     }
 }

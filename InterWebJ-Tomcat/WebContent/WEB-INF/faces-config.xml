@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <faces-config version="2.3"
-			  xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd">
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd">
 
-	<navigation-rule>
-		<display-name>services.xhtml</display-name>
-		<from-view-id>/services.xhtml</from-view-id>
-		<navigation-case>
-			<from-action>#{servicesBean.revoke(connectorWrapper)}</from-action>
-			<from-outcome>success</from-outcome>
-			<to-view-id>/services.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>
-	<navigation-rule>
-		<display-name>awaiting_services.xhtml</display-name>
-		<from-view-id>/awaiting_services.xhtml</from-view-id>
-		<navigation-case>
-			<from-action>#{servicesBean.save(connectorWrapper)}</from-action>
-			<from-outcome>success</from-outcome>
-			<to-view-id>/awaiting_services.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>
+    <navigation-rule>
+        <display-name>services.xhtml</display-name>
+        <from-view-id>/services.xhtml</from-view-id>
+        <navigation-case>
+            <from-action>#{servicesBean.revoke(connectorWrapper)}</from-action>
+            <from-outcome>success</from-outcome>
+            <to-view-id>/services.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <display-name>awaiting_services.xhtml</display-name>
+        <from-view-id>/awaiting_services.xhtml</from-view-id>
+        <navigation-case>
+            <from-action>#{servicesBean.save(connectorWrapper)}</from-action>
+            <from-outcome>success</from-outcome>
+            <to-view-id>/awaiting_services.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
 
 </faces-config>

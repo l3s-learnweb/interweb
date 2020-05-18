@@ -10,8 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AuthorizationEntity
-{
+public class AuthorizationEntity {
 
     @XmlAttribute(name = "type")
     protected String type;
@@ -21,43 +20,35 @@ public class AuthorizationEntity
     @XmlElement(name = "link")
     protected AuthorizationLinkEntity authorizationLinkEntity;
 
-    public void addParameter(String type, String value)
-    {
-	if(parameters == null)
-	{
-	    parameters = new ArrayList<ParameterEntity>();
-	}
-	parameters.add(new ParameterEntity(type, value));
+    public void addParameter(String type, String value) {
+        if (parameters == null) {
+            parameters = new ArrayList<ParameterEntity>();
+        }
+        parameters.add(new ParameterEntity(type, value));
     }
 
-    public AuthorizationLinkEntity getAuthorizationLinkEntity()
-    {
-	return authorizationLinkEntity;
+    public AuthorizationLinkEntity getAuthorizationLinkEntity() {
+        return authorizationLinkEntity;
     }
 
-    public List<ParameterEntity> getParameters()
-    {
-	return parameters;
+    public void setAuthorizationLinkEntity(AuthorizationLinkEntity authorizationLinkEntity) {
+        this.authorizationLinkEntity = authorizationLinkEntity;
     }
 
-    public String getType()
-    {
-	return type;
+    public List<ParameterEntity> getParameters() {
+        return parameters;
     }
 
-    public void setAuthorizationLinkEntity(AuthorizationLinkEntity authorizationLinkEntity)
-    {
-	this.authorizationLinkEntity = authorizationLinkEntity;
+    public void setParameters(List<ParameterEntity> parameters) {
+        this.parameters = parameters;
     }
 
-    public void setParameters(List<ParameterEntity> parameters)
-    {
-	this.parameters = parameters;
+    public String getType() {
+        return type;
     }
 
-    public void setType(String type)
-    {
-	this.type = type;
+    public void setType(String type) {
+        this.type = type;
     }
 
 }

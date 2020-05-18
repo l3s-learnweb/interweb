@@ -1,21 +1,23 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import de.l3s.interwebj.tomcat.TestUtils;
-import de.l3s.interwebj.core.AuthCredentials;
-import de.l3s.interwebj.tomcat.jaxb.OkResponse;
-import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationLinkResponse;
-import de.l3s.interwebj.tomcat.jaxb.services.ServiceResponse;
-import de.l3s.interwebj.tomcat.jaxb.services.ServicesResponse;
-import org.junit.jupiter.api.Test;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
+
+import org.junit.jupiter.api.Test;
+
+import de.l3s.interwebj.core.AuthCredentials;
+import de.l3s.interwebj.tomcat.TestUtils;
+import de.l3s.interwebj.tomcat.jaxb.OkResponse;
+import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationLinkResponse;
+import de.l3s.interwebj.tomcat.jaxb.services.ServiceResponse;
+import de.l3s.interwebj.tomcat.jaxb.services.ServicesResponse;
 
 class UserTest {
 
@@ -86,8 +88,7 @@ class UserTest {
     @Test
     void testUserServices() {
         AuthCredentials consumerCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
-        //		AuthCredentials userCredentials = new AuthCredentials("***REMOVED***",
-        //		                                                      "***REMOVED***");
+        // AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
         AuthCredentials userCredentials = new AuthCredentials("***REMOVED***", "***REMOVED***");
         WebTarget resource = TestUtils.createWebTarget("api/users/default/services", consumerCredentials, userCredentials);
         System.out.println("querying InterWebJ URL: " + resource.toString());

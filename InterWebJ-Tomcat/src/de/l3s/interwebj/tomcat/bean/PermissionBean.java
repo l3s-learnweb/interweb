@@ -11,33 +11,28 @@ import com.sun.istack.NotNull;
 
 @Named
 @RequestScoped
-public class PermissionBean
-{
+public class PermissionBean {
 
     @NotNull
     private String level;
     private List<SelectItem> levels;
 
-    public PermissionBean()
-    {
-	levels = new ArrayList<SelectItem>();
-	levels.add(new SelectItem("read"));
-	levels.add(new SelectItem("write"));
-	levels.add(new SelectItem("delete"));
+    public PermissionBean() {
+        levels = new ArrayList<SelectItem>();
+        levels.add(new SelectItem("read"));
+        levels.add(new SelectItem("write"));
+        levels.add(new SelectItem("delete"));
     }
 
-    public String getLevelIndex()
-    {
-	return level;
+    public String getLevelIndex() {
+        return level;
     }
 
-    public List<SelectItem> getLevels()
-    {
-	return levels;
+    public List<SelectItem> getLevels() {
+        return levels;
     }
 
-    public void setLevel(String level)
-    {
-	this.level = level;
+    public void setLevel(String level) {
+        this.level = level;
     }
 }

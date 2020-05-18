@@ -1,11 +1,13 @@
 package de.l3s.interwebj.connector.slideshare.jaxb;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "Slideshow")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SearchResultEntity
-{
+public class SearchResultEntity {
 
     @XmlElement(name = "ID")
     protected int id;
@@ -45,184 +47,148 @@ public class SearchResultEntity
     @XmlElement(name = "InContest")
     protected int inContest;
 
-    public String getCreated()
-    {
-	return created;
+    public String getCreated() {
+        return created;
     }
 
-    public String getDescription()
-    {
-	return description;
+    public void setCreated(String created) {
+        this.created = created;
     }
 
-    public int getDownload()
-    {
-	return download;
+    public String getDescription() {
+        return description;
     }
 
-    public String getDownloadUrl()
-    {
-	return downloadUrl;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getEmbed()
-    {
-	return embed;
+    public int getDownload() {
+        return download;
     }
 
-    public String getFormat()
-    {
-	return format;
+    public void setDownload(int download) {
+        this.download = download;
     }
 
-    public int getId()
-    {
-	return id;
+    public String getDownloadUrl() {
+        return downloadUrl;
     }
 
-    public int getInContest()
-    {
-	return inContest;
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
     }
 
-    public String getLanguage()
-    {
-	return language;
+    public String getEmbed() {
+        return embed;
     }
 
-    public int getSlideshowType()
-    {
-	return slideshowType;
+    public void setEmbed(String embed) {
+        this.embed = embed;
     }
 
-    public int getStatus()
-    {
-	return status;
+    public String getFormat() {
+        return format;
     }
 
-    public String getThumbnailSmallURL()
-    {
-	return thumbnailSmallURL;
+    public void setFormat(String format) {
+        this.format = format;
     }
 
-    public String getThumbnailURL()
-    {
-	return thumbnailURL;
+    public int getId() {
+        return id;
     }
 
-    public String getTitle()
-    {
-	return title;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getUpdated()
-    {
-	return updated;
+    public int getInContest() {
+        return inContest;
     }
 
-    public String getUrl()
-    {
-	return url;
+    public void setInContest(int inContest) {
+        this.inContest = inContest;
     }
 
-    public String getUserName()
-    {
-	return userName;
+    public String getLanguage() {
+        return language;
     }
 
-    public void setCreated(String created)
-    {
-	this.created = created;
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
-    public void setDescription(String description)
-    {
-	this.description = description;
+    public int getSlideshowType() {
+        return slideshowType;
     }
 
-    public void setDownload(int download)
-    {
-	this.download = download;
+    public void setSlideshowType(int slideshowType) {
+        this.slideshowType = slideshowType;
     }
 
-    public void setDownloadUrl(String downloadUrl)
-    {
-	this.downloadUrl = downloadUrl;
+    public int getStatus() {
+        return status;
     }
 
-    public void setEmbed(String embed)
-    {
-	this.embed = embed;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
-    public void setFormat(String format)
-    {
-	this.format = format;
+    public String getThumbnailSmallURL() {
+        return thumbnailSmallURL;
     }
 
-    public void setId(int id)
-    {
-	this.id = id;
+    public void setThumbnailSmallURL(String thumbnailSmallURL) {
+        this.thumbnailSmallURL = thumbnailSmallURL;
     }
 
-    public void setInContest(int inContest)
-    {
-	this.inContest = inContest;
+    public String getThumbnailURL() {
+        return thumbnailURL;
     }
 
-    public void setLanguage(String language)
-    {
-	this.language = language;
+    public void setThumbnailURL(String thumbnailURL) {
+        this.thumbnailURL = thumbnailURL;
     }
 
-    public void setSlideshowType(int slideshowType)
-    {
-	this.slideshowType = slideshowType;
+    public String getTitle() {
+        return title;
     }
 
-    public void setStatus(int status)
-    {
-	this.status = status;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setThumbnailSmallURL(String thumbnailSmallURL)
-    {
-	this.thumbnailSmallURL = thumbnailSmallURL;
+    public String getUpdated() {
+        return updated;
     }
 
-    public void setThumbnailURL(String thumbnailURL)
-    {
-	this.thumbnailURL = thumbnailURL;
+    public void setUpdated(String updated) {
+        this.updated = updated;
     }
 
-    public void setTitle(String title)
-    {
-	this.title = title;
+    public String getUrl() {
+        return url;
     }
 
-    public void setUpdated(String updated)
-    {
-	this.updated = updated;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public void setUrl(String url)
-    {
-	this.url = url;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserName(String userName)
-    {
-	this.userName = userName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getThumbnailSize()
-    {
-	return thumbnailSize;
+    public String getThumbnailSize() {
+        return thumbnailSize;
     }
 
-    public void setThumbnailSize(String thumbnailSize)
-    {
-	this.thumbnailSize = thumbnailSize;
+    public void setThumbnailSize(String thumbnailSize) {
+        this.thumbnailSize = thumbnailSize;
     }
 
 }

@@ -1,11 +1,11 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import de.l3s.interwebj.tomcat.TestUtils;
-import de.l3s.interwebj.core.AuthCredentials;
-import de.l3s.interwebj.tomcat.jaxb.SearchResponse;
-import de.l3s.interwebj.tomcat.jaxb.auth.OAuthAccessTokenResponse;
-import de.l3s.interwebj.tomcat.jaxb.auth.OAuthRequestTokenResponse;
-import org.junit.jupiter.api.Test;
+import java.awt.Desktop;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -13,12 +13,13 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.Test;
+
+import de.l3s.interwebj.core.AuthCredentials;
+import de.l3s.interwebj.tomcat.TestUtils;
+import de.l3s.interwebj.tomcat.jaxb.SearchResponse;
+import de.l3s.interwebj.tomcat.jaxb.auth.OAuthAccessTokenResponse;
+import de.l3s.interwebj.tomcat.jaxb.auth.OAuthRequestTokenResponse;
 
 class OAuthTest {
 
@@ -45,9 +46,8 @@ class OAuthTest {
         OAuthRequestTokenResponse requestTokenResponse = response.readEntity(OAuthRequestTokenResponse.class);
         System.out.println(requestTokenResponse);
         String tokenKey = requestTokenResponse.getRequestToken().getOauthToken();
-        URI authorizationUri = URI.create(TestUtils.serverUrl + "api/oauth/OAuthAuthorizeToken" + "?oauth_token=" + tokenKey
-                //		                                  + "&oauth_callback=http://localhost:8080/InterWebJ/view/search.xhtml"
-        );
+        // + "&oauth_callback=http://localhost:8080/InterWebJ/view/search.xhtml"
+        URI authorizationUri = URI.create(TestUtils.serverUrl + "api/oauth/OAuthAuthorizeToken" + "?oauth_token=" + tokenKey);
         System.out.println("authorize token url: " + authorizationUri.toASCIIString());
         Desktop.getDesktop().browse(authorizationUri);
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));

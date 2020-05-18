@@ -7,8 +7,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import de.l3s.interwebj.core.AuthCredentials;
 
-public class RandomGenerator
-{
+public class RandomGenerator {
 
     private static final int DEFAULT_BIT_COUNT = 144;
 
@@ -18,65 +17,53 @@ public class RandomGenerator
 
     private SecureRandom random;
 
-    public RandomGenerator()
-    {
-	random = new SecureRandom();
+    public RandomGenerator() {
+        random = new SecureRandom();
     }
 
-    public String nextAlphanumericId()
-    {
-	return nextAlphanumericId(16);
+    public static RandomGenerator getInstance() {
+        if (singleton == null) {
+            singleton = new RandomGenerator();
+        }
+        return singleton;
     }
 
-    public String nextAlphanumericId(int charCount)
-    {
-	return RandomStringUtils.random(charCount, alphanumericChars);
+    public static void main(String[] args) {
+        RandomGenerator randomGenerator = RandomGenerator.getInstance();
+        System.out.println(randomGenerator.nextOAuthCredentials());
     }
 
-    public String nextDecId()
-    {
-	return nextDecId(DEFAULT_BIT_COUNT);
+    public String nextAlphanumericId() {
+        return nextAlphanumericId(16);
     }
 
-    public String nextDecId(int bitCount)
-    {
-	return new BigInteger(bitCount, random).toString(10);
+    public String nextAlphanumericId(int charCount) {
+        return RandomStringUtils.random(charCount, alphanumericChars);
     }
 
-    public String nextHexId()
-    {
-	return nextHexId(DEFAULT_BIT_COUNT);
+    public String nextDecId() {
+        return nextDecId(DEFAULT_BIT_COUNT);
     }
 
-    public String nextHexId(int bitCount)
-    {
-	return new BigInteger(bitCount, random).toString(16);
+    public String nextDecId(int bitCount) {
+        return new BigInteger(bitCount, random).toString(10);
     }
 
-    public AuthCredentials nextOAuthCredentials()
-    {
-	String key = nextAlphanumericId(16);
-	String secret = nextAlphanumericId(24);
-	return new AuthCredentials(key, secret);
+    public String nextHexId() {
+        return nextHexId(DEFAULT_BIT_COUNT);
     }
 
-    public String nextOAuthToken()
-    {
-	return nextAlphanumericId(16);
+    public String nextHexId(int bitCount) {
+        return new BigInteger(bitCount, random).toString(16);
     }
 
-    public static RandomGenerator getInstance()
-    {
-	if(singleton == null)
-	{
-	    singleton = new RandomGenerator();
-	}
-	return singleton;
+    public AuthCredentials nextOAuthCredentials() {
+        String key = nextAlphanumericId(16);
+        String secret = nextAlphanumericId(24);
+        return new AuthCredentials(key, secret);
     }
 
-    public static void main(String[] args)
-    {
-	RandomGenerator randomGenerator = RandomGenerator.getInstance();
-	System.out.println(randomGenerator.nextOAuthCredentials());
+    public String nextOAuthToken() {
+        return nextAlphanumericId(16);
     }
 }

@@ -1,19 +1,20 @@
 package de.l3s.interwebj.connector.slideshare;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
 import de.l3s.interwebj.core.query.QueryResult;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class SlideShareConnectorTest {
-    private final static String TEST_KEY = "***REMOVED***";
-    private final static String TEST_SECRET = "***REMOVED***";
+    private static final  String TEST_KEY = "***REMOVED***";
+    private static final  String TEST_SECRET = "***REMOVED***";
 
     private static AbstractServiceConnector connector;
 
@@ -35,8 +36,8 @@ class SlideShareConnectorTest {
         query.addSearchScope(Query.SearchScope.TEXT);
         query.addSearchScope(Query.SearchScope.TAGS);
         query.setResultCount(5);
-        //		query.addParam("date_from", "2009-01-01 00:00:00");
-        //		query.addParam("date_till", "2009-06-01 00:00:00");
+        // query.addParam("date_from", "2009-01-01 00:00:00");
+        // query.addParam("date_till", "2009-06-01 00:00:00");
         query.setSortOrder(Query.SortOrder.RELEVANCE);
 
         QueryResult queryResult = connector.get(query, null);

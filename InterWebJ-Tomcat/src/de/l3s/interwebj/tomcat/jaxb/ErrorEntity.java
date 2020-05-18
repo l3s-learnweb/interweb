@@ -7,58 +7,49 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "error")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ErrorEntity
-{
+public class ErrorEntity {
 
     @XmlAttribute(name = "code")
     protected int code;
     @XmlAttribute(name = "message")
     protected String message;
 
-    public ErrorEntity()
-    {
+    public ErrorEntity() {
     }
 
-    public ErrorEntity(int code, String message)
-    {
-	this();
-	this.code = code;
-	this.message = message;
+    public ErrorEntity(int code, String message) {
+        this();
+        this.code = code;
+        this.message = message;
     }
 
-    public int getCode()
-    {
-	return code;
+    public int getCode() {
+        return code;
     }
 
-    public String getMessage()
-    {
-	return message;
+    public void setCode(int code) {
+        this.code = code;
     }
 
-    public void setCode(int code)
-    {
-	this.code = code;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMessage(String message)
-    {
-	this.message = message;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override
-    public String toString()
-    {
-	StringBuilder builder = new StringBuilder();
-	builder.append("ResponseError [code=");
-	builder.append(code);
-	builder.append(", ");
-	if(message != null)
-	{
-	    builder.append("message=");
-	    builder.append(message);
-	}
-	builder.append("]");
-	return builder.toString();
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ResponseError [code=");
+        builder.append(code);
+        builder.append(", ");
+        if (message != null) {
+            builder.append("message=");
+            builder.append(message);
+        }
+        builder.append("]");
+        return builder.toString();
     }
 }

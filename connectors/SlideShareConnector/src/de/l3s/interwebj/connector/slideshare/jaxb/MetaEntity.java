@@ -1,11 +1,13 @@
 package de.l3s.interwebj.connector.slideshare.jaxb;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "Meta")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class MetaEntity
-{
+public class MetaEntity {
 
     @XmlElement(name = "Query")
     protected String query;
@@ -16,44 +18,36 @@ public class MetaEntity
     @XmlElement(name = "TotalResults")
     protected int totalResults;
 
-    public int getNumResults()
-    {
-	return numResults;
+    public int getNumResults() {
+        return numResults;
     }
 
-    public String getQuery()
-    {
-	return query;
+    public void setNumResults(int numResults) {
+        this.numResults = numResults;
     }
 
-    public int getResultOffset()
-    {
-	return resultOffset;
+    public String getQuery() {
+        return query;
     }
 
-    public int getTotalResults()
-    {
-	return totalResults;
+    public void setQuery(String query) {
+        this.query = query;
     }
 
-    public void setNumResults(int numResults)
-    {
-	this.numResults = numResults;
+    public int getResultOffset() {
+        return resultOffset;
     }
 
-    public void setQuery(String query)
-    {
-	this.query = query;
+    public void setResultOffset(int resultOffset) {
+        this.resultOffset = resultOffset;
     }
 
-    public void setResultOffset(int resultOffset)
-    {
-	this.resultOffset = resultOffset;
+    public int getTotalResults() {
+        return totalResults;
     }
 
-    public void setTotalResults(int totalResults)
-    {
-	this.totalResults = totalResults;
+    public void setTotalResults(int totalResults) {
+        this.totalResults = totalResults;
     }
 
 }
