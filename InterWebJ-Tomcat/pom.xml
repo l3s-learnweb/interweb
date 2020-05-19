@@ -17,7 +17,7 @@
     <name>InterWebJ-Tomcat</name>
 
     <properties>
-        <javax.faces.project_stage>Production</javax.faces.project_stage>
+        <javax.faces.project_stage>Development</javax.faces.project_stage>
     </properties>
 
     <dependencies>
@@ -101,10 +101,6 @@
             <artifactId>jersey-hk2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-jaxb</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.jersey.security</groupId>
             <artifactId>oauth1-client</artifactId>
         </dependency>
@@ -114,7 +110,15 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-jaxb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
         </dependency>
 
         <dependency>

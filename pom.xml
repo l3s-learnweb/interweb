@@ -81,11 +81,6 @@
                 <version>${maven.dependency.jersey2.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-jaxb</artifactId>
-                <version>${maven.dependency.jersey2.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.glassfish.jersey.security</groupId>
                 <artifactId>oauth1-client</artifactId>
                 <version>${maven.dependency.jersey2.version}</version>
@@ -97,7 +92,17 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-jaxb</artifactId>
+                <version>${maven.dependency.jersey2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-multipart</artifactId>
+                <version>${maven.dependency.jersey2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
                 <version>${maven.dependency.jersey2.version}</version>
             </dependency>
 

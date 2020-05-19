@@ -43,6 +43,101 @@ public class Search extends Endpoint {
     @Context
     private UriInfo uriInfo;
 
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    public XMLResponse getQueryResult(@QueryParam("q") String queryString, @QueryParam("search_in") String searchIn,
+                                      @QueryParam("media_types") String mediaTypes, @QueryParam("date_from") String dateFrom,
+                                      @QueryParam("date_till") String dateTill, @QueryParam("ranking") String ranking,
+                                      @QueryParam("number_of_results") String resultCount, @QueryParam("services") String services,
+                                      @QueryParam("page") String page, @QueryParam("language") String language,
+                                      @QueryParam("privacy") String privacy, @QueryParam("privacy_image_feature") String privacyUseImageFeature,
+                                      @QueryParam("timeout") String timeout) {
+        QueryFactory queryFactory = new QueryFactory();
+        ErrorResponse errorResponse;
+        errorResponse = checkQueryString(queryString);
+        if (errorResponse != null) {
+            return errorResponse;
+        }
+        Query query = queryFactory.createQuery(queryString.trim());
+        query.setLink(uriInfo.getAbsolutePath() + "/" + query.getId() + ".xml");
+        errorResponse = checkSearchIn(query, searchIn);
+        if (errorResponse != null) {
+            return errorResponse;
+        }
+        errorResponse = checkMediaTypes(query, mediaTypes);
+        if (errorResponse != null) {
+            return errorResponse;
+        }
+        errorResponse = checkDates(query, dateFrom, dateTill);
+        if (errorResponse != null) {
+            return errorResponse;
+        }
+        errorResponse = checkRanking(query, ranking);
+        if (errorResponse != null) {
+            return errorResponse;
+        }
+        errorResponse = checkResultCount(query, resultCount);
+        if (errorResponse != null) {
+            return errorResponse;
+        }
+        errorResponse = checkServices(query, services);
+        if (errorResponse != null) {
+            return errorResponse;
+        }
+        checkPage(query, page);
+
+        if (null != privacy) {
+            query.setPrivacy(Float.parseFloat(privacy));
+        }
+
+        if (null != privacyUseImageFeature && (privacyUseImageFeature.equals("1") || privacyUseImageFeature.equalsIgnoreCase("true"))) {
+            query.setPrivacyUseImageFeatures(true);
+        }
+
+        if (null != language) {
+            query.setLanguage(language);
+        }
+
+        if (null != timeout) {
+            query.setTimeout(Integer.parseInt(timeout));
+        }
+
+        try {
+            Engine engine = Environment.getInstance().getEngine();
+            InterWebPrincipal principal = getPrincipal();
+            log.info("principal: [" + principal + "]");
+
+            QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
+            QueryResult queryResult = collector.retrieve();
+
+            ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
+            expirableMap.put(queryResult.getQuery().getId(), queryResult);
+            SearchResponse searchResponse = new SearchResponse(queryResult);
+            String userName = (principal == null) ? "anonymous" : principal.getName();
+            searchResponse.getQuery().setUser(userName);
+            log.info(searchResponse.getQuery().getResults().size() + " results found in " + searchResponse.getQuery().getElapsedTime() + " ms");
+            return searchResponse;
+        } catch (InterWebException e) {
+            log.error(e);
+            return new ErrorResponse(999, e.getMessage());
+        }
+    }
+
+    @GET
+    @Path("/{id}.xml")
+    @Produces(MediaType.APPLICATION_XML)
+    public XMLResponse getStandingQueryResult(@PathParam(value = "id") String id) {
+        Engine engine = Environment.getInstance().getEngine();
+        ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
+        QueryResult queryResult = (QueryResult) expirableMap.get(id);
+        InterWebPrincipal principal = getPrincipal();
+        if (queryResult == null || principal == null || principal.getName().equals(queryResult.getQuery().getParam("user"))) {
+            return ErrorResponse.NO_STANDING_QUERY;
+        }
+        SearchResponse iwSearchResponse = new SearchResponse(queryResult);
+        return iwSearchResponse;
+    }
+
     private static boolean checkDate(String date) {
         try {
             CoreUtils.parseDate(date);
@@ -176,100 +271,5 @@ public class Search extends Endpoint {
             }
         }
         return null;
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public XMLResponse getQueryResult(@QueryParam("q") String queryString, @QueryParam("search_in") String searchIn,
-                                      @QueryParam("media_types") String mediaTypes, @QueryParam("date_from") String dateFrom,
-                                      @QueryParam("date_till") String dateTill, @QueryParam("ranking") String ranking,
-                                      @QueryParam("number_of_results") String resultCount, @QueryParam("services") String services,
-                                      @QueryParam("page") String page, @QueryParam("language") String language,
-                                      @QueryParam("privacy") String privacy, @QueryParam("privacy_image_feature") String privacyUseImageFeature,
-                                      @QueryParam("timeout") String timeout) {
-        QueryFactory queryFactory = new QueryFactory();
-        ErrorResponse errorResponse;
-        errorResponse = checkQueryString(queryString);
-        if (errorResponse != null) {
-            return errorResponse;
-        }
-        Query query = queryFactory.createQuery(queryString.trim());
-        query.setLink(uriInfo.getAbsolutePath() + "/" + query.getId() + ".xml");
-        errorResponse = checkSearchIn(query, searchIn);
-        if (errorResponse != null) {
-            return errorResponse;
-        }
-        errorResponse = checkMediaTypes(query, mediaTypes);
-        if (errorResponse != null) {
-            return errorResponse;
-        }
-        errorResponse = checkDates(query, dateFrom, dateTill);
-        if (errorResponse != null) {
-            return errorResponse;
-        }
-        errorResponse = checkRanking(query, ranking);
-        if (errorResponse != null) {
-            return errorResponse;
-        }
-        errorResponse = checkResultCount(query, resultCount);
-        if (errorResponse != null) {
-            return errorResponse;
-        }
-        errorResponse = checkServices(query, services);
-        if (errorResponse != null) {
-            return errorResponse;
-        }
-        checkPage(query, page);
-
-        if (null != privacy) {
-            query.setPrivacy(Float.parseFloat(privacy));
-        }
-
-        if (null != privacyUseImageFeature && (privacyUseImageFeature.equals("1") || privacyUseImageFeature.equalsIgnoreCase("true"))) {
-            query.setPrivacyUseImageFeatures(true);
-        }
-
-        if (null != language) {
-            query.setLanguage(language);
-        }
-
-        if (null != timeout) {
-            query.setTimeout(Integer.parseInt(timeout));
-        }
-
-        try {
-            Engine engine = Environment.getInstance().getEngine();
-            InterWebPrincipal principal = getPrincipal();
-            log.info("principal: [" + principal + "]");
-
-            QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
-            QueryResult queryResult = collector.retrieve();
-
-            ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-            expirableMap.put(queryResult.getQuery().getId(), queryResult);
-            SearchResponse searchResponse = new SearchResponse(queryResult);
-            String userName = (principal == null) ? "anonymous" : principal.getName();
-            searchResponse.getQuery().setUser(userName);
-            log.info(searchResponse.getQuery().getResults().size() + " results found in " + searchResponse.getQuery().getElapsedTime() + " ms");
-            return searchResponse;
-        } catch (InterWebException e) {
-            log.error(e);
-            return new ErrorResponse(999, e.getMessage());
-        }
-    }
-
-    @GET
-    @Path("/{id}.xml")
-    @Produces(MediaType.APPLICATION_XML)
-    public XMLResponse getStandingQueryResult(@PathParam(value = "id") String id) {
-        Engine engine = Environment.getInstance().getEngine();
-        ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-        QueryResult queryResult = (QueryResult) expirableMap.get(id);
-        InterWebPrincipal principal = getPrincipal();
-        if (queryResult == null || principal == null || principal.getName().equals(queryResult.getQuery().getParam("user"))) {
-            return ErrorResponse.NO_STANDING_QUERY;
-        }
-        SearchResponse iwSearchResponse = new SearchResponse(queryResult);
-        return iwSearchResponse;
     }
 }
