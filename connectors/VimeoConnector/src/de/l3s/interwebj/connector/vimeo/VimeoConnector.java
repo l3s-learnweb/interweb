@@ -30,7 +30,7 @@ import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.Query;
-import de.l3s.interwebj.core.query.QueryResult;
+import de.l3s.interwebj.core.query.ConnectorResults;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
@@ -101,11 +101,11 @@ public class VimeoConnector extends AbstractServiceConnector implements Cloneabl
     }
 
     @Override
-    public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
         }
-        QueryResult queryResult = new QueryResult(query);
+        ConnectorResults queryResult = new ConnectorResults(query, getName());
 
         if (!query.getContentTypes().contains(Query.CT_VIDEO)) {
             return queryResult;

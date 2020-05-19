@@ -20,14 +20,13 @@ import de.l3s.interwebj.core.core.ServiceConnector;
 
 public class QueryResultCollector {
     private static final Logger log = LogManager.getLogger(QueryResultCollector.class);
+
     private Query query;
-    private QueryResultMerger merger;
     private List<QueryResultRetriever> retrievers;
 
-    public QueryResultCollector(Query query, QueryResultMerger merger) {
+    public QueryResultCollector(Query query) {
         this.query = query;
-        this.merger = merger;
-        retrievers = new ArrayList<QueryResultCollector.QueryResultRetriever>();
+        this.retrievers = new ArrayList<>();
     }
 
     public void addQueryResultRetriever(ServiceConnector connector, AuthCredentials authCredentials) {
@@ -45,21 +44,21 @@ public class QueryResultCollector {
 
         log.info("Search for: " + query);
 
-        List<FutureTask<QueryResult>> tasks = new ArrayList<FutureTask<QueryResult>>();
+        List<FutureTask<ConnectorResults>> tasks = new ArrayList<FutureTask<ConnectorResults>>();
         for (QueryResultRetriever retriever : retrievers) {
-            FutureTask<QueryResult> task = new FutureTask<QueryResult>(retriever);
+            FutureTask<ConnectorResults> task = new FutureTask<ConnectorResults>(retriever);
             tasks.add(task);
             Thread t = new Thread(task);
             t.start();
         }
 
-        QueryResult queryResult = new QueryResult(query);
+        QueryResult results = new QueryResult(query);
         long startTime = System.currentTimeMillis();
-        queryResult.setCreatedTime(startTime);
+        results.setCreatedTime(startTime);
         boolean errorOccurred = false;
-        for (FutureTask<QueryResult> task : tasks) {
+        for (FutureTask<ConnectorResults> task : tasks) {
             try {
-                queryResult.addQueryResult(task.get(query.getTimeout(), TimeUnit.SECONDS));
+                results.addQueryResult(task.get(query.getTimeout(), TimeUnit.SECONDS));
             } catch (InterruptedException e) {
                 log.error(e);
                 throw new InterWebException(e);
@@ -72,17 +71,16 @@ public class QueryResultCollector {
                 log.error(e);
             }
         }
-        queryResult.setElapsedTime(System.currentTimeMillis() - startTime);
-        queryResult = merger.merge(queryResult);
+        results.setElapsedTime(System.currentTimeMillis() - startTime);
 
         if (!errorOccurred) {
-            cache.put(query, queryResult);
+            cache.put(query, results);
         }
 
-        return queryResult;
+        return results;
     }
 
-    private class QueryResultRetriever implements Callable<QueryResult> {
+    private class QueryResultRetriever implements Callable<ConnectorResults> {
 
         private ServiceConnector connector;
         private AuthCredentials authCredentials;
@@ -93,16 +91,16 @@ public class QueryResultCollector {
         }
 
         @Override
-        public QueryResult call() {
+        public ConnectorResults call() {
             long startTime = System.currentTimeMillis();
             log.info("[" + connector.getName() + "] Start querying: " + query);
 
-            QueryResult queryResult;
+            ConnectorResults queryResult;
             try {
                 queryResult = connector.get(query, authCredentials);
             } catch (Throwable e) {
                 log.error(e);
-                return new QueryResult(query);
+                return new ConnectorResults(query, connector.getName());
             }
 
             long endTime = System.currentTimeMillis();

@@ -188,6 +188,7 @@ public class SearchBean implements Serializable {
         query.setPage(page);
         query.setLanguage(language);
         query.setTimeout(timeout);
+
         QueryResult queryResult = new QueryResult(query);
         Engine engine = Environment.getInstance().getEngine();
         InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();

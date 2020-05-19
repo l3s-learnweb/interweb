@@ -34,7 +34,7 @@ import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.Query;
-import de.l3s.interwebj.core.query.QueryResult;
+import de.l3s.interwebj.core.query.ConnectorResults;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 
@@ -124,7 +124,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
     }
 
     @Override
-    public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
 
         if (authCredentials == null) {
@@ -158,7 +158,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
      *
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
      */
-    private QueryResult getWebSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
+    private ConnectorResults getWebSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
         List<AnswerType> answerTypes = new ArrayList<>();
         for (String contentType : query.getContentTypes()) {
             if (contentType.equals(Query.CT_TEXT)) {
@@ -184,7 +184,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                     .execute();
 
             // Results go here
-            QueryResult results = new QueryResult(query);
+            ConnectorResults results = new ConnectorResults(query, getName());
 
 
             if (webData != null && webData.webPages() != null && webData.webPages().value() != null && !webData.webPages().value().isEmpty()) {
@@ -192,6 +192,8 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
                 if (webResults.totalEstimatedMatches() != null) {
                     results.addTotalResultCount(webResults.totalEstimatedMatches());
+                } else {
+                    results.addTotalResultCount(webResults.value().size());
                 }
 
                 int index = 1;
@@ -215,7 +217,6 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                 if (imagesResults.totalEstimatedMatches() != null) {
                     results.addTotalResultCount(imagesResults.totalEstimatedMatches());
                 } else {
-                    // better than nothing
                     results.addTotalResultCount(imagesResults.value().size());
                 }
 
@@ -264,7 +265,6 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                 if (videosResults.totalEstimatedMatches() != null) {
                     results.addTotalResultCount(videosResults.totalEstimatedMatches());
                 } else {
-                    // better than nothing
                     results.addTotalResultCount(videosResults.value().size());
                 }
 
@@ -318,7 +318,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
      *
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
      */
-    private QueryResult getImagesSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
+    private ConnectorResults getImagesSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
         try {
             // Init Bing Client
             BingImageSearchAPI client = BingImageSearchManager.authenticate(authCredentials.getKey());
@@ -332,14 +332,13 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                     .execute();
 
             // Results go here
-            QueryResult results = new QueryResult(query);
+            ConnectorResults results = new ConnectorResults(query, getName());
 
             if (imageResults != null && imageResults.value() != null && !imageResults.value().isEmpty()) {
                 if (imageResults.totalEstimatedMatches() != null) {
-                    results.addTotalResultCount(imageResults.totalEstimatedMatches());
+                    results.setTotalResultCount(imageResults.totalEstimatedMatches());
                 } else {
-                    // better than nothing
-                    results.addTotalResultCount(imageResults.value().size());
+                    results.setTotalResultCount(imageResults.value().size());
                 }
 
                 int index = 1;
@@ -392,7 +391,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
      *
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-video-search/quickstarts/client-libraries?pivots=programming-language-java
      */
-    private QueryResult getVideoSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
+    private ConnectorResults getVideoSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
         try {
             // Init Bing Client
             BingVideoSearchAPI client = BingVideoSearchManager.authenticate(authCredentials.getKey());
@@ -406,14 +405,13 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                     .execute();
 
             // Results go here
-            QueryResult results = new QueryResult(query);
+            ConnectorResults results = new ConnectorResults(query, getName());
 
             if (videoResults != null && videoResults.value() != null && !videoResults.value().isEmpty()) {
                 if (videoResults.totalEstimatedMatches() != null) {
-                    results.addTotalResultCount(videoResults.totalEstimatedMatches());
+                    results.setTotalResultCount(videoResults.totalEstimatedMatches());
                 } else {
-                    // better than nothing
-                    results.addTotalResultCount(videoResults.value().size());
+                    results.setTotalResultCount(videoResults.value().size());
                 }
 
                 int index = 1;

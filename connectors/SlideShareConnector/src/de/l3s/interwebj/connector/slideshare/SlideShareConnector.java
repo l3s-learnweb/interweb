@@ -39,7 +39,7 @@ import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.Query.SearchScope;
 import de.l3s.interwebj.core.query.Query.SortOrder;
-import de.l3s.interwebj.core.query.QueryResult;
+import de.l3s.interwebj.core.query.ConnectorResults;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
@@ -77,9 +77,9 @@ public class SlideShareConnector extends AbstractServiceConnector implements Clo
     }
 
     @Override
-    public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
-        QueryResult queryResult = new QueryResult(query);
+        ConnectorResults queryResult = new ConnectorResults(query, getName());
         //WebResource resource = createResource("https://www.slideshare.net/api/2/search_slideshows");
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("https://www.slideshare.net/api/2/search_slideshows");

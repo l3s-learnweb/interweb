@@ -30,7 +30,7 @@ import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.Query.SortOrder;
-import de.l3s.interwebj.core.query.QueryResult;
+import de.l3s.interwebj.core.query.ConnectorResults;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
@@ -91,12 +91,12 @@ public class IpernityConnector extends AbstractServiceConnector implements Clone
     }
 
     @Override
-    public QueryResult get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
         }
-        QueryResult queryResult = new QueryResult(query);
+        ConnectorResults queryResult = new ConnectorResults(query, getName());
 
         if (!query.getContentTypes().contains(Query.CT_IMAGE)
             && !query.getContentTypes().contains(Query.CT_VIDEO)

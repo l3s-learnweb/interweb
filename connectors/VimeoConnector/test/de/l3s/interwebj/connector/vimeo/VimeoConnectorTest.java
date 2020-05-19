@@ -10,7 +10,7 @@ import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
-import de.l3s.interwebj.core.query.QueryResult;
+import de.l3s.interwebj.core.query.ConnectorResults;
 
 class VimeoConnectorTest {
     private static final  String TEST_KEY = "***REMOVED***";
@@ -34,7 +34,7 @@ class VimeoConnectorTest {
         // query.addParam("date_till", "2009-06-01 00:00:00");
         query.setSortOrder(Query.SortOrder.RELEVANCE);
 
-        QueryResult queryResult = connector.get(query, null);
+        ConnectorResults queryResult = connector.get(query, null);
 
         assertEquals(5, queryResult.getResultItems().size());
         assertTrue(queryResult.getTotalResultCount() > 100);

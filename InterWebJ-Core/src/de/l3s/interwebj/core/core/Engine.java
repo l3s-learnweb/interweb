@@ -22,14 +22,9 @@ import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.core.query.DumbQueryResultMerger;
 import de.l3s.interwebj.core.query.Query;
-import de.l3s.interwebj.core.query.Query.SearchScope;
-import de.l3s.interwebj.core.query.Query.SortOrder;
-import de.l3s.interwebj.core.query.QueryFactory;
 import de.l3s.interwebj.core.query.QueryResult;
 import de.l3s.interwebj.core.query.QueryResultCollector;
-import de.l3s.interwebj.core.query.QueryResultMerger;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.util.ExpirableMap;
 import de.l3s.interwebj.core.util.ExpirationPolicy;
@@ -47,45 +42,6 @@ public class Engine {
     public Engine(Database database) {
         this.database = database;
         init();
-    }
-
-    public static void main(String[] args) throws InterWebException {
-        Database database = Environment.getInstance().getDatabase();
-        InterWebPrincipal principal;
-        principal = database.authenticate("olex", "123456");
-        AuthCredentials authCredentials;
-        authCredentials = database.readConnectorAuthCredentials("flickr");
-        log.info(authCredentials);
-        Engine engine = new Engine(database);
-        engine.loadConnectors();
-
-        List<String> connectorNames = engine.getConnectorNames();
-        log.info("Searching in connectors: " + connectorNames);
-        int retryCount = 5;
-        for (int i = 0; i < retryCount; i++) {
-            testSearch("london", connectorNames, engine, principal);
-        }
-
-        log.info("finished");
-    }
-
-    private static void testSearch(String word, List<String> connectorNames, Engine engine, InterWebPrincipal principal) throws InterWebException {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery(word);
-        query.addContentType(Query.CT_VIDEO);
-        query.addContentType(Query.CT_IMAGE);
-        query.addSearchScope(SearchScope.TEXT);
-        query.addSearchScope(SearchScope.TAGS);
-        query.setResultCount(10);
-        query.setSortOrder(SortOrder.RELEVANCE);
-        for (String connectorName : connectorNames) {
-            query.addConnectorName(connectorName);
-        }
-        QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
-
-        QueryResult queryResult = collector.retrieve();
-        log.info("query: [" + query + "]");
-        log.info("elapsed time : [" + queryResult.getElapsedTime() + "]");
     }
 
     public Cache<Query, QueryResult> getCache() {
@@ -146,30 +102,8 @@ public class Engine {
 
     public QueryResultCollector getQueryResultCollector(Query query, InterWebPrincipal principal) throws InterWebException {
         log.info(query);
-        /*
-        String userName = (principal == null)? "anonymous" : principal.getName();
-        query.addParam("user", userName);
-        */
 
-        QueryResultMerger merger = new DumbQueryResultMerger();
-        /*
-        if(query.getPrivacy() != -1) // increase the number of results, to fetch enough public and private results
-        {
-            if(query.getPrivacy() < 0f) query.setPrivacy(0f);
-            if(query.getPrivacy() > 1f) query.setPrivacy(1f);
-
-            int estimatedPrivateResults = Math.round(query.getResultCount() * query.getConnectorNames().size() * query.getPrivacy());
-            int estimatedPublicResults = query.getResultCount() * query.getConnectorNames().size() - estimatedPrivateResults;
-
-            merger = new PrivacyQueryResultMerger(query.getResultCount(), estimatedPrivateResults, estimatedPublicResults);
-
-            int tmp_number_of_results =  estimatedPrivateResults*5 + (int)Math.ceil(estimatedPublicResults*1.25);
-
-            query.setResultCount(tmp_number_of_results);
-
-        }*/
-
-        QueryResultCollector collector = new QueryResultCollector(query, merger);
+        QueryResultCollector collector = new QueryResultCollector(query);
         for (String connectorName : query.getConnectorNames()) {
             ServiceConnector connector = getConnector(connectorName);
             if (connector.isRegistered()) {

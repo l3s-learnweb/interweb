@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 
 import de.l3s.interwebj.core.AuthCredentials;
 
@@ -26,11 +27,6 @@ public class RandomGenerator {
             singleton = new RandomGenerator();
         }
         return singleton;
-    }
-
-    public static void main(String[] args) {
-        RandomGenerator randomGenerator = RandomGenerator.getInstance();
-        System.out.println(randomGenerator.nextOAuthCredentials());
     }
 
     public String nextAlphanumericId() {

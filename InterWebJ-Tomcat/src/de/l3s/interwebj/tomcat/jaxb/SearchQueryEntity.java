@@ -2,6 +2,7 @@ package de.l3s.interwebj.tomcat.jaxb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,6 +44,10 @@ public class SearchQueryEntity {
     protected String updated;
     @XmlElement(name = "elapsed_time")
     protected String elapsedTime;
+    @XmlElement(name = "total_results")
+    protected Long totalResults;
+    @XmlElement(name = "facet_sources")
+    protected Map<String, Long> facetSources;
     @XmlElementWrapper(name = "results")
     @XmlElement(name = "result")
     protected List<SearchResultEntity> results;
@@ -149,6 +154,22 @@ public class SearchQueryEntity {
 
     public void setResults(List<SearchResultEntity> results) {
         this.results = results;
+    }
+
+    public Long getTotalResults() {
+        return totalResults;
+    }
+
+    public void setTotalResults(Long totalResults) {
+        this.totalResults = totalResults;
+    }
+
+    public Map<String, Long> getFacetSources() {
+        return facetSources;
+    }
+
+    public void setFacetSources(Map<String, Long> facetSources) {
+        this.facetSources = facetSources;
     }
 
     public String getSearchIn() {

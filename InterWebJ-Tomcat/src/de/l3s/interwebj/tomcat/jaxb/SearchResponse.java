@@ -21,10 +21,14 @@ public class SearchResponse extends XMLResponse {
     public SearchResponse(QueryResult queryResult) {
         SearchQueryEntity searchQueryEntity = new SearchQueryEntity(queryResult.getQuery());
         searchQueryEntity.setElapsedTime(String.valueOf(queryResult.getElapsedTime()));
+        searchQueryEntity.setTotalResults(queryResult.getTotalResultCount());
+        searchQueryEntity.setFacetSources(queryResult.getFacetResults());
+
         for (ResultItem resultItem : queryResult.getResultItems()) {
             SearchResultEntity iwSearchResult = new SearchResultEntity(resultItem);
             searchQueryEntity.addResult(iwSearchResult);
         }
+
         query = searchQueryEntity;
     }
 
