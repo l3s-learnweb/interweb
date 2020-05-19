@@ -37,7 +37,7 @@ public class OAuth extends Endpoint {
 
     @GET
     @Path("/OAuthAuthorizeToken")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse authorizeToken(@QueryParam("oauth_token") String requestToken, @QueryParam("oauth_callback") String callbackUrl) {
         log.info("callbackUrl: [" + callbackUrl + "]");
         URI uri = getBaseUri().resolve("../view/authorize_consumer.xhtml");
@@ -53,7 +53,7 @@ public class OAuth extends Endpoint {
 
     @GET
     @Path("/OAuthGetAccessToken")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse getAccessToken() {
         String token = getOAuthParameters().getToken();
         Engine engine = Environment.getInstance().getEngine();
@@ -71,7 +71,7 @@ public class OAuth extends Endpoint {
 
     @GET
     @Path("/OAuthGetRequestToken")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse getRequestToken() {
         AuthCredentials authCredentials = RandomGenerator.getInstance().nextOAuthCredentials();
         OAuthRequestTokenResponse response = new OAuthRequestTokenResponse(authCredentials);
@@ -86,7 +86,7 @@ public class OAuth extends Endpoint {
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse registerUser(@FormParam("username") String userName, @FormParam("password") String password,
                                     @FormParam("mediator_username") String mediatorUserName, @FormParam("mediator_password") String mediatorPassword) {
         Database database = Environment.getInstance().getDatabase();
@@ -115,7 +115,7 @@ public class OAuth extends Endpoint {
     // @POST
     // @Path("/set_defaults")
     // @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    // @Produces(MediaType.APPLICATION_XML)
+    // @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     // public XMLResponse registerUser(@FormParam("default_token") String defaultToken,
     //                                 @FormParam("default_secret") String defaultTokenSecret)
     // {

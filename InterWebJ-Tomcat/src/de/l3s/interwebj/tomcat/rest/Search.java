@@ -44,13 +44,12 @@ public class Search extends Endpoint {
     private UriInfo uriInfo;
 
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse getQueryResult(@QueryParam("q") String queryString, @QueryParam("search_in") String searchIn,
                                       @QueryParam("media_types") String mediaTypes, @QueryParam("date_from") String dateFrom,
                                       @QueryParam("date_till") String dateTill, @QueryParam("ranking") String ranking,
                                       @QueryParam("number_of_results") String resultCount, @QueryParam("services") String services,
                                       @QueryParam("page") String page, @QueryParam("language") String language,
-                                      @QueryParam("privacy") String privacy, @QueryParam("privacy_image_feature") String privacyUseImageFeature,
                                       @QueryParam("timeout") String timeout) {
         QueryFactory queryFactory = new QueryFactory();
         ErrorResponse errorResponse;
@@ -86,14 +85,6 @@ public class Search extends Endpoint {
         }
         checkPage(query, page);
 
-        if (null != privacy) {
-            query.setPrivacy(Float.parseFloat(privacy));
-        }
-
-        if (null != privacyUseImageFeature && (privacyUseImageFeature.equals("1") || privacyUseImageFeature.equalsIgnoreCase("true"))) {
-            query.setPrivacyUseImageFeatures(true);
-        }
-
         if (null != language) {
             query.setLanguage(language);
         }
@@ -125,7 +116,7 @@ public class Search extends Endpoint {
 
     @GET
     @Path("/{id}.xml")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse getStandingQueryResult(@PathParam(value = "id") String id) {
         Engine engine = Environment.getInstance().getEngine();
         ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();

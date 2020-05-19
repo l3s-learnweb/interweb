@@ -34,7 +34,7 @@ public class Embedded extends Endpoint {
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse getEmbedded(@FormParam("url") String url, @FormParam("max_width") int maxWidth, @FormParam("max_height") int maxHeight) {
         if (StringUtils.isEmpty(url)) {
             return new ErrorResponse(999, "URL must not by null or empty");

@@ -77,7 +77,6 @@ public class Engine {
         query.addSearchScope(SearchScope.TEXT);
         query.addSearchScope(SearchScope.TAGS);
         query.setResultCount(10);
-        query.setPrivacy(0.5f);
         query.setSortOrder(SortOrder.RELEVANCE);
         for (String connectorName : connectorNames) {
             query.addConnectorName(connectorName);

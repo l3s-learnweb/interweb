@@ -45,7 +45,7 @@ public class User extends Endpoint {
 
     @POST
     @Path("/services/{service}/auth")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse authenticateOnService(@PathParam("service") String connectorName, @QueryParam("callback") String callback,
                                              @FormParam("username") String userName, @FormParam("password") String password) {
         Engine engine = Environment.getInstance().getEngine();
@@ -105,7 +105,7 @@ public class User extends Endpoint {
 
     @GET
     @Path("/services/{service}")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse getService(@PathParam("service") String serviceName) {
         ServiceEntity serviceEntity = Services.createServiceEntity(serviceName, getBaseUri().toASCIIString(), getTargetPrincipal());
         ServiceResponse serviceResponse = new ServiceResponse();
@@ -115,7 +115,7 @@ public class User extends Endpoint {
 
     @GET
     @Path("/services")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse getServices() {
         List<ServiceEntity> serviceEntities = Services.createServiceEntities(getBaseUri().toASCIIString(), getTargetPrincipal());
         ServicesResponse servicesResponse = new ServicesResponse();
@@ -133,7 +133,7 @@ public class User extends Endpoint {
     @POST
     @Path("/mediator")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse registerUser(@FormParam("mediator_token") String mediatorToken) {
         Database database = Environment.getInstance().getDatabase();
         InterWebPrincipal mediator = database.readPrincipalByKey(mediatorToken);
@@ -150,7 +150,7 @@ public class User extends Endpoint {
 
     @DELETE
     @Path("/mediator")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse removeMediator() {
         Database database = Environment.getInstance().getDatabase();
         InterWebPrincipal principal = getPrincipal();
@@ -163,7 +163,7 @@ public class User extends Endpoint {
 
     @DELETE
     @Path("/services/{service}/auth")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse revokeAuthorizationOnService(@PathParam("service") String serviceName) {
         log.info("revoking user authentication");
         InterWebPrincipal principal = getTargetPrincipal();

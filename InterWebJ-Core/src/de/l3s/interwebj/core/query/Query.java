@@ -14,15 +14,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Query implements Serializable {
+    private static final long serialVersionUID = 3955897587724588474L;
+    private static final Logger log = LogManager.getLogger(Query.class);
+
     public static final int DEFAULT_RESULT_COUNT = 10;
+
     public static final String CT_TEXT = "text";
     public static final String CT_VIDEO = "video";
     public static final String CT_IMAGE = "image";
     public static final String CT_AUDIO = "audio";
     public static final String CT_PRESENTATION = "presentation";
-    public static final String CT_FRIEND = "friend";
-    private static final Logger log = LogManager.getLogger(Query.class);
-    private static final long serialVersionUID = 3955897587724588474L;
+
     private String id;
     private String link;
     private String query;
@@ -31,8 +33,6 @@ public class Query implements Serializable {
     private int resultCount;
     private int page = 1;
     private String language = "en";
-    private float privacy = -1f;
-    private boolean privacyUseImageFeatures = false;
     private long updated;
     private SortOrder sortOrder;
     private Set<SearchScope> searchScopes;
@@ -182,22 +182,6 @@ public class Query implements Serializable {
 
     public void setLanguage(String language) {
         this.language = language;
-    }
-
-    public float getPrivacy() {
-        return privacy;
-    }
-
-    public void setPrivacy(float privacy) {
-        this.privacy = privacy;
-    }
-
-    public boolean isPrivacyUseImageFeatures() {
-        return privacyUseImageFeatures;
-    }
-
-    public void setPrivacyUseImageFeatures(boolean privacyUseImageFeatures) {
-        this.privacyUseImageFeatures = privacyUseImageFeatures;
     }
 
     public int getTimeout() {

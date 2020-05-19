@@ -47,8 +47,6 @@ public class SearchBean implements Serializable {
     @NotNull
     private int resultCount;
     private int timeout = 60;
-    private boolean privacyUseImageFeatures = false;
-    private boolean usePrivacy = false;
 
     public SearchBean() {
         init();
@@ -158,9 +156,6 @@ public class SearchBean implements Serializable {
         if (Query.CT_VIDEO.equals(type)) {
             return "film.png";
         }
-        if (Query.CT_FRIEND.equals(type)) {
-            return "user.png";
-        }
         if (Query.CT_PRESENTATION.equals(type)) {
             return "pictures.png";
         }
@@ -192,9 +187,7 @@ public class SearchBean implements Serializable {
         query.setResultCount(resultCount);
         query.setPage(page);
         query.setLanguage(language);
-        query.setPrivacy(usePrivacy ? 1f : -1f);
         query.setTimeout(timeout);
-        query.setPrivacyUseImageFeatures(privacyUseImageFeatures);
         QueryResult queryResult = new QueryResult(query);
         Engine engine = Environment.getInstance().getEngine();
         InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
@@ -234,21 +227,5 @@ public class SearchBean implements Serializable {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
-    }
-
-    public boolean isPrivacyUseImageFeatures() {
-        return privacyUseImageFeatures;
-    }
-
-    public void setPrivacyUseImageFeatures(boolean privacyUseImageFeatures) {
-        this.privacyUseImageFeatures = privacyUseImageFeatures;
-    }
-
-    public boolean isUsePrivacy() {
-        return usePrivacy;
-    }
-
-    public void setUsePrivacy(boolean usePrivacy) {
-        this.usePrivacy = usePrivacy;
     }
 }

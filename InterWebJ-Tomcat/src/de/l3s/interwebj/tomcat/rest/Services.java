@@ -86,7 +86,7 @@ public class Services extends Endpoint {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse getServices() {
         List<ServiceEntity> serviceEntities = createServiceEntities(getBaseUri().toASCIIString(), getPrincipal());
         ServicesResponse servicesResponse = new ServicesResponse();

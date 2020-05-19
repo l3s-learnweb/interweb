@@ -30,7 +30,7 @@ public class Upload extends Endpoint {
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public XMLResponse getQueryResult(@FormDataParam("title") String title, @FormDataParam("description") String description,
                                       @FormDataParam("tags") String tags, @FormDataParam("is_private") String privacy,
                                       @FormDataParam("content_type") String contentType, @FormDataParam("data") FormDataContentDisposition disposition,
