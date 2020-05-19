@@ -203,7 +203,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                     resultItem.setUrl(page.url());
                     resultItem.setRank(index++);
                     resultItem.setDate(page.dateLastCrawled());
-                    resultItem.setTotalResultCount(webResults.totalEstimatedMatches());
+                    resultItem.setTotalResultCount(results.getTotalResultCount());
 
                     results.addResultItem(resultItem);
                 }
@@ -227,6 +227,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                     resultItem.setDescription(image.description());
                     resultItem.setUrl(image.contentUrl());
                     resultItem.setRank(index++);
+                    resultItem.setTotalResultCount(results.getTotalResultCount());
 
                     Set<Thumbnail> thumbnails = new LinkedHashSet<>();
 
@@ -275,6 +276,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                     resultItem.setDescription(video.description());
                     resultItem.setUrl(video.contentUrl());
                     resultItem.setRank(index++);
+                    resultItem.setTotalResultCount(results.getTotalResultCount());
 
                     Set<Thumbnail> thumbnails = new LinkedHashSet<>();
 
@@ -348,6 +350,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                     resultItem.setDescription(image.description());
                     resultItem.setUrl(image.contentUrl());
                     resultItem.setRank(index++);
+                    resultItem.setTotalResultCount(results.getTotalResultCount());
 
                     Set<Thumbnail> thumbnails = new LinkedHashSet<>();
 
@@ -421,6 +424,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                     resultItem.setDescription(video.description());
                     resultItem.setUrl(video.contentUrl());
                     resultItem.setRank(index++);
+                    resultItem.setTotalResultCount(results.getTotalResultCount());
 
                     Set<Thumbnail> thumbnails = new LinkedHashSet<>();
 
