@@ -1,5 +1,6 @@
 package de.l3s.interwebj.tomcat.bean;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -8,11 +9,12 @@ import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.servlet.http.Part;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.richfaces.event.FileUploadEvent;
-import org.richfaces.model.UploadedFile;
+
+import com.google.common.io.ByteStreams;
 
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
@@ -34,13 +36,13 @@ public class UploadBean implements Serializable {
 
     private String selectedContentType;
     private List<String> selectedConnectors;
-    private byte[] data;
     private String title;
     private String description;
     private String tags;
     private String text;
-    private String fileName;
     private boolean publicAccess;
+
+    private Part uploadedFile;
 
     public UploadBean() {
         publicAccess = true;
@@ -129,21 +131,21 @@ public class UploadBean implements Serializable {
         this.publicAccess = publicAccess;
     }
 
-    public void listener(FileUploadEvent event) throws Exception {
-        UploadedFile uploadedFile = event.getUploadedFile();
-        fileName = uploadedFile.getName();
-        log.info("File to upload: " + uploadedFile.getName());
-        log.info("Content type: " + uploadedFile.getContentType());
-        data = uploadedFile.getData();
-        log.info("Size: " + data.length);
+    public Part getUploadedFile() {
+        return uploadedFile;
     }
 
-    public void save() {
+    public void setUploadedFile(Part uploadedFile) {
+        this.uploadedFile = uploadedFile;
     }
 
-    public void upload() throws InterWebException {
+    public void upload() throws InterWebException, IOException {
         log.info("uploading binary data...");
-        if (data != null && selectedConnectors != null) {
+
+        String fileName = uploadedFile.getName();
+        byte[] data = ByteStreams.toByteArray(uploadedFile.getInputStream());
+
+        if (selectedConnectors != null) {
             Engine engine = Environment.getInstance().getEngine();
             InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
             Parameters params = new Parameters();
@@ -160,7 +162,6 @@ public class UploadBean implements Serializable {
             params.add(Parameters.PRIVACY, privacy);
             params.add(Parameters.FILENAME, fileName);
             engine.upload(data, principal, selectedConnectors, selectedContentType, params);
-            data = null;
         }
     }
 

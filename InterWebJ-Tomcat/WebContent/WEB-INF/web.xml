@@ -18,12 +18,32 @@
         <param-value>${javax.faces.project_stage}</param-value>
     </context-param>
     <context-param>
-        <param-name>org.richfaces.skin</param-name>
-        <param-value>DEFAULT</param-value>
+        <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
     </context-param>
     <context-param>
-        <param-name>org.richfaces.CONTROL_SKINNING</param-name>
-        <param-value>enable</param-value>
+        <param-name>org.apache.myfaces.commons.GZIP_RESOURCES_ENABLED</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>org.apache.myfaces.SUPPORT_JSP</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>org.apache.myfaces.SUPPORT_MANAGED_BEANS</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>org.apache.myfaces.LOG_WEB_CONTEXT_PARAMS</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>org.apache.myfaces.PRETTY_HTML</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.validator.ENABLE_VALIDATE_WHOLE_BEAN</param-name>
+        <param-value>false</param-value> <!-- Enable if you want to use f:validateWholeBean -->
     </context-param>
 
     <servlet>

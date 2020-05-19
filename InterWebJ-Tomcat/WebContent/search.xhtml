@@ -1,139 +1,124 @@
 <ui:composition template="/WEB-INF/templates/layout.xhtml"
-				xmlns="http://www.w3.org/1999/xhtml"
-				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-				xmlns:h="http://xmlns.jcp.org/jsf/html"
-				xmlns:f="http://xmlns.jcp.org/jsf/core"
-				xmlns:rich="http://richfaces.org/rich">
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="content">
-		<h:form>
-			<h:panelGrid columns="2" columnClasses="top,top">
-				<rich:panel styleClass="richpanel">
-					<h:outputLabel for="query" value="Search query: " />
-					<h:inputText id="query" label="query" required="true"
-						value="#{searchBean.query}" size="30" />
-					<h:commandButton action="#{searchBean.search()}" value="Search"
-						id="search_button" style="margin-left:5px" />
-				</rich:panel>
-				<h:panelGrid columns="3" columnClasses="top,top,top">
-					<h:panelGroup>
-						<h:outputLabel value="Results: " for="result_count" />
-						<h:inputText id="result_count" label="results count"
-							required="true" value="#{searchBean.resultCount}" size="4"
-							style="margin-right: 5px;" />
-						<br />
-						<h:outputLabel value="Page: " />
-						<h:selectOneListbox value="#{searchBean.page}" size="1">
-							<f:selectItem itemValue="1" />
-							<f:selectItem itemValue="2" />
-							<f:selectItem itemValue="3" />
-							<f:selectItem itemValue="4" />
-							<f:selectItem itemValue="5" />
-							<f:selectItem itemValue="6" />
-						</h:selectOneListbox>
-						<br />
-						<h:outputLabel value="Language: " />
-						<h:inputText required="true" value="#{searchBean.language}"
-							size="2" maxlength="2" style="margin-right: 5px;" />
-						<br />
-						<h:outputLabel value="Timeout: " />
-						<h:inputText required="true" value="#{searchBean.timeout}"
-							size="3" maxlength="3" style="margin-right: 5px;" />
-					</h:panelGroup>
-					<rich:panel styleClass="richpanel" style="border-width: 1px;">
-						<f:facet name="header">
-							<h:outputText value="Connectors" />
-						</f:facet>
-						<h:selectManyCheckbox id="connectors"
-							value="#{searchBean.selectedConnectorNames}"
-							layout="pageDirection">
-							<f:selectItems value="#{searchBean.connectorNames}" />
-							<f:ajax event="change" render="content_types" />
-						</h:selectManyCheckbox>
-					</rich:panel>
-					<rich:panel styleClass="richpanel" style="border-width: 1px;">
-						<f:facet name="header">
-							<h:outputText value="Supported content types" />
-						</f:facet>
-						<h:selectManyCheckbox id="content_types"
-							value="#{searchBean.selectedContentTypes}" layout="pageDirection">
-							<f:selectItems value="#{searchBean.contentTypes}" />
-							<f:ajax event="change" execute="#{searchBean.save()}" />
-						</h:selectManyCheckbox>
-					</rich:panel>
-				</h:panelGrid>
-			</h:panelGrid>
-		</h:form>
-		<ui:fragment rendered="#{searchBean.hasResults()}">
-			<h:outputText value="No results found"
-				rendered="${searchBean.queryResult.size()==0}" />
-			<h:outputText
-				value="${searchBean.queryResult.resultItems.size()} result(s) found (${searchBean.queryResult.elapsedTime/1000} s)"
-				rendered="${searchBean.queryResult.size()>0}" />
-		</ui:fragment>
-		<h:form rendered="#{searchBean.hasResults()}">
-			<h:panelGrid>
-				<rich:dataScroller for="result_table" maxPages="11" />
-				<rich:dataTable value="#{searchBean.queryResult.resultItems}"
-					var="resultItem" id="result_table" rows="10">
-					<rich:column style="vertical-align: top;">
-						<span style="text-align: left; vertical-align: top;">#{searchBean.getResultIndex(resultItem)+1}</span>
-					</rich:column>
-					<rich:column style="vertical-align: top;">
-						<span style="white-space: nowrap;"><img
-							src="#{searchBean.getConnectorBaseUrl(resultItem.connectorName)}/favicon.ico"
-							alt="#{resultItem.connectorName}"
-							style="vertical-align: middle; margin: 3px;" />&#160;&#160;<h:outputText
-								value="#{resultItem.serviceName}" /> </span>
-					</rich:column>
-					<rich:column>
-						<div>
-							<h6>
-								<img
-									src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
-									style="vertical-align: middle; margin: 3px;" />
-								<h:outputLink value="#{resultItem.url}" target="_blank">&#160;<h:outputText
-										value="#{resultItem.title}" escape="false" />
-								</h:outputLink>
-							</h6>
-							<div>
-								<h:outputLink value="#{resultItem.url}" target="_blank"
-									style="border-width: 0px;">
-									<h:outputText value="#{resultItem.embeddedSize1}"
-										escape="false" />
-									<hr />
-									<h:outputText value="#{resultItem.embeddedSize2}"
-										escape="false" />
-									<hr />
-								</h:outputLink>
-								<h:outputText value="#{resultItem.embeddedSize3}" escape="false" />
+        <h:form>
+            <h:panelGrid columns="2" columnClasses="top,top">
+                <h:panelGroup layout="block" styleClass="iw-panel">
+                    <h:panelGroup layout="block" styleClass="iw-panel-content">
+                        <h:outputLabel for="query_input" value="Search query: "/>
 
-								<div>
-									<span><h:outputText value="#{resultItem.description}"
-											escape="false" /></span>
-									<pre>
-										<span style="color: #3399FF;"><h:outputText
-												value="#{resultItem.snippet}" escape="false" /></span>
-									</pre>
-								</div>
-								<div>
-									<span
-										style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;">
-										<span style="background-color: #D0EFEF;">Added</span>:
-										#{resultItem.date} - <span
-										style="background-color: #D0EFEF;">Tags</span>:
-										#{searchBean.getTags(resultItem)} - <span
-										style="background-color: #D0EFEF;">Privacy</span>:
-										#{resultItem.privacy} (#{resultItem.privacyConfidence})
-									</span>
-								</div>
-							</div>
-						</div>
-					</rich:column>
-				</rich:dataTable>
-				<rich:dataScroller for="result_table" maxPages="11" />
-			</h:panelGrid>
-		</h:form>
+                        <h:inputText id="query_input" label="query" required="true" value="#{searchBean.query}" size="30"/>
+                        <h:commandButton action="#{searchBean.search()}" value="Search" id="search_button" style="margin-left:5px"/>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <h:panelGrid columns="3" columnClasses="top,top,top">
+                    <h:panelGroup>
+                        <h:outputLabel value="Results: " for="count_input"/>
+                        <h:inputText id="count_input" label="results count" required="true" value="#{searchBean.resultCount}" size="4" style="margin-right: 5px;"/>
+                        <br/>
+                        <h:outputLabel for="page_input" value="Page: "/>
+                        <h:selectOneListbox id="page_input" value="#{searchBean.page}" size="1">
+                            <f:selectItem itemValue="1"/>
+                            <f:selectItem itemValue="2"/>
+                            <f:selectItem itemValue="3"/>
+                            <f:selectItem itemValue="4"/>
+                            <f:selectItem itemValue="5"/>
+                            <f:selectItem itemValue="6"/>
+                        </h:selectOneListbox>
+                        <br/>
+                        <h:outputLabel for="lang_input" value="Language: "/>
+                        <h:inputText id="lang_input" required="true" value="#{searchBean.language}" size="2" maxlength="2" style="margin-right: 5px;"/>
+                        <br/>
+                        <h:outputLabel for="timeout_input" value="Timeout: "/>
+                        <h:inputText id="timeout_input" required="true" value="#{searchBean.timeout}" size="3" maxlength="3" style="margin-right: 5px;"/>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" styleClass="iw-panel" style="border-width: 1px;">
+                        <h:panelGroup layout="block" styleClass="iw-panel-header">
+                            <h:outputText value="Connectors"/>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="iw-panel-content">
+                            <h:selectManyCheckbox id="connectors" value="#{searchBean.selectedConnectorNames}" layout="pageDirection">
+                                <f:selectItems value="#{searchBean.connectorNames}"/>
+                                <f:ajax event="change" render="content_types"/>
+                            </h:selectManyCheckbox>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" styleClass="iw-panel" style="border-width: 1px;">
+                        <h:panelGroup layout="block" styleClass="iw-panel-header">
+                            <h:outputText value="Supported content types"/>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="iw-panel-content">
+                            <h:selectManyCheckbox id="content_types" value="#{searchBean.selectedContentTypes}" layout="pageDirection">
+                                <f:selectItems value="#{searchBean.contentTypes}"/>
+                                <f:ajax event="change" execute="#{searchBean.save()}"/>
+                            </h:selectManyCheckbox>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGrid>
+            </h:panelGrid>
+        </h:form>
+
+        <ui:fragment rendered="#{searchBean.hasResults()}">
+            <h:outputText value="No results found" rendered="${searchBean.queryResult.size()==0}"/>
+            <h:outputText value="${searchBean.queryResult.resultItems.size()} result(s) found (${searchBean.queryResult.elapsedTime/1000} s), total results available ${searchBean.queryResult.totalResultCount}."
+                          rendered="${searchBean.queryResult.size()>0}"/>
+        </ui:fragment>
+
+        <h:form rendered="#{searchBean.hasResults()}">
+            <h:dataTable value="#{searchBean.queryResult.resultItems}" var="resultItem" id="result_table" styleClass="iw-datatable" style="width: 100%">
+                <h:column>
+                    <span style="text-align: left;">#{searchBean.getResultIndex(resultItem)+1}</span>
+                </h:column>
+
+                <h:column>
+                    <span style="white-space: nowrap;">
+                        <img src="#{searchBean.getConnectorBaseUrl(resultItem.connectorName)}/favicon.ico" alt="#{resultItem.connectorName}"
+                             style="vertical-align: middle; margin: 3px; width: 16px;"/>
+
+                        <h:outputText value="#{resultItem.serviceName}"/>
+                    </span>
+                </h:column>
+
+                <h:column>
+                    <div>
+                        <h6>
+                            <img src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}"
+                                 style="vertical-align: middle; margin: 3px; width: 16px;"/>
+
+                            <h:outputLink value="#{resultItem.url}" target="_blank">
+                                <h:outputText value="#{resultItem.title}" escape="false"/>
+                            </h:outputLink>
+                        </h6>
+                        <div>
+                            <h:outputLink value="#{resultItem.url}" target="_blank" style="border-width: 0;">
+                                <h:outputText value="#{resultItem.embeddedSize1}" escape="false"/><hr/>
+                                <h:outputText value="#{resultItem.embeddedSize2}" escape="false"/><hr/>
+                            </h:outputLink>
+                            <h:outputText value="#{resultItem.embeddedSize3}" escape="false"/>
+
+                            <div>
+                                <span><h:outputText value="#{resultItem.description}" escape="false"/></span>
+                                <ui:fragment rendered="#{not empty resultItem.snippet}">
+                                    <pre style="color: #3399FF;"><h:outputText value="#{resultItem.snippet}" escape="false"/></pre>
+                                </ui:fragment>
+                            </div>
+
+                            <div>
+                                <span style="text-align: left; vertical-align: bottom; color: #008080; font-size: 0.8em;">
+                                    <span style="background-color: #D0EFEF;">Added</span>:#{resultItem.date} -
+                                    <span style="background-color: #D0EFEF;">Tags</span>:#{searchBean.getTags(resultItem)} -
+                                    <span style="background-color: #D0EFEF;">Privacy</span>:#{resultItem.privacy} (#{resultItem.privacyConfidence})
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </h:column>
+            </h:dataTable>
+        </h:form>
     </ui:define>
 
 </ui:composition>

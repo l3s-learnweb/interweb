@@ -3,8 +3,7 @@ html {
     padding: 0;
     line-height: 1.5em;
     background: #b7c4d3;
-    font: normal 12px "Trebuchet MS", "Lucida Grande", Verdana, Georgia,
-		Sans-Serif;
+    font: normal 12px "Trebuchet MS", "Lucida Grande", Verdana, Georgia, Sans-Serif;
 }
 
 tr.hide {
@@ -27,17 +26,6 @@ tr.hide {
     vertical-align: top;
     text-align: right;
     font-weight: bold;
-}
-
-div.richpanel {
-    background-color: inherit;
-    margin-right: 5px;
-    border-width: 0px;
-}
-
-div.richpanel div {
-    margin: 0;
-    padding: 3px;
 }
 
 /* Links */
@@ -246,14 +234,12 @@ li#admin_menu_item a {
     border-bottom-width: 0px;
 }
 
-#menu a:link, #menu a:visited, #admin_menu_item a:link, #admin_menu_item a:visited
-    {
+#menu a:link, #menu a:visited, #admin_menu_item a:link, #admin_menu_item a:visited {
     color: #988d87;
 }
 
 #menu a:hover, #menu a:active, #admin_menu_item a:hover,
-    #admin_menu_item a:active, #admin_menu_item a.selected, #menu a.selected
-    {
+#admin_menu_item a:active, #admin_menu_item a.selected, #menu a.selected {
     color: #ddd8d5 !important;
 }
 
@@ -305,4 +291,59 @@ li.ui-datalist-item {
 
 ul.ui-datalist-data {
     padding: 5px;
+}
+
+.iw-panel {
+    color: #C4C0B9;
+    border-width: 0;
+    border-style: solid;
+    border-radius: 0;
+    padding: 1px;
+
+    margin-right: 5px;
+}
+
+.iw-panel-header {
+    background-color: #D4CFC7;
+    border-color: #D4CFC7;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    font-size: 11px;
+    color: #000000;
+    font-weight: bold;
+    padding: 3px;
+    border-width: 1px;
+    border-style: solid;
+    background-position: top left;
+    background-repeat: repeat-x;
+}
+
+.iw-panel-content {
+    font-size: 11px;
+    color: #000000;
+    padding: 3px;
+}
+
+.iw-datatable {
+    background-color: #FFFFFF;
+    border-collapse: collapse;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #C4C0C9;
+    empty-cells: show;
+}
+
+.iw-datatable th,
+.iw-datatable td {
+    vertical-align: top;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #C4C0C9;
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: #C4C0C9;
+    color: #000000;
+    font-family: Arial, Verdana, sans-serif;
+    font-size: 11px;
+    padding: 4px;
 }
