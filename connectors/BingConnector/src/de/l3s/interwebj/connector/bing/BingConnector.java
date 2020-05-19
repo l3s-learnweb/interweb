@@ -326,7 +326,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                     .withQuery(query.getQuery())
                     .withMarket(language)
                     .withCount(count)
-                    .withOffset((long) ((query.getPage() - 1) * count))
+                    .withOffset(((query.getPage() - 1L) * count))
                     .execute();
 
             // Results go here
