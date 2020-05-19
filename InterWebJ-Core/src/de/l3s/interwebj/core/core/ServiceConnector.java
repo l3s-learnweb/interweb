@@ -8,8 +8,8 @@ import org.apache.commons.lang3.NotImplementedException;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
-import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 
 public interface ServiceConnector {

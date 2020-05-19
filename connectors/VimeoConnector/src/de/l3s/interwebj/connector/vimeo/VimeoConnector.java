@@ -29,8 +29,8 @@ import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
@@ -116,10 +116,11 @@ public class VimeoConnector extends AbstractServiceConnector implements Cloneabl
         }
 
         try {
-            String requestUrl = "https://api.vimeo.com/videos?page=" + query.getPage() + "&per_page=" + query.getResultCount() + "&query=" + URLEncoder.encode(query.getQuery(), StandardCharsets.UTF_8);
+            String requestUrl = "https://api.vimeo.com/videos?page=" + query.getPage() + "&per_page=" + query.getResultCount() + "&query=" +
+                URLEncoder.encode(query.getQuery(), StandardCharsets.UTF_8);
             String response = httpRequest(requestUrl, Map.ofEntries(
-                    Map.entry("Accept", "application/vnd.vimeo.*+json; version=3.2"),
-                    Map.entry("Authorization", "bearer " + TOKEN)
+                Map.entry("Accept", "application/vnd.vimeo.*+json; version=3.2"),
+                Map.entry("Authorization", "bearer " + TOKEN)
             ));
 
             JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();

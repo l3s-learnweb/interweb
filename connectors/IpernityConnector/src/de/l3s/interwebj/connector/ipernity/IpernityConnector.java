@@ -28,9 +28,9 @@ import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.ServiceConnector;
+import de.l3s.interwebj.core.query.ConnectorResults;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.Query.SortOrder;
-import de.l3s.interwebj.core.query.ConnectorResults;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
@@ -207,8 +207,8 @@ public class IpernityConnector extends AbstractServiceConnector implements Clone
 
         final ConsumerCredentials consumerCredentials = new ConsumerCredentials(authCredentials.getKey(), authCredentials.getSecret());
         final OAuth1AuthorizationFlow authFlow = OAuth1ClientSupport.builder(consumerCredentials)
-                .authorizationFlow(REQUEST_TOKEN_PATH, ACCESS_TOKEN_PATH, AUTHORIZATION_PATH)
-                .callbackUri(callbackUrl).build();
+            .authorizationFlow(REQUEST_TOKEN_PATH, ACCESS_TOKEN_PATH, AUTHORIZATION_PATH)
+            .callbackUri(callbackUrl).build();
 
         final String authorizationUri = authFlow.start();
         log.info("requesting url: " + authorizationUri);
@@ -238,7 +238,7 @@ public class IpernityConnector extends AbstractServiceConnector implements Clone
 
         final ConsumerCredentials consumerCredentials = new ConsumerCredentials(authCredentials.getKey(), authCredentials.getSecret());
         final OAuth1AuthorizationFlow authFlow = OAuth1ClientSupport.builder(consumerCredentials)
-                .authorizationFlow(REQUEST_TOKEN_PATH, ACCESS_TOKEN_PATH, AUTHORIZATION_PATH).build();
+            .authorizationFlow(REQUEST_TOKEN_PATH, ACCESS_TOKEN_PATH, AUTHORIZATION_PATH).build();
 
         log.info("requesting access token");
         final AccessToken accessToken = authFlow.finish(oauthVerifier);

@@ -1,6 +1,7 @@
 package de.l3s.interwebj.connector.vimeo;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -8,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
+import de.l3s.interwebj.core.query.ConnectorResults;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
-import de.l3s.interwebj.core.query.ConnectorResults;
 
 class VimeoConnectorTest {
-    private static final  String TEST_KEY = "***REMOVED***";
-    private static final  String TEST_SECRET = "***REMOVED***";
+    private static final String TEST_KEY = "***REMOVED***";
+    private static final String TEST_SECRET = "***REMOVED***";
 
     private static AbstractServiceConnector connector;
 

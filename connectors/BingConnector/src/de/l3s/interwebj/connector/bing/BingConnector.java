@@ -33,8 +33,8 @@ import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 
@@ -155,7 +155,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
     /**
      * Make a search using Bing Web Search API.
      * It can retrieve any type of content, but only limited amount and no estimated results count.
-     *
+     * <p>
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
      */
     private ConnectorResults getWebSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
@@ -176,12 +176,12 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
             // Build query
             SearchResponse webData = client.bingWebs().search()
-                    .withQuery(query.getQuery())
-                    .withMarket(language)
-                    .withCount(count)
-                    .withResponseFilter(answerTypes)
-                    .withOffset((query.getPage() - 1) * count)
-                    .execute();
+                .withQuery(query.getQuery())
+                .withMarket(language)
+                .withCount(count)
+                .withResponseFilter(answerTypes)
+                .withOffset((query.getPage() - 1) * count)
+                .execute();
 
             // Results go here
             ConnectorResults results = new ConnectorResults(query, getName());
@@ -315,7 +315,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
     /**
      * Make a search using Bing Image Search API.
-     *
+     * <p>
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
      */
     private ConnectorResults getImagesSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
@@ -325,11 +325,11 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
             // Build query
             ImagesModel imageResults = client.bingImages().search()
-                    .withQuery(query.getQuery())
-                    .withMarket(language)
-                    .withCount(count)
-                    .withOffset(((query.getPage() - 1L) * count))
-                    .execute();
+                .withQuery(query.getQuery())
+                .withMarket(language)
+                .withCount(count)
+                .withOffset(((query.getPage() - 1L) * count))
+                .execute();
 
             // Results go here
             ConnectorResults results = new ConnectorResults(query, getName());
@@ -388,7 +388,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
     /**
      * Make a search using Bing Video Search API.
-     *
+     * <p>
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-video-search/quickstarts/client-libraries?pivots=programming-language-java
      */
     private ConnectorResults getVideoSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
@@ -398,11 +398,11 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
             // Build query
             VideosModel videoResults = client.bingVideos().search()
-                    .withQuery(query.getQuery())
-                    .withMarket(language)
-                    .withCount(count)
-                    .withOffset(((query.getPage() - 1) * count))
-                    .execute();
+                .withQuery(query.getQuery())
+                .withMarket(language)
+                .withCount(count)
+                .withOffset(((query.getPage() - 1) * count))
+                .execute();
 
             // Results go here
             ConnectorResults results = new ConnectorResults(query, getName());

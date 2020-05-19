@@ -49,8 +49,8 @@ import de.l3s.interwebj.core.Parameters;
 import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
@@ -71,7 +71,8 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
     /**
      * Define a global instance of the scopes.
      */
-    private static final List<String> SCOPES = Arrays.asList("https://www.googleapis.com/auth/youtube.upload", "profile", "https://www.googleapis.com/auth/youtube");
+    private static final List<String> SCOPES =
+        Arrays.asList("https://www.googleapis.com/auth/youtube.upload", "profile", "https://www.googleapis.com/auth/youtube");
 
     private static GoogleAuthorizationCodeFlow flow = null;
 
@@ -372,7 +373,8 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
         resultItem.setThumbnails(thumbnails);
 
         //create embedded flash video player
-        String embeddedCode = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/" + singleVideo.getId() + "\" frameborder=\"0\" allowfullscreen></iframe>";
+        String embeddedCode = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/" + singleVideo.getId() +
+            "\" frameborder=\"0\" allowfullscreen></iframe>";
         resultItem.setEmbeddedSize3(embeddedCode);
 
         return resultItem;
@@ -381,7 +383,7 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
     private long getSecondFromDuration(String period) {
         String time = period.substring(2);
         long duration = 0L;
-        Object[][] indexs = new Object[][]{{"H", 3600}, {"M", 60}, {"S", 1}};
+        Object[][] indexs = new Object[][] {{"H", 3600}, {"M", 60}, {"S", 1}};
         for (int i = 0; i < indexs.length; i++) {
             int index = time.indexOf((String) indexs[ i ][ 0 ]);
             if (index != -1) {
@@ -400,7 +402,8 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
 
         if (matcher.matches()) {
             String id = matcher.group(1);
-            return "<iframe width=\"" + maxWidth + "\" height=\"" + maxHeight + "\" src=\"https://www.youtube.com/embed/" + id + "\" frameborder=\"0\" allowfullscreen></iframe>";
+            return "<iframe width=\"" + maxWidth + "\" height=\"" + maxHeight + "\" src=\"https://www.youtube.com/embed/" + id +
+                "\" frameborder=\"0\" allowfullscreen></iframe>";
         }
 
         throw new InterWebException("URL: [" + url + "] doesn't belong to connector [" + getName() + "]");

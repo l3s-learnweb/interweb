@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 
 import de.l3s.interwebj.core.AuthCredentials;
 
