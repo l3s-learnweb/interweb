@@ -12,6 +12,12 @@ import java.util.TreeSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.microsoft.azure.cognitiveservices.search.imagesearch.BingImageSearchAPI;
+import com.microsoft.azure.cognitiveservices.search.imagesearch.BingImageSearchManager;
+import com.microsoft.azure.cognitiveservices.search.imagesearch.models.ImagesModel;
+import com.microsoft.azure.cognitiveservices.search.videosearch.BingVideoSearchAPI;
+import com.microsoft.azure.cognitiveservices.search.videosearch.BingVideoSearchManager;
+import com.microsoft.azure.cognitiveservices.search.videosearch.models.VideosModel;
 import com.microsoft.azure.cognitiveservices.search.websearch.BingWebSearchAPI;
 import com.microsoft.azure.cognitiveservices.search.websearch.BingWebSearchManager;
 import com.microsoft.azure.cognitiveservices.search.websearch.models.AnswerType;
@@ -133,6 +139,26 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
             language = createMarket(language);
         }
 
+        // TODO: move this log to core if requires
+        // String key = (authCredentials != null) ? authCredentials.getKey() : "no";
+        // Environment.getInstance().getDatabase().logQuery(key, query.getQuery());
+
+        if (query.getContentTypes().size() == 1 && query.getContentTypes().contains(Query.CT_IMAGE)) {
+            return getImagesSearch(query, count, language, authCredentials);
+        } else if (query.getContentTypes().size() == 1 && query.getContentTypes().contains(Query.CT_VIDEO)) {
+            return getVideoSearch(query, count, language, authCredentials);
+        } else {
+            return getWebSearch(query, count, language, authCredentials);
+        }
+    }
+
+    /**
+     * Make a search using Bing Web Search API.
+     * It can retrieve any type of content, but only limited amount and no estimated results count.
+     *
+     * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
+     */
+    private QueryResult getWebSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
         List<AnswerType> answerTypes = new ArrayList<>();
         for (String contentType : query.getContentTypes()) {
             if (contentType.equals(Query.CT_TEXT)) {
@@ -143,10 +169,6 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
                 answerTypes.add(AnswerType.VIDEOS);
             }
         }
-
-        // TODO: move this log to core if requires
-        // String key = (authCredentials != null) ? authCredentials.getKey() : "no";
-        // Environment.getInstance().getDatabase().logQuery(key, query.getQuery());
 
         try {
             // Init Bing Client
@@ -213,9 +235,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
                         if (thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0) {
                             thumbnails.add(thumbnail);
-                            resultItem.setEmbeddedSize1("<img src=\"" + thumbnail.getUrl()
-                                    + "\" height=\"" + thumbnail.getHeight()
-                                    + "\" width=\"" + thumbnail.getWidth() + "\"/>");
+                            resultItem.setEmbeddedSize1(createEmbedded(thumbnail));
                         }
                     } catch (Exception e) {
                         log.warn(e.getMessage());
@@ -226,9 +246,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
                         if (thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0) {
                             thumbnails.add(thumbnail);
-                            resultItem.setEmbeddedSize2("<img src=\"" + thumbnail.getUrl()
-                                    + "\" height=\"" + thumbnail.getHeight()
-                                    + "\" width=\"" + thumbnail.getWidth() + "\"/>");
+                            resultItem.setEmbeddedSize2(createEmbedded(thumbnail));
                         }
                     } catch (Exception e) {
                         log.warn(e.getMessage());
@@ -265,9 +283,7 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
                         if (thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0) {
                             thumbnails.add(thumbnail);
-                            resultItem.setEmbeddedSize1("<img src=\"" + thumbnail.getUrl()
-                                    + "\" height=\"" + thumbnail.getHeight()
-                                    + "\" width=\"" + thumbnail.getWidth() + "\"/>");
+                            resultItem.setEmbeddedSize1(createEmbedded(thumbnail));
                         }
                     } catch (Exception e) {
                         log.warn(e.getMessage());
@@ -293,6 +309,156 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
         } catch (Exception e) {
             throw new InterWebException(e);
         }
+    }
+
+    /**
+     * Make a search using Bing Image Search API.
+     *
+     * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
+     */
+    private QueryResult getImagesSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
+        try {
+            // Init Bing Client
+            BingImageSearchAPI client = BingImageSearchManager.authenticate(authCredentials.getKey());
+
+            // Build query
+            ImagesModel imageResults = client.bingImages().search()
+                    .withQuery(query.getQuery())
+                    .withMarket(language)
+                    .withCount(count)
+                    .withOffset((long) ((query.getPage() - 1) * count))
+                    .execute();
+
+            // Results go here
+            QueryResult results = new QueryResult(query);
+
+            if (imageResults != null && imageResults.value() != null && !imageResults.value().isEmpty()) {
+                if (imageResults.totalEstimatedMatches() != null) {
+                    results.addTotalResultCount(imageResults.totalEstimatedMatches());
+                } else {
+                    // better than nothing
+                    results.addTotalResultCount(imageResults.value().size());
+                }
+
+                int index = 1;
+                for (com.microsoft.azure.cognitiveservices.search.imagesearch.models.ImageObject image : imageResults.value()) {
+                    ResultItem resultItem = new ResultItem(getName());
+                    resultItem.setType(Query.CT_IMAGE);
+                    resultItem.setTitle(image.name());
+                    resultItem.setDescription(image.description());
+                    resultItem.setUrl(image.contentUrl());
+                    resultItem.setRank(index++);
+
+                    Set<Thumbnail> thumbnails = new LinkedHashSet<>();
+
+                    try {
+                        Thumbnail thumbnail = new Thumbnail(image.thumbnailUrl(), image.thumbnail().width(), image.thumbnail().height());
+
+                        if (thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0) {
+                            thumbnails.add(thumbnail);
+                            resultItem.setEmbeddedSize1(createEmbedded(thumbnail));
+                        }
+                    } catch (Exception e) {
+                        log.warn(e.getMessage());
+                    }
+
+                    try {
+                        Thumbnail thumbnail = new Thumbnail(image.contentUrl(), image.thumbnail().width(), image.thumbnail().height());
+
+                        if (thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0) {
+                            thumbnails.add(thumbnail);
+                            resultItem.setEmbeddedSize2(createEmbedded(thumbnail));
+                        }
+                    } catch (Exception e) {
+                        log.warn(e.getMessage());
+                    }
+
+                    resultItem.setThumbnails(thumbnails);
+                    results.addResultItem(resultItem);
+                }
+            }
+
+            return results;
+        } catch (Exception e) {
+            throw new InterWebException(e);
+        }
+    }
+
+    /**
+     * Make a search using Bing Video Search API.
+     *
+     * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-video-search/quickstarts/client-libraries?pivots=programming-language-java
+     */
+    private QueryResult getVideoSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
+        try {
+            // Init Bing Client
+            BingVideoSearchAPI client = BingVideoSearchManager.authenticate(authCredentials.getKey());
+
+            // Build query
+            VideosModel videoResults = client.bingVideos().search()
+                    .withQuery(query.getQuery())
+                    .withMarket(language)
+                    .withCount(count)
+                    .withOffset(((query.getPage() - 1) * count))
+                    .execute();
+
+            // Results go here
+            QueryResult results = new QueryResult(query);
+
+            if (videoResults != null && videoResults.value() != null && !videoResults.value().isEmpty()) {
+                if (videoResults.totalEstimatedMatches() != null) {
+                    results.addTotalResultCount(videoResults.totalEstimatedMatches());
+                } else {
+                    // better than nothing
+                    results.addTotalResultCount(videoResults.value().size());
+                }
+
+                int index = 1;
+                for (com.microsoft.azure.cognitiveservices.search.videosearch.models.VideoObject video : videoResults.value()) {
+                    ResultItem resultItem = new ResultItem(getName());
+                    resultItem.setType(Query.CT_VIDEO);
+                    resultItem.setTitle(video.name());
+                    resultItem.setDescription(video.description());
+                    resultItem.setUrl(video.contentUrl());
+                    resultItem.setRank(index++);
+
+                    Set<Thumbnail> thumbnails = new LinkedHashSet<>();
+
+                    try {
+                        Thumbnail thumbnail = new Thumbnail(video.thumbnailUrl(), video.thumbnail().width(), video.thumbnail().height());
+
+                        if (thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0) {
+                            thumbnails.add(thumbnail);
+                            resultItem.setEmbeddedSize1(createEmbedded(thumbnail));
+                        }
+                    } catch (Exception e) {
+                        log.warn(e.getMessage());
+                    }
+
+                    try {
+                        Thumbnail thumbnail = new Thumbnail(video.contentUrl(), video.thumbnail().width(), video.thumbnail().height());
+
+                        if (thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0) {
+                            thumbnails.add(thumbnail);
+                            resultItem.setEmbeddedSize2(video.embedHtml());
+                        }
+                    } catch (Exception e) {
+                        log.warn(e.getMessage());
+                    }
+
+                    resultItem.setThumbnails(thumbnails);
+                    results.addResultItem(resultItem);
+                }
+            }
+
+            return results;
+        } catch (Exception e) {
+            throw new InterWebException(e);
+        }
+    }
+
+    private static String createEmbedded(Thumbnail thumbnail) {
+        return "<img src=\"" + thumbnail.getUrl() + "\" height=\"" + thumbnail.getHeight() + "\" width=\"" + thumbnail.getWidth() + "\"/>";
     }
 
     @Override

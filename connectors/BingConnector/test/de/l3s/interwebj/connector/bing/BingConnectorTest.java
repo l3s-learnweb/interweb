@@ -34,11 +34,9 @@ class BingConnectorTest {
         QueryFactory queryFactory = new QueryFactory();
         Query query = queryFactory.createQuery("hello world");
         query.addContentType(Query.CT_VIDEO);
-        // query.addContentType(Query.CT_IMAGE);
-        query.setResultCount(5);
+        query.addContentType(Query.CT_IMAGE);
         // query.addParam("date_from", "2009-01-01 00:00:00");
         // query.addParam("date_till", "2009-06-01 00:00:00");
-        query.setSortOrder(Query.SortOrder.RELEVANCE);
 
         QueryResult queryResult = connector.get(query, null);
 
@@ -55,10 +53,8 @@ class BingConnectorTest {
         QueryFactory queryFactory = new QueryFactory();
         Query query = queryFactory.createQuery("hannover");
         query.addContentType(Query.CT_IMAGE);
-        query.setResultCount(20);
-        // query.addParam("date_from", "2009-01-01 00:00:00");
-        // query.addParam("date_till", "2009-06-01 00:00:00");
-        query.setSortOrder(Query.SortOrder.RELEVANCE);
+        query.setResultCount(30);
+        query.setPage(2);
 
         QueryResult queryResult = connector.get(query, null);
 
@@ -66,7 +62,25 @@ class BingConnectorTest {
             log.info("{}: {}", res.getRank(), res.toString());
         }
 
-        assertEquals(20, queryResult.getResultItems().size());
-        assertTrue(queryResult.getTotalResultCount() >= 20);
+        assertEquals(30, queryResult.getResultItems().size());
+        assertTrue(queryResult.getTotalResultCount() > 100);
+    }
+
+    @Test
+    void getVideos() throws InterWebException {
+        QueryFactory queryFactory = new QueryFactory();
+        Query query = queryFactory.createQuery("hannover");
+        query.addContentType(Query.CT_VIDEO);
+        query.setResultCount(30);
+        query.setPage(2);
+
+        QueryResult queryResult = connector.get(query, null);
+
+        for (ResultItem res : queryResult.getResultItems()) {
+            log.info("{}: {}", res.getRank(), res.toString());
+        }
+
+        assertEquals(30, queryResult.getResultItems().size());
+        assertTrue(queryResult.getTotalResultCount() > 100);
     }
 }
