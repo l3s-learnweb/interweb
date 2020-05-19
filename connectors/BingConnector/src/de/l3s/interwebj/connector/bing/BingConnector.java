@@ -192,6 +192,9 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
                 if (imagesResults.totalEstimatedMatches() != null) {
                     results.addTotalResultCount(imagesResults.totalEstimatedMatches());
+                } else {
+                    // better than nothing
+                    results.addTotalResultCount(imagesResults.value().size());
                 }
 
                 int index = 1;
@@ -241,6 +244,9 @@ public class BingConnector extends AbstractServiceConnector implements Cloneable
 
                 if (videosResults.totalEstimatedMatches() != null) {
                     results.addTotalResultCount(videosResults.totalEstimatedMatches());
+                } else {
+                    // better than nothing
+                    results.addTotalResultCount(videosResults.value().size());
                 }
 
                 int index = 1;

@@ -49,4 +49,24 @@ class BingConnectorTest {
         assertEquals(20, queryResult.getResultItems().size());
         assertTrue(queryResult.getTotalResultCount() > 100);
     }
+
+    @Test
+    void getImages() throws InterWebException {
+        QueryFactory queryFactory = new QueryFactory();
+        Query query = queryFactory.createQuery("hannover");
+        query.addContentType(Query.CT_IMAGE);
+        query.setResultCount(20);
+        // query.addParam("date_from", "2009-01-01 00:00:00");
+        // query.addParam("date_till", "2009-06-01 00:00:00");
+        query.setSortOrder(Query.SortOrder.RELEVANCE);
+
+        QueryResult queryResult = connector.get(query, null);
+
+        for (ResultItem res : queryResult.getResultItems()) {
+            log.info("{}: {}", res.getRank(), res.toString());
+        }
+
+        assertEquals(20, queryResult.getResultItems().size());
+        assertTrue(queryResult.getTotalResultCount() >= 20);
+    }
 }
