@@ -201,15 +201,6 @@
                         <version>8.32</version>
                     </dependency>
                 </dependencies>
-                <executions>
-                    <execution>
-                        <id>checkstyle</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>validate</phase>
-                    </execution>
-                </executions>
             </plugin>
             <!-- Runs static code analyser on Java sources to check for possible bugs and bad practice -->
             <plugin>
@@ -226,16 +217,54 @@
                         <version>4.0.3</version>
                     </dependency>
                 </dependencies>
-                <executions>
-                    <execution>
-                        <id>spotbugs</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>process-classes</phase>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Used by default, aimed for local development -->
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <!-- Used on GitLab when creating package to deploy -->
+        <profile>
+            <id>prod</id>
+            <properties>
+                <javax.faces.project_stage>Production</javax.faces.project_stage>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>checkstyle</id>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <phase>validate</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>spotbugs</id>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <phase>process-classes</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

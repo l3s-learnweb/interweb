@@ -6,6 +6,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,9 +31,7 @@ import de.l3s.interwebj.tomcat.jaxb.XMLResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.ServiceResponse;
 import de.l3s.interwebj.tomcat.rest.Endpoint;
 
-/**
- * Servlet implementation class Logout.
- */
+@WebServlet(name = "CallbackServlet", description = "Authorization callback", urlPatterns = {"/callback"})
 public class CallbackServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(CallbackServlet.class);
     private static final long serialVersionUID = 6534209215912582685L;

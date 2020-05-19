@@ -26,15 +26,6 @@
     </context-param>
 
     <servlet>
-        <display-name>Authorization callback</display-name>
-        <servlet-name>callback</servlet-name>
-        <servlet-class>de.l3s.interwebj.tomcat.servlet.CallbackServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>callback</servlet-name>
-        <url-pattern>/callback</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <display-name>InterWebJ Faces Servlet</display-name>
         <servlet-name>facesServlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -60,9 +51,6 @@
 
     <listener>
         <listener-class>de.l3s.interwebj.tomcat.servlet.listener.ServletContextLifecycleListener</listener-class>
-    </listener>
-    <listener>
-        <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
     </listener>
 
     <security-constraint>
