@@ -42,7 +42,7 @@ public class UploadBean implements Serializable {
     private String text;
     private boolean publicAccess;
 
-    private Part uploadedFile;
+    private transient Part uploadedFile;
 
     public UploadBean() {
         publicAccess = true;
