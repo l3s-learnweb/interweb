@@ -10,12 +10,12 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ThumbnailEntity {
 
+    @XmlValue
+    protected String url;
     @XmlAttribute(name = "width")
     protected int width;
     @XmlAttribute(name = "height")
     protected int height;
-    @XmlValue
-    protected String url;
 
     public ThumbnailEntity() {
     }
@@ -23,14 +23,6 @@ public class ThumbnailEntity {
     public ThumbnailEntity(String url, int width, int height) {
         this.url = url;
         this.width = width;
-        this.height = height;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
         this.height = height;
     }
 
@@ -48,6 +40,14 @@ public class ThumbnailEntity {
 
     public void setWidth(int width) {
         this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     @Override

@@ -44,10 +44,6 @@ public class InterWeb implements Serializable {
         return target;
     }
 
-    /**
-     * @param query  The query string
-     * @param params see http://athena.l3s.uni-hannover.de:8000/doc/search
-     */
     public SearchResponse search(String query, TreeMap<String, String> params) {
         if (null == query || query.isEmpty()) {
             throw new IllegalArgumentException("empty query");
@@ -60,7 +56,7 @@ public class InterWeb implements Serializable {
             target = target.queryParam(entry.getKey(), value);
         }
 
-        Response response = target.request().get();
+        Response response = target.request("application/xml").get();
 
         if (response.getStatus() != 200) {
             String content = response.readEntity(String.class);

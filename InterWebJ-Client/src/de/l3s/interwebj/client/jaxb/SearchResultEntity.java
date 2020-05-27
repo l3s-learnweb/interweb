@@ -64,24 +64,12 @@ public class SearchResultEntity {
     public SearchResultEntity() {
     }
 
-    public String getDate() {
-        return date;
+    public String getService() {
+        return service;
     }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    //public String getEmbedded() {
-    //    return embedded;
-    //}
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setService(String service) {
+        this.service = service;
     }
 
     public String getIdAtService() {
@@ -92,60 +80,12 @@ public class SearchResultEntity {
         this.idAtService = idAtService;
     }
 
-    public String getImage() {
-        return image;
+    public String getType() {
+        return type.toLowerCase();
     }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public int getNumberOfComments() {
-        return numberOfComments;
-    }
-
-    public void setNumberOfComments(int numberOfComments) {
-        this.numberOfComments = numberOfComments;
-    }
-
-    public int getNumberOfViews() {
-        return numberOfViews;
-    }
-
-    public void setNumberOfViews(int numberOfViews) {
-        this.numberOfViews = numberOfViews;
-    }
-
-    public int getRankAtService() {
-        return rankAtService;
-    }
-
-    public void setRankAtService(int rankAtService) {
-        this.rankAtService = rankAtService;
-    }
-
-    public String getService() {
-        return service;
-    }
-
-    public void setService(String service) {
-        this.service = service;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
-    public List<ThumbnailEntity> getThumbnailEntities() {
-        return thumbnailEntities;
-    }
-
-    public void setThumbnailEntities(List<ThumbnailEntity> thumbnailEntities) {
-        this.thumbnailEntities = thumbnailEntities;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getTitle() {
@@ -156,24 +96,12 @@ public class SearchResultEntity {
         this.title = title;
     }
 
-    public long getTotalResultsAtService() {
-        return totalResultsAtService;
+    public String getDescription() {
+        return description;
     }
 
-    public void setTotalResultsAtService(long totalResultsAtService) {
-        this.totalResultsAtService = totalResultsAtService;
-    }
-
-    public String getType() {
-        if (type.equalsIgnoreCase("text")) {
-            this.type = "website";
-        }
-
-        return type.toLowerCase();
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getUrl() {
@@ -184,22 +112,68 @@ public class SearchResultEntity {
         this.url = url;
     }
 
-    public void setViews(int numberOfViews) {
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public List<ThumbnailEntity> getThumbnailEntities() {
+        return thumbnailEntities;
+    }
+
+    public void setThumbnailEntities(List<ThumbnailEntity> thumbnailEntities) {
+        this.thumbnailEntities = thumbnailEntities;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public int getRankAtService() {
+        return rankAtService;
+    }
+
+    public void setRankAtService(int rankAtService) {
+        this.rankAtService = rankAtService;
+    }
+
+    public long getTotalResultsAtService() {
+        return totalResultsAtService;
+    }
+
+    public void setTotalResultsAtService(long totalResultsAtService) {
+        this.totalResultsAtService = totalResultsAtService;
+    }
+
+    public int getNumberOfViews() {
+        return numberOfViews;
+    }
+
+    public void setNumberOfViews(int numberOfViews) {
         this.numberOfViews = numberOfViews;
     }
 
-    /**
-     * html code, could be flash, max width and max height 500px.
-     */
-    public String getEmbeddedSize3() {
-        return embeddedSize3;
+    public int getNumberOfComments() {
+        return numberOfComments;
     }
 
-    /**
-     * html code, could be flash, max width and max height 500px.
-     */
-    public void setEmbeddedSize3(String embedded) {
-        this.embeddedSize3 = embedded;
+    public void setNumberOfComments(int numberOfComments) {
+        this.numberOfComments = numberOfComments;
     }
 
     /**
@@ -209,9 +183,6 @@ public class SearchResultEntity {
         return embeddedSize1;
     }
 
-    /**
-     * html code, only image or text, max width and max height 100px.
-     */
     public void setEmbeddedSize1(String embeddedSize1) {
         this.embeddedSize1 = embeddedSize1;
     }
@@ -223,11 +194,19 @@ public class SearchResultEntity {
         return embeddedSize2;
     }
 
-    /**
-     * html code, only image or text, max width and max height 240px.
-     */
     public void setEmbeddedSize2(String embeddedSize2) {
         this.embeddedSize2 = embeddedSize2;
+    }
+
+    /**
+     * html code, could be flash, max width and max height 500px.
+     */
+    public String getEmbeddedSize3() {
+        return embeddedSize3;
+    }
+
+    public void setEmbeddedSize3(String embeddedSize3) {
+        this.embeddedSize3 = embeddedSize3;
     }
 
     /**
@@ -237,9 +216,6 @@ public class SearchResultEntity {
         return embeddedSize4;
     }
 
-    /**
-     * html code, could be flash, max width and max height 100%.
-     */
     public void setEmbeddedSize4(String embeddedSize4) {
         this.embeddedSize4 = embeddedSize4;
     }
@@ -251,15 +227,8 @@ public class SearchResultEntity {
         return imageUrl;
     }
 
-    /**
-     * Url to the best (high resolution) available preview image.
-     */
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public String getSnippet() {
-        return snippet;
     }
 
     public int getDuration() {
@@ -268,6 +237,10 @@ public class SearchResultEntity {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String getSnippet() {
+        return snippet;
     }
 
     @Override

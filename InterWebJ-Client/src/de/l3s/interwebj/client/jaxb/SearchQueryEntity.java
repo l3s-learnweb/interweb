@@ -43,35 +43,7 @@ public class SearchQueryEntity {
     protected List<SearchResultEntity> results;
 
     public SearchQueryEntity() {
-        results = new ArrayList<SearchResultEntity>();
-    }
-
-    public void addResult(SearchResultEntity result) {
-        results.add(result);
-    }
-
-    public String getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(String dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public String getDateTill() {
-        return dateTill;
-    }
-
-    public void setDateTill(String dateTill) {
-        this.dateTill = dateTill;
-    }
-
-    public String getElapsedTime() {
-        return elapsedTime;
-    }
-
-    public void setElapsedTime(String elapsedTime) {
-        this.elapsedTime = elapsedTime;
+        results = new ArrayList<>();
     }
 
     public String getId() {
@@ -90,20 +62,12 @@ public class SearchQueryEntity {
         this.link = link;
     }
 
-    public String getMediaTypes() {
-        return mediaTypes;
+    public String getUser() {
+        return user;
     }
 
-    public void setMediaTypes(String mediaTypes) {
-        this.mediaTypes = mediaTypes;
-    }
-
-    public int getNumberOfResults() {
-        return numberOfResults;
-    }
-
-    public void setNumberOfResults(int numberOfResults) {
-        this.numberOfResults = numberOfResults;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public String getQueryString() {
@@ -114,6 +78,38 @@ public class SearchQueryEntity {
         this.queryString = queryString;
     }
 
+    public String getSearchIn() {
+        return searchIn;
+    }
+
+    public void setSearchIn(String searchIn) {
+        this.searchIn = searchIn;
+    }
+
+    public String getMediaTypes() {
+        return mediaTypes;
+    }
+
+    public void setMediaTypes(String mediaTypes) {
+        this.mediaTypes = mediaTypes;
+    }
+
+    public String getDateFrom() {
+        return dateFrom;
+    }
+
+    public void setDateFrom(String dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public String getDateTill() {
+        return dateTill;
+    }
+
+    public void setDateTill(String dateTill) {
+        this.dateTill = dateTill;
+    }
+
     public String getRanking() {
         return ranking;
     }
@@ -122,20 +118,12 @@ public class SearchQueryEntity {
         this.ranking = ranking;
     }
 
-    public List<SearchResultEntity> getResults() {
-        return results;
+    public int getNumberOfResults() {
+        return numberOfResults;
     }
 
-    public void setResults(List<SearchResultEntity> results) {
-        this.results = results;
-    }
-
-    public String getSearchIn() {
-        return searchIn;
-    }
-
-    public void setSearchIn(String searchIn) {
-        this.searchIn = searchIn;
+    public void setNumberOfResults(int numberOfResults) {
+        this.numberOfResults = numberOfResults;
     }
 
     public String getUpdated() {
@@ -146,11 +134,23 @@ public class SearchQueryEntity {
         this.updated = updated;
     }
 
-    public String getUser() {
-        return user;
+    public String getElapsedTime() {
+        return elapsedTime;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setElapsedTime(String elapsedTime) {
+        this.elapsedTime = elapsedTime;
+    }
+
+    public List<SearchResultEntity> getResults() {
+        return results;
+    }
+
+    public void setResults(List<SearchResultEntity> results) {
+        this.results = results;
+    }
+
+    public void addResult(SearchResultEntity result) {
+        results.add(result);
     }
 }

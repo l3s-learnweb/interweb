@@ -1,13 +1,13 @@
-package de.l3s.interwebj.client;
+package de.l3s.interwebj.clientjson;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
-import de.l3s.interwebj.client.jaxb.SearchResponse;
-import de.l3s.interwebj.client.jaxb.SearchResultEntity;
+import de.l3s.interwebj.clientjson.model.SearchResponse;
+import de.l3s.interwebj.clientjson.model.SearchResult;
 
 class InterWebTest {
     // private static final String SERVER_URL = "http://localhost:8080/InterWebJ/api/";
@@ -30,7 +30,7 @@ class InterWebTest {
         SearchResponse response = iw.search("london", params);
         assertTrue(response.getQuery().getResults().size() > 0);
 
-        for (SearchResultEntity result : response.getQuery().getResults()) {
+        for (SearchResult result : response.getQuery().getResults()) {
             System.out.println(result.getTitle());
             System.out.println(result.getUrl());
         }
