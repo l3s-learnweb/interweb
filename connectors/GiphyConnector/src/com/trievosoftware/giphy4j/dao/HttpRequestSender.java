@@ -95,10 +95,6 @@ public class HttpRequestSender implements RequestSender {
             throw new IOException(e);
         }
 
-        if (body == null) {
-            throw new IOException("Unparseable response body! \n {" + body + "}");
-        }
-
         return new Response(headers, body);
     }
 

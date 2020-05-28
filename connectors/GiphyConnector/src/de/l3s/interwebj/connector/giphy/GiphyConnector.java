@@ -56,8 +56,6 @@ public class GiphyConnector extends AbstractServiceConnector implements Cloneabl
 
             SearchFeed feed = giphy.search(query.getQuery(), query.getResultCount(), (query.getPage() - 1) * query.getResultCount(), query.getLanguage());
 
-            feed.getDataList().get(0).getImages().getOriginal().getUrl();
-
             ConnectorResults results = new ConnectorResults(query, getName());
 
             if (feed.getDataList() != null && !feed.getDataList().isEmpty()) {

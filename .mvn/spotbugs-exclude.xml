@@ -18,6 +18,10 @@
     <Match>
         <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
     </Match>
+    <!-- Connectors should be wrapped into try-catch even if no exceptions is thrown -->
+    <Match>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Match>
     <!-- Date is mutable object value of which can be changed by untrusted source -->
     <Match>
         <Or>

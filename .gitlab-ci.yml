@@ -1,10 +1,20 @@
 variables:
   MAVEN_OPTS: "-DproxySet=true -Dhttp.proxyHost=web-proxy.rrzn.uni-hannover.de -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=learnweb.l3s.uni-hannover.de -Dhttps.proxyHost=web-proxy.rrzn.uni-hannover.de -Dhttps.proxyPort=3128 -Dhttps.nonProxyHosts=learnweb.l3s.uni-hannover.de"
   MAVEN_CLI_OPTS: "-P prod,!local --batch-mode"
+  MAVEN_CLI_QUIET: "--quiet -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.MavenCli=OFF"
 
 stages:
+  - lint
   - build
   - deploy
+
+# Check for code style issues
+lint:
+  stage: lint
+  tags:
+    - java
+  script:
+    - mvn $MAVEN_CLI_OPTS $MAVEN_CLI_QUIET checkstyle:check
 
 # Build Java sources (includes tests)
 build:
@@ -12,6 +22,7 @@ build:
   tags:
     - java
   script:
+    - mvn $MAVEN_CLI_OPTS $MAVEN_CLI_QUIET spotbugs:check
     - mvn $MAVEN_CLI_OPTS install
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'

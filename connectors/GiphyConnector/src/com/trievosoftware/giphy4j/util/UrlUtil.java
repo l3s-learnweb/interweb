@@ -57,10 +57,10 @@ public class UrlUtil {
             StringBuilder query = new StringBuilder(baseUrl);
             query.append(QUERY_STRING_SEPARATOR);
 
-            for (String key : params.keySet()) {
-                query.append(key);
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                query.append(entry.getKey());
                 query.append(PAIR_SEPARATOR);
-                query.append(encodeString(params.get(key)));
+                query.append(encodeString(entry.getValue()));
                 query.append(PARAM_SEPARATOR);
             }
 
