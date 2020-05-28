@@ -22,6 +22,7 @@
         <module>InterWebJ-Core</module>
         <module>connectors/BingConnector</module>
         <module>connectors/FlickrConnector</module>
+        <module>connectors/GiphyConnector</module>
         <module>connectors/IpernityConnector</module>
         <module>connectors/SlideShareConnector</module>
         <module>connectors/VimeoConnector</module>

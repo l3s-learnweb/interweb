@@ -39,6 +39,11 @@
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
+            <artifactId>connector-giphy</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-ipernity</artifactId>
             <version>2.5.0</version>
         </dependency>
