@@ -280,7 +280,6 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
                 List<Video> videoList = listResponse.getItems();
 
                 if (videoList != null) {
-
                     Iterator<Video> iteratorVideoResults = videoList.iterator();
                     int rank = Math.min(50, query.getResultCount()) * (query.getPage() - 1) + 1;
                     int resultCount = (int) queryResult.getTotalResultCount();
@@ -373,7 +372,7 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
         resultItem.setThumbnails(thumbnails);
 
         //create embedded flash video player
-        String embeddedCode = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/" + singleVideo.getId() +
+        String embeddedCode = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube-nocookie.com/embed/" + singleVideo.getId() +
             "\" frameborder=\"0\" allowfullscreen></iframe>";
         resultItem.setEmbeddedSize3(embeddedCode);
 

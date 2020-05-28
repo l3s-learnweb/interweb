@@ -77,7 +77,7 @@ public class GiphyConnector extends AbstractServiceConnector implements Cloneabl
                     Set<Thumbnail> thumbnails = new LinkedHashSet<>();
 
                     try {
-                        GiphyImage smallThumbnail = giphyThumbnails.getDownsized();
+                        GiphyImage smallThumbnail = giphyThumbnails.getFixedHeightSmallStill();
                         Thumbnail thumbnail = new Thumbnail(smallThumbnail.getUrl(), Integer.parseInt(smallThumbnail.getWidth()), Integer.parseInt(smallThumbnail.getHeight()));
 
                         if (thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0) {
@@ -89,7 +89,7 @@ public class GiphyConnector extends AbstractServiceConnector implements Cloneabl
                     }
 
                     try {
-                        GiphyImage mediumThumbnail = giphyThumbnails.getDownsizedMedium();
+                        GiphyImage mediumThumbnail = giphyThumbnails.getFixedHeightDownsampled();
                         Thumbnail thumbnail = new Thumbnail(mediumThumbnail.getUrl(), Integer.parseInt(mediumThumbnail.getWidth()), Integer.parseInt(mediumThumbnail.getHeight()));
 
                         if (thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0) {
@@ -101,7 +101,7 @@ public class GiphyConnector extends AbstractServiceConnector implements Cloneabl
                     }
 
                     try {
-                        GiphyImage largeThumbnail = giphyThumbnails.getDownsizedLarge();
+                        GiphyImage largeThumbnail = giphyThumbnails.getDownsizedMedium();
                         Thumbnail thumbnail = new Thumbnail(largeThumbnail.getUrl(), Integer.parseInt(largeThumbnail.getWidth()), Integer.parseInt(largeThumbnail.getHeight()));
 
                         if (thumbnail.getUrl() != null && thumbnail.getWidth() > 0 && thumbnail.getHeight() > 0) {
