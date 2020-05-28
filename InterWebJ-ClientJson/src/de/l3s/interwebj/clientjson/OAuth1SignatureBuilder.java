@@ -34,7 +34,6 @@ public class OAuth1SignatureBuilder {
     private final Map<String, String> parameters = new LinkedHashMap<>();
 
     public String build() {
-
         // For testing purposes, only add the timestamp if it has not yet been added
         if (!parameters.containsKey("oauth_timestamp")) {
             parameters.put("oauth_timestamp", getTimestamp());

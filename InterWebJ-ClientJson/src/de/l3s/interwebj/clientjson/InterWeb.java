@@ -41,7 +41,7 @@ public class InterWeb implements Serializable {
 
         boolean isFirst = true;
         for (final Map.Entry<String, String> entry : params.entrySet()) {
-            sb.append(isFirst ? '?' : '&').append(entry.getKey()).append('=').append(entry.getValue());
+            sb.append(isFirst ? '?' : '&').append(entry.getKey()).append('=').append(OAuth1SignatureBuilder.percentEncode(entry.getValue()));
             isFirst = false;
         }
 

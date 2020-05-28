@@ -81,7 +81,7 @@ public class SearchResultEntity {
     }
 
     public String getType() {
-        return type.toLowerCase();
+        return type;
     }
 
     public void setType(String type) {

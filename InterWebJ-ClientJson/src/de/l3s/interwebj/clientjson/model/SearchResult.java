@@ -2,6 +2,7 @@ package de.l3s.interwebj.clientjson.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.StringJoiner;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -36,10 +37,6 @@ public class SearchResult implements Serializable {
     private Integer numberOfViews;
     @SerializedName("number_of_comments")
     private Integer numberOfComments;
-    @SerializedName("privacy")
-    private Double privacy;
-    @SerializedName("privacy_confidence")
-    private Double privacyConfidence;
     @SerializedName("embedded_size1")
     private String embeddedSize1;
     @SerializedName("embedded_size2")
@@ -72,7 +69,7 @@ public class SearchResult implements Serializable {
     }
 
     public String getType() {
-        return type.toLowerCase();
+        return type;
     }
 
     public void setType(String type) {
@@ -238,4 +235,30 @@ public class SearchResult implements Serializable {
         this.snippet = snippet;
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SearchResult.class.getSimpleName() + "[", "]")
+            .add("service='" + service + "'")
+            .add("idAtService='" + idAtService + "'")
+            .add("type='" + type + "'")
+            .add("title='" + title + "'")
+            .add("description='" + description + "'")
+            .add("url='" + url + "'")
+            .add("image='" + image + "'")
+            .add("thumbnails=" + thumbnails)
+            .add("date='" + date + "'")
+            .add("tags='" + tags + "'")
+            .add("rankAtService=" + rankAtService)
+            .add("totalResultsAtService=" + totalResultsAtService)
+            .add("numberOfViews=" + numberOfViews)
+            .add("numberOfComments=" + numberOfComments)
+            .add("embeddedSize1='" + embeddedSize1 + "'")
+            .add("embeddedSize2='" + embeddedSize2 + "'")
+            .add("embeddedSize3='" + embeddedSize3 + "'")
+            .add("embeddedSize4='" + embeddedSize4 + "'")
+            .add("imageUrl='" + imageUrl + "'")
+            .add("duration=" + duration)
+            .add("snippet='" + snippet + "'")
+            .toString();
+    }
 }

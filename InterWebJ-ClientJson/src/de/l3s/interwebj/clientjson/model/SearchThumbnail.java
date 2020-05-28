@@ -1,6 +1,7 @@
 package de.l3s.interwebj.clientjson.model;
 
 import java.io.Serializable;
+import java.util.StringJoiner;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -38,4 +39,12 @@ public class SearchThumbnail implements Serializable {
         this.height = height;
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SearchThumbnail.class.getSimpleName() + "[", "]")
+            .add("url='" + url + "'")
+            .add("width=" + width)
+            .add("height=" + height)
+            .toString();
+    }
 }

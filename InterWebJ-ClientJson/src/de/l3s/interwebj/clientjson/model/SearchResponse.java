@@ -1,6 +1,7 @@
 package de.l3s.interwebj.clientjson.model;
 
 import java.io.Serializable;
+import java.util.StringJoiner;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -38,4 +39,12 @@ public class SearchResponse implements Serializable {
         this.query = query;
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SearchResponse.class.getSimpleName() + "[", "]")
+            .add("stat='" + stat + "'")
+            .add("error=" + error)
+            .add("query=" + query)
+            .toString();
+    }
 }

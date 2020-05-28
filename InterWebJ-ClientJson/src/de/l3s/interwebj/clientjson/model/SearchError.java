@@ -1,6 +1,7 @@
 package de.l3s.interwebj.clientjson.model;
 
 import java.io.Serializable;
+import java.util.StringJoiner;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,4 +29,11 @@ public class SearchError implements Serializable {
         this.message = message;
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SearchError.class.getSimpleName() + "[", "]")
+            .add("code=" + code)
+            .add("message='" + message + "'")
+            .toString();
+    }
 }

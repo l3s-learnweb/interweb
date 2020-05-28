@@ -3,6 +3,7 @@ package de.l3s.interwebj.clientjson.model;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -158,5 +159,26 @@ public class SearchQuery implements Serializable {
 
     public void setResults(List<SearchResult> results) {
         this.results = results;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SearchQuery.class.getSimpleName() + "[", "]")
+            .add("id='" + id + "'")
+            .add("link='" + link + "'")
+            .add("user='" + user + "'")
+            .add("queryString='" + queryString + "'")
+            .add("searchIn='" + searchIn + "'")
+            .add("mediaTypes='" + mediaTypes + "'")
+            .add("dateFrom='" + dateFrom + "'")
+            .add("dateTill='" + dateTill + "'")
+            .add("ranking='" + ranking + "'")
+            .add("numberOfResults=" + numberOfResults)
+            .add("updated='" + updated + "'")
+            .add("elapsedTime='" + elapsedTime + "'")
+            .add("totalResults=" + totalResults)
+            .add("facetSources=" + facetSources)
+            .add("results=" + results)
+            .toString();
     }
 }
