@@ -1,4 +1,4 @@
-package de.l3s.interwebj.clientjson;
+package de.l3s.interwebj.client;
 
 import java.net.URI;
 import java.net.URLEncoder;

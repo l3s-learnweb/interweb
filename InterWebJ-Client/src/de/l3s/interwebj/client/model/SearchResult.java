@@ -1,4 +1,4 @@
-package de.l3s.interwebj.clientjson.model;
+package de.l3s.interwebj.client.model;
 
 import java.io.Serializable;
 import java.util.List;

@@ -1,47 +1,65 @@
 package de.l3s.interwebj.client;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.Response;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.glassfish.jersey.client.oauth1.ConsumerCredentials;
-import org.glassfish.jersey.client.oauth1.OAuth1ClientSupport;
 
-import de.l3s.interwebj.client.jaxb.SearchResponse;
+import com.google.gson.Gson;
+
+import de.l3s.interwebj.client.model.SearchResponse;
 
 public class InterWeb implements Serializable {
+    private static final long serialVersionUID = 7231324400348062196L;
     private static final Logger log = LogManager.getLogger(InterWeb.class);
-    private static final long serialVersionUID = -1621494088505203391L;
 
+    private final String interwebApiURL;
     private final String consumerKey;
     private final String consumerSecret;
-    private final String interwebApiURL;
 
     public InterWeb(String interwebApiURL, String consumerKey, String consumerSecret) {
+        this.interwebApiURL = interwebApiURL;
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
-        this.interwebApiURL = interwebApiURL;
     }
 
-    private WebTarget createWebTarget(final String apiPath) {
-        final String apiUrl = interwebApiURL + apiPath;
-        final ConsumerCredentials consumerCredentials = new ConsumerCredentials(consumerKey, consumerSecret);
+    private URI createRequestUri(final String apiPath, final TreeMap<String, String> params) {
+        StringBuilder sb = new StringBuilder();
 
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(apiUrl);
+        sb.append(interwebApiURL);
+        if (sb.charAt(sb.length() - 1) != '/') {
+            sb.append('/');
+        }
+        sb.append(apiPath);
 
-        Feature filterFeature = OAuth1ClientSupport.builder(consumerCredentials).feature().build();
-        target.register(filterFeature);
+        boolean isFirst = true;
+        for (final Map.Entry<String, String> entry : params.entrySet()) {
+            sb.append(isFirst ? '?' : '&').append(entry.getKey()).append('=').append(OAuth1SignatureBuilder.percentEncode(entry.getValue()));
+            isFirst = false;
+        }
 
-        return target;
+        return URI.create(sb.toString());
+    }
+
+    private HttpRequest createRequest(final String apiPath, final TreeMap<String, String> params) {
+        final URI apiUri = createRequestUri(apiPath, params);
+
+        String authorizationHeader = new OAuth1SignatureBuilder()
+            .withURI(apiUri).withConsumerKey(consumerKey).withConsumerSecret(consumerSecret)
+            .build();
+
+        return HttpRequest.newBuilder().GET()
+            .uri(apiUri)
+            .header("Accept", "application/json")
+            .header("Authorization", authorizationHeader)
+            .build();
     }
 
     public SearchResponse search(String query, TreeMap<String, String> params) {
@@ -49,22 +67,21 @@ public class InterWeb implements Serializable {
             throw new IllegalArgumentException("empty query");
         }
 
-        WebTarget target = createWebTarget("search");
-        target = target.queryParam("q", query);
-        for (final Map.Entry<String, String> entry : params.entrySet()) {
-            String value = entry.getValue();
-            target = target.queryParam(entry.getKey(), value);
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            params.put("q", query);
+
+            HttpResponse<String> response = client.send(createRequest("search", params), HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                log.fatal("Interweb request failed; Error code: {}; params: {}; response: {}", response.statusCode(), params, response.body());
+                throw new RuntimeException("Interweb request failed, response: " + response.body());
+            }
+
+            return new Gson().fromJson(response.body(), SearchResponse.class);
+        } catch (IOException | InterruptedException e) {
+            log.fatal("An error occurred during Interweb request", e);
+            return null;
         }
-
-        Response response = target.request("application/xml").get();
-
-        if (response.getStatus() != 200) {
-            String content = response.readEntity(String.class);
-
-            log.fatal("Interweb request failed; Error code: " + response.getStatus() + "; for query:" + query + " | " + params + "; response: " + content);
-            throw new RuntimeException("Interweb request failed : HTTP error code : " + response.getStatus());
-        }
-
-        return response.readEntity(SearchResponse.class);
     }
 }
