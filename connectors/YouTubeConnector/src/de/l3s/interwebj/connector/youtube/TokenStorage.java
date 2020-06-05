@@ -63,7 +63,7 @@ public final class TokenStorage {
         return instance;
     }
 
-    private final static class TokenStorageMap<K, V> extends LinkedHashMap<K, V> {
+    private static final class TokenStorageMap<K, V> extends LinkedHashMap<K, V> {
         private static final long serialVersionUID = -7231532816950321903L;
 
         private TokenStorageMap(final int initialCapacity, final float loadFactor, final boolean accessOrder) {
