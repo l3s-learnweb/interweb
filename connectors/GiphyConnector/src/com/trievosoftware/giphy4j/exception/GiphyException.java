@@ -47,7 +47,7 @@ public class GiphyException extends Exception {
      * Constructs a new exception with the specified detail message and cause.
      *
      * @param message the detail message
-     * @param cause   the cause
+     * @param cause the cause
      */
     public GiphyException(String message, Throwable cause) {
         super(message, cause);

@@ -9,28 +9,20 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public final class TokenStorage {
 
     private static TokenStorage instance = null;
-    private static int capacity = 10000;
+    private static final int capacity = 10000;
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Lock readLock = lock.readLock();
     private final Lock writeLock = lock.writeLock();
-    private Map<Integer, String> storage;
+    private final Map<Integer, String> storage;
 
     private TokenStorage() {
-        storage = new LinkedHashMap<Integer, String>(capacity + 1, .75F, true) {
+        storage = new LinkedHashMap<>(capacity + 1, .75F, true) {
             private static final long serialVersionUID = -7231532816950321903L;
 
             public boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
                 return size() > capacity;
             }
         };
-    }
-
-    public static synchronized TokenStorage getInstance() {
-        if (instance == null) {
-            instance = new TokenStorage();
-        }
-
-        return instance;
     }
 
     public String get(int id) {
@@ -45,10 +37,7 @@ public final class TokenStorage {
     public void put(int id, String resource) {
         writeLock.lock();
         try {
-            String old = storage.get(id);
-            if (null == old) {
-                storage.put(id, resource);
-            }
+            storage.putIfAbsent(id, resource);
         } finally {
             writeLock.unlock();
         }
@@ -70,5 +59,13 @@ public final class TokenStorage {
         } finally {
             writeLock.unlock();
         }
+    }
+
+    public static synchronized TokenStorage getInstance() {
+        if (instance == null) {
+            instance = new TokenStorage();
+        }
+
+        return instance;
     }
 }

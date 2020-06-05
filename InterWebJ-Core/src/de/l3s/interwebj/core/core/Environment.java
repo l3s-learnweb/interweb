@@ -17,7 +17,7 @@ public final class Environment {
     private Properties properties;
     private Database database;
     private Engine engine;
-    private AccessControll accessControll;
+    private AccessControl accessControl;
 
     private Environment(InputStream inputStream) {
         try {
@@ -28,10 +28,26 @@ public final class Environment {
             database = new JdbcDatabase(properties);
             log.info("Database connected");
             engine = new Engine(database);
-            accessControll = new AccessControll();
+            accessControl = new AccessControl();
         } catch (Exception e) {
             log.error("Unable to load configuration file", e);
         }
+    }
+
+    public AccessControl getAccessControl() {
+        return accessControl;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public Database getDatabase() {
+        return database;
+    }
+
+    public Engine getEngine() {
+        return engine;
     }
 
     public static Environment getInstance() {
@@ -51,21 +67,5 @@ public final class Environment {
             singleton = new Environment(inputStream);
         }
         return singleton;
-    }
-
-    public AccessControll getAccessControll() {
-        return accessControll;
-    }
-
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public Database getDatabase() {
-        return database;
-    }
-
-    public Engine getEngine() {
-        return engine;
     }
 }

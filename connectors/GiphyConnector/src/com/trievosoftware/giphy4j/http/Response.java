@@ -42,7 +42,7 @@ public class Response {
      * Constructs a new response.
      *
      * @param headers the header map
-     * @param body    the body.
+     * @param body the body.
      */
     public Response(Map<String, String> headers, String body) {
         this.headers = headers;

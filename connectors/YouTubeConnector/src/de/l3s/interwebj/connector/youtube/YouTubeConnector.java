@@ -5,17 +5,17 @@ import static de.l3s.interwebj.core.util.Assertions.notNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +36,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
+import com.google.api.services.youtube.model.ThumbnailDetails;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoListResponse;
@@ -46,16 +47,24 @@ import com.google.api.services.youtube.model.VideoStatus;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
-import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
-public class YouTubeConnector extends AbstractServiceConnector implements Cloneable {
+public class YouTubeConnector extends ServiceConnector implements Cloneable {
+    private static final Logger log = LogManager.getLogger(YouTubeConnector.class);
+
+    private static final String API_KEY = "***REMOVED***";
+    /**
+     * Define a global instance of the scopes.
+     */
+    private static final List<String> SCOPES =
+        Arrays.asList("https://www.googleapis.com/auth/youtube.upload", "profile", "https://www.googleapis.com/auth/youtube");
     /**
      * Define a global instance of the HTTP transport.
      */
@@ -64,20 +73,10 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
      * Define a global instance of the JSON factory.
      */
     public static final JsonFactory JSON_FACTORY = new JacksonFactory();
-    private static final Logger log = LogManager.getLogger(YouTubeConnector.class);
-    private static final String CLIENT_ID = "***REMOVED***";
-    private static final String CLIENT_SECRET = "***REMOVED***";
-    private static final String API_KEY = "***REMOVED***";
-    /**
-     * Define a global instance of the scopes.
-     */
-    private static final List<String> SCOPES =
-        Arrays.asList("https://www.googleapis.com/auth/youtube.upload", "profile", "https://www.googleapis.com/auth/youtube");
-
     private static GoogleAuthorizationCodeFlow flow = null;
 
     public YouTubeConnector() {
-        super("YouTube", "http://www.youtube.com", new TreeSet<>(Arrays.asList("video")));
+        super("YouTube", "http://www.youtube.com", ContentType.video);
     }
 
     public YouTubeConnector(AuthCredentials consumerAuthCredentials) {
@@ -117,7 +116,6 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
     @Override
     public AuthCredentials completeAuthentication(Parameters params) throws InterWebException {
         notNull(params, "params");
-        AuthCredentials authCredentials = null;
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
         }
@@ -125,7 +123,8 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
         String authorizationCode = params.get("code");
         log.info("authorization_code: " + authorizationCode);
 
-        Credential cred = null;
+        AuthCredentials authCredentials;
+        Credential cred;
 
         try {
             GoogleTokenResponse response = getFlow().newTokenRequest(authorizationCode).setRedirectUri(params.get(Parameters.CALLBACK + "Auth")).execute();
@@ -150,7 +149,7 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
         ConnectorResults queryResult = new ConnectorResults(query, getName());
         TokenStorage tokens = TokenStorage.getInstance();
 
-        if (!query.getContentTypes().contains(Query.CT_VIDEO)) {
+        if (!query.getContentTypes().contains(ContentType.video)) {
             return queryResult;
         }
 
@@ -169,31 +168,31 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
             if (query.getQuery().startsWith("user::")) {
                 String[] splitQuery = query.getQuery().split(" ", 2);
                 ChannelListResponse channelListResponse = youtube.channels().list("id")
-                    .setKey(API_KEY).setForUsername(splitQuery[ 0 ].substring(6)).setFields("items(id)").execute();
+                    .setKey(API_KEY).setForUsername(splitQuery[0].substring(6)).setFields("items(id)").execute();
 
                 search.setChannelId(channelListResponse.getItems().get(0).getId());
 
-                if (splitQuery.length > 1 && splitQuery[ 1 ] != null) {
-                    search.setQ(splitQuery[ 1 ]);
+                if (splitQuery.length > 1 && splitQuery[1] != null) {
+                    search.setQ(splitQuery[1]);
                 }
             } else {
                 search.setQ(query.getQuery());
             }
 
-            search.setMaxResults((long) query.getResultCount());
+            search.setMaxResults((long) query.getPerPage());
 
-            if (query.getParam("date_from") != null) {
+            if (query.getDateFrom() != null) {
                 try {
-                    DateTime dateFrom = new DateTime(CoreUtils.parseDate(query.getParam("date_from")));
+                    DateTime dateFrom = new DateTime(CoreUtils.parseDate(query.getDateFrom()));
                     search.setPublishedAfter(dateFrom);
                 } catch (Exception e) {
                     log.error(e);
                 }
             }
 
-            if (query.getParam("date_till") != null) {
+            if (query.getDateTill() != null) {
                 try {
-                    DateTime dateTill = new DateTime(CoreUtils.parseDate(query.getParam("date_till")));
+                    DateTime dateTill = new DateTime(CoreUtils.parseDate(query.getDateTill()));
                     search.setPublishedBefore(dateTill);
                 } catch (Exception e) {
                     log.error(e);
@@ -224,15 +223,15 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
             search.setType("video");
             search.setSafeSearch("none"); // moderate | none | strict
 
-            switch (query.getSortOrder()) {
-                case RELEVANCE:
+            switch (query.getRanking()) {
+                case relevance:
                     search.setOrder("relevance");
                     break;
                 //ytq.addCustomParameter(new CustomParameter("orderby", "relevance_lang_"+ query.getLanguage())); break;
-                case DATE:
+                case date:
                     search.setOrder("date");
                     break;
-                case INTERESTINGNESS:
+                case interestingness:
                     search.setOrder("viewCount");
                     break;
                 default:
@@ -243,7 +242,7 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
 
             // To increase efficiency, only retrieve the fields that the application uses.
             search.setFields("nextPageToken,pageInfo/totalResults,items(id/videoId)");
-            search.setMaxResults((long) query.getResultCount());
+            search.setMaxResults((long) query.getPerPage());
 
             // Call the API and print results.
             log.info("Request url: " + search.buildHttpRequestUrl());
@@ -262,7 +261,7 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
             }
 
             List<SearchResult> searchResultList = searchResponse.getItems();
-            List<String> videoIds = new ArrayList<String>();
+            List<String> videoIds = new ArrayList<>();
 
             if (searchResultList != null) {
                 // Merge video IDs
@@ -281,7 +280,7 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
 
                 if (videoList != null) {
                     Iterator<Video> iteratorVideoResults = videoList.iterator();
-                    int rank = Math.min(50, query.getResultCount()) * (query.getPage() - 1) + 1;
+                    int rank = Math.min(50, query.getPerPage()) * (query.getPage() - 1) + 1;
                     int resultCount = (int) queryResult.getTotalResultCount();
 
                     while (iteratorVideoResults.hasNext()) {
@@ -308,12 +307,10 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
             return null;
         }
 
-        ResultItem resultItem = new ResultItem(getName());
-        resultItem.setType(Query.CT_VIDEO);
+        ResultItem resultItem = new ResultItem(getName(), rank);
+        resultItem.setType(ContentType.video);
         resultItem.setId(singleVideo.getId());
         resultItem.setUrl("https://www.youtube.com/watch?v=" + singleVideo.getId());
-        resultItem.setRank(rank);
-        resultItem.setTotalResultCount(totalResultCount);
 
         VideoSnippet vSnippet = singleVideo.getSnippet();
         if (vSnippet != null) {
@@ -327,76 +324,46 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
                 resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
             }
             if (vSnippet.getTags() != null) {
-                resultItem.setTags(StringUtils.join(vSnippet.getTags(), ','));
+                resultItem.getTags().addAll(vSnippet.getTags());
+            }
+
+            ThumbnailDetails thumbnails = vSnippet.getThumbnails();
+            if (thumbnails.getMedium() != null) {
+                resultItem.setThumbnailSmall(createThumbnail(thumbnails.getMedium()));
+            }
+            if (thumbnails.getHigh() != null) {
+                resultItem.setThumbnailMedium(createThumbnail(thumbnails.getHigh()));
+            }
+            if (thumbnails.getMaxres() != null) {
+                resultItem.setThumbnailLarge(createThumbnail(thumbnails.getMaxres()));
             }
         }
 
         VideoStatistics vStatistics = singleVideo.getStatistics();
         if (vStatistics != null) {
             if (vStatistics.getViewCount() != null) {
-                resultItem.setViewCount(vStatistics.getViewCount().intValue());
+                resultItem.setViewCount(vStatistics.getViewCount().longValue());
             }
             if (vStatistics.getCommentCount() != null) {
-                resultItem.setViewCount(vStatistics.getCommentCount().intValue());
+                resultItem.setViewCount(vStatistics.getCommentCount().longValue());
             }
         }
 
         VideoContentDetails vContentDetails = singleVideo.getContentDetails();
         if (vContentDetails != null) {
             if (vContentDetails.getDuration() != null) {
-                resultItem.setDuration((int) getSecondFromDuration(vContentDetails.getDuration()));
+                resultItem.setDuration(Duration.parse(vContentDetails.getDuration()).get(ChronoUnit.SECONDS));
             }
         }
 
-        // load thumbnails
-        Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
-        Thumbnail thumbnail;
-        com.google.api.services.youtube.model.Thumbnail googleThumbnail;
-
-        googleThumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
-        thumbnail = new Thumbnail(googleThumbnail.getUrl(), googleThumbnail.getWidth().intValue(), googleThumbnail.getHeight().intValue());
-        resultItem.setEmbeddedSize1(CoreUtils.createImageCode(thumbnail, 100, 100));
-        thumbnails.add(thumbnail);
-
-        if (singleVideo.getSnippet().getThumbnails().getMedium() != null) {
-            googleThumbnail = singleVideo.getSnippet().getThumbnails().getMedium();
-        } else {
-            googleThumbnail = singleVideo.getSnippet().getThumbnails().getHigh();
-        }
-
-        thumbnail = new Thumbnail(googleThumbnail.getUrl(), googleThumbnail.getWidth().intValue(), googleThumbnail.getHeight().intValue());
-        resultItem.setEmbeddedSize2(CoreUtils.createImageCode(thumbnail, 240, 240));
-        resultItem.setImageUrl(thumbnail.getUrl());
-        thumbnails.add(thumbnail);
-
-        resultItem.setThumbnails(thumbnails);
-
-        //create embedded flash video player
-        String embeddedCode = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube-nocookie.com/embed/" + singleVideo.getId() +
-            "\" frameborder=\"0\" allowfullscreen></iframe>";
-        resultItem.setEmbeddedSize3(embeddedCode);
+        resultItem.setEmbeddedCode(createEmbeddedCode(singleVideo.getId()));
 
         return resultItem;
     }
 
-    private long getSecondFromDuration(String period) {
-        String time = period.substring(2);
-        long duration = 0L;
-        Object[][] indexs = new Object[][] {{"H", 3600}, {"M", 60}, {"S", 1}};
-        for (int i = 0; i < indexs.length; i++) {
-            int index = time.indexOf((String) indexs[ i ][ 0 ]);
-            if (index != -1) {
-                String value = time.substring(0, index);
-                duration += Integer.parseInt(value) * (Integer) indexs[ i ][ 1 ];
-                time = time.substring(value.length() + 1);
-            }
-        }
-        return duration;
-    }
-
     @Override
     public String getEmbedded(AuthCredentials authCredentials, String url, int maxWidth, int maxHeight) throws InterWebException {
-        Pattern pattern = Pattern.compile(".*(?:youtu.be\\/|v\\/|u\\/\\w\\/|embed\\/|watch\\?v=)([^#\\&\\?]*).*");
+        Pattern pattern = Pattern.compile(".*(?:youtu.be/|v/|u/\\w/|embed/|watch\\?v=)([^#&?]*).*");
         Matcher matcher = pattern.matcher(url);
 
         if (matcher.matches()) {
@@ -440,10 +407,11 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
     }
 
     @Override
-    public ResultItem put(byte[] data, String contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException {
+    public ResultItem put(byte[] data, ContentType contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException {
         notNull(data, "data");
         notNull(contentType, "contentType");
         notNull(params, "params");
+
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
         }
@@ -452,7 +420,7 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
             throw new InterWebException("Upload is forbidden for non-authorized users");
         }
 
-        ResultItem resultItem = null;
+        ResultItem resultItem;
 
         try {
             YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials)).setApplicationName("Interweb").build();
@@ -473,12 +441,6 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
             snippet.setDescription(description);
             String tags = params.get(Parameters.TAGS, "");
             snippet.setTags(CoreUtils.convertToUniqueList(tags));
-
-            /*
-            TODO set categories
-            String category = params.get("category", "Film");
-            mg.addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME, category));
-            */
 
             // Add the completed snippet object to the video resource.
             videoObjectDefiningMetadata.setSnippet(snippet);
@@ -506,27 +468,25 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
             // time and bandwidth in the event of network failures.
             uploader.setDirectUploadEnabled(false);
 
-            MediaHttpUploaderProgressListener progressListener = new MediaHttpUploaderProgressListener() {
-                public void progressChanged(MediaHttpUploader uploader) throws IOException {
-                    switch (uploader.getUploadState()) {
-                        case INITIATION_STARTED:
-                            log.info("Initiation Started");
-                            break;
-                        case INITIATION_COMPLETE:
-                            log.info("Initiation Completed");
-                            break;
-                        case MEDIA_IN_PROGRESS:
-                            log.info("Upload in progress");
-                            break;
-                        case MEDIA_COMPLETE:
-                            log.info("Upload Completed!");
-                            break;
-                        case NOT_STARTED:
-                            log.info("Upload Not Started!");
-                            break;
-                        default:
-                            log.error("Unknown upload state");
-                    }
+            MediaHttpUploaderProgressListener progressListener = uploader1 -> {
+                switch (uploader1.getUploadState()) {
+                    case INITIATION_STARTED:
+                        log.info("Initiation Started");
+                        break;
+                    case INITIATION_COMPLETE:
+                        log.info("Initiation Completed");
+                        break;
+                    case MEDIA_IN_PROGRESS:
+                        log.info("Upload in progress");
+                        break;
+                    case MEDIA_COMPLETE:
+                        log.info("Upload Completed!");
+                        break;
+                    case NOT_STARTED:
+                        log.info("Upload Not Started!");
+                        break;
+                    default:
+                        log.error("Unknown upload state");
                 }
             };
             uploader.setProgressListener(progressListener);
@@ -557,14 +517,10 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
         ChannelListResponse detailedItem = youtube.channels().list("id, brandingSettings")
             .setKey(API_KEY).setId(channelListResponse.getItems().get(0).getId()).setFields("items(id, brandingSettings)").execute();
 
-        HashSet<String> tags = new HashSet<String>();
         String keywords = detailedItem.getItems().get(0).getBrandingSettings().getChannel().getKeywords();
 
-        for (String keyword : keywords.replaceAll("[\"'-+.^:,]", "").split(" ")) {
-            tags.add(keyword);
-        }
-
-        return tags;
+        String[] tagsArray = keywords.replaceAll("[\"'-+.^:,]", "").split(" ");
+        return new HashSet<>(Arrays.asList(tagsArray));
     }
 
     /**
@@ -572,9 +528,10 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
      *
      * @return GoogleAuthorizationCodeFlow instance.
      */
-    public GoogleAuthorizationCodeFlow getFlow() throws IOException {
+    public GoogleAuthorizationCodeFlow getFlow() {
         if (flow == null) {
-            flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, SCOPES)
+            AuthCredentials clientCredentials = getAuthCredentials();
+            flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientCredentials.getKey(), clientCredentials.getSecret(), SCOPES)
                 .setAccessType("offline").setApprovalPrompt("force").build();
         }
         return flow;
@@ -584,8 +541,9 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
      * Convert AuthCredentials to Google Credential.
      */
     private Credential getYoutubeCredential(AuthCredentials authCredentials) {
+        AuthCredentials clientCredentials = getAuthCredentials();
         Credential credential = new GoogleCredential.Builder().setTransport(HTTP_TRANSPORT).setJsonFactory(JSON_FACTORY)
-            .setClientSecrets(CLIENT_ID, CLIENT_SECRET).build();
+            .setClientSecrets(clientCredentials.getKey(), clientCredentials.getSecret()).build();
 
         credential.setAccessToken(authCredentials.getKey());
         credential.setRefreshToken(authCredentials.getSecret());
@@ -603,5 +561,14 @@ public class YouTubeConnector extends AbstractServiceConnector implements Clonea
     public String generateCallbackUrl(String baseApiUrl, Parameters parameters) {
         parameters.remove(Parameters.IWJ_USER_ID);
         return baseApiUrl + "callback?" + parameters.toQueryString();
+    }
+
+    private static Thumbnail createThumbnail(com.google.api.services.youtube.model.Thumbnail vThumbnail) {
+        return new Thumbnail(vThumbnail.getUrl(), vThumbnail.getWidth().intValue(), vThumbnail.getHeight().intValue());
+    }
+
+    private static String createEmbeddedCode(String id) {
+        String iframeUrl = "https://www.youtube-nocookie.com/embed/" + id;
+        return "<iframe src=\"" + iframeUrl + "\" allowfullscreen referrerpolicy=\"origin\">Your browser has blocked this iframe</iframe>";
     }
 }

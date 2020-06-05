@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.l3s.interwebj.core.core.AccessControll;
+import de.l3s.interwebj.core.core.AccessControl;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.tomcat.bean.SessionBean;
@@ -35,9 +35,9 @@ public class SecurityFilter implements Filter {
             String requestUrl = getRequestUrl(httpRequest);
             // log.debug("Requested URL: [" + requestUrl + "]");
 
-            AccessControll accessControll = Environment.getInstance().getAccessControll();
+            AccessControl accessControl = Environment.getInstance().getAccessControl();
             InterWebPrincipal principal = sessionBean.getPrincipal();
-            boolean authorized = accessControll.isAuthorized(principal, requestUrl, null);
+            boolean authorized = accessControl.isAuthorized(principal, requestUrl, null);
             if (!authorized) {
                 log.info("Login required. User: " + principal + " is not authorized to access the resource: " + requestUrl);
                 log.info("saving requested URL: " + requestUrl);

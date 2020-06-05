@@ -1,6 +1,9 @@
 package de.l3s.interwebj.core.core;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -8,60 +11,117 @@ import org.apache.commons.lang3.NotImplementedException;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
+import de.l3s.interwebj.core.db.Database;
 import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 
-public interface ServiceConnector {
-    default Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException {
+public abstract class ServiceConnector {
+
+    private final String name;
+    private final String baseUrl;
+    private final List<ContentType> contentTypes;
+
+    private AuthCredentials consumerAuthCredentials;
+
+    public ServiceConnector(String name, String baseUrl, ContentType... contentTypes) {
+        this(name, baseUrl, Arrays.asList(contentTypes));
+    }
+
+    public ServiceConnector(String name, String baseUrl, List<ContentType> contentTypes) {
+        this.name = name;
+        this.baseUrl = baseUrl;
+        this.contentTypes = contentTypes;
+    }
+
+    public abstract ServiceConnector clone();
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ServiceConnector other = (ServiceConnector) obj;
+        if (name == null) {
+            return other.name == null;
+        } else {
+            return name.equals(other.name);
+        }
+    }
+
+
+    public Parameters getRefinedCallbackParameters(Parameters parameters) {
+        return parameters;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    public boolean isRegistered() {
+        return consumerAuthCredentials != null;
+    }
+
+    public boolean supportContentType(ContentType contentType) {
+        return (contentType != null) && contentTypes.contains(contentType);
+    }
+
+    public InterWebPrincipal getPrincipal(Parameters parameters) throws InterWebException {
+        for (String parameter : parameters.keySet()) {
+            if (parameter.equals(Parameters.IWJ_USER_ID)) {
+                String userName = parameters.get(parameter);
+
+                Database database = Environment.getInstance().getDatabase();
+                InterWebPrincipal principal = database.readPrincipalByName(userName);
+                if (principal == null) {
+                    throw new InterWebException("User [" + userName + "] not found");
+                }
+                return principal;
+            }
+        }
+
+        throw new InterWebException("Unable to fetch user name from the callback URL");
+    }
+
+    public Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException {
         throw new NotImplementedException();
     }
 
-    ServiceConnector clone();
-
-    default AuthCredentials completeAuthentication(Parameters params) throws InterWebException {
+    public AuthCredentials completeAuthentication(Parameters params) throws InterWebException {
         throw new NotImplementedException();
     }
 
-    ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException;
+    public abstract ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException;
 
-    AuthCredentials getAuthCredentials();
-
-    void setAuthCredentials(AuthCredentials consumerAuthCredentials);
-
-    String getBaseUrl();
-
-    Set<String> getContentTypes();
-
-    default String getEmbedded(AuthCredentials authCredentials, String url, int width, int height) throws InterWebException {
+    public String getEmbedded(AuthCredentials authCredentials, String url, int width, int height) throws InterWebException {
         return null;
     }
 
-    String getName();
-
-    Parameters getRefinedCallbackParameters(Parameters parameters);
-
-    default String getUserId(AuthCredentials userAuthCredentials) throws InterWebException {
+    public String getUserId(AuthCredentials userAuthCredentials) throws InterWebException {
         throw new NotImplementedException();
     }
 
-    boolean isConnectorRegistrationDataRequired();
+    public abstract boolean isConnectorRegistrationDataRequired();
 
-    boolean isRegistered();
+    public abstract boolean isUserRegistrationDataRequired();
 
-    boolean isUserRegistrationDataRequired();
+    public abstract boolean isUserRegistrationRequired();
 
-    boolean isUserRegistrationRequired();
-
-    default ResultItem put(byte[] data, String contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException {
+    public ResultItem put(byte[] data, ContentType contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException {
         throw new NotImplementedException();
     }
 
-    default void revokeAuthentication() throws InterWebException {
+    public void revokeAuthentication() throws InterWebException {
         // not supported. do nothing
     }
-
-    boolean supportContentType(String contentType);
 
     /**
      * Returns a set of tags. The tags have to belong <i>somehow</i> to the user.
@@ -70,20 +130,38 @@ public interface ServiceConnector {
      * @param username the function throws an IllegalArgumentException if the username is not valid at the service
      * @param maxCount the maximal result count
      */
-    default Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException {
+    public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException {
         throw new NotImplementedException();
     }
 
     /**
      * Returns a set of usernames that belong <i>somehow</i> to the specified tags.
      */
-    default Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException {
+    public Set<String> getUsers(Set<String> tags, int maxCount) throws IOException, InterWebException {
         throw new NotImplementedException();
     }
 
-    default String generateCallbackUrl(String baseApiUrl, Parameters parameters) {
+    public String generateCallbackUrl(String baseApiUrl, Parameters parameters) {
         return baseApiUrl + "callback?" + parameters.toQueryString();
     }
 
-    InterWebPrincipal getPrincipal(Parameters parameters) throws InterWebException;
+    public AuthCredentials getAuthCredentials() {
+        return consumerAuthCredentials;
+    }
+
+    public void setAuthCredentials(AuthCredentials authCredentials) {
+        this.consumerAuthCredentials = authCredentials;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public List<ContentType> getContentTypes() {
+        return contentTypes;
+    }
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.model.SelectItem;
@@ -22,7 +23,7 @@ import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.Query;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 
 /**
@@ -34,7 +35,7 @@ public class UploadBean implements Serializable {
     private static final Logger log = LogManager.getLogger(UploadBean.class);
     private static final long serialVersionUID = -3906461569264684939L;
 
-    private String selectedContentType;
+    private ContentType selectedContentType;
     private List<String> selectedConnectors;
     private String title;
     private String description;
@@ -49,7 +50,7 @@ public class UploadBean implements Serializable {
     }
 
     public List<SelectItem> getConnectors() throws InterWebException {
-        List<SelectItem> connectors = new ArrayList<SelectItem>();
+        List<SelectItem> connectors = new ArrayList<>();
         Engine engine = Environment.getInstance().getEngine();
         InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
         for (ServiceConnector connector : engine.getConnectors()) {
@@ -61,14 +62,9 @@ public class UploadBean implements Serializable {
         return connectors;
     }
 
-    public List<SelectItem> getContentTypes() throws InterWebException {
-        List<SelectItem> contentTypes = new ArrayList<SelectItem>();
+    public List<ContentType> getContentTypes() throws InterWebException {
         Engine engine = Environment.getInstance().getEngine();
-        for (String contentType : engine.getContentTypes()) {
-            SelectItem selectItem = new SelectItem(contentType);
-            contentTypes.add(selectItem);
-        }
-        return contentTypes;
+        return engine.getContentTypes();
     }
 
     public String getDescription() {
@@ -87,11 +83,11 @@ public class UploadBean implements Serializable {
         this.selectedConnectors = selectedConnectors;
     }
 
-    public String getSelectedContentType() {
+    public ContentType getSelectedContentType() {
         return selectedContentType;
     }
 
-    public void setSelectedContentType(String selectedContentType) {
+    public void setSelectedContentType(ContentType selectedContentType) {
         this.selectedContentType = selectedContentType;
     }
 
@@ -120,7 +116,7 @@ public class UploadBean implements Serializable {
     }
 
     public boolean isFileUpload() {
-        return Query.CT_IMAGE.equals(selectedContentType) || Query.CT_VIDEO.equals(selectedContentType) || Query.CT_AUDIO.equals(selectedContentType);
+        return Arrays.asList(ContentType.image, ContentType.video, ContentType.audio).contains(selectedContentType);
     }
 
     public boolean isPublicAccess() {

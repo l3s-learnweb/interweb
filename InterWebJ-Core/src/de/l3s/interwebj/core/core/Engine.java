@@ -22,9 +22,10 @@ import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
 import de.l3s.interwebj.core.db.Database;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
-import de.l3s.interwebj.core.query.QueryResult;
 import de.l3s.interwebj.core.query.QueryResultCollector;
+import de.l3s.interwebj.core.query.QueryResults;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.util.ExpirableMap;
 import de.l3s.interwebj.core.util.ExpirationPolicy;
@@ -33,18 +34,18 @@ public class Engine {
     private static final Logger log = LogManager.getLogger(Engine.class);
 
     private Map<String, ServiceConnector> connectors;
-    private Set<String> contentTypes;
-    private Database database;
+    private Set<ContentType> contentTypes;
+    private final Database database;
     private ExpirableMap<String, Object> expirableMap;
     private Map<String, Map<ServiceConnector, Parameters>> pendingAuthorizationConnectors;
-    private Cache<Query, QueryResult> cache;
+    private Cache<Query, QueryResults> cache;
 
     public Engine(Database database) {
         this.database = database;
         init();
     }
 
-    public Cache<Query, QueryResult> getCache() {
+    public Cache<Query, QueryResults> getCache() {
         return cache;
     }
 
@@ -74,7 +75,7 @@ public class Engine {
     }
 
     public List<String> getConnectorNames() {
-        List<String> connectorList = new ArrayList<String>();
+        List<String> connectorList = new ArrayList<>();
         for (ServiceConnector connector : connectors.values()) {
             connectorList.add(connector.getName().toLowerCase());
         }
@@ -82,7 +83,7 @@ public class Engine {
     }
 
     public List<ServiceConnector> getConnectors() {
-        List<ServiceConnector> connectorList = new ArrayList<ServiceConnector>();
+        List<ServiceConnector> connectorList = new ArrayList<>();
 
         Set<String> connectorNames = connectors.keySet();
         for (String connectorName : connectorNames) {
@@ -92,8 +93,8 @@ public class Engine {
         return connectorList;
     }
 
-    public List<String> getContentTypes() {
-        return new ArrayList<String>(contentTypes);
+    public List<ContentType> getContentTypes() {
+        return new ArrayList<>(contentTypes);
     }
 
     public ExpirableMap<String, Object> getExpirableMap() {
@@ -161,7 +162,7 @@ public class Engine {
         database.saveUserAuthCredentials(connectorName, principal.getName(), userId, consumerAuthCredentials);
     }
 
-    public ResultItem upload(byte[] data, Principal principal, List<String> connectorNames, String contentType, Parameters params) throws InterWebException {
+    public ResultItem upload(byte[] data, Principal principal, List<String> connectorNames, ContentType contentType, Parameters params) throws InterWebException {
         log.info("start uploading ...");
         for (String connectorName : connectorNames) {
             log.info("connectorName: [" + connectorName + "]");
@@ -189,7 +190,7 @@ public class Engine {
 
     private ExpirableMap<ServiceConnector, Parameters> createExpirableMap(int minutes) {
         ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
-        return new ExpirableMap<ServiceConnector, Parameters>(builder.timeToIdle(minutes, TimeUnit.MINUTES).build());
+        return new ExpirableMap<>(builder.timeToIdle(minutes, TimeUnit.MINUTES).build());
     }
 
     private Parameters getPendingAuthorizationParameters(InterWebPrincipal principal, ServiceConnector connector) throws InterWebException {
@@ -213,11 +214,11 @@ public class Engine {
     }
 
     private void init() {
-        connectors = new TreeMap<String, ServiceConnector>();
-        contentTypes = new TreeSet<String>();
+        connectors = new TreeMap<>();
+        contentTypes = new TreeSet<>();
         ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
-        expirableMap = new ExpirableMap<String, Object>(builder.timeToIdle(60, TimeUnit.MINUTES).build());
-        pendingAuthorizationConnectors = new HashMap<String, Map<ServiceConnector, Parameters>>();
+        expirableMap = new ExpirableMap<>(builder.timeToIdle(60, TimeUnit.MINUTES).build());
+        pendingAuthorizationConnectors = new HashMap<>();
 
         cache = CacheBuilder.newBuilder().maximumSize(10000).build();
     }

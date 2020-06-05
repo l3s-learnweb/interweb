@@ -14,7 +14,7 @@ public class AuthorizationEntity {
 
     @XmlAttribute(name = "type")
     protected String type;
-    @XmlElementWrapper(name = "parameters")
+    @XmlElementWrapper
     @XmlElement(name = "parameter")
     protected List<ParameterEntity> parameters;
     @XmlElement(name = "link")
@@ -22,7 +22,7 @@ public class AuthorizationEntity {
 
     public void addParameter(String type, String value) {
         if (parameters == null) {
-            parameters = new ArrayList<ParameterEntity>();
+            parameters = new ArrayList<>();
         }
         parameters.add(new ParameterEntity(type, value));
     }

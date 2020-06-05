@@ -11,9 +11,9 @@ class ExpirableMapTest {
     @Test
     void testExpirable() throws InterruptedException {
         ExpirationPolicy policy = new ExpirationPolicy.Builder().timeToIdle(1, TimeUnit.SECONDS).build();
-        ExpirableMap<String, String> map = new ExpirableMap<String, String>(policy);
+        ExpirableMap<String, String> map = new ExpirableMap<>(policy);
 
-        Expirable<String, String> expirable = new Expirable<String, String>("a", "aaa", policy);
+        Expirable<String, String> expirable = new Expirable<>("a", "aaa", policy);
         map.put(expirable.getKey(), expirable.getValue());
 
         assertTrue(map.containsKey("a"));

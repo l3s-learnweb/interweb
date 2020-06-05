@@ -72,13 +72,14 @@ public class InterWeb implements Serializable {
             params.put("q", query);
 
             HttpResponse<String> response = client.send(createRequest("search", params), HttpResponse.BodyHandlers.ofString());
+            String responseBody = response.body();
 
             if (response.statusCode() != 200) {
-                log.fatal("Interweb request failed; Error code: {}; params: {}; response: {}", response.statusCode(), params, response.body());
-                throw new RuntimeException("Interweb request failed, response: " + response.body());
+                log.fatal("Interweb request failed; Error code: {}; params: {}; response: {}", response.statusCode(), params, responseBody);
+                throw new RuntimeException("Interweb request failed, response: " + responseBody);
             }
 
-            return new Gson().fromJson(response.body(), SearchResponse.class);
+            return new Gson().fromJson(responseBody, SearchResponse.class);
         } catch (IOException | InterruptedException e) {
             log.fatal("An error occurred during Interweb request", e);
             return null;

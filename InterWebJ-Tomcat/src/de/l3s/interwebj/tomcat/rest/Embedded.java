@@ -21,9 +21,9 @@ import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.core.ServiceConnector;
+import de.l3s.interwebj.core.xml.ErrorResponse;
+import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.EmbeddedResponse;
-import de.l3s.interwebj.tomcat.jaxb.ErrorResponse;
-import de.l3s.interwebj.tomcat.jaxb.XMLResponse;
 
 @Path("/embedded")
 public class Embedded extends Endpoint {
@@ -35,7 +35,7 @@ public class Embedded extends Endpoint {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse getEmbedded(@FormParam("url") String url, @FormParam("max_width") int maxWidth, @FormParam("max_height") int maxHeight) {
+    public XmlResponse getEmbedded(@FormParam("url") String url, @FormParam("max_width") int maxWidth, @FormParam("max_height") int maxHeight) {
         if (StringUtils.isEmpty(url)) {
             return new ErrorResponse(999, "URL must not by null or empty");
         }

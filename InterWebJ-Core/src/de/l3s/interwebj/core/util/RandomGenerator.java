@@ -11,21 +11,14 @@ public class RandomGenerator {
 
     private static final int DEFAULT_BIT_COUNT = 144;
 
-    private static char[] alphanumericChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_".toCharArray();
+    private static final char[] alphanumericChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_".toCharArray();
 
     private static RandomGenerator singleton;
 
-    private SecureRandom random;
+    private final SecureRandom random;
 
     public RandomGenerator() {
         random = new SecureRandom();
-    }
-
-    public static RandomGenerator getInstance() {
-        if (singleton == null) {
-            singleton = new RandomGenerator();
-        }
-        return singleton;
     }
 
     public String nextAlphanumericId() {
@@ -60,5 +53,12 @@ public class RandomGenerator {
 
     public String nextOAuthToken() {
         return nextAlphanumericId(16);
+    }
+
+    public static RandomGenerator getInstance() {
+        if (singleton == null) {
+            singleton = new RandomGenerator();
+        }
+        return singleton;
     }
 }

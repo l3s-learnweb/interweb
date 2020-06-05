@@ -17,8 +17,8 @@ import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.tomcat.jaxb.ErrorResponse;
-import de.l3s.interwebj.tomcat.jaxb.XMLResponse;
+import de.l3s.interwebj.core.xml.ErrorResponse;
+import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationEntity;
 import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationLinkEntity;
 import de.l3s.interwebj.tomcat.jaxb.services.ServiceEntity;
@@ -28,7 +28,7 @@ import de.l3s.interwebj.tomcat.jaxb.services.ServicesResponse;
 public class Services extends Endpoint {
 
     public static List<ServiceEntity> createServiceEntities(String baseUri, Principal principal) {
-        List<ServiceEntity> serviceEntities = new ArrayList<ServiceEntity>();
+        List<ServiceEntity> serviceEntities = new ArrayList<>();
         Engine engine = Environment.getInstance().getEngine();
         List<ServiceConnector> connectors = engine.getConnectors();
         for (ServiceConnector connector : connectors) {
@@ -87,7 +87,7 @@ public class Services extends Endpoint {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse getServices() {
+    public XmlResponse getServices() {
         List<ServiceEntity> serviceEntities = createServiceEntities(getBaseUri().toASCIIString(), getPrincipal());
         ServicesResponse servicesResponse = new ServicesResponse();
         servicesResponse.setServiceEntities(serviceEntities);

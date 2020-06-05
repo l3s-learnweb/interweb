@@ -106,8 +106,7 @@ public class Giphy {
      * Be aware that not every response has all information available. In that
      * case the value will be returned as null.
      *
-     * @param query  the query parameters. Multiple parameters are separated by a
-     *               space
+     * @param query the query parameters. Multiple parameters are separated by a space
      * @param offset the offset
      * @return the SearchFeed object
      * @throws GiphyException if an error occurs during the search
@@ -124,9 +123,8 @@ public class Giphy {
      * Be aware that not every response has all information available. In that
      * case the value will be returned as null.
      *
-     * @param query  the query parameters. Multiple parameters are separated by a
-     *               space
-     * @param limit  the result limit. The maximum is 100.
+     * @param query the query parameters. Multiple parameters are separated by a space
+     * @param limit the result limit. The maximum is 100.
      * @param offset the offset
      * @return the SearchFeed object
      * @throws GiphyException if an error occurs during the search
@@ -156,7 +154,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             feed = gson.fromJson(response.getBody(), SearchFeed.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw new GiphyException(e);
         }
 
@@ -188,7 +186,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             giphy = gson.fromJson(response.getBody(), SearchGiphy.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw new GiphyException(e);
         }
 
@@ -222,7 +220,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             giphy = gson.fromJson(response.getBody(), SearchGiphy.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw new GiphyException(e);
         }
 
@@ -255,7 +253,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             random = gson.fromJson(response.getBody(), SearchRandom.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw new GiphyException(e);
         }
 
@@ -288,7 +286,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             feed = gson.fromJson(response.getBody(), SearchFeed.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw new GiphyException(e);
         }
 
@@ -303,8 +301,7 @@ public class Giphy {
      * Be aware that not every response has all information available. In that
      * case the value will be returned as null.
      *
-     * @param query  the query parameters. Multiple parameters are separated by a
-     *               space
+     * @param query the query parameters. Multiple parameters are separated by a space
      * @param offset the offset
      * @return the SearchFeed object
      * @throws GiphyException if an error occurs during the search
@@ -321,9 +318,8 @@ public class Giphy {
      * Be aware that not every response has all information available. In that
      * case the value will be returned as null.
      *
-     * @param query  the query parameters. Multiple parameters are separated by a
-     *               space
-     * @param limit  the result limit. The maximum is 100.
+     * @param query the query parameters. Multiple parameters are separated by a space
+     * @param limit the result limit. The maximum is 100.
      * @param offset the offset
      * @return the SearchFeed object
      * @throws GiphyException if an error occurs during the search
@@ -349,7 +345,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             feed = gson.fromJson(response.getBody(), SearchFeed.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw new GiphyException(e);
         }
 
@@ -383,7 +379,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             giphy = gson.fromJson(response.getBody(), SearchGiphy.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw new GiphyException(e);
         }
 
@@ -416,7 +412,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             feed = gson.fromJson(response.getBody(), SearchFeed.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw new GiphyException(e);
         }
 
@@ -449,7 +445,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             random = gson.fromJson(response.getBody(), SearchRandom.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw new GiphyException(e);
         }
 

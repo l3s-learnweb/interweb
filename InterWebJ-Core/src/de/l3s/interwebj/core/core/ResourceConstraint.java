@@ -4,9 +4,9 @@ import java.util.regex.Pattern;
 
 public class ResourceConstraint {
 
-    private Pattern pattern;
-    private int weight;
-    private String role;
+    private final Pattern pattern;
+    private final int weight;
+    private final String role;
 
     public ResourceConstraint(String pattern, int weight) {
         this(pattern, null, weight);

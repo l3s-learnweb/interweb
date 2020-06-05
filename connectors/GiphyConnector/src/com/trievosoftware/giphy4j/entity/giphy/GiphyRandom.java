@@ -276,7 +276,7 @@ public class GiphyRandom {
     }
 
     /**
-     * Sets the downsampled URL
+     * Sets the downsampled URL.
      *
      * @param fixedHeightDownsampledUrl the downsampled URL
      */
@@ -294,7 +294,7 @@ public class GiphyRandom {
     }
 
     /**
-     * Sets the fixed height downsampled width
+     * Sets the fixed height downsampled width.
      *
      * @param fixedHeightDownsampledWidth the fixed height downsampled width
      */

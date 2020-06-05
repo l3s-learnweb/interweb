@@ -7,15 +7,20 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import de.l3s.interwebj.core.AuthCredentials;
 
 public class InterWebPrincipal implements java.security.Principal, Serializable {
+    private static final long serialVersionUID = 3491812866957391163L;
+
     public static final String DEFAULT_ROLE = "default";
     public static final String MANAGER_ROLE = "manager";
-    private static final long serialVersionUID = 3491812866957391163L;
-    private String name;
-    private String email;
-    private Set<String> roles;
+
+    private final String name;
+    private final String email;
+    private final Set<String> roles;
     private AuthCredentials oauthCredentials;
 
     public InterWebPrincipal(String name) {
@@ -23,7 +28,7 @@ public class InterWebPrincipal implements java.security.Principal, Serializable 
     }
 
     public InterWebPrincipal(String name, String email) {
-        this(name, email, new HashSet<String>());
+        this(name, email, new HashSet<>());
     }
 
     public InterWebPrincipal(String name, String email, Set<String> roles) {
@@ -31,20 +36,10 @@ public class InterWebPrincipal implements java.security.Principal, Serializable 
         notNull(roles, "roles");
         this.name = name;
         this.email = email;
-        this.roles = new HashSet<String>();
+        this.roles = new HashSet<>();
         for (String role : roles) {
             addRole(role);
         }
-    }
-
-    public static InterWebPrincipal createDefault(String name) {
-        return createDefault(name, null);
-    }
-
-    public static InterWebPrincipal createDefault(String name, String email) {
-        InterWebPrincipal principal = new InterWebPrincipal(name, email);
-        principal.addRole(DEFAULT_ROLE);
-        return principal;
     }
 
     public void addRole(String role) {
@@ -65,13 +60,10 @@ public class InterWebPrincipal implements java.security.Principal, Serializable 
         }
         InterWebPrincipal other = (InterWebPrincipal) obj;
         if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
+            return other.name == null;
+        } else {
+            return name.equals(other.name);
         }
-        return true;
     }
 
     public String getEmail() {
@@ -112,28 +104,21 @@ public class InterWebPrincipal implements java.security.Principal, Serializable 
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("InterWebPrincipal [");
-        if (name != null) {
-            builder.append("name=");
-            builder.append(name);
-            builder.append(", ");
-        }
-        if (email != null) {
-            builder.append("email=");
-            builder.append(email);
-            builder.append(", ");
-        }
-        if (roles != null) {
-            builder.append("roles=");
-            builder.append(roles);
-            builder.append(", ");
-        }
-        if (oauthCredentials != null) {
-            builder.append("oauthCredentials=");
-            builder.append(oauthCredentials);
-        }
-        builder.append("]");
-        return builder.toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("name", name)
+            .append("email", email)
+            .append("roles", roles)
+            .append("oauthCredentials", oauthCredentials)
+            .toString();
+    }
+
+    public static InterWebPrincipal createDefault(String name) {
+        return createDefault(name, null);
+    }
+
+    public static InterWebPrincipal createDefault(String name, String email) {
+        InterWebPrincipal principal = new InterWebPrincipal(name, email);
+        principal.addRole(DEFAULT_ROLE);
+        return principal;
     }
 }

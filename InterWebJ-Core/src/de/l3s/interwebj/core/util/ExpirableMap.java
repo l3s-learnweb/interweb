@@ -6,7 +6,6 @@ import java.lang.ref.WeakReference;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -21,7 +20,7 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
     private final ExpirationPolicy defaultPolicy;
 
     public ExpirableMap(ExpirationPolicy defaultPolicy) {
-        delegate = new ConcurrentHashMap<K, Expirable<K, V>>();
+        delegate = new ConcurrentHashMap<>();
         scheduler = Executors.newScheduledThreadPool(0);
         this.defaultPolicy = defaultPolicy;
     }
@@ -93,7 +92,7 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
         notNull(key, "key");
         notNull(value, "value");
         notNull(policy, "policy");
-        Expirable<K, V> expirable = new Expirable<K, V>(key, value, policy);
+        Expirable<K, V> expirable = new Expirable<>(key, value, policy);
         Expirable<K, V> old = delegate.put(key, expirable);
         scheduleTimeToLive(expirable);
         scheduleTimeToIdle(expirable);
@@ -112,7 +111,7 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
         notNull(value, "value");
         notNull(policy, "policy");
         while (true) {
-            Expirable<K, V> expirable = new Expirable<K, V>(key, value, policy);
+            Expirable<K, V> expirable = new Expirable<>(key, value, policy);
             Expirable<K, V> old = delegate.putIfAbsent(key, expirable);
             if (old == null) {
                 scheduleTimeToLive(expirable);
@@ -169,7 +168,7 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
             handleExpiration(old);
             return null;
         }
-        Expirable<K, V> expirable = new Expirable<K, V>(key, value, policy);
+        Expirable<K, V> expirable = new Expirable<>(key, value, policy);
         old = delegate.replace(key, expirable);
         if (old == null) {
             return null;
@@ -197,7 +196,7 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
         } else if (!oldValue.equals(old.getValue())) {
             return false;
         }
-        Expirable<K, V> expirable = new Expirable<K, V>(key, newValue, policy);
+        Expirable<K, V> expirable = new Expirable<>(key, newValue, policy);
         if (delegate.replace(key, old, expirable)) {
             scheduleTimeToLive(expirable);
             scheduleTimeToIdle(expirable);
@@ -229,14 +228,14 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
     private void scheduleTimeToIdle(Expirable<K, V> expirable) {
         long timeToIdle = expirable.getPolicy().getTimeToIdle(TimeUnit.NANOSECONDS);
         if (timeToIdle != 0) {
-            scheduler.schedule(new ExpirationTask<K, V>(this, expirable), timeToIdle, TimeUnit.NANOSECONDS);
+            scheduler.schedule(new ExpirationTask<>(this, expirable), timeToIdle, TimeUnit.NANOSECONDS);
         }
     }
 
     private void scheduleTimeToLive(Expirable<K, V> expirable) {
         long timeToLive = expirable.getPolicy().getTimeToLive(TimeUnit.NANOSECONDS);
         if (timeToLive != 0) {
-            scheduler.schedule(new ExpirationTask<K, V>(this, expirable), timeToLive, TimeUnit.NANOSECONDS);
+            scheduler.schedule(new ExpirationTask<>(this, expirable), timeToLive, TimeUnit.NANOSECONDS);
         }
     }
 
@@ -246,8 +245,8 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
         private final WeakReference<ExpirableMap<K, V>> mapRef;
 
         ExpirationTask(ExpirableMap<K, V> map, Expirable<K, V> expirable) {
-            expirableRef = new WeakReference<Expirable<K, V>>(expirable);
-            mapRef = new WeakReference<ExpirableMap<K, V>>(map);
+            expirableRef = new WeakReference<>(expirable);
+            mapRef = new WeakReference<>(map);
         }
 
         public void run() {
@@ -265,9 +264,9 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
 
         @Override
         public Iterator<Entry<K, V>> iterator() {
-            return new Iterator<Map.Entry<K, V>>() {
+            return new Iterator<>() {
 
-                Iterator<Entry<K, Expirable<K, V>>> iterator = ExpirableMap.this.delegate.entrySet().iterator();
+                final Iterator<Entry<K, Expirable<K, V>>> iterator = ExpirableMap.this.delegate.entrySet().iterator();
 
                 @Override
                 public boolean hasNext() {
@@ -278,7 +277,7 @@ public class ExpirableMap<K, V> extends AbstractMap<K, V> implements ConcurrentM
                 public Entry<K, V> next() {
                     final Entry<K, Expirable<K, V>> entry = iterator.next();
 
-                    return new Entry<K, V>() {
+                    return new Entry<>() {
 
                         @Override
                         public K getKey() {

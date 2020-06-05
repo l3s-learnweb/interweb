@@ -26,10 +26,7 @@
                             <h:outputText value="Supported connectors"/>
                         </h:panelGroup>
                         <h:panelGroup layout="block" styleClass="iw-panel-content">
-                            <h:selectManyCheckbox value="#{uploadBean.selectedConnectors}" layout="pageDirection">
-                                <f:selectItems value="#{uploadBean.connectors}"/>
-                                <f:ajax event="change" execute="#{uploadBean.save()}"/>
-                            </h:selectManyCheckbox>
+                            <h:selectManyCheckbox value="#{uploadBean.selectedConnectors}" layout="pageDirection"/>
                         </h:panelGroup>
                     </h:panelGroup>
                 </h:panelGroup>
@@ -40,27 +37,19 @@
                     </h:panelGroup>
                     <h:panelGroup layout="block" styleClass="iw-panel-content">
                         <h:outputLabel for="title" value="Title: "/>&#160;&#160;&#160;
-                        <h:inputText id="title" label="title" value="#{uploadBean.title}" size="37">
-                            <f:ajax event="change" execute="#{uploadBean.save()}"/>
-                        </h:inputText>
+                        <h:inputText id="title" label="title" value="#{uploadBean.title}" size="37"/>
                         <br/>
                         <br/>
                         <h:outputLabel for="description" value="Description: "/>
                         <br/>
-                        <h:inputTextarea id="description" label="description" value="#{uploadBean.description}" cols="40" rows="8">
-                            <f:ajax event="change" execute="#{uploadBean.save()}"/>
-                        </h:inputTextarea>
+                        <h:inputTextarea id="description" label="description" value="#{uploadBean.description}" cols="40" rows="8"/>
                         <br/>
                         <br/>
                         <h:outputLabel for="tags" value="Tags: "/>&#160;&#160;
-                        <h:inputText id="tags" label="tags" value="#{uploadBean.tags}" size="37">
-                            <f:ajax event="change" execute="#{uploadBean.save()}"/>
-                        </h:inputText>
+                        <h:inputText id="tags" label="tags" value="#{uploadBean.tags}" size="37"/>
                         <br/>
                         <br/>
-                        <h:selectBooleanCheckbox label="public" id="privacy" value="#{uploadBean.publicAccess}">
-                            <f:ajax event="change" execute="#{uploadBean.save()}"/>
-                        </h:selectBooleanCheckbox>
+                        <h:selectBooleanCheckbox label="public" id="privacy" value="#{uploadBean.publicAccess}"/>
                         <h:outputLabel for="privacy" value="Public access"/>
                     </h:panelGroup>
                 </h:panelGroup>

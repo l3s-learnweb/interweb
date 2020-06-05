@@ -36,8 +36,7 @@ public class PrincipalBean implements Serializable {
     public String login(String username, String password) throws IOException {
         Environment environment = Environment.getInstance();
         Database database = environment.getDatabase();
-        InterWebPrincipal principal = null;
-        principal = database.authenticate(username, password);
+        InterWebPrincipal principal = database.authenticate(username, password);
         if (principal == null) {
             FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Incorrect login. Please check username and/or password.");
             return null;

@@ -9,29 +9,29 @@
 			<h:panelGrid columns="3">
 				<h:outputLabel value="username: " />
 				<h:outputLabel value="#{sessionBean.principal.name}" />
-				<h:column></h:column>
+				<h:column/>
 
 				<h:outputLabel value="e-mail: " />
 				<h:outputLabel value="#{sessionBean.principal.email}" />
-				<h:column></h:column>
+				<h:column/>
 
-				<h:outputLabel for="old_password" value="old password: "></h:outputLabel>
+				<h:outputLabel for="old_password" value="old password: "/>
 				<h:inputSecret id="old_password" label="old password"
 					required="true" value="#{changePasswordBean.oldPassword}">
 				</h:inputSecret>
 				<h:message showSummary="true" showDetail="false" styleClass="error"
 					for="old_password" />
-				<h:outputLabel for="new_password" value="new password: "></h:outputLabel>
+				<h:outputLabel for="new_password" value="new password: "/>
 				<h:inputSecret id="new_password" label="new password"
 					required="true" value="#{changePasswordBean.newPassword}">
-					<f:validateLength minimum="4" maximum="32"></f:validateLength>
+					<f:validateLength minimum="4" maximum="32"/>
 				</h:inputSecret>
 				<h:message showSummary="true" showDetail="false" styleClass="error"
 					for="new_password" />
-				<h:outputLabel for="new_password2" value="confirm new password: "></h:outputLabel>
+				<h:outputLabel for="new_password2" value="confirm new password: "/>
 				<h:inputSecret id="new_password2" label="new password2"
 					required="true" value="#{changePasswordBean.newPassword2}">
-					<f:validateLength minimum="4" maximum="32"></f:validateLength>
+					<f:validateLength minimum="4" maximum="32"/>
 				</h:inputSecret>
 				<h:message showSummary="true" showDetail="false" styleClass="error"
 					for="new_password2" />

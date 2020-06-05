@@ -2,11 +2,7 @@ package de.l3s.interwebj.connector.ipernity;
 
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -21,21 +17,21 @@ import org.glassfish.jersey.client.oauth1.OAuth1Builder;
 import org.glassfish.jersey.client.oauth1.OAuth1ClientSupport;
 
 import de.l3s.interwebj.connector.ipernity.jaxb.CheckTokenResponse;
-import de.l3s.interwebj.connector.ipernity.jaxb.SearchResponse;
-import de.l3s.interwebj.connector.ipernity.jaxb.SearchResponse.Docs.Doc;
+import de.l3s.interwebj.connector.ipernity.jaxb.Doc;
+import de.l3s.interwebj.connector.ipernity.jaxb.IpernityResponse;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
-import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
-import de.l3s.interwebj.core.query.Query.SortOrder;
 import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.SearchRanking;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
-public class IpernityConnector extends AbstractServiceConnector implements Cloneable {
+public class IpernityConnector extends ServiceConnector implements Cloneable {
     private static final Logger log = LogManager.getLogger(IpernityConnector.class);
 
     private static final String REQUEST_TOKEN_PATH = "http://www.ipernity.com/apps/oauth/request";
@@ -44,7 +40,7 @@ public class IpernityConnector extends AbstractServiceConnector implements Clone
     private static final String IPERNITY_BASE = "http://api.ipernity.com/api/";
 
     public IpernityConnector() {
-        super("Ipernity", "http://www.ipernity.com", new TreeSet<>(Arrays.asList("image")));
+        super("Ipernity", "http://www.ipernity.com", ContentType.image);
     }
 
     public IpernityConnector(AuthCredentials consumerAuthCredentials) {
@@ -52,44 +48,15 @@ public class IpernityConnector extends AbstractServiceConnector implements Clone
         setAuthCredentials(consumerAuthCredentials);
     }
 
-    private static String createSortOrder(SortOrder sortOrder) {
-        /*
-         * Method to sort by: relevant, newest, oldest, most_played, most_commented, or most_liked.
-         */
-        switch (sortOrder) {
-            case RELEVANCE:
-                return "relevance";
-            case DATE:
-                return "posted-desc";
-            case INTERESTINGNESS:
-                return "popular";
-            default:
-                return "relevance";
-        }
-    }
-
-    private static WebTarget createWebTarget(String apiUrl, AuthCredentials consumerAuthCredentials, AuthCredentials userAuthCredentials) {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(apiUrl);
-
-        ConsumerCredentials consumerCredentials = new ConsumerCredentials(consumerAuthCredentials.getKey(), consumerAuthCredentials.getSecret());
-
-        OAuth1Builder.FilterFeatureBuilder filterFeature = OAuth1ClientSupport.builder(consumerCredentials).feature();
-
-        if (userAuthCredentials != null) {
-            AccessToken storedToken = new AccessToken(userAuthCredentials.getKey(), userAuthCredentials.getSecret());
-            filterFeature.accessToken(storedToken);
-        }
-        target.register(filterFeature.build());
-
-        return target;
-    }
-
     @Override
     public ServiceConnector clone() {
         return new IpernityConnector(getAuthCredentials());
     }
 
+    /**
+     * API Docs:
+     * http://www.ipernity.com/help/api/method/doc.search
+     */
     @Override
     public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
@@ -98,9 +65,9 @@ public class IpernityConnector extends AbstractServiceConnector implements Clone
         }
         ConnectorResults queryResult = new ConnectorResults(query, getName());
 
-        if (!query.getContentTypes().contains(Query.CT_IMAGE)
-            && !query.getContentTypes().contains(Query.CT_VIDEO)
-            && !query.getContentTypes().contains(Query.CT_AUDIO)) {
+        if (!query.getContentTypes().contains(ContentType.image)
+            && !query.getContentTypes().contains(ContentType.video)
+            && !query.getContentTypes().contains(ContentType.audio)) {
             return queryResult;
         }
 
@@ -115,28 +82,28 @@ public class IpernityConnector extends AbstractServiceConnector implements Clone
         resource = resource.queryParam("text", query.getQuery());
         resource = resource.queryParam("media", "photo"); // TODO media values are : photo, audio, video  query.getContentTypes()  Query.CT_AUDIO
         resource = resource.queryParam("page", Integer.toString(query.getPage()));
-        resource = resource.queryParam("per_page", Integer.toString(query.getResultCount()));
-        resource = resource.queryParam("sort", createSortOrder(query.getSortOrder()));
-        resource = resource.queryParam("thumbsize", "560");
+        resource = resource.queryParam("per_page", Integer.toString(query.getPerPage()));
+        resource = resource.queryParam("sort", createSortOrder(query.getRanking()));
+        resource = resource.queryParam("thumbsize", "2048");
         resource = resource.queryParam("extra", "medias,count"); //,dates,original
 
-        if (query.getParam("date_from") != null) {
+        if (query.getDateFrom() != null) {
             try {
-                resource = resource.queryParam("created_min", query.getParam("date_from"));
+                resource = resource.queryParam("created_min", query.getDateFrom());
             } catch (Exception e) {
                 log.error(e);
             }
         }
 
-        if (query.getParam("date_till") != null) {
+        if (query.getDateTill() != null) {
             try {
-                resource = resource.queryParam("created_max", query.getParam("date_till"));
+                resource = resource.queryParam("created_max", query.getDateTill());
             } catch (Exception e) {
                 log.error(e);
             }
         }
 
-        SearchResponse sr = resource.request().get(SearchResponse.class);
+        IpernityResponse sr = resource.request().get(IpernityResponse.class);
 
         long totalResultCount = sr.getDocs().getTotal();
         queryResult.setTotalResultCount(totalResultCount);
@@ -144,51 +111,58 @@ public class IpernityConnector extends AbstractServiceConnector implements Clone
 
         List<Doc> docs = sr.getDocs().getDoc();
         for (Doc doc : docs) {
-            ResultItem resultItem = new ResultItem(getName());
-            resultItem.setType(Query.CT_IMAGE);
+            ResultItem resultItem = new ResultItem(getName(), count++);
+            resultItem.setType(ContentType.image);
             resultItem.setId(Integer.toString(doc.getDocId()));
             resultItem.setTitle(doc.getTitle());
-            //resultItem.setDescription(video.getDescription());
             resultItem.setUrl("http://ipernity.com/doc/" + doc.getOwner().getUserId() + "/" + doc.getDocId());
-            //resultItem.setDate(CoreUtils.formatDate(new Date(video.getDates().getCreated().getMillisecond())));
-            resultItem.setRank(count++);
-            resultItem.setTotalResultCount(totalResultCount);
             resultItem.setCommentCount(doc.getCount().getComments());
             resultItem.setViewCount(doc.getCount().getVisits());
 
-            String url = doc.getThumb().getUrl();
-            int height = doc.getThumb().getH();
-            int width = doc.getThumb().getW();
+            // valid labels are: 75x, 100, 240, 250x, 500, 560, 640, 800, 1024, 1600 or 2048
+            // original: 2048, 1600
+            // large: 640, 800 or 1024
+            // medium: 500, 560
+            // small: 100, 240
+            // we are trying to retrieve max, and then smaller values, the API always return the max value they have
+            String thumbLabel = doc.getThumb().getLabel();
+            String thumbUrl = doc.getThumb().getUrl();
+            int thumWidth = doc.getThumb().getW();
+            int thumHeight = doc.getThumb().getH();
 
-            int width240;
-            int width100;
-            int height240;
-            int height100;
+            if (thumbLabel.equals("2048") || thumbLabel.equals("1600")) {
+                resultItem.setThumbnailOriginal(new Thumbnail(thumbUrl, thumWidth, thumHeight));
 
-            double aspect = (double) width / (double) height;
-            if (width > height) {
-                width240 = 240;
-                width100 = 100;
-                height240 = (int) Math.ceil(240.0 / aspect);
-                height100 = (int) Math.ceil(100.0 / aspect);
-            } else {
-                width240 = (int) Math.ceil(240.0 * aspect);
-                width100 = (int) Math.ceil(100.0 * aspect);
-                height240 = 240;
-                height100 = 100;
+                thumbUrl = thumbUrl.replace("." + thumbLabel + ".", ".1024.");
+                thumbLabel = "1024";
+                int[] newSize = CoreUtils.scaleThumbnail(thumWidth, thumHeight, 1024);
+                thumWidth = newSize[0];
+                thumHeight = newSize[1];
             }
 
-            resultItem.setImageUrl(url); // todo parse original-tag and use it when available
-            resultItem.setEmbeddedSize3("<img src=\"" + url + "\" width=\"" + width + "\" height=\"" + height + "\" />");
-            resultItem.setEmbeddedSize2(CoreUtils.createImageCode(url.replace(".560.", ".240."), width, height, 240, 240));
-            resultItem.setEmbeddedSize1(CoreUtils.createImageCode(url.replace(".560.", ".100."), width, height, 100, 100));
+            if (thumbLabel.equals("1024") || thumbLabel.equals("800") || thumbLabel.equals("640")) {
+                resultItem.setThumbnailLarge(new Thumbnail(thumbUrl, thumWidth, thumHeight));
 
-            Set<Thumbnail> thumbnails = new LinkedHashSet<Thumbnail>();
-            thumbnails.add(new Thumbnail(url.replace(".560.", ".75x."), 75, 75));
-            thumbnails.add(new Thumbnail(url.replace(".560.", ".100."), width100, height100));
-            thumbnails.add(new Thumbnail(url.replace(".560.", ".240."), width240, height240));
-            thumbnails.add(new Thumbnail(url, width, height));
-            resultItem.setThumbnails(thumbnails);
+                thumbUrl = thumbUrl.replace("." + thumbLabel + ".", ".560.");
+                thumbLabel = "560";
+                int[] newSize = CoreUtils.scaleThumbnail(thumWidth, thumHeight, 560);
+                thumWidth = newSize[0];
+                thumHeight = newSize[1];
+            }
+
+            if (thumbLabel.equals("560") || thumbLabel.equals("500")) {
+                resultItem.setThumbnailMedium(new Thumbnail(thumbUrl, thumWidth, thumHeight));
+
+                thumbUrl = thumbUrl.replace("." + thumbLabel + ".", ".240.");
+                thumbLabel = "240";
+                int[] newSize = CoreUtils.scaleThumbnail(thumWidth, thumHeight, 240);
+                thumWidth = newSize[0];
+                thumHeight = newSize[1];
+            }
+
+            if (thumbLabel.equals("240") || thumbLabel.equals("100")) {
+                resultItem.setThumbnailSmall(new Thumbnail(thumbUrl, thumWidth, thumHeight));
+            }
 
             queryResult.addResultItem(resultItem);
         }
@@ -251,7 +225,7 @@ public class IpernityConnector extends AbstractServiceConnector implements Clone
     }
 
     @Override
-    public String getUserId(AuthCredentials authCredentials) throws InterWebException {
+    public String getUserId(AuthCredentials authCredentials) {
         WebTarget target = createWebTarget(IPERNITY_BASE + "auth.checkToken/xml", getAuthCredentials(), authCredentials);
         CheckTokenResponse response = target.request().get(CheckTokenResponse.class);
         return response.getAuth().getUser().getUsername();
@@ -270,5 +244,38 @@ public class IpernityConnector extends AbstractServiceConnector implements Clone
     @Override
     public boolean isUserRegistrationRequired() {
         return true;
+    }
+
+    private static String createSortOrder(SearchRanking searchRanking) {
+        /*
+         * Method to sort by: relevant, newest, oldest, most_played, most_commented, or most_liked.
+         */
+        switch (searchRanking) {
+            case relevance:
+                return "relevance";
+            case date:
+                return "posted-desc";
+            case interestingness:
+                return "popular";
+            default:
+                return "relevance";
+        }
+    }
+
+    private static WebTarget createWebTarget(String apiUrl, AuthCredentials consumerAuthCredentials, AuthCredentials userAuthCredentials) {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(apiUrl);
+
+        ConsumerCredentials consumerCredentials = new ConsumerCredentials(consumerAuthCredentials.getKey(), consumerAuthCredentials.getSecret());
+
+        OAuth1Builder.FilterFeatureBuilder filterFeature = OAuth1ClientSupport.builder(consumerCredentials).feature();
+
+        if (userAuthCredentials != null) {
+            AccessToken storedToken = new AccessToken(userAuthCredentials.getKey(), userAuthCredentials.getSecret());
+            filterFeature.accessToken(storedToken);
+        }
+        target.register(filterFeature.build());
+
+        return target;
     }
 }

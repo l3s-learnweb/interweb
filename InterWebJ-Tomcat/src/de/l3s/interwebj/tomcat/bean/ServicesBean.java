@@ -27,19 +27,19 @@ import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 public class ServicesBean {
     private static final Logger log = LogManager.getLogger(ServicesBean.class);
 
-    private Engine engine;
-    private Database database;
-    private InterWebPrincipal principal;
-    private List<ConnectorWrapper> connectorWrappers;
-    private List<ConnectorWrapper> awaitingConnectorWrappers;
+    private final Engine engine;
+    private final Database database;
+    private final InterWebPrincipal principal;
+    private final List<ConnectorWrapper> connectorWrappers;
+    private final List<ConnectorWrapper> awaitingConnectorWrappers;
     private String error;
 
     public ServicesBean() throws InterWebException {
         engine = Environment.getInstance().getEngine();
         database = Environment.getInstance().getDatabase();
         principal = FacesUtils.getSessionBean().getPrincipal();
-        connectorWrappers = new ArrayList<ConnectorWrapper>();
-        awaitingConnectorWrappers = new ArrayList<ConnectorWrapper>();
+        connectorWrappers = new ArrayList<>();
+        awaitingConnectorWrappers = new ArrayList<>();
         for (ServiceConnector connector : engine.getConnectors()) {
             if (connector.isRegistered() && connector.isUserRegistrationRequired()) {
                 ConnectorWrapper connectorWrapper = new ConnectorWrapper();

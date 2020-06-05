@@ -47,7 +47,7 @@ public class UrlUtil {
      * Builds the URL String.
      *
      * @param baseUrl the base URL.
-     * @param params  the URL parameter.
+     * @param params the URL parameter.
      * @return the URL as String.
      */
     public static String buildUrlQuery(String baseUrl, Map<String, String> params) {

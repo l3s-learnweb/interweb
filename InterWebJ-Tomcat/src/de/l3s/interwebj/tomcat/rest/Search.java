@@ -22,17 +22,17 @@ import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
-import de.l3s.interwebj.core.query.Query.SearchScope;
-import de.l3s.interwebj.core.query.Query.SortOrder;
 import de.l3s.interwebj.core.query.QueryFactory;
-import de.l3s.interwebj.core.query.QueryResult;
 import de.l3s.interwebj.core.query.QueryResultCollector;
+import de.l3s.interwebj.core.query.QueryResults;
+import de.l3s.interwebj.core.query.SearchRanking;
+import de.l3s.interwebj.core.query.SearchScope;
 import de.l3s.interwebj.core.util.CoreUtils;
 import de.l3s.interwebj.core.util.ExpirableMap;
-import de.l3s.interwebj.tomcat.jaxb.ErrorResponse;
-import de.l3s.interwebj.tomcat.jaxb.SearchResponse;
-import de.l3s.interwebj.tomcat.jaxb.XMLResponse;
+import de.l3s.interwebj.core.xml.ErrorResponse;
+import de.l3s.interwebj.core.xml.XmlResponse;
 
 @Path("/search")
 public class Search extends Endpoint {
@@ -45,12 +45,12 @@ public class Search extends Endpoint {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse getQueryResult(@QueryParam("q") String queryString, @QueryParam("search_in") String searchIn,
-                                      @QueryParam("media_types") String mediaTypes, @QueryParam("date_from") String dateFrom,
-                                      @QueryParam("date_till") String dateTill, @QueryParam("ranking") String ranking,
-                                      @QueryParam("number_of_results") String resultCount, @QueryParam("services") String services,
-                                      @QueryParam("page") String page, @QueryParam("language") String language,
-                                      @QueryParam("timeout") String timeout) {
+    public XmlResponse getQueryResult(@QueryParam("q") String queryString, @QueryParam("services") String services,
+        @QueryParam("search_in") String searchIn, @QueryParam("types") String mediaTypes,
+        @QueryParam("date_from") String dateFrom, @QueryParam("date_till") String dateTill,
+        @QueryParam("page") String page, @QueryParam("per_page") String resultCount, @QueryParam("ranking") String ranking,
+        @QueryParam("language") String language, @QueryParam("timeout") String timeout) {
+
         QueryFactory queryFactory = new QueryFactory();
         ErrorResponse errorResponse;
         errorResponse = checkQueryString(queryString);
@@ -99,15 +99,12 @@ public class Search extends Endpoint {
             log.info("principal: [" + principal + "]");
 
             QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
-            QueryResult queryResult = collector.retrieve();
+            QueryResults queryResults = collector.retrieve();
 
             ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-            expirableMap.put(queryResult.getQuery().getId(), queryResult);
-            SearchResponse searchResponse = new SearchResponse(queryResult);
-            String userName = (principal == null) ? "anonymous" : principal.getName();
-            searchResponse.getQuery().setUser(userName);
-            log.info(searchResponse.getQuery().getResults().size() + " results found in " + searchResponse.getQuery().getElapsedTime() + " ms");
-            return searchResponse;
+            expirableMap.put(queryResults.getQuery().getId(), queryResults);
+            log.info(queryResults.getResultItems().size() + " results found in " + queryResults.getElapsedTime() + " ms");
+            return queryResults;
         } catch (InterWebException e) {
             log.error(e);
             return new ErrorResponse(999, e.getMessage());
@@ -117,16 +114,15 @@ public class Search extends Endpoint {
     @GET
     @Path("/{id}.xml")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse getStandingQueryResult(@PathParam(value = "id") String id) {
+    public XmlResponse getStandingQueryResult(@PathParam(value = "id") String id) {
         Engine engine = Environment.getInstance().getEngine();
         ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-        QueryResult queryResult = (QueryResult) expirableMap.get(id);
+        QueryResults queryResults = (QueryResults) expirableMap.get(id);
         InterWebPrincipal principal = getPrincipal();
-        if (queryResult == null || principal == null || principal.getName().equals(queryResult.getQuery().getParam("user"))) {
+        if (queryResults == null || principal == null) {
             return ErrorResponse.NO_STANDING_QUERY;
         }
-        SearchResponse iwSearchResponse = new SearchResponse(queryResult);
-        return iwSearchResponse;
+        return queryResults;
     }
 
     private static boolean checkDate(String date) {
@@ -142,7 +138,7 @@ public class Search extends Endpoint {
     private static ErrorResponse checkDates(Query query, String dateFrom, String dateTill) {
         if (dateFrom != null) {
             if (checkDate(dateFrom)) {
-                query.addParam("date_from", dateFrom);
+                query.setDateFrom(dateFrom);
             } else {
                 return ErrorResponse.INVALID_DATE_FROM;
             }
@@ -150,7 +146,7 @@ public class Search extends Endpoint {
 
         if (dateTill != null) {
             if (checkDate(dateTill)) {
-                query.addParam("date_till", dateTill);
+                query.setDateTill(dateTill);
             } else {
                 return ErrorResponse.INVALID_DATE_TILL;
             }
@@ -165,12 +161,13 @@ public class Search extends Endpoint {
         }
         String[] mediaTypeArray = mediaTypes.split(",");
         Engine engine = Environment.getInstance().getEngine();
-        List<String> contentTypes = engine.getContentTypes();
+        List<ContentType> contentTypes = engine.getContentTypes();
         for (String mediaType : mediaTypeArray) {
-            if (!contentTypes.contains(mediaType)) {
+            ContentType contentType = ContentType.find(mediaType);
+            if (contentType == null || !contentTypes.contains(contentType)) {
                 return ErrorResponse.UNKNOWN_MEDIA_TYPE;
             }
-            query.addContentType(mediaType);
+            query.addContentType(contentType);
         }
         return null;
     }
@@ -184,15 +181,15 @@ public class Search extends Endpoint {
 
     private static ErrorResponse checkRanking(Query query, String ranking) {
         if (ranking == null || ranking.trim().length() == 0) {
-            query.setSortOrder(SortOrder.RELEVANCE);
+            query.setRanking(SearchRanking.relevance);
             return null;
         }
-        SortOrder sortOrder = SortOrder.find(ranking);
-        if (sortOrder == null) {
-            query.setSortOrder(SortOrder.RELEVANCE);
+        SearchRanking searchRanking = SearchRanking.find(ranking);
+        if (searchRanking == null) {
+            query.setRanking(SearchRanking.relevance);
             return null;
         }
-        query.setSortOrder(sortOrder);
+        query.setRanking(searchRanking);
         return null;
     }
 
@@ -204,7 +201,7 @@ public class Search extends Endpoint {
             int i = Integer.parseInt(resultCount);
             i = Math.max(1, i);
             i = Math.min(500, i);
-            query.setResultCount(i);
+            query.setPerPage(i);
         } catch (NumberFormatException e) {
             log.error(e);
         }
@@ -228,14 +225,14 @@ public class Search extends Endpoint {
 
     private static ErrorResponse checkSearchIn(Query query, String searchIn) {
         if (searchIn == null || searchIn.trim().length() == 0) {
-            query.addSearchScope(SearchScope.TEXT);
+            query.addSearchScope(SearchScope.text);
             return null;
         }
         String[] scopes = searchIn.split(",");
         for (String scope : scopes) {
             SearchScope searchScope = SearchScope.find(scope);
             if (searchScope == null) {
-                Set<SearchScope> searchScopes = new HashSet<Query.SearchScope>();
+                Set<SearchScope> searchScopes = new HashSet<>();
                 query.setSearchScopes(searchScopes);
                 return null;
             }

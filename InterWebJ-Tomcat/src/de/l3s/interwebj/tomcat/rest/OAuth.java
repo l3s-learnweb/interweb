@@ -26,8 +26,8 @@ import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.db.Database;
 import de.l3s.interwebj.core.util.ExpirableMap;
 import de.l3s.interwebj.core.util.RandomGenerator;
-import de.l3s.interwebj.tomcat.jaxb.ErrorResponse;
-import de.l3s.interwebj.tomcat.jaxb.XMLResponse;
+import de.l3s.interwebj.core.xml.ErrorResponse;
+import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.auth.OAuthAccessTokenResponse;
 import de.l3s.interwebj.tomcat.jaxb.auth.OAuthRequestTokenResponse;
 
@@ -38,7 +38,7 @@ public class OAuth extends Endpoint {
     @GET
     @Path("/OAuthAuthorizeToken")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse authorizeToken(@QueryParam("oauth_token") String requestToken, @QueryParam("oauth_callback") String callbackUrl) {
+    public XmlResponse authorizeToken(@QueryParam("oauth_token") String requestToken, @QueryParam("oauth_callback") String callbackUrl) {
         log.info("callbackUrl: [" + callbackUrl + "]");
         URI uri = getBaseUri().resolve("../view/authorize_consumer.xhtml");
         UriBuilder builder = UriBuilder.fromUri(uri);
@@ -54,7 +54,7 @@ public class OAuth extends Endpoint {
     @GET
     @Path("/OAuthGetAccessToken")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse getAccessToken() {
+    public XmlResponse getAccessToken() {
         String token = getOAuthParameters().getToken();
         Engine engine = Environment.getInstance().getEngine();
         ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
@@ -72,7 +72,7 @@ public class OAuth extends Endpoint {
     @GET
     @Path("/OAuthGetRequestToken")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse getRequestToken() {
+    public XmlResponse getRequestToken() {
         AuthCredentials authCredentials = RandomGenerator.getInstance().nextOAuthCredentials();
         OAuthRequestTokenResponse response = new OAuthRequestTokenResponse(authCredentials);
         Engine engine = Environment.getInstance().getEngine();
@@ -87,7 +87,7 @@ public class OAuth extends Endpoint {
     @Path("/register")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse registerUser(@FormParam("username") String userName, @FormParam("password") String password,
+    public XmlResponse registerUser(@FormParam("username") String userName, @FormParam("password") String password,
                                     @FormParam("mediator_username") String mediatorUserName, @FormParam("mediator_password") String mediatorPassword) {
         Database database = Environment.getInstance().getDatabase();
         InterWebPrincipal mediator = null;

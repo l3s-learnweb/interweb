@@ -2,6 +2,7 @@ package de.l3s.interwebj.tomcat.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,6 +12,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,14 +23,13 @@ import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.core.ServiceConnector;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
-import de.l3s.interwebj.core.query.Query.SearchScope;
 import de.l3s.interwebj.core.query.QueryFactory;
-import de.l3s.interwebj.core.query.QueryResult;
 import de.l3s.interwebj.core.query.QueryResultCollector;
+import de.l3s.interwebj.core.query.QueryResults;
 import de.l3s.interwebj.core.query.ResultItem;
-import de.l3s.interwebj.core.query.Thumbnail;
-import de.l3s.interwebj.core.util.CoreUtils;
+import de.l3s.interwebj.core.query.SearchScope;
 import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 
 @Named
@@ -41,9 +42,9 @@ public class SearchBean implements Serializable {
     private String query;
     private int page = 1;
     private String language = "en";
-    private QueryResult queryResult;
-    private List<String> selectedContentTypes;
-    private List<String> selectedConnectorNames;
+    private QueryResults queryResults;
+    private Set<ContentType> selectedContentTypes;
+    private Set<String> selectedConnectorNames;
     @NotNull
     private int resultCount;
     private int timeout = 60;
@@ -59,7 +60,7 @@ public class SearchBean implements Serializable {
     }
 
     public List<SelectItem> getConnectorNames() throws InterWebException {
-        List<SelectItem> connectorSelectItems = new ArrayList<SelectItem>();
+        List<SelectItem> connectorSelectItems = new ArrayList<>();
         Engine engine = Environment.getInstance().getEngine();
         for (ServiceConnector connector : engine.getConnectors()) {
             if (connector.isRegistered()) {
@@ -74,27 +75,18 @@ public class SearchBean implements Serializable {
         if (selectedConnectorNames == null) {
             init();
         }
+
         Engine engine = Environment.getInstance().getEngine();
-        Set<String> contentTypes = new TreeSet<String>();
+        Set<ContentType> contentTypes = new TreeSet<>();
         for (String connectorName : selectedConnectorNames) {
             ServiceConnector connector = engine.getConnector(connectorName);
             contentTypes.addAll(connector.getContentTypes());
         }
-        List<SelectItem> contentTypeSelectItems = new ArrayList<SelectItem>();
-        for (String contentType : contentTypes) {
-            SelectItem selectItem = new SelectItem(contentType);
-            contentTypeSelectItems.add(selectItem);
+        List<SelectItem> contentTypeSelectItems = new ArrayList<>();
+        for (ContentType contentType : contentTypes) {
+            contentTypeSelectItems.add(new SelectItem(contentType));
         }
         return contentTypeSelectItems;
-    }
-
-    public String getImageUrl(Object obj, Long maxWidth, Long maxHeight) throws InterWebException {
-        ResultItem resultItem = (ResultItem) obj;
-        Thumbnail thumbnail = resultItem.getThumbnail(maxWidth.intValue(), maxHeight.intValue());
-        if (thumbnail == null) {
-            return "";
-        }
-        return thumbnail.getUrl();
     }
 
     public String getQuery() {
@@ -105,8 +97,8 @@ public class SearchBean implements Serializable {
         this.query = query;
     }
 
-    public QueryResult getQueryResult() {
-        return queryResult;
+    public QueryResults getQueryResults() {
+        return queryResults;
     }
 
     public int getResultCount() {
@@ -117,59 +109,55 @@ public class SearchBean implements Serializable {
         this.resultCount = resultCount;
     }
 
-    public int getResultIndex(Object resultItem) {
-        return queryResult.getResultItems().indexOf(resultItem);
+    public int getResultIndex(ResultItem resultItem) {
+        return queryResults.getResultItems().indexOf(resultItem);
     }
 
-    public List<String> getSelectedConnectorNames() {
+    public Set<String> getSelectedConnectorNames() {
         return selectedConnectorNames;
     }
 
-    public void setSelectedConnectorNames(List<String> selectedConnectorNames) {
+    public void setSelectedConnectorNames(Set<String> selectedConnectorNames) {
         this.selectedConnectorNames = selectedConnectorNames;
     }
 
-    public List<String> getSelectedContentTypes() {
+    public Set<ContentType> getSelectedContentTypes() {
         return selectedContentTypes;
     }
 
-    public void setSelectedContentTypes(List<String> selectedContentTypes) {
+    public void setSelectedContentTypes(Set<ContentType> selectedContentTypes) {
         this.selectedContentTypes = selectedContentTypes;
     }
 
     public String getTags(Object obj) {
         ResultItem resultItem = (ResultItem) obj;
-        String tags = resultItem.getTags();
-        return (tags == null) ? null : CoreUtils.convertToUniqueList(tags).toString();
+        return StringUtils.join(resultItem.getTags(), ", ");
     }
 
-    public String getTypeImageUrl(String type) {
-        if (Query.CT_AUDIO.equals(type)) {
+    public String getTypeImageUrl(ContentType type) {
+        if (ContentType.audio == type) {
             return "music.png";
-        }
-        if (Query.CT_IMAGE.equals(type)) {
+        } else if (ContentType.image == type) {
             return "photo.png";
-        }
-        if (Query.CT_TEXT.equals(type)) {
+        } else if (ContentType.text == type) {
             return "script.png";
-        }
-        if (Query.CT_VIDEO.equals(type)) {
+        } else if (ContentType.video == type) {
             return "film.png";
-        }
-        if (Query.CT_PRESENTATION.equals(type)) {
+        } else if (ContentType.presentation == type) {
             return "pictures.png";
+        } else {
+            return null;
         }
-        return null;
     }
 
     public boolean hasResults() {
-        return queryResult != null;
+        return queryResults != null;
     }
 
     public void init() {
         Engine engine = Environment.getInstance().getEngine();
-        selectedConnectorNames = engine.getConnectorNames();
-        selectedContentTypes = engine.getContentTypes();
+        selectedConnectorNames = new HashSet<>(engine.getConnectorNames());
+        selectedContentTypes = new HashSet<>(engine.getContentTypes());
         resultCount = 10;
     }
 
@@ -182,19 +170,19 @@ public class SearchBean implements Serializable {
         query.setConnectorNames(selectedConnectorNames);
         String link = FacesUtils.getInterWebJBean().getBaseUrl() + "api/search/" + query.getId() + ".xml";
         query.setLink(link);
-        query.addSearchScope(SearchScope.TEXT);
-        query.addSearchScope(SearchScope.TAGS);
-        query.setResultCount(resultCount);
+        query.addSearchScope(SearchScope.text);
+        query.addSearchScope(SearchScope.tags);
+        query.setPerPage(resultCount);
         query.setPage(page);
         query.setLanguage(language);
         query.setTimeout(timeout);
 
-        QueryResult queryResult = new QueryResult(query);
+        QueryResults queryResults = new QueryResults(query);
         Engine engine = Environment.getInstance().getEngine();
         InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
         try {
             QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
-            queryResult = collector.retrieve();
+            queryResults = collector.retrieve();
         } catch (InterWebException e) {
             log.error(e);
             FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
@@ -203,7 +191,7 @@ public class SearchBean implements Serializable {
         ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
         expirableMap.put(queryResult.getQuery().getId(), queryResult);
         */
-        this.queryResult = queryResult;
+        this.queryResults = queryResults;
     }
 
     public int getPage() {

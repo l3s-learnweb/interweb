@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "Slideshows")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SearchResponse {
+public class SlideShareResponse {
 
     @XmlElement(name = "Meta")
     protected MetaEntity meta;

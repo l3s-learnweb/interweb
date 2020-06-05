@@ -1,12 +1,13 @@
-package de.l3s.interwebj.tomcat.jaxb;
+package de.l3s.interwebj.core.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ErrorResponse extends XMLResponse {
+public class ErrorResponse extends XmlResponse {
 
     public static final ErrorResponse NO_CONSUMER_KEY_GIVEN = new ErrorResponse(101, "No consumer key given");
     public static final ErrorResponse NO_TOKEN_GIVEN = new ErrorResponse(102, "No token given");
@@ -38,12 +39,23 @@ public class ErrorResponse extends XMLResponse {
     public static final ErrorResponse FILE_NOT_ACCEPTED = new ErrorResponse(401, "The services did not accept the file");
     public static final ErrorResponse NO_SERVICE_FOR_FILE = new ErrorResponse(402, "No service of the user can process the file");
 
+    @XmlElement(name = "error")
+    private ErrorEntity error;
+
     public ErrorResponse() {
-        stat = XMLResponse.FAILED;
+        super(ResponseStatus.FAILED);
     }
 
     public ErrorResponse(int code, String message) {
-        this();
+        super(ResponseStatus.FAILED);
         error = new ErrorEntity(code, message);
+    }
+
+    public ErrorEntity getError() {
+        return error;
+    }
+
+    public void setError(final ErrorEntity error) {
+        this.error = error;
     }
 }

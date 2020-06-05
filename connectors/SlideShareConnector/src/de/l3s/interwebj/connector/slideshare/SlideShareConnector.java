@@ -7,11 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,27 +26,27 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.hash.Hashing;
 
-import de.l3s.interwebj.connector.slideshare.jaxb.SearchResponse;
 import de.l3s.interwebj.connector.slideshare.jaxb.SearchResultEntity;
+import de.l3s.interwebj.connector.slideshare.jaxb.SlideShareResponse;
 import de.l3s.interwebj.connector.slideshare.jaxb.TagsResponse;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
-import de.l3s.interwebj.core.core.AbstractServiceConnector;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
-import de.l3s.interwebj.core.query.Query.SearchScope;
-import de.l3s.interwebj.core.query.Query.SortOrder;
 import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.SearchRanking;
+import de.l3s.interwebj.core.query.SearchScope;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
-public class SlideShareConnector extends AbstractServiceConnector implements Cloneable {
+public class SlideShareConnector extends ServiceConnector implements Cloneable {
     private static final Logger log = LogManager.getLogger(SlideShareConnector.class);
 
     public SlideShareConnector() {
-        super("SlideShare", "https://www.slideshare.net", new TreeSet<>(Arrays.asList("text", "presentation", "video")));
+        super("SlideShare", "https://www.slideshare.net", ContentType.text, ContentType.presentation, ContentType.video);
     }
 
     public SlideShareConnector(AuthCredentials consumerAuthCredentials) {
@@ -57,7 +55,7 @@ public class SlideShareConnector extends AbstractServiceConnector implements Clo
     }
 
     @Override
-    public Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException {
+    public Parameters authenticate(String callbackUrl, Parameters parameters) {
         Parameters params = new Parameters();
         params.add(Parameters.AUTHORIZATION_URL, callbackUrl);
         return params;
@@ -69,7 +67,7 @@ public class SlideShareConnector extends AbstractServiceConnector implements Clo
     }
 
     @Override
-    public AuthCredentials completeAuthentication(Parameters params) throws InterWebException {
+    public AuthCredentials completeAuthentication(Parameters params) {
         notNull(params, "params");
         String key = params.get(Parameters.USER_KEY);
         String secret = params.get(Parameters.USER_SECRET);
@@ -80,35 +78,38 @@ public class SlideShareConnector extends AbstractServiceConnector implements Clo
     public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
         ConnectorResults queryResult = new ConnectorResults(query, getName());
-        //WebResource resource = createResource("https://www.slideshare.net/api/2/search_slideshows");
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("https://www.slideshare.net/api/2/search_slideshows");
-        target = target.queryParam("q", query.getQuery());
-        target = target.queryParam("lang", query.getLanguage());
-        target = target.queryParam("page", Integer.toString(query.getPage()));
 
-        target = target.queryParam("items_per_page", Integer.toString(query.getResultCount()));
-        target = target.queryParam("sort", createSortOrder(query.getSortOrder()));
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target("https://www.slideshare.net/api/2/search_slideshows")
+            .queryParam("q", query.getQuery())
+            .queryParam("lang", query.getLanguage())
+            .queryParam("page", Integer.toString(query.getPage()))
+            .queryParam("items_per_page", Integer.toString(query.getPerPage()))
+            // .queryParam("detailed", "1")
+            .queryParam("sort", createSortOrder(query.getRanking()));
 
         String searchScope = createSearchScope(query.getSearchScopes());
         if (searchScope != null) {
             target = target.queryParam("what", searchScope);
         }
+
         String fileType = createFileType(query.getContentTypes());
         if (fileType == null) {
             return queryResult;
         }
         target = target.queryParam("file_type", fileType);
-        //resource = resource.queryParam("detailed", "1");
+
         Response response = postQuery(target);
 
-        SearchResponse sr;
-        try { // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
-            sr = response.readEntity(SearchResponse.class);
+        SlideShareResponse sr;
+        try {
+            // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
+            sr = response.readEntity(SlideShareResponse.class);
         } catch (Exception e) {
             log.error(e);
             return queryResult;
         }
+
         queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
         int count = sr.getMeta().getResultOffset() - 1;
         List<SearchResultEntity> searchResults = sr.getSearchResults();
@@ -116,47 +117,23 @@ public class SlideShareConnector extends AbstractServiceConnector implements Clo
             return queryResult;
         }
 
-        int width = 170; // = Integer.parseInt(size[0]);
-        int height = 128; // = Integer.parseInt(size[1]);
-        int heightSmall = 90;
-
-        if (fileType.equals("documents")) {
-            height = 220;
-            heightSmall = 155;
-        }
-
         for (SearchResultEntity sre : searchResults) {
-            ResultItem resultItem = new ResultItem(getName());
+            ResultItem resultItem = new ResultItem(getName(), count++);
             resultItem.setType(createType(sre.getSlideshowType()));
             resultItem.setId(Integer.toString(sre.getId()));
             resultItem.setTitle(sre.getTitle());
             resultItem.setDescription(sre.getDescription());
             resultItem.setUrl(sre.getUrl());
             resultItem.setDate(CoreUtils.formatDate(parseDate(sre.getUpdated())));
-            resultItem.setRank(count++);
-            resultItem.setTotalResultCount(sr.getMeta().getTotalResults());
 
             // slideshare api return always the same wrong thumbnail size
             //String[] size = sre.getThumbnailSize().substring(1, sre.getThumbnailSize().length()-1).split(",");
 
-            Set<Thumbnail> thumbnails = new TreeSet<Thumbnail>();
-            thumbnails.add(new Thumbnail(sre.getThumbnailSmallURL(), 120, heightSmall));
-            thumbnails.add(new Thumbnail(sre.getThumbnailURL(), width, height));
-            resultItem.setThumbnails(thumbnails);
+            int width = 170; // Integer.parseInt(size[0]);
+            int height = fileType.equals("documents") ? 220 : 128; // Integer.parseInt(size[1]);
 
-            resultItem.setEmbeddedSize1(CoreUtils.createImageCode(sre.getThumbnailSmallURL(), 120, heightSmall, 100, 100));
-            resultItem.setEmbeddedSize2("<img src=\"" + sre.getThumbnailURL() + "\" width=\"" + width + "\" height=\"" + height + "\" />");
-            resultItem.setImageUrl(sre.getThumbnailURL());
-
-            // remove spam from the embedded code
-            Pattern pattern = Pattern.compile("(<object.*</object>)");
-            Matcher matcher = pattern.matcher(sre.getEmbed());
-
-            if (matcher.find()) {
-                resultItem.setEmbeddedSize3(matcher.group(0));
-            } else {
-                resultItem.setEmbeddedSize3(sre.getEmbed());
-            }
+            resultItem.setThumbnailSmall(new Thumbnail(sre.getThumbnailURL(), width, height));
+            resultItem.setEmbeddedCode(getEmbeddedCode(sre.getEmbed()));
 
             queryResult.addResultItem(resultItem);
         }
@@ -220,23 +197,19 @@ public class SlideShareConnector extends AbstractServiceConnector implements Clo
         return true;
     }
 
-    @Override
-    public ResultItem put(byte[] data, String contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException {
-        // TODO: to implement
-        return null;
-    }
+    private String createFileType(Set<ContentType> contentTypes) {
+        List<String> fileTypes = new ArrayList<>();
 
-    private String createFileType(List<String> contentTypes) {
-        List<String> fileTypes = new ArrayList<String>();
-        if (contentTypes.contains(Query.CT_PRESENTATION)) {
+        if (contentTypes.contains(ContentType.presentation)) {
             fileTypes.add("presentations");
         }
-        if (contentTypes.contains(Query.CT_TEXT)) {
+        if (contentTypes.contains(ContentType.text)) {
             fileTypes.add("documents");
         }
-        if (contentTypes.contains(Query.CT_VIDEO)) {
+        if (contentTypes.contains(ContentType.video)) {
             fileTypes.add("videos");
         }
+
         if (fileTypes.size() == 0) {
             return null;
         }
@@ -247,35 +220,35 @@ public class SlideShareConnector extends AbstractServiceConnector implements Clo
     }
 
     private String createSearchScope(Set<SearchScope> searchScopes) {
-        if (!searchScopes.contains(SearchScope.TEXT)) {
+        if (!searchScopes.contains(SearchScope.text)) {
             return "tag";
         }
         return null;
     }
 
-    private String createSortOrder(SortOrder sortOrder) {
-        switch (sortOrder) {
-            case RELEVANCE:
+    private String createSortOrder(SearchRanking searchRanking) {
+        switch (searchRanking) {
+            case relevance:
                 return "relevance";
-            case DATE:
+            case date:
                 return "latest";
-            case INTERESTINGNESS:
+            case interestingness:
                 return "mostviewed";
             default:
                 return "relevance";
         }
     }
 
-    private String createType(int slideshowType) {
+    private ContentType createType(int slideshowType) {
         switch (slideshowType) {
             case 0:
-                return Query.CT_PRESENTATION;
+                return ContentType.presentation;
             case 1:
-                return Query.CT_TEXT;
+                return ContentType.text;
             case 2:
-                return Query.CT_IMAGE;
+                return ContentType.image;
             case 3:
-                return Query.CT_VIDEO;
+                return ContentType.video;
             default:
                 log.error("Unknown type {}", slideshowType);
         }
@@ -285,12 +258,11 @@ public class SlideShareConnector extends AbstractServiceConnector implements Clo
     private Response getQuery(WebTarget target) {
         AuthCredentials authCredentials = getAuthCredentials();
         long timestamp = System.currentTimeMillis() / 1000;
-        String toHash = authCredentials.getSecret() + Long.toString(timestamp);
+        String toHash = authCredentials.getSecret() + timestamp;
         target = target.queryParam("api_key", authCredentials.getKey());
         target = target.queryParam("ts", Long.toString(timestamp));
         target = target.queryParam("hash", getHash(toHash));
-        Response response = target.request().get();
-        return response;
+        return target.request().get();
     }
 
     private Date parseDate(String dateString) throws InterWebException {
@@ -311,16 +283,29 @@ public class SlideShareConnector extends AbstractServiceConnector implements Clo
     private Response postQuery(WebTarget target, MultivaluedMap<String, String> params) {
         AuthCredentials authCredentials = getAuthCredentials();
         long timestamp = System.currentTimeMillis() / 1000;
-        String toHash = authCredentials.getSecret() + Long.toString(timestamp);
+        String toHash = authCredentials.getSecret() + timestamp;
         params.add("api_key", authCredentials.getKey());
         params.add("ts", Long.toString(timestamp));
         params.add("hash", getHash(toHash));
-        Response response = target.request().post(Entity.form(params));
-        return response;
+        return target.request().post(Entity.form(params));
     }
 
     @SuppressWarnings({"UnstableApiUsage", "deprecation"})
     private String getHash(String str) {
         return Hashing.sha1().hashString(str, StandardCharsets.UTF_8).toString();
+    }
+
+    /**
+     * Remove spam from the embedded code.
+     */
+    private static String getEmbeddedCode(String embed) {
+        Pattern pattern = Pattern.compile("(<object.*</object>)");
+        Matcher matcher = pattern.matcher(embed);
+
+        if (matcher.find()) {
+            return matcher.group(0);
+        } else {
+            return CoreUtils.cleanupEmbedHtml(embed);
+        }
     }
 }

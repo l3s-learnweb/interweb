@@ -3,278 +3,256 @@ package de.l3s.interwebj.core.query;
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@XmlRootElement(name = "query")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Query implements Serializable {
     private static final long serialVersionUID = 3955897587724588474L;
-    private static final Logger log = LogManager.getLogger(Query.class);
 
-    public static final int DEFAULT_RESULT_COUNT = 10;
-
-    public static final String CT_TEXT = "text";
-    public static final String CT_VIDEO = "video";
-    public static final String CT_IMAGE = "image";
-    public static final String CT_AUDIO = "audio";
-    public static final String CT_PRESENTATION = "presentation";
-
+    @XmlAttribute(name = "id")
     private String id;
+    @XmlAttribute(name = "link")
     private String link;
+
+    @XmlElement(name = "q")
     private String query;
-    private List<String> connectorNames;
-    private List<String> contentTypes;
-    private int resultCount;
-    private int page = 1;
+    @XmlElement(name = "date_from")
+    private String dateFrom;
+    @XmlElement(name = "date_till")
+    private String dateTill;
+    @XmlElement(name = "language")
     private String language = "en";
-    private long updated;
-    private SortOrder sortOrder;
+
+    @JsonProperty("services")
+    @XmlElementWrapper(name = "services")
+    @XmlElement(name = "service")
+    private Set<String> connectorNames;
+    @JsonProperty("types")
+    @XmlElementWrapper(name = "types")
+    @XmlElement(name = "type")
+    private Set<ContentType> contentTypes;
+    @JsonProperty("search_in")
+    @XmlElementWrapper(name = "search_in")
+    @XmlElement(name = "scope")
     private Set<SearchScope> searchScopes;
-    private Map<String, String> params;
+
+    @XmlElement(name = "page")
+    private int page = 1;
+    @XmlElement(name = "per_page")
+    private int perPage = 10;
+    @XmlElement(name = "ranking")
+    private SearchRanking ranking = SearchRanking.relevance;
+
+    @XmlElement(name = "timeout")
     private int timeout = 30;
 
-    public Query(String id, String query, List<String> contentTypes, Map<String, String> params) {
+    public Query() {
+    }
+
+    public Query(String id, String query, Set<ContentType> contentTypes) {
         notNull(id, "id");
         notNull(query, "query");
         notNull(contentTypes, "contentTypes");
-        notNull(params, "params");
 
         this.id = id;
         this.query = query;
-        connectorNames = new ArrayList<String>();
+        this.connectorNames = new HashSet<>();
         this.contentTypes = contentTypes;
-        this.params = params;
-        resultCount = DEFAULT_RESULT_COUNT;
-        sortOrder = SortOrder.RELEVANCE;
-        searchScopes = new HashSet<Query.SearchScope>();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Query query1 = (Query) o;
-        return resultCount == query1.resultCount
-            && page == query1.page
-            && query.equalsIgnoreCase(query1.query)
-            && Objects.equals(contentTypes, query1.contentTypes)
-            && Objects.equals(language, query1.language);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(query.toLowerCase(), connectorNames, contentTypes, resultCount, page, language);
-    }
-
-    public void addConnectorName(String connectorName) {
-        connectorNames.add(connectorName);
-    }
-
-    public void addContentType(String contentType) {
-        contentTypes.add(contentType);
-    }
-
-    public void addParam(String key, String value) {
-        params.put(key, value);
-    }
-
-    public void addSearchScope(SearchScope searchScope) {
-        searchScopes.add(searchScope);
-    }
-
-    public List<String> getConnectorNames() {
-        return connectorNames;
-    }
-
-    public void setConnectorNames(List<String> connectorNames) {
-        this.connectorNames = connectorNames;
-    }
-
-    public List<String> getContentTypes() {
-        return contentTypes;
-    }
-
-    public void setContentTypes(List<String> contentTypes) {
-        this.contentTypes = contentTypes;
+        this.searchScopes = new HashSet<>();
     }
 
     public String getId() {
         return id;
     }
 
+    public void setId(final String id) {
+        this.id = id;
+    }
+
     public String getLink() {
         return link;
     }
 
-    public void setLink(String link) {
+    public void setLink(final String link) {
         this.link = link;
-    }
-
-    public String getParam(String name) {
-        return params.get(name);
-    }
-
-    public String getParam(String name, String defaultValue) {
-        return params.containsKey(name) ? getParam(name) : defaultValue;
-    }
-
-    public Map<String, String> getParams() {
-        return params;
     }
 
     public String getQuery() {
         return query;
     }
 
-    public int getResultCount() {
-        return resultCount;
+    public void setQuery(final String query) {
+        this.query = query;
     }
 
-    public void setResultCount(int resultCount) {
-        this.resultCount = resultCount;
+    public String getDateFrom() {
+        return dateFrom;
     }
 
-    public Set<SearchScope> getSearchScopes() {
-        return searchScopes;
+    public void setDateFrom(final String dateFrom) {
+        this.dateFrom = dateFrom;
     }
 
-    public void setSearchScopes(Set<SearchScope> searchScopes) {
-        this.searchScopes = new HashSet<Query.SearchScope>(searchScopes);
+    public String getDateTill() {
+        return dateTill;
     }
 
-    public SortOrder getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(SortOrder sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public long getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(long updated) {
-        this.updated = updated;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page > 1 ? page : 1;
+    public void setDateTill(final String dateTill) {
+        this.dateTill = dateTill;
     }
 
     public String getLanguage() {
         return language;
     }
 
-    public void setLanguage(String language) {
+    public void setLanguage(final String language) {
         this.language = language;
+    }
+
+    public Set<String> getConnectorNames() {
+        return connectorNames;
+    }
+
+    public void setConnectorNames(final Set<String> connectorNames) {
+        this.connectorNames = connectorNames;
+    }
+
+    public void addConnectorName(String connectorName) {
+        connectorNames.add(connectorName);
+    }
+
+    public Set<ContentType> getContentTypes() {
+        return contentTypes;
+    }
+
+    public void setContentTypes(final Set<ContentType> contentTypes) {
+        this.contentTypes = contentTypes;
+    }
+
+    public void addContentType(ContentType contentType) {
+        contentTypes.add(contentType);
+    }
+
+    public Set<SearchScope> getSearchScopes() {
+        return searchScopes;
+    }
+
+    public void setSearchScopes(final Set<SearchScope> searchScopes) {
+        this.searchScopes = searchScopes;
+    }
+
+    public void addSearchScope(SearchScope searchScope) {
+        searchScopes.add(searchScope);
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(final int page) {
+        this.page = Math.max(page, 1);
+    }
+
+    public int getPerPage() {
+        return perPage;
+    }
+
+    public void setPerPage(final int perPage) {
+        this.perPage = perPage;
+    }
+
+    public SearchRanking getRanking() {
+        return ranking;
+    }
+
+    public void setRanking(final SearchRanking ranking) {
+        this.ranking = ranking;
     }
 
     public int getTimeout() {
         return timeout;
     }
 
-    public void setTimeout(int timeout) {
+    public void setTimeout(final int timeout) {
         this.timeout = timeout;
     }
 
     @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final Query query1 = (Query) o;
+
+        return new EqualsBuilder()
+            .append(page, query1.page)
+            .append(perPage, query1.perPage)
+            .append(timeout, query1.timeout)
+            .append(query, query1.query)
+            .append(dateFrom, query1.dateFrom)
+            .append(dateTill, query1.dateTill)
+            .append(language, query1.language)
+            .append(connectorNames, query1.connectorNames)
+            .append(contentTypes, query1.contentTypes)
+            .append(searchScopes, query1.searchScopes)
+            .append(ranking, query1.ranking)
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+            .append(query)
+            .append(dateFrom)
+            .append(dateTill)
+            .append(language)
+            .append(connectorNames)
+            .append(contentTypes)
+            .append(searchScopes)
+            .append(page)
+            .append(perPage)
+            .append(ranking)
+            .append(timeout)
+            .toHashCode();
+    }
+
+    @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Query [");
-        if (id != null) {
-            builder.append("id=");
-            builder.append(id);
-            builder.append(", ");
-        }
-        if (link != null) {
-            builder.append("link=");
-            builder.append(link);
-            builder.append(", ");
-        }
-        if (query != null) {
-            builder.append("query=");
-            builder.append(query);
-            builder.append(", ");
-        }
-        if (contentTypes != null) {
-            builder.append("contentTypes=");
-            builder.append(contentTypes);
-            builder.append(", ");
-        }
-        if (connectorNames != null) {
-            builder.append("connectorNames=");
-            builder.append(connectorNames);
-            builder.append(", ");
-        }
-        builder.append("resultCount=");
-        builder.append(resultCount);
-        builder.append(", ");
-        if (sortOrder != null) {
-            builder.append("sortOrder=");
-            builder.append(sortOrder);
-            builder.append(", ");
-        }
-        if (searchScopes != null) {
-            builder.append("searchScopes=");
-            builder.append(searchScopes);
-            builder.append(", ");
-        }
-        if (params != null) {
-            builder.append("params=");
-            builder.append(params);
-        }
-        builder.append("]");
-        return builder.toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("id", id)
+            .append("link", link)
+            .append("query", query)
+            .append("dateFrom", dateFrom)
+            .append("dateTill", dateTill)
+            .append("language", language)
+            .append("connectorNames", connectorNames)
+            .append("contentTypes", contentTypes)
+            .append("searchScopes", searchScopes)
+            .append("page", page)
+            .append("perPage", perPage)
+            .append("ranking", ranking)
+            .append("timeout", timeout)
+            .toString();
     }
-
-    public enum SearchScope {
-        TEXT,
-        TAGS;
-
-        public static SearchScope find(String name) {
-            try {
-                return SearchScope.valueOf(name.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
-        }
-
-        public String getName() {
-            return name().toLowerCase();
-        }
-    }
-
-    public enum SortOrder {
-        RELEVANCE,
-        DATE,
-        INTERESTINGNESS;
-
-        public static SortOrder find(String name) {
-            try {
-                return SortOrder.valueOf(name.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
-        }
-
-        public String getName() {
-            return name().toLowerCase();
-        }
-    }
-
 }

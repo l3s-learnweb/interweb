@@ -26,9 +26,9 @@ import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.tomcat.jaxb.ErrorResponse;
-import de.l3s.interwebj.tomcat.jaxb.OkResponse;
-import de.l3s.interwebj.tomcat.jaxb.XMLResponse;
+import de.l3s.interwebj.core.xml.ErrorResponse;
+import de.l3s.interwebj.core.xml.OkResponse;
+import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationLinkEntity;
 import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationLinkResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.ServiceEntity;
@@ -46,7 +46,7 @@ public class User extends Endpoint {
     @POST
     @Path("/services/{service}/auth")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse authenticateOnService(@PathParam("service") String connectorName, @QueryParam("callback") String callback,
+    public XmlResponse authenticateOnService(@PathParam("service") String connectorName, @QueryParam("callback") String callback,
                                              @FormParam("username") String userName, @FormParam("password") String password) {
         Engine engine = Environment.getInstance().getEngine();
         ServiceConnector connector = engine.getConnector(connectorName);
@@ -106,7 +106,7 @@ public class User extends Endpoint {
     @GET
     @Path("/services/{service}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse getService(@PathParam("service") String serviceName) {
+    public XmlResponse getService(@PathParam("service") String serviceName) {
         ServiceEntity serviceEntity = Services.createServiceEntity(serviceName, getBaseUri().toASCIIString(), getTargetPrincipal());
         ServiceResponse serviceResponse = new ServiceResponse();
         serviceResponse.setServiceEntity(serviceEntity);
@@ -116,7 +116,7 @@ public class User extends Endpoint {
     @GET
     @Path("/services")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse getServices() {
+    public XmlResponse getServices() {
         List<ServiceEntity> serviceEntities = Services.createServiceEntities(getBaseUri().toASCIIString(), getTargetPrincipal());
         ServicesResponse servicesResponse = new ServicesResponse();
         servicesResponse.setServiceEntities(serviceEntities);
@@ -134,7 +134,7 @@ public class User extends Endpoint {
     @Path("/mediator")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse registerUser(@FormParam("mediator_token") String mediatorToken) {
+    public XmlResponse registerUser(@FormParam("mediator_token") String mediatorToken) {
         Database database = Environment.getInstance().getDatabase();
         InterWebPrincipal mediator = database.readPrincipalByKey(mediatorToken);
         if (mediator == null) {
@@ -151,7 +151,7 @@ public class User extends Endpoint {
     @DELETE
     @Path("/mediator")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse removeMediator() {
+    public XmlResponse removeMediator() {
         Database database = Environment.getInstance().getDatabase();
         InterWebPrincipal principal = getPrincipal();
         if (principal == null || !principal.equals(getTargetPrincipal())) {
@@ -164,7 +164,7 @@ public class User extends Endpoint {
     @DELETE
     @Path("/services/{service}/auth")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse revokeAuthorizationOnService(@PathParam("service") String serviceName) {
+    public XmlResponse revokeAuthorizationOnService(@PathParam("service") String serviceName) {
         log.info("revoking user authentication");
         InterWebPrincipal principal = getTargetPrincipal();
         Engine engine = Environment.getInstance().getEngine();

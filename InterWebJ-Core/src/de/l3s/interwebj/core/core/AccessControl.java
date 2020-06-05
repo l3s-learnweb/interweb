@@ -3,13 +3,13 @@ package de.l3s.interwebj.core.core;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AccessControll {
+public class AccessControl {
 
     private static final String SYSTEM_ROLE = "system";
 
     private List<ResourceConstraint> constraints;
 
-    public AccessControll() {
+    public AccessControl() {
         initConstraints();
     }
 
@@ -45,8 +45,8 @@ public class AccessControll {
         ResourceConstraint resourceConstraint = null;
         for (ResourceConstraint constraint : constraints) {
             if (resourceConstraint == null && constraint.matches(resource)
-                    || resourceConstraint != null && constraint.matches(resource)
-                    && constraint.getWeight() > resourceConstraint.getWeight()) {
+                || resourceConstraint != null && constraint.matches(resource)
+                && constraint.getWeight() > resourceConstraint.getWeight()) {
                 resourceConstraint = constraint;
             }
         }
@@ -56,7 +56,7 @@ public class AccessControll {
     private void initConstraints() {
         // TODO: find easy and flexible way to store/read constraints
         // Public access resources
-        constraints = new LinkedList<ResourceConstraint>();
+        constraints = new LinkedList<>();
         constraints.add(buildPublicConstraint("/api/.*"));
         constraints.add(buildPublicConstraint("/css/.*"));
         constraints.add(buildPublicConstraint("/img/.*"));

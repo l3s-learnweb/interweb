@@ -1,6 +1,5 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import java.io.IOException;
 import java.security.Principal;
 
 import javax.ws.rs.Consumes;
@@ -18,11 +17,11 @@ import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
 import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.ResultItem;
-import de.l3s.interwebj.tomcat.jaxb.ErrorResponse;
-import de.l3s.interwebj.tomcat.jaxb.SearchResultEntity;
+import de.l3s.interwebj.core.xml.ErrorResponse;
+import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.UploadResponse;
-import de.l3s.interwebj.tomcat.jaxb.XMLResponse;
 
 @Path("/users/default/uploads")
 public class Upload extends Endpoint {
@@ -31,13 +30,15 @@ public class Upload extends Endpoint {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XMLResponse getQueryResult(@FormDataParam("title") String title, @FormDataParam("description") String description,
-                                      @FormDataParam("tags") String tags, @FormDataParam("is_private") String privacy,
-                                      @FormDataParam("content_type") String contentType, @FormDataParam("data") FormDataContentDisposition disposition,
-                                      @FormDataParam("data") byte[] data) throws IOException, InterWebException {
+    public XmlResponse getQueryResult(@FormDataParam("title") String title, @FormDataParam("description") String description,
+        @FormDataParam("tags") String tags, @FormDataParam("is_private") String privacy,
+        @FormDataParam("content_type") String contentType, @FormDataParam("data") FormDataContentDisposition disposition,
+        @FormDataParam("data") byte[] data) throws InterWebException {
+
         Engine engine = Environment.getInstance().getEngine();
         Principal principal = getPrincipal();
         log.info("principal: [" + principal + "]");
+
         Parameters params = new Parameters();
         if (title != null) {
             params.add(Parameters.TITLE, title);
@@ -56,12 +57,12 @@ public class Upload extends Endpoint {
             params.add(Parameters.FILENAME, fileName);
         }
 
-        ResultItem result = engine.upload(data, principal, engine.getConnectorNames(), contentType, params);
+        ResultItem result = engine.upload(data, principal, engine.getConnectorNames(), ContentType.valueOf(contentType), params);
 
         if (null == result) {
             return ErrorResponse.FILE_NOT_ACCEPTED;
         } else {
-            return new UploadResponse(new SearchResultEntity(result));
+            return new UploadResponse(result);
         }
     }
 }

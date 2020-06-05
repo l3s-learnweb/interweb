@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class Parameters {
 
     public static final String AUTHORIZATION_URL = "authorization_url";
@@ -29,10 +32,10 @@ public class Parameters {
     public static final String IWJ_CONNECTOR_ID = "iwj_connector_id";
     public static final String ERROR = "error";
 
-    private Map<String, String> parameters;
+    private final Map<String, String> parameters;
 
     public Parameters() {
-        parameters = new TreeMap<String, String>();
+        parameters = new TreeMap<>();
     }
 
     public void add(Map<String, String> parameters) {
@@ -61,22 +64,22 @@ public class Parameters {
             String[] values = entry.getValue();
             String value = null;
             if (values != null && values.length > 0) {
-                value = values[ 0 ];
+                value = values[0];
             }
             add(entry.getKey(), value);
         }
     }
 
     public void addQueryParameters(String query) {
-        int startQueryIndex = query.indexOf("?") == -1 ? 0 : query.indexOf("?") + 1;
+        int startQueryIndex = !query.contains("?") ? 0 : query.indexOf("?") + 1;
         query = query.substring(startQueryIndex);
         String[] params = query.split("&");
         for (String param : params) {
             String[] paramPair = param.split("=");
-            String name = paramPair[ 0 ];
+            String name = paramPair[0];
             String value = null;
             if (paramPair.length > 1) {
-                value = paramPair[ 1 ];
+                value = paramPair[1];
             }
             addDecoded(name, value);
         }
@@ -125,11 +128,8 @@ public class Parameters {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Parameters ");
-        if (parameters != null) {
-            builder.append(parameters);
-        }
-        return builder.toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("parameters", parameters)
+            .toString();
     }
 }

@@ -49,9 +49,9 @@ a:hover, a:active {
 }
 
 a.search_result {
-    border-bottom: 0px;
-    padding: 0px;
-    margin: 0px;
+    border-bottom: 0;
+    padding: 0;
+    margin: 0;
 }
 
 .search_result img {
@@ -119,6 +119,11 @@ del {
     color: #555555;
 }
 
+iframe {
+    max-width: 100%;
+}
+
+
 /* Structure */
 body {
     width: 1000px;
@@ -126,134 +131,116 @@ body {
     background: #f9f9f9;
 }
 
+
 /* Top-Nav */
 #topnav {
-    width: 100%;
-    float: left;
     color: #999999;
     background-color: #2c231e;
 }
 
 #topnav ul {
-    float: right;
     list-style-type: none;
     margin: 0;
     padding: 0 10px;
-    width: 95%;
+    text-align: right;
     line-height: 1.0em;
 }
 
 #topnav li {
-    float: right;
     margin: 0;
     padding: 0;
+    display: inline-block;
 }
 
-#topnav a {
+#topnav li a {
     display: block;
-    float: left;
     margin: 10px 0;
     padding: 0 10px;
     border-left: 1px solid #777777;
-    border-bottom-width: 0px;
+    border-bottom-width: 0;
 }
 
-#topnav a:link, #topnav a:visited {
-    color: #988d87;
-}
-
-#topnav a:hover, #topnav a:active {
-    color: #ddd8d5;
-}
-
-#topnav li#skip a {
+#topnav li:first-child a {
     border-left-width: 0;
 }
 
+#topnav a:link,
+#topnav a:visited {
+    color: #988d87;
+}
+
+#topnav a:hover,
+#topnav a:active {
+    color: #ddd8d5;
+}
+
+
 /* Header */
 #header {
-    clear: both;
-    background-color: #d9d4be;
     padding-top: 10px;
-    float: right;
-    height: 71px;
+    background-color: #d9d4be;
     border-bottom: 1px solid #e5e5e5;
+    text-align: right;
 }
 
-div#header {
-    width: 100%;
-    height: 71px;
-    text-align: left;
-}
-
-#header span {
-    float: right;
+#header h3 {
+    margin: 0;
     font-size: 24pt;
     font-weight: bold;
     font-family: serif;
     color: #2c231e;
-    padding-right: 20px;
+    padding: 0 20px;
 }
 
 /* Menu */
 #menu {
-    width: 100%;
-    float: right;
-    color: #999999;
-    background-color: #d9d4be;
+    text-align: left;
 }
 
 #menu ul {
-    float: left;
     list-style-type: none;
     margin: 0;
-    padding: 0px;
-    line-height: 1.0em;
-    background-color: #2c231e;
-}
-
-#menu li {
-    float: left;
-    margin: 0;
     padding: 0;
-}
-
-li#admin_menu_item {
-    background-color: #FE8484;
-}
-
-li#admin_menu_item a {
-    color: #2c231e !important;
+    line-height: 1;
+    background-color: #2c231e;
+    display: inline-block;
 }
 
 #menu a {
     display: block;
-    float: left;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-bottom-width: 0px;
+    padding: 10px;
+    border-bottom-width: 0;
 }
 
-#menu a:link, #menu a:visited, #admin_menu_item a:link, #admin_menu_item a:visited {
+#menu a:link,
+#menu a:visited {
     color: #988d87;
 }
 
-#menu a:hover, #menu a:active, #admin_menu_item a:hover,
-#admin_menu_item a:active, #admin_menu_item a.selected, #menu a.selected {
+#menu a:hover,
+#menu a:active,
+#menu a.selected {
     color: #ddd8d5 !important;
 }
 
-#menu li#skip a {
-    border-left-width: 0;
+#menu a.admin_menu_item {
+    background-color: #FE8484;
+    color: #2c231e !important;
 }
+
 
 /* Content */
 #content {
-    float: left;
-    margin: 20px;
+    padding: 20px;
 }
 
-#content dl, #content dt, #content dd {
+#content > .error {
+    margin: 0;
+}
+
+#content dl,
+#content dt,
+#content dd {
     margin: 0;
     padding: 0;
 }
@@ -271,9 +258,9 @@ li#admin_menu_item a {
     border-bottom: 1px dotted #aaaaaa;
 }
 
+
 /* Footer */
 #footer {
-    clear: both;
     color: #2c231e;
     padding: 1px 0;
     text-align: center;
@@ -281,10 +268,8 @@ li#admin_menu_item a {
     border-top: 1px solid #e5e5e5;
 }
 
-td.alignTop {
-    vertical-align: top;
-}
 
+/* Misc */
 li.ui-datalist-item {
     list-style-type: none;
 }
@@ -293,6 +278,23 @@ ul.ui-datalist-data {
     padding: 5px;
 }
 
+.table-form {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-gap: 5px 5px;
+    align-items: center;
+}
+
+.bordered {
+    border-width: 1px !important;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+
+/* IW Panel */
 .iw-panel {
     color: #C4C0B9;
     border-width: 0;
@@ -324,6 +326,8 @@ ul.ui-datalist-data {
     padding: 3px;
 }
 
+
+/* IW Datatable */
 .iw-datatable {
     background-color: #FFFFFF;
     border-collapse: collapse;
@@ -335,6 +339,7 @@ ul.ui-datalist-data {
 
 .iw-datatable th,
 .iw-datatable td {
+    word-wrap: break-word;
     vertical-align: top;
     border-bottom-width: 1px;
     border-bottom-style: solid;

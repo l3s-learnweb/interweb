@@ -23,7 +23,7 @@ import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.tomcat.jaxb.ErrorResponse;
+import de.l3s.interwebj.core.xml.ErrorResponse;
 
 @Provider
 public class OAuthFilter implements ContainerRequestFilter {

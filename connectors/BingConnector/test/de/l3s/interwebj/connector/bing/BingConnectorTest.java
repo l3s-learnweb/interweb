@@ -1,7 +1,6 @@
 package de.l3s.interwebj.connector.bing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,8 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
-import de.l3s.interwebj.core.core.AbstractServiceConnector;
+import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
 import de.l3s.interwebj.core.query.ResultItem;
@@ -19,10 +19,10 @@ import de.l3s.interwebj.core.query.ResultItem;
 class BingConnectorTest {
     private static final Logger log = LogManager.getLogger(BingConnectorTest.class);
 
-    private static final String TEST_KEY = "***REMOVED***";
-    private static final String TEST_SECRET = "";
+    private static final String TEST_KEY = "accesskey";
+    private static final String TEST_SECRET = "***REMOVED***";
 
-    private static AbstractServiceConnector connector;
+    private static ServiceConnector connector;
 
     @BeforeAll
     public static void initialize() {
@@ -34,15 +34,15 @@ class BingConnectorTest {
     void get() throws InterWebException {
         QueryFactory queryFactory = new QueryFactory();
         Query query = queryFactory.createQuery("hello world");
-        query.addContentType(Query.CT_VIDEO);
-        query.addContentType(Query.CT_IMAGE);
-        // query.addParam("date_from", "2009-01-01 00:00:00");
-        // query.addParam("date_till", "2009-06-01 00:00:00");
+        query.addContentType(ContentType.video);
+        query.addContentType(ContentType.image);
+        // query.setDateFrom("2009-01-01 00:00:00");
+        // query.setDateTill("2009-06-01 00:00:00");
 
         ConnectorResults queryResult = connector.get(query, null);
 
         for (ResultItem res : queryResult.getResultItems()) {
-            log.info("{}: {}", res.getRank(), res.toString());
+            log.info(res.toString());
         }
 
         assertEquals(20, queryResult.getResultItems().size());
@@ -53,14 +53,14 @@ class BingConnectorTest {
     void getImages() throws InterWebException {
         QueryFactory queryFactory = new QueryFactory();
         Query query = queryFactory.createQuery("hannover");
-        query.addContentType(Query.CT_IMAGE);
-        query.setResultCount(30);
+        query.addContentType(ContentType.image);
+        query.setPerPage(30);
         query.setPage(2);
 
         ConnectorResults queryResult = connector.get(query, null);
 
         for (ResultItem res : queryResult.getResultItems()) {
-            log.info("{}: {}", res.getRank(), res.toString());
+            log.info(res);
         }
 
         assertEquals(30, queryResult.getResultItems().size());
@@ -71,14 +71,14 @@ class BingConnectorTest {
     void getVideos() throws InterWebException {
         QueryFactory queryFactory = new QueryFactory();
         Query query = queryFactory.createQuery("hannover");
-        query.addContentType(Query.CT_VIDEO);
-        query.setResultCount(30);
+        query.addContentType(ContentType.video);
+        query.setPerPage(30);
         query.setPage(2);
 
         ConnectorResults queryResult = connector.get(query, null);
 
         for (ResultItem res : queryResult.getResultItems()) {
-            log.info("{}: {}", res.getRank(), res.toString());
+            log.info(res.toString());
         }
 
         assertEquals(30, queryResult.getResultItems().size());

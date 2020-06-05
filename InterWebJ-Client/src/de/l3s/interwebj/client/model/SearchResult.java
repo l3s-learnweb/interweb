@@ -11,8 +11,11 @@ public class SearchResult implements Serializable {
 
     @SerializedName("service")
     private String service;
+    @SerializedName("rank_at_service")
+    private Integer rankAtService;
     @SerializedName("id_at_service")
     private String idAtService;
+
     @SerializedName("type")
     private String type;
     @SerializedName("title")
@@ -21,50 +24,65 @@ public class SearchResult implements Serializable {
     private String description;
     @SerializedName("url")
     private String url;
-    @SerializedName("image")
-    private String image;
-    @SerializedName("thumbnail")
-    private List<SearchThumbnail> thumbnails = null;
     @SerializedName("date")
     private String date;
-    @SerializedName("tags")
-    private String tags;
-    @SerializedName("rank_at_service")
-    private Integer rankAtService;
-    @SerializedName("total_results_at_service")
-    private Integer totalResultsAtService;
-    @SerializedName("views")
-    private Integer numberOfViews;
-    @SerializedName("number_of_comments")
-    private Integer numberOfComments;
-    @SerializedName("embedded_size1")
-    private String embeddedSize1;
-    @SerializedName("embedded_size2")
-    private String embeddedSize2;
-    @SerializedName("embedded_size3")
-    private String embeddedSize3;
-    @SerializedName("embedded_size4")
-    private String embeddedSize4;
-    @SerializedName("max_image_url")
-    private String imageUrl;
-    @SerializedName("duration")
-    private Integer duration;
     @SerializedName("snippet")
     private String snippet;
+    @SerializedName("duration")
+    private Long duration;
+    @SerializedName("tags")
+    private List<String> tags;
+
+    @SerializedName("number_of_views")
+    private Long numberOfViews;
+    @SerializedName("number_of_comments")
+    private Long numberOfComments;
+
+    @SerializedName("embedded_code")
+    private String embeddedCode;
+
+    /**
+     * Usually an image with HEIGHT between 100 and 180 px.
+     */
+    @SerializedName("thumbnail_small")
+    private SearchThumbnail thumbnailSmall;
+    /**
+     * Usually an image with HEIGHT between 200 and 440 px.
+     */
+    @SerializedName("thumbnail_medium")
+    private SearchThumbnail thumbnailMedium;
+    /**
+     * Usually an image with HEIGHT between 600 and 920 px.
+     */
+    @SerializedName("thumbnail_large")
+    private SearchThumbnail thumbnailLarge;
+    /**
+     * Image in max available quality, if bigger than large.
+     */
+    @SerializedName("thumbnail_original")
+    private SearchThumbnail thumbnailOriginal;
 
     public String getService() {
         return service;
     }
 
-    public void setService(String service) {
+    public void setService(final String service) {
         this.service = service;
+    }
+
+    public Integer getRankAtService() {
+        return rankAtService;
+    }
+
+    public void setRankAtService(final Integer rankAtService) {
+        this.rankAtService = rankAtService;
     }
 
     public String getIdAtService() {
         return idAtService;
     }
 
-    public void setIdAtService(String idAtService) {
+    public void setIdAtService(final String idAtService) {
         this.idAtService = idAtService;
     }
 
@@ -72,7 +90,7 @@ public class SearchResult implements Serializable {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -80,7 +98,7 @@ public class SearchResult implements Serializable {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -88,7 +106,7 @@ public class SearchResult implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -96,169 +114,119 @@ public class SearchResult implements Serializable {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(final String url) {
         this.url = url;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public List<SearchThumbnail> getThumbnails() {
-        return thumbnails;
-    }
-
-    public void setThumbnails(List<SearchThumbnail> thumbnails) {
-        this.thumbnails = thumbnails;
     }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(final String date) {
         this.date = date;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
-    public Integer getRankAtService() {
-        return rankAtService;
-    }
-
-    public void setRankAtService(Integer rankAtService) {
-        this.rankAtService = rankAtService;
-    }
-
-    public Integer getTotalResultsAtService() {
-        return totalResultsAtService;
-    }
-
-    public void setTotalResultsAtService(Integer totalResultsAtService) {
-        this.totalResultsAtService = totalResultsAtService;
-    }
-
-    public Integer getNumberOfViews() {
-        return numberOfViews;
-    }
-
-    public void setNumberOfViews(Integer numberOfViews) {
-        this.numberOfViews = numberOfViews;
-    }
-
-    public Integer getNumberOfComments() {
-        return numberOfComments;
-    }
-
-    public void setNumberOfComments(Integer numberOfComments) {
-        this.numberOfComments = numberOfComments;
-    }
-
-    /**
-     * html code, only image or text, max width and max height 100px.
-     */
-    public String getEmbeddedSize1() {
-        return embeddedSize1;
-    }
-
-    public void setEmbeddedSize1(String embeddedSize1) {
-        this.embeddedSize1 = embeddedSize1;
-    }
-
-    /**
-     * html code, only image or text, max width and max height 240px.
-     */
-    public String getEmbeddedSize2() {
-        return embeddedSize2;
-    }
-
-    public void setEmbeddedSize2(String embeddedSize2) {
-        this.embeddedSize2 = embeddedSize2;
-    }
-
-    /**
-     * html code, could be flash, max width and max height 500px.
-     */
-    public String getEmbeddedSize3() {
-        return embeddedSize3;
-    }
-
-    public void setEmbeddedSize3(String embeddedSize3) {
-        this.embeddedSize3 = embeddedSize3;
-    }
-
-    /**
-     * html code, could be flash, max width and max height 100%.
-     */
-    public String getEmbeddedSize4() {
-        return embeddedSize4;
-    }
-
-    public void setEmbeddedSize4(String embeddedSize4) {
-        this.embeddedSize4 = embeddedSize4;
-    }
-
-    /**
-     * Url to the best (high resolution) available preview image.
-     */
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public Integer getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Integer duration) {
-        this.duration = duration;
     }
 
     public String getSnippet() {
         return snippet;
     }
 
-    public void setSnippet(String snippet) {
+    public void setSnippet(final String snippet) {
         this.snippet = snippet;
+    }
+
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(final Long duration) {
+        this.duration = duration;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(final List<String> tags) {
+        this.tags = tags;
+    }
+
+    public Long getNumberOfViews() {
+        return numberOfViews;
+    }
+
+    public void setNumberOfViews(final Long numberOfViews) {
+        this.numberOfViews = numberOfViews;
+    }
+
+    public Long getNumberOfComments() {
+        return numberOfComments;
+    }
+
+    public void setNumberOfComments(final Long numberOfComments) {
+        this.numberOfComments = numberOfComments;
+    }
+
+    public String getEmbeddedCode() {
+        return embeddedCode;
+    }
+
+    public void setEmbeddedCode(final String embeddedCode) {
+        this.embeddedCode = embeddedCode;
+    }
+
+    public SearchThumbnail getThumbnailSmall() {
+        return thumbnailSmall;
+    }
+
+    public void setThumbnailSmall(final SearchThumbnail thumbnailSmall) {
+        this.thumbnailSmall = thumbnailSmall;
+    }
+
+    public SearchThumbnail getThumbnailMedium() {
+        return thumbnailMedium;
+    }
+
+    public void setThumbnailMedium(final SearchThumbnail thumbnailMedium) {
+        this.thumbnailMedium = thumbnailMedium;
+    }
+
+    public SearchThumbnail getThumbnailLarge() {
+        return thumbnailLarge;
+    }
+
+    public void setThumbnailLarge(final SearchThumbnail thumbnailLarge) {
+        this.thumbnailLarge = thumbnailLarge;
+    }
+
+    public SearchThumbnail getThumbnailOriginal() {
+        return thumbnailOriginal;
+    }
+
+    public void setThumbnailOriginal(final SearchThumbnail thumbnailOriginal) {
+        this.thumbnailOriginal = thumbnailOriginal;
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", SearchResult.class.getSimpleName() + "[", "]")
             .add("service='" + service + "'")
+            .add("rankAtService=" + rankAtService)
             .add("idAtService='" + idAtService + "'")
             .add("type='" + type + "'")
             .add("title='" + title + "'")
             .add("description='" + description + "'")
             .add("url='" + url + "'")
-            .add("image='" + image + "'")
-            .add("thumbnails=" + thumbnails)
             .add("date='" + date + "'")
-            .add("tags='" + tags + "'")
-            .add("rankAtService=" + rankAtService)
-            .add("totalResultsAtService=" + totalResultsAtService)
+            .add("snippet='" + snippet + "'")
+            .add("duration=" + duration)
+            .add("tags=" + tags)
             .add("numberOfViews=" + numberOfViews)
             .add("numberOfComments=" + numberOfComments)
-            .add("embeddedSize1='" + embeddedSize1 + "'")
-            .add("embeddedSize2='" + embeddedSize2 + "'")
-            .add("embeddedSize3='" + embeddedSize3 + "'")
-            .add("embeddedSize4='" + embeddedSize4 + "'")
-            .add("imageUrl='" + imageUrl + "'")
-            .add("duration=" + duration)
-            .add("snippet='" + snippet + "'")
+            .add("embeddedCode='" + embeddedCode + "'")
+            .add("thumbnailSmall=" + thumbnailSmall)
+            .add("thumbnailMedium=" + thumbnailMedium)
+            .add("thumbnailLarge=" + thumbnailLarge)
+            .add("thumbnailOriginal=" + thumbnailOriginal)
             .toString();
     }
 }

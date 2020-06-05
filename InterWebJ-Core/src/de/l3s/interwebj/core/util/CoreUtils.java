@@ -12,22 +12,20 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.l3s.interwebj.core.query.Thumbnail;
-
 public class CoreUtils {
     private static final Logger log = LogManager.getLogger(CoreUtils.class);
 
     private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static List<String> convertToUniqueList(String s) {
-        Set<String> list = new HashSet<String>();
+        Set<String> list = new HashSet<>();
         String[] tokens = s.split("[,\\s]");
         for (String token : tokens) {
             if (token.length() > 0) {
                 list.add(token);
             }
         }
-        return new ArrayList<String>(list);
+        return new ArrayList<>(list);
     }
 
     public static String formatDate(DateFormat df, Date date) {
@@ -54,37 +52,50 @@ public class CoreUtils {
         return parseDate(DEFAULT_DATE_FORMAT, dateString);
     }
 
-    public static String ulrToHttps(String url) {
-        if (url.startsWith("http://")) {
-            return url.replace("http://", "https://");
+    public static int[] scaleThumbnail(int width, int height, int maxDimension) {
+        double aspect = (double) width / height;
+
+        int newWidth = maxDimension;
+        int newHeight = maxDimension;
+        if (width > height) {
+            newHeight = (int) Math.ceil(maxDimension / aspect);
+        } else {
+            newWidth = (int) Math.ceil(maxDimension * aspect);
         }
-        return url;
+
+        return new int[] {newWidth, newHeight};
     }
 
-    public static String createImageCode(Thumbnail tn, int maxWidth, int maxHeight) {
-        return createImageCode(tn.getUrl(), tn.getWidth(), tn.getHeight(), maxWidth, maxHeight);
-    }
-
-    public static String createImageCode(String url, int imageWidth, int imageHeight, int maxWidth, int maxHeight) {
-        if (null == url || url.length() < 7 || imageWidth < 2 || imageHeight < 2) {
+    /**
+     * If the string is longer than maxLength it is split at the nearest blank space.
+     */
+    public static String shortnString(final String str, final int maxLength) {
+        if (null == str) {
             return null;
         }
 
-        int width = imageWidth;
-        int height = imageHeight;
+        if (str.length() > maxLength) {
+            int endIdx = maxLength - 3;
+            while (endIdx > 0 && str.charAt(endIdx) != ' ' && str.charAt(endIdx) != '\n') {
+                endIdx--;
+            }
 
-        if (width > maxWidth) {
-            double ratio = (double) maxWidth / (double) width;
-            height = (int) Math.ceil(height * ratio);
-            width = maxWidth;
+            return str.substring(0, endIdx) + "...";
+        }
+        return str;
+    }
+
+    /**
+     * Removes width, height, autoplay, styles from embedded code.
+     */
+    public static String cleanupEmbedHtml(String embeddedCode) {
+        if (null == embeddedCode) {
+            return null;
         }
 
-        if (height > maxHeight) {
-            double ratio = (double) maxHeight / (double) height;
-            width = (int) (width * ratio);
-            height = maxHeight;
-        }
-
-        return "<img src=\"" + ulrToHttps(url) + "\" width=\"" + width + "\" height=\"" + height + "\" alt=\"\" />";
+        // remove autoplay attribute
+        embeddedCode = embeddedCode.replace("?autoplay=1", "");
+        embeddedCode = embeddedCode.replaceAll("\\s(style|width|height)=\"[^\"]*\"", "");
+        return embeddedCode;
     }
 }

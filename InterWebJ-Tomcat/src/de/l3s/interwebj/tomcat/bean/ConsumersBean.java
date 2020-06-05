@@ -35,7 +35,7 @@ public class ConsumersBean implements Serializable {
     private String description;
     private AuthCredentials accessToken;
     private String oauthToken;
-    private String callback;
+    private final String callback;
 
     public ConsumersBean() {
         HttpServletRequest request = FacesUtils.getRequest();

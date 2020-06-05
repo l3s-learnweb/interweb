@@ -9,10 +9,13 @@ import org.junit.jupiter.api.Test;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.db.Database;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
-import de.l3s.interwebj.core.query.QueryResult;
 import de.l3s.interwebj.core.query.QueryResultCollector;
+import de.l3s.interwebj.core.query.QueryResults;
+import de.l3s.interwebj.core.query.SearchRanking;
+import de.l3s.interwebj.core.query.SearchScope;
 
 class EngineTest {
     private static final Logger log = LogManager.getLogger(EngineTest.class);
@@ -41,19 +44,19 @@ class EngineTest {
     private static void testSearch(String word, List<String> connectorNames, Engine engine, InterWebPrincipal principal) throws InterWebException {
         QueryFactory queryFactory = new QueryFactory();
         Query query = queryFactory.createQuery(word);
-        query.addContentType(Query.CT_VIDEO);
-        query.addContentType(Query.CT_IMAGE);
-        query.addSearchScope(Query.SearchScope.TEXT);
-        query.addSearchScope(Query.SearchScope.TAGS);
-        query.setResultCount(10);
-        query.setSortOrder(Query.SortOrder.RELEVANCE);
+        query.addContentType(ContentType.video);
+        query.addContentType(ContentType.image);
+        query.addSearchScope(SearchScope.text);
+        query.addSearchScope(SearchScope.tags);
+        query.setPerPage(10);
+        query.setRanking(SearchRanking.relevance);
         for (String connectorName : connectorNames) {
             query.addConnectorName(connectorName);
         }
         QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
 
-        QueryResult queryResult = collector.retrieve();
+        QueryResults queryResults = collector.retrieve();
         log.info("query: [" + query + "]");
-        log.info("elapsed time : [" + queryResult.getElapsedTime() + "]");
+        log.info("elapsed time : [" + queryResults.getElapsedTime() + "]");
     }
 }

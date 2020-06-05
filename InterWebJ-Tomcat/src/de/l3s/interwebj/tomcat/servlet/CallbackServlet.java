@@ -26,8 +26,8 @@ import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.tomcat.jaxb.ErrorResponse;
-import de.l3s.interwebj.tomcat.jaxb.XMLResponse;
+import de.l3s.interwebj.core.xml.ErrorResponse;
+import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.ServiceResponse;
 import de.l3s.interwebj.tomcat.rest.Endpoint;
 
@@ -163,7 +163,7 @@ public class CallbackServlet extends HttpServlet {
         }
     }
 
-    private void writeIntoServletResponse(HttpServletResponse servletResponse, XMLResponse xmlResponse) throws IOException {
+    private void writeIntoServletResponse(HttpServletResponse servletResponse, XmlResponse xmlResponse) throws IOException {
         byte[] content = xmlResponse.toString().getBytes(StandardCharsets.UTF_8);
         OutputStream os = servletResponse.getOutputStream();
         os.write(content);

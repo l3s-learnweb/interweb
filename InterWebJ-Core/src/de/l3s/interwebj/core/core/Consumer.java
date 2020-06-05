@@ -6,10 +6,10 @@ import de.l3s.interwebj.core.AuthCredentials;
 
 public class Consumer {
 
-    private String name;
-    private String url;
-    private String description;
-    private AuthCredentials authCredentials;
+    private final String name;
+    private final String url;
+    private final String description;
+    private final AuthCredentials authCredentials;
 
     public Consumer(String name, String url, String description, AuthCredentials authCredentials) {
         notNull(name, "name");

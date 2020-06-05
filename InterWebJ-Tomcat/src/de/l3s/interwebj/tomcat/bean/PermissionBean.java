@@ -15,10 +15,10 @@ public class PermissionBean {
 
     @NotNull
     private String level;
-    private List<SelectItem> levels;
+    private final List<SelectItem> levels;
 
     public PermissionBean() {
-        levels = new ArrayList<SelectItem>();
+        levels = new ArrayList<>();
         levels.add(new SelectItem("read"));
         levels.add(new SelectItem("write"));
         levels.add(new SelectItem("delete"));

@@ -5,24 +5,27 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.xml.XmlResponse;
+
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UploadResponse extends XMLResponse {
+public class UploadResponse extends XmlResponse {
     @XmlElement(name = "result")
-    protected SearchResultEntity result;
+    protected ResultItem result;
 
     public UploadResponse() {
     }
 
-    public UploadResponse(SearchResultEntity result) {
+    public UploadResponse(ResultItem result) {
         this.result = result;
     }
 
-    public SearchResultEntity getResult() {
+    public ResultItem getResult() {
         return result;
     }
 
-    public void setResult(SearchResultEntity result) {
+    public void setResult(ResultItem result) {
         this.result = result;
     }
 

@@ -280,7 +280,7 @@ public class JdbcDatabase implements Database {
     @Override
     public List<Consumer> readConsumers(String userName) {
         notNull(userName, "userName");
-        ArrayList<Consumer> consumers = new ArrayList<Consumer>();
+        ArrayList<Consumer> consumers = new ArrayList<>();
         try {
             if (openConnection()) {
                 PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_CONSUMERS);
@@ -624,7 +624,7 @@ public class JdbcDatabase implements Database {
 
     private ArrayList<String> getRoles(String userName) {
         notNull(userName, "userName");
-        ArrayList<String> roles = new ArrayList<String>();
+        ArrayList<String> roles = new ArrayList<>();
         try {
             if (openConnection()) {
                 PreparedStatement pstmt = preparedStatements.get(PSTMT_SELECT_PRINCIPAL_ROLES);
@@ -654,18 +654,14 @@ public class JdbcDatabase implements Database {
         } catch (SQLException e) {
             log.error(e);
         }
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-
-            @Override
-            public void run() {
-                log.info("Shutdown intercepted. Cleaning up Database resources");
-                close();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("Shutdown intercepted. Cleaning up Database resources");
+            close();
+        }));
     }
 
     private void initPreparedStatements() throws SQLException {
-        preparedStatements = new HashMap<String, PreparedStatement>();
+        preparedStatements = new HashMap<>();
 
         addPreparedStatement(PSTMT_HAS_PRINCIPAL);
         addPreparedStatement(PSTMT_SELECT_PRINCIPAL_BY_NAME);
@@ -713,7 +709,7 @@ public class JdbcDatabase implements Database {
         while (dbConnection == null && numberOfTries >= 0) {
             if (driver == null) {
                 try {
-                    driver = (Driver) Class.forName("org.mariadb.jdbc.Driver").newInstance();
+                    driver = (Driver) Class.forName("org.mariadb.jdbc.Driver").getDeclaredConstructor().newInstance();
                 } catch (Throwable e) {
                     throw new SQLException(e.getMessage());
                 }

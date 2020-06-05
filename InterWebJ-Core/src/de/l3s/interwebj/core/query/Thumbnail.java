@@ -3,18 +3,32 @@ package de.l3s.interwebj.core.query;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
+@XmlRootElement(name = "thumbnail")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Thumbnail implements Comparable<Thumbnail>, Serializable {
-
     private static final long serialVersionUID = -792701713759619246L;
 
-    private final int width;
-    private final int height;
-    private final String url;
+    @XmlValue
+    private String url;
+    @XmlAttribute(name = "width")
+    private int width;
+    @XmlAttribute(name = "height")
+    private int height;
+
+    public Thumbnail() {
+    }
 
     public Thumbnail(String url, int width, int height) {
-        this.url = url; // disabled because of ipernity CoreUtils.ulrToHttps(url);
+        this.url = url;
         this.width = width;
         this.height = height;
     }
@@ -36,16 +50,28 @@ public class Thumbnail implements Comparable<Thumbnail>, Serializable {
         return url.compareTo(t.url);
     }
 
-    public int getHeight() {
-        return height;
-    }
-
     public String getUrl() {
         return url;
     }
 
+    public void setUrl(final String url) {
+        this.url = url;
+    }
+
     public int getWidth() {
         return width;
+    }
+
+    public void setWidth(final int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(final int height) {
+        this.height = height;
     }
 
     @Override
@@ -67,10 +93,10 @@ public class Thumbnail implements Comparable<Thumbnail>, Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("width", width)
-                .append("height", height)
-                .append("url", url)
-                .toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("url", url)
+            .append("width", width)
+            .append("height", height)
+            .toString();
     }
 }

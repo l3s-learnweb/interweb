@@ -1,102 +1,101 @@
 package de.l3s.interwebj.core.query;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.StringJoiner;
-import java.util.TreeSet;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.l3s.interwebj.core.util.CoreUtils;
+
+@XmlRootElement(name = "result")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ResultItem implements Serializable {
+    private static final long serialVersionUID = 8890673440048432524L;
 
-    public static final int DEFAULT_EMBEDDED_WIDTH = 500;
-    public static final int DEFAULT_EMBEDDED_HEIGHT = 375;
     private static final int MAX_TITLE_LENGTH = 256;
     private static final int MAX_DESCRIPTION_LENGTH = 1024;
-    private static final long serialVersionUID = 9111067008513145675L;
 
-    private String id;
-    private String title;
-    private String type;
-    private String description;
-    private String connectorName;
+    public static final int THUMBNAIL_SMALL_MAX_HEIGHT = 180;
+    public static final int THUMBNAIL_MEDIUM_MAX_HEIGHT = 440;
+    public static final int THUMBNAIL_LARGE_MAX_HEIGHT = 920;
+
+    // base
+    @XmlElement(name = "service")
     private String serviceName;
-    private String tags;
+    @XmlElement(name = "rank_at_service")
+    private int rank;
+    @XmlElement(name = "id_at_service")
+    private String id;
+
+    // general
+    @XmlElement(name = "type")
+    private ContentType type;
+    @XmlElement(name = "title")
+    private String title;
+    @XmlElement(name = "description")
+    private String description;
+    @XmlElement(name = "url")
     private String url;
-    private Set<Thumbnail> thumbnails;
+    @XmlElement(name = "date")
     private String date;
-    private int rank = -1;
-    private long totalResultCount = -1;
-    private int viewCount = -1;
-    private int commentCount = -1;
-    private double privacy;
-    private int privacyConfidence;
-    private int duration;
+    @XmlElement(name = "snippet")
     private String snippet;
-    private String embeddedSize1;
-    private String embeddedSize2;
-    private String embeddedSize3;
-    private String embeddedSize4;
+    @XmlElement(name = "duration")
+    private Long duration;
+    @JsonProperty("tags")
+    @XmlElementWrapper(name = "tags")
+    @XmlElement(name = "tag")
+    private Set<String> tags = new HashSet<>();
 
-    private String imageUrl;
+    // statistic
+    @XmlElement(name = "number_of_views")
+    private Long viewCount;
+    @XmlElement(name = "number_of_comments")
+    private Long commentCount;
 
-    public ResultItem(String connectorName) {
-        this.connectorName = connectorName;
-        serviceName = connectorName;
-        thumbnails = new TreeSet<Thumbnail>();
+    // media
+    @XmlElement(name = "embedded_code")
+    private String embeddedCode;
+    /**
+     * Usually an image with HEIGHT between 100 and 180 px.
+     */
+    @XmlElement(name = "thumbnail_small")
+    private Thumbnail thumbnailSmall;
+    /**
+     * Usually an image with HEIGHT between 200 and 440 px.
+     */
+    @XmlElement(name = "thumbnail_medium")
+    private Thumbnail thumbnailMedium;
+    /**
+     * Usually an image with HEIGHT between 600 and 920 px.
+     */
+    @XmlElement(name = "thumbnail_large")
+    private Thumbnail thumbnailLarge;
+    /**
+     * Image in max available quality, if bigger than large.
+     */
+    @XmlElement(name = "thumbnail_original")
+    private Thumbnail thumbnailOriginal;
+
+    public ResultItem() {
     }
 
-    public int getCommentCount() {
-        return commentCount;
+    public ResultItem(final String serviceName) {
+        this.serviceName = serviceName;
     }
 
-    public void setCommentCount(int commentCount) {
-        this.commentCount = commentCount;
-    }
-
-    public String getConnectorName() {
-        return connectorName;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        if (description == null) {
-            return;
-        }
-        description = description.trim();
-        //description = unescape(description); TODO testen ob wirklich überflüssig
-        if (description.length() > MAX_DESCRIPTION_LENGTH) {
-            int cutIndex = description.lastIndexOf(' ', MAX_DESCRIPTION_LENGTH);
-            if (cutIndex == -1) {
-                cutIndex = MAX_DESCRIPTION_LENGTH;
-            }
-            description = description.substring(0, cutIndex) + "...";
-        }
-        this.description = description;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public int getRank() {
-        return rank;
-    }
-
-    public void setRank(int rank) {
+    public ResultItem(final String serviceName, final int rank) {
+        this.serviceName = serviceName;
         this.rank = rank;
     }
 
@@ -104,227 +103,187 @@ public class ResultItem implements Serializable {
         return serviceName;
     }
 
-    public void setServiceName(String serviceName) {
+    public void setServiceName(final String serviceName) {
         this.serviceName = serviceName;
     }
 
-    public String getTags() {
-        return tags;
+    public int getRank() {
+        return rank;
     }
 
-    public void setTags(String tags) {
-        this.tags = tags;
+    public void setRank(final int rank) {
+        this.rank = rank;
     }
 
-    public String getSnippet() {
-        return snippet;
+    public String getId() {
+        return id;
     }
 
-    public void setSnippet(String snippet) {
-        if (snippet == null) {
-            return;
-        }
-
-        this.snippet = snippet;
-
+    public void setId(final String id) {
+        this.id = id;
     }
 
-    public Thumbnail getThumbnail(int maxWidth, int maxHeight) {
-        Set<Thumbnail> thumbnails = getThumbnails();
-        if (thumbnails == null) {
-            return null;
-        }
-        Thumbnail thumbnail = null;
-        for (Thumbnail t : thumbnails) {
-            if (thumbnail == null || t.getWidth() <= maxWidth && t.getHeight() <= maxHeight) {
-                thumbnail = t;
-            }
-        }
-        return thumbnail;
+    public ContentType getType() {
+        return type;
     }
 
-    public Set<Thumbnail> getThumbnails() {
-        return thumbnails;
-    }
-
-    public void setThumbnails(Set<Thumbnail> thumbnails) {
-        this.thumbnails = thumbnails;
+    public void setType(final ContentType type) {
+        this.type = type;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        if (title == null) {
-            return;
-        }
-        title = title.trim();
-        //title = unescape(title); TODO testen ob wirklich überflüssig
-        if (title.length() > MAX_TITLE_LENGTH) {
-            int cutIndex = title.lastIndexOf(' ', MAX_TITLE_LENGTH);
-            if (cutIndex == -1) {
-                cutIndex = MAX_TITLE_LENGTH;
-            }
-            title = title.substring(0, cutIndex) + "...";
-        }
-        this.title = title;
+    public void setTitle(final String title) {
+        this.title = CoreUtils.shortnString(title, MAX_TITLE_LENGTH);
     }
 
-    public long getTotalResultCount() {
-        return totalResultCount;
+    public String getDescription() {
+        return description;
     }
 
-    public void setTotalResultCount(long totalResultCount) {
-        this.totalResultCount = totalResultCount;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setDescription(final String description) {
+        this.description = CoreUtils.shortnString(description, MAX_DESCRIPTION_LENGTH);
     }
 
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(final String url) {
         this.url = url;
     }
 
-    public int getViewCount() {
-        return viewCount;
+    public String getDate() {
+        return date;
     }
 
-    public void setViewCount(int viewCount) {
-        this.viewCount = viewCount;
+    public void setDate(final String date) {
+        this.date = date;
     }
 
-    /**
-     * html code, only image or text, max width and max height 100px.
-     */
-    public String getEmbeddedSize1() {
-        return embeddedSize1;
+    public String getSnippet() {
+        return snippet;
     }
 
-    /**
-     * html code, only image or text, max width and max height 100px.
-     */
-    public void setEmbeddedSize1(String embeddedSize1) {
-        this.embeddedSize1 = embeddedSize1;
+    public void setSnippet(final String snippet) {
+        this.snippet = snippet;
     }
 
-    /**
-     * html code, only image or text, max width and max height 240px.
-     */
-    public String getEmbeddedSize2() {
-        return embeddedSize2;
-    }
-
-    /**
-     * html code, only image or text, max width and max height 240px.
-     */
-    public void setEmbeddedSize2(String embeddedSize2) {
-        this.embeddedSize2 = embeddedSize2;
-    }
-
-    /**
-     * html code, could be flash, max width and max height 500px.
-     *
-     * @return
-     */
-    public String getEmbeddedSize3() {
-        return embeddedSize3;
-    }
-
-    /**
-     * html code, could be flash, max width and max height 500px.
-     */
-    public void setEmbeddedSize3(String embedded) {
-        this.embeddedSize3 = embedded;
-    }
-
-    /**
-     * html code, could be flash, max width and max height 100%.
-     */
-    public String getEmbeddedSize4() {
-        return embeddedSize4;
-    }
-
-    /**
-     * html code, could be flash, max width and max height 100%.
-     */
-    public void setEmbeddedSize4(String embeddedSize4) {
-        this.embeddedSize4 = embeddedSize4;
-    }
-
-    /**
-     * Url to the best (high resolution) available preview image.
-     */
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    /**
-     * Url to the best (high resolution) available preview image.
-     */
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public double getPrivacy() {
-        return privacy;
-    }
-
-    public void setPrivacy(double privacy) {
-        this.privacy = privacy;
-    }
-
-    public int getPrivacyConfidence() {
-        return privacyConfidence;
-    }
-
-    public void setPrivacyConfidence(int privacyConfidence) {
-        this.privacyConfidence = privacyConfidence;
-    }
-
-    public int getDuration() {
+    public Long getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(final Long duration) {
         this.duration = duration;
+    }
+
+    public Set<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(final Set<String> tags) {
+        this.tags = tags;
+    }
+
+    public Long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(final Long viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public Long getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(final Long commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public String getEmbeddedCode() {
+        return embeddedCode;
+    }
+
+    public void setEmbeddedCode(final String embeddedCode) {
+        this.embeddedCode = embeddedCode;
+    }
+
+    public Thumbnail getThumbnailSmall() {
+        return thumbnailSmall;
+    }
+
+    public void setThumbnailSmall(final Thumbnail thumbnailSmall) {
+        this.thumbnailSmall = thumbnailSmall;
+    }
+
+    public Thumbnail getThumbnailMedium() {
+        return thumbnailMedium;
+    }
+
+    public void setThumbnailMedium(final Thumbnail thumbnailMedium) {
+        this.thumbnailMedium = thumbnailMedium;
+    }
+
+    public Thumbnail getThumbnailLarge() {
+        return thumbnailLarge;
+    }
+
+    public void setThumbnailLarge(final Thumbnail thumbnailLarge) {
+        this.thumbnailLarge = thumbnailLarge;
+    }
+
+    public Thumbnail getThumbnailOriginal() {
+        return thumbnailOriginal;
+    }
+
+    public void setThumbnailOriginal(final Thumbnail thumbnailOriginal) {
+        this.thumbnailOriginal = thumbnailOriginal;
+    }
+
+    public void setThumbnail(Thumbnail thumbnail) {
+        if (thumbnail.getHeight() < THUMBNAIL_SMALL_MAX_HEIGHT) {
+            if (thumbnailSmall == null || thumbnailSmall.getHeight() < thumbnail.getHeight()) {
+                thumbnailSmall = thumbnail;
+            }
+        } else if (thumbnail.getHeight() < THUMBNAIL_MEDIUM_MAX_HEIGHT) {
+            if (thumbnailMedium == null || thumbnailMedium.getHeight() < thumbnail.getHeight()) {
+                thumbnailMedium = thumbnail;
+            }
+        } else if (thumbnail.getHeight() < THUMBNAIL_LARGE_MAX_HEIGHT) {
+            if (thumbnailLarge == null || thumbnailLarge.getHeight() < thumbnail.getHeight()) {
+                thumbnailLarge = thumbnail;
+            }
+        } else {
+            if (thumbnailOriginal == null || thumbnailOriginal.getHeight() < thumbnail.getHeight()) {
+                thumbnailOriginal = thumbnail;
+            }
+        }
     }
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", ResultItem.class.getSimpleName() + "[", "]")
-                .add("id='" + id + "'")
-                .add("title='" + title + "'")
-                .add("type='" + type + "'")
-                .add("description='" + description + "'")
-                .add("connectorName='" + connectorName + "'")
-                .add("serviceName='" + serviceName + "'")
-                .add("tags='" + tags + "'")
-                .add("url='" + url + "'")
-                .add("thumbnails=" + thumbnails)
-                .add("date='" + date + "'")
-                .add("rank=" + rank)
-                .add("totalResultCount=" + totalResultCount)
-                .add("viewCount=" + viewCount)
-                .add("commentCount=" + commentCount)
-                .add("privacy=" + privacy)
-                .add("privacyConfidence=" + privacyConfidence)
-                .add("duration=" + duration)
-                .add("snippet='" + snippet + "'")
-                .add("embeddedSize1='" + embeddedSize1 + "'")
-                .add("embeddedSize2='" + embeddedSize2 + "'")
-                .add("embeddedSize3='" + embeddedSize3 + "'")
-                .add("embeddedSize4='" + embeddedSize4 + "'")
-                .add("imageUrl='" + imageUrl + "'")
-                .toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("serviceName", serviceName)
+            .append("rank", rank)
+            .append("id", id)
+            .append("title", title)
+            .append("type", type)
+            .append("description", description)
+            .append("url", url)
+            .append("date", date)
+            .append("snippet", snippet)
+            .append("duration", duration)
+            .append("tags", tags)
+            .append("viewCount", viewCount)
+            .append("commentCount", commentCount)
+            .append("embeddedCode", embeddedCode)
+            .append("thumbnailSmall", thumbnailSmall)
+            .append("thumbnailMedium", thumbnailMedium)
+            .append("thumbnailLarge", thumbnailLarge)
+            .append("thumbnailOriginal", thumbnailOriginal)
+            .toString();
     }
 }

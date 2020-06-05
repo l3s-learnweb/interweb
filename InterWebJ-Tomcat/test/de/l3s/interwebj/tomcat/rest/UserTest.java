@@ -13,8 +13,8 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interwebj.core.AuthCredentials;
+import de.l3s.interwebj.core.xml.OkResponse;
 import de.l3s.interwebj.tomcat.TestUtils;
-import de.l3s.interwebj.tomcat.jaxb.OkResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationLinkResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.ServiceResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.ServicesResponse;

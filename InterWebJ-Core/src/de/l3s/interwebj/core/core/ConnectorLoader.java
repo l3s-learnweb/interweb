@@ -20,7 +20,7 @@ public class ConnectorLoader {
     };
 
     public List<ServiceConnector> load() {
-        List<ServiceConnector> connectors = new ArrayList<ServiceConnector>();
+        List<ServiceConnector> connectors = new ArrayList<>();
         log.info("loading connectors");
         for (String connectorClassName : CONNECTORS) {
             ServiceConnector connector = loadConnector(connectorClassName);

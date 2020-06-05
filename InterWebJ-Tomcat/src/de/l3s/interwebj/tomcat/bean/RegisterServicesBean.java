@@ -25,7 +25,7 @@ public class RegisterServicesBean implements Serializable {
 
     public List<ConnectorWrapper> getConnectorWrappers() {
         if (connectorWrappers == null) {
-            connectorWrappers = new ArrayList<ConnectorWrapper>();
+            connectorWrappers = new ArrayList<>();
             Engine engine = Environment.getInstance().getEngine();
             for (ServiceConnector connector : engine.getConnectors()) {
                 if (connector.isConnectorRegistrationDataRequired()) {

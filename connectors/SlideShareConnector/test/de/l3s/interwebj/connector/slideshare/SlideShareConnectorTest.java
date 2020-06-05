@@ -1,23 +1,25 @@
 package de.l3s.interwebj.connector.slideshare;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
-import de.l3s.interwebj.core.core.AbstractServiceConnector;
+import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
+import de.l3s.interwebj.core.query.SearchRanking;
+import de.l3s.interwebj.core.query.SearchScope;
 
 class SlideShareConnectorTest {
     private static final String TEST_KEY = "***REMOVED***";
     private static final String TEST_SECRET = "***REMOVED***";
 
-    private static AbstractServiceConnector connector;
+    private static ServiceConnector connector;
 
     @BeforeAll
     public static void initialize() {
@@ -29,17 +31,17 @@ class SlideShareConnectorTest {
     void get() throws InterWebException {
         QueryFactory queryFactory = new QueryFactory();
         Query query = queryFactory.createQuery("hello world");
-        query.addContentType(Query.CT_VIDEO);
-        query.addContentType(Query.CT_IMAGE);
-        query.addContentType(Query.CT_TEXT);
-        query.addContentType(Query.CT_PRESENTATION);
-        query.addContentType(Query.CT_AUDIO);
-        query.addSearchScope(Query.SearchScope.TEXT);
-        query.addSearchScope(Query.SearchScope.TAGS);
-        query.setResultCount(5);
-        // query.addParam("date_from", "2009-01-01 00:00:00");
-        // query.addParam("date_till", "2009-06-01 00:00:00");
-        query.setSortOrder(Query.SortOrder.RELEVANCE);
+        query.addContentType(ContentType.video);
+        query.addContentType(ContentType.image);
+        query.addContentType(ContentType.text);
+        query.addContentType(ContentType.presentation);
+        query.addContentType(ContentType.audio);
+        query.addSearchScope(SearchScope.text);
+        query.addSearchScope(SearchScope.tags);
+        query.setPerPage(5);
+        // query.setDateFrom("2009-01-01 00:00:00");
+        // query.setDateTill("2009-06-01 00:00:00");
+        query.setRanking(SearchRanking.relevance);
 
         ConnectorResults queryResult = connector.get(query, null);
 

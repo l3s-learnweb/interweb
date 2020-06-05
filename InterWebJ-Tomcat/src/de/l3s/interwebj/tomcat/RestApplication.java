@@ -8,6 +8,7 @@ import org.glassfish.jersey.oauth1.signature.OAuth1SignatureFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
+import de.l3s.interwebj.tomcat.servlet.provider.InterwebExceptionMapper;
 import de.l3s.interwebj.tomcat.servlet.provider.OAuthFilter;
 
 @ApplicationPath("/api")
@@ -23,6 +24,7 @@ public class RestApplication extends ResourceConfig {
         // register(OAuth1ServerFeature.class);
         // register(InterwebOAuth1Provider.class);
         register(OAuth1SignatureFeature.class);
+        register(InterwebExceptionMapper.class);
         register(OAuthFilter.class);
     }
 }
