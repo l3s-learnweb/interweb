@@ -16,13 +16,7 @@ public final class TokenStorage {
     private final Map<Integer, String> storage;
 
     private TokenStorage() {
-        storage = new LinkedHashMap<>(capacity + 1, .75F, true) {
-            private static final long serialVersionUID = -7231532816950321903L;
-
-            public boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
-                return size() > capacity;
-            }
-        };
+        storage = new TotenStorageMap<>(capacity + 1, .75F, true);
     }
 
     public String get(int id) {
@@ -67,5 +61,17 @@ public final class TokenStorage {
         }
 
         return instance;
+    }
+
+    private static class TotenStorageMap<K,V> extends LinkedHashMap<K, V> {
+        private static final long serialVersionUID = -7231532816950321903L;
+
+        private TotenStorageMap(final int initialCapacity, final float loadFactor, final boolean accessOrder) {
+            super(initialCapacity, loadFactor, accessOrder);
+        }
+
+        public boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+            return size() > capacity;
+        }
     }
 }

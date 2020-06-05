@@ -4,6 +4,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
@@ -66,7 +68,13 @@ public class UserDataBean {
             FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Sorry, such user name already exists", "register_form:username");
             return false;
         }
-        if (!password.equals(password2)) {
+
+        if (password == null || password.trim().length() < 6) {
+            FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Passwords should be at lest 6 characters long", "register_form:password2");
+            return false;
+        }
+
+        if (!StringUtils.equals(password, password2)) {
             FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Passwords are not equal", "register_form:password2");
             return false;
         }

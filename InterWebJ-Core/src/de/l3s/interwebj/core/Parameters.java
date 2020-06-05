@@ -71,7 +71,7 @@ public class Parameters {
     }
 
     public void addQueryParameters(String query) {
-        int startQueryIndex = !query.contains("?") ? 0 : query.indexOf("?") + 1;
+        int startQueryIndex = !query.contains("?") ? 0 : query.indexOf('?') + 1;
         query = query.substring(startQueryIndex);
         String[] params = query.split("&");
         for (String param : params) {

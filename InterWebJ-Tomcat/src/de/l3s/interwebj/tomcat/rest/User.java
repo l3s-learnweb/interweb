@@ -37,7 +37,7 @@ public class User extends Endpoint {
     private static final Logger log = LogManager.getLogger(User.class);
 
     @PathParam("user")
-    protected String userName;
+    protected String username;
     private InterWebPrincipal targetPrincipal;
 
     @POST
@@ -126,7 +126,7 @@ public class User extends Endpoint {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String getUserName() {
+    public String getUsername() {
         InterWebPrincipal targetPrincipal = getTargetPrincipal();
         return targetPrincipal.getName();
     }
@@ -197,11 +197,11 @@ public class User extends Endpoint {
 
     private InterWebPrincipal getTargetPrincipal() {
         if (targetPrincipal == null) {
-            if (userName == null || userName.equals("default")) {
+            if (username == null || username.equals("default")) {
                 targetPrincipal = getPrincipal();
             } else {
                 Database database = Environment.getInstance().getDatabase();
-                targetPrincipal = database.readPrincipalByName(userName);
+                targetPrincipal = database.readPrincipalByName(username);
             }
             if (targetPrincipal == null) {
                 throw new WebApplicationException("User does not exist", Response.Status.BAD_REQUEST);

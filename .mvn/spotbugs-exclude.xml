@@ -54,6 +54,18 @@
     <Match>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
+    <!-- Do not check for locale in toLowerCase() calls -->
+    <Match>
+        <Bug pattern="DM_CONVERT_CASE"/>
+    </Match>
+    <!-- Do not check for nulls cast -->
+    <Match>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    </Match>
+    <!-- False positive for try block -->
+    <Match>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+    </Match>
     <!-- We do not preform check if file was deleted -->
     <Match>
         <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>

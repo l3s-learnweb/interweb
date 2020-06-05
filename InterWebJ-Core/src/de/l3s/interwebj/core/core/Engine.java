@@ -187,9 +187,7 @@ public class Engine {
                 AuthCredentials userAuthCredentials = getUserAuthCredentials(connector, principal);
                 ResultItem result = connector.put(data, contentType, params, userAuthCredentials);
                 log.info("done");
-                if (null != result) {
-                    return result;
-                }
+                return result;
             }
         }
         log.info("... uploading done");
