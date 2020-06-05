@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
-import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.connector.ConnectorSearchResults;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
@@ -43,11 +43,17 @@ class SlideShareConnectorTest {
         // query.setDateTill("2009-06-01 00:00:00");
         query.setRanking(SearchRanking.relevance);
 
-        ConnectorResults queryResult = connector.get(query, null);
+        ConnectorSearchResults queryResult = connector.get(query, null);
 
         assertEquals(16, queryResult.getResultItems().size());
         assertTrue(queryResult.getTotalResultCount() > 100);
 
+        String embedded = connector.getEmbedded(null, "https://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
+        System.out.println(embedded);
+    }
+
+    @Test
+    void getEmbedded() throws InterWebException {
         String embedded = connector.getEmbedded(null, "https://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
         System.out.println(embedded);
     }

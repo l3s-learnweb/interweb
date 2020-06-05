@@ -11,9 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.l3s.interwebj.core.AuthCredentials;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
-import de.l3s.interwebj.core.core.ServiceConnector;
 
 @Named
 @ViewScoped

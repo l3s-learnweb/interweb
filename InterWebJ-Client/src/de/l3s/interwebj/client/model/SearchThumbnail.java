@@ -1,7 +1,9 @@
 package de.l3s.interwebj.client.model;
 
 import java.io.Serializable;
-import java.util.StringJoiner;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -41,10 +43,10 @@ public class SearchThumbnail implements Serializable {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", SearchThumbnail.class.getSimpleName() + "[", "]")
-            .add("url='" + url + "'")
-            .add("width=" + width)
-            .add("height=" + height)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("url", url)
+            .append("width", width)
+            .append("height", height)
             .toString();
     }
 }

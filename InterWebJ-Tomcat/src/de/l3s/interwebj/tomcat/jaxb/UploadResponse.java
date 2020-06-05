@@ -6,11 +6,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.l3s.interwebj.core.query.ResultItem;
-import de.l3s.interwebj.core.xml.XmlResponse;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UploadResponse extends XmlResponse {
+public class UploadResponse {
     @XmlElement(name = "result")
     protected ResultItem result;
 

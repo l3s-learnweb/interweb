@@ -25,15 +25,15 @@ import de.l3s.interwebj.connector.vimeo.entity.Tag;
 import de.l3s.interwebj.connector.vimeo.entity.VimeoResponse;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
-import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.connector.ConnectorSearchResults;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
-public class VimeoConnector extends ServiceConnector implements Cloneable {
+public class VimeoConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(VimeoConnector.class);
 
     public VimeoConnector() {
@@ -67,7 +67,7 @@ public class VimeoConnector extends ServiceConnector implements Cloneable {
     }*/
 
     @Override
-    public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
         }
@@ -76,7 +76,7 @@ public class VimeoConnector extends ServiceConnector implements Cloneable {
             authCredentials = getAuthCredentials();
         }
 
-        ConnectorResults queryResult = new ConnectorResults(query, getName());
+        ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
 
         if (!query.getContentTypes().contains(ContentType.video)) {
             return queryResult;
@@ -140,16 +140,6 @@ public class VimeoConnector extends ServiceConnector implements Cloneable {
             log.error(e);
         }
         return queryResult;
-    }
-
-    @Override
-    public boolean isConnectorRegistrationDataRequired() {
-        return true;
-    }
-
-    @Override
-    public boolean isUserRegistrationDataRequired() {
-        return false;
     }
 
     @Override

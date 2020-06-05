@@ -6,7 +6,9 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,8 +21,6 @@ import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.ResultItem;
-import de.l3s.interwebj.core.xml.ErrorResponse;
-import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.UploadResponse;
 
 @Path("/users/default/uploads")
@@ -30,7 +30,7 @@ public class Upload extends Endpoint {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse getQueryResult(@FormDataParam("title") String title, @FormDataParam("description") String description,
+    public UploadResponse getQueryResult(@FormDataParam("title") String title, @FormDataParam("description") String description,
         @FormDataParam("tags") String tags, @FormDataParam("is_private") String privacy,
         @FormDataParam("content_type") String contentType, @FormDataParam("data") FormDataContentDisposition disposition,
         @FormDataParam("data") byte[] data) throws InterWebException {
@@ -60,7 +60,7 @@ public class Upload extends Endpoint {
         ResultItem result = engine.upload(data, principal, engine.getConnectorNames(), ContentType.valueOf(contentType), params);
 
         if (null == result) {
-            return ErrorResponse.FILE_NOT_ACCEPTED;
+            throw new WebApplicationException("The services did not accept the file", Response.Status.BAD_REQUEST);
         } else {
             return new UploadResponse(result);
         }

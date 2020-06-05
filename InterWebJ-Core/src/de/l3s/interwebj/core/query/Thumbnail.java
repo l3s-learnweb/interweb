@@ -14,7 +14,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 @XmlRootElement(name = "thumbnail")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Thumbnail implements Comparable<Thumbnail>, Serializable {
+public class Thumbnail implements Serializable {
     private static final long serialVersionUID = -792701713759619246L;
 
     @XmlValue
@@ -31,23 +31,6 @@ public class Thumbnail implements Comparable<Thumbnail>, Serializable {
         this.url = url;
         this.width = width;
         this.height = height;
-    }
-
-    @Override
-    public int compareTo(Thumbnail t) {
-        if (width < t.width) {
-            return -1;
-        }
-        if (width > t.width) {
-            return 1;
-        }
-        if (height < t.height) {
-            return -1;
-        }
-        if (height > t.height) {
-            return 1;
-        }
-        return url.compareTo(t.url);
     }
 
     public String getUrl() {
@@ -75,20 +58,20 @@ public class Thumbnail implements Comparable<Thumbnail>, Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Thumbnail thumbnail = (Thumbnail) o;
+        final Thumbnail thumbnail = (Thumbnail) o;
         return width == thumbnail.width && height == thumbnail.height && Objects.equals(url, thumbnail.url);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(width, height, url);
+        return Objects.hash(url, width, height);
     }
 
     @Override

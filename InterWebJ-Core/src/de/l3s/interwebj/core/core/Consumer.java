@@ -14,6 +14,7 @@ public class Consumer {
     public Consumer(String name, String url, String description, AuthCredentials authCredentials) {
         notNull(name, "name");
         notNull(authCredentials, "authCredentials");
+
         this.name = name;
         this.url = url;
         this.description = description;

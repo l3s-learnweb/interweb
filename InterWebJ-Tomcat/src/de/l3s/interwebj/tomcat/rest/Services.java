@@ -1,7 +1,5 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import static de.l3s.interwebj.tomcat.webutil.RestUtils.throwWebApplicationException;
-
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,16 +7,16 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
-import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.core.xml.ErrorResponse;
-import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationEntity;
 import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationLinkEntity;
 import de.l3s.interwebj.tomcat.jaxb.services.ServiceEntity;
@@ -60,7 +58,7 @@ public class Services extends Endpoint {
         Engine engine = Environment.getInstance().getEngine();
         ServiceConnector connector = engine.getConnector(serviceName);
         if (connector == null) {
-            throwWebApplicationException(ErrorResponse.UNKNOWN_SERVICE);
+            throw new WebApplicationException("Service unknown", Response.Status.BAD_REQUEST);
         }
         ServiceEntity serviceEntity = createServiceEntity(baseUri, principal, connector);
         return serviceEntity;
@@ -87,7 +85,7 @@ public class Services extends Endpoint {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse getServices() {
+    public ServicesResponse getServices() {
         List<ServiceEntity> serviceEntities = createServiceEntities(getBaseUri().toASCIIString(), getPrincipal());
         ServicesResponse servicesResponse = new ServicesResponse();
         servicesResponse.setServiceEntities(serviceEntities);

@@ -21,32 +21,55 @@ import com.google.common.cache.CacheBuilder;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
+import de.l3s.interwebj.core.connector.QueryResultCollector;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.db.Database;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
-import de.l3s.interwebj.core.query.QueryResultCollector;
-import de.l3s.interwebj.core.query.QueryResults;
 import de.l3s.interwebj.core.query.ResultItem;
-import de.l3s.interwebj.core.util.ExpirableMap;
-import de.l3s.interwebj.core.util.ExpirationPolicy;
+import de.l3s.interwebj.core.query.SearchResults;
 
 public class Engine {
     private static final Logger log = LogManager.getLogger(Engine.class);
 
-    private Map<String, ServiceConnector> connectors;
-    private Set<ContentType> contentTypes;
     private final Database database;
-    private ExpirableMap<String, Object> expirableMap;
-    private Map<String, Map<ServiceConnector, Parameters>> pendingAuthorizationConnectors;
-    private Cache<Query, QueryResults> cache;
+
+    private Set<ContentType> contentTypes;
+    private Map<String, ServiceConnector> connectors;
+    private Map<String, Cache<ServiceConnector, Parameters>> pendingAuthorizationConnectors;
+
+    private Cache<String, Object> generalCache;
+    private Cache<Query, SearchResults> searchCache;
 
     public Engine(Database database) {
         this.database = database;
         init();
     }
 
-    public Cache<Query, QueryResults> getCache() {
-        return cache;
+    private void init() {
+        connectors = new TreeMap<>();
+        contentTypes = new TreeSet<>();
+        pendingAuthorizationConnectors = new HashMap<>();
+
+        generalCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .build();
+
+        searchCache = CacheBuilder.newBuilder()
+            .maximumSize(10000)
+            .build();
+    }
+
+    public List<ContentType> getContentTypes() {
+        return new ArrayList<>(contentTypes);
+    }
+
+    public Cache<String, Object> getGeneralCache() {
+        return generalCache;
+    }
+
+    public Cache<Query, SearchResults> getSearchCache() {
+        return searchCache;
     }
 
     public void addPendingAuthorizationConnector(InterWebPrincipal principal, ServiceConnector connector, Parameters params) {
@@ -55,14 +78,14 @@ public class Engine {
         notNull(params, "params");
         log.info("Adding pending authorization connector [" + connector.getName() + "] for user [" + principal.getName() + "]");
         log.info("params: [" + params + "]");
-        Map<ServiceConnector, Parameters> expirableMap = createExpirableMap(60);
+        Cache<ServiceConnector, Parameters> expirableCache = createExpirableCache(60);
 
         if (pendingAuthorizationConnectors.containsKey(principal.getName())) {
-            expirableMap = pendingAuthorizationConnectors.get(principal.getName());
+            expirableCache = pendingAuthorizationConnectors.get(principal.getName());
         } else {
-            pendingAuthorizationConnectors.put(principal.getName(), expirableMap);
+            pendingAuthorizationConnectors.put(principal.getName(), expirableCache);
         }
-        expirableMap.put(connector, params);
+        expirableCache.put(connector, params);
     }
 
     public ServiceConnector getConnector(String connectorName) {
@@ -91,14 +114,6 @@ public class Engine {
             connectorList.add(connector);
         }
         return connectorList;
-    }
-
-    public List<ContentType> getContentTypes() {
-        return new ArrayList<>(contentTypes);
-    }
-
-    public ExpirableMap<String, Object> getExpirableMap() {
-        return expirableMap;
     }
 
     public QueryResultCollector getQueryResultCollector(Query query, InterWebPrincipal principal) throws InterWebException {
@@ -188,9 +203,8 @@ public class Engine {
         connectors.put(connector.getName().toLowerCase(), connector);
     }
 
-    private ExpirableMap<ServiceConnector, Parameters> createExpirableMap(int minutes) {
-        ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
-        return new ExpirableMap<>(builder.timeToIdle(minutes, TimeUnit.MINUTES).build());
+    private Cache<ServiceConnector, Parameters> createExpirableCache(int minutes) {
+        return CacheBuilder.newBuilder().expireAfterWrite(minutes, TimeUnit.MINUTES).build();
     }
 
     private Parameters getPendingAuthorizationParameters(InterWebPrincipal principal, ServiceConnector connector) throws InterWebException {
@@ -200,26 +214,16 @@ public class Engine {
             pendingAuthorizationConnectors.remove(principal.getName());
             throw new InterWebException("There are no connectors with pending authorization info for user [" + principal.getName() + "]");
         }
-        Map<ServiceConnector, Parameters> expirableMap = pendingAuthorizationConnectors.get(principal.getName());
-        if (!expirableMap.containsKey(connector) || expirableMap.get(connector) == null) {
+        Cache<ServiceConnector, Parameters> expirableCache = pendingAuthorizationConnectors.get(principal.getName());
+        if (expirableCache.getIfPresent(connector) == null) {
             throw new InterWebException("There are no parameters with pending authorization info for user [" + principal.getName()
                 + "] and connector [" + connector.getName() + "]");
         }
-        Parameters parameters = expirableMap.get(connector);
-        expirableMap.remove(connector);
-        if (expirableMap.isEmpty()) {
+        Parameters parameters = expirableCache.getIfPresent(connector);
+        expirableCache.invalidate(connector);
+        if (expirableCache.size() == 0) {
             pendingAuthorizationConnectors.remove(principal.getName());
         }
         return parameters;
-    }
-
-    private void init() {
-        connectors = new TreeMap<>();
-        contentTypes = new TreeSet<>();
-        ExpirationPolicy.Builder builder = new ExpirationPolicy.Builder();
-        expirableMap = new ExpirableMap<>(builder.timeToIdle(60, TimeUnit.MINUTES).build());
-        pendingAuthorizationConnectors = new HashMap<>();
-
-        cache = CacheBuilder.newBuilder().maximumSize(10000).build();
     }
 }

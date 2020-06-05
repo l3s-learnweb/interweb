@@ -8,11 +8,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.l3s.interwebj.core.xml.XmlResponse;
-
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ServicesResponse extends XmlResponse {
+public class ServicesResponse {
 
     @XmlElementWrapper
     @XmlElement(name = "service")

@@ -2,7 +2,9 @@ package de.l3s.interwebj.client.model;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.StringJoiner;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -146,20 +148,20 @@ public class SearchQuery implements Serializable {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", SearchQuery.class.getSimpleName() + "[", "]")
-            .add("id='" + id + "'")
-            .add("link='" + link + "'")
-            .add("queryString='" + query + "'")
-            .add("dateFrom='" + dateFrom + "'")
-            .add("dateTill='" + dateTill + "'")
-            .add("language='" + language + "'")
-            .add("connectorNames=" + services)
-            .add("contentTypes=" + contentTypes)
-            .add("searchScopes=" + searchScopes)
-            .add("page=" + page)
-            .add("perPage=" + perPage)
-            .add("ranking='" + ranking + "'")
-            .add("timeout=" + timeout)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("id", id)
+            .append("link", link)
+            .append("query", query)
+            .append("dateFrom", dateFrom)
+            .append("dateTill", dateTill)
+            .append("language", language)
+            .append("services", services)
+            .append("contentTypes", contentTypes)
+            .append("searchScopes", searchScopes)
+            .append("page", page)
+            .append("perPage", perPage)
+            .append("ranking", ranking)
+            .append("timeout", timeout)
             .toString();
     }
 }

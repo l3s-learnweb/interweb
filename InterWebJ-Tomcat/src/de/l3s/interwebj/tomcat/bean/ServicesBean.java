@@ -15,10 +15,10 @@ import org.apache.logging.log4j.Logger;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
-import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.db.Database;
 import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 

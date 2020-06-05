@@ -1,5 +1,7 @@
 package de.l3s.interwebj.tomcat.rest;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
@@ -13,7 +15,6 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interwebj.core.AuthCredentials;
-import de.l3s.interwebj.core.xml.OkResponse;
 import de.l3s.interwebj.tomcat.TestUtils;
 import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationLinkResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.ServiceResponse;
@@ -42,8 +43,7 @@ class UserTest {
         WebTarget resource = TestUtils.createWebTarget("api/users/default/mediator", userCredentials);
         System.out.println("querying InterWebJ URL: " + resource.toString());
         Response response = resource.request().delete();
-        OkResponse servicesResponse = response.readEntity(OkResponse.class);
-        System.out.println(servicesResponse);
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -63,8 +63,7 @@ class UserTest {
         params.add("mediator_token", TestUtils.userCredentials.getKey());
         System.out.println("querying InterWebJ URL: " + resource.toString());
         Response response = resource.request().post(Entity.form(params));
-        OkResponse servicesResponse = response.readEntity(OkResponse.class);
-        System.out.println(servicesResponse);
+        assertEquals(201, response.getStatus());
     }
 
     @Test

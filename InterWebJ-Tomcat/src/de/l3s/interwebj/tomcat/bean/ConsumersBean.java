@@ -9,9 +9,12 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.google.common.cache.Cache;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
@@ -20,8 +23,6 @@ import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.core.util.ExpirableMap;
-import de.l3s.interwebj.core.util.RandomGenerator;
 import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 
 @Named
@@ -41,18 +42,20 @@ public class ConsumersBean implements Serializable {
         HttpServletRequest request = FacesUtils.getRequest();
         oauthToken = request.getParameter("oauth_token");
         callback = request.getParameter("oauth_callback");
+
         Engine engine = Environment.getInstance().getEngine();
-        ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-        accessToken = (AuthCredentials) expirableMap.get("access_token:" + oauthToken);
+        accessToken = (AuthCredentials) engine.getGeneralCache().getIfPresent("access_token:" + oauthToken);
     }
 
     public void addConsumer() throws IOException {
         Database database = Environment.getInstance().getDatabase();
         InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
-        AuthCredentials authCredentials = RandomGenerator.getInstance().nextOAuthCredentials();
+        AuthCredentials authCredentials = AuthCredentials.random();
+
         Consumer consumer = new Consumer(name, url, description, authCredentials);
         database.saveConsumer(principal.getName(), consumer);
         log.info("consumer: [" + consumer.getName() + "] successfully added");
+
         String contextPath = FacesUtils.getContextPath();
         FacesUtils.redirect(contextPath + "/view/consumers.xhtml");
     }
@@ -61,22 +64,24 @@ public class ConsumersBean implements Serializable {
         HttpServletRequest request = FacesUtils.getRequest();
         String requestToken = request.getParameter("oauth_token");
         Engine engine = Environment.getInstance().getEngine();
-        ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-        AuthCredentials authCredentials = (AuthCredentials) expirableMap.get("request_token:" + requestToken);
-        String consumerKey = (String) expirableMap.get("consumer_token:" + requestToken);
-        accessToken = new AuthCredentials(RandomGenerator.getInstance().nextOAuthToken(), authCredentials.getSecret());
-        expirableMap.remove("request_token:" + requestToken);
-        expirableMap.remove("consumer_token:" + requestToken);
-        expirableMap.put("access_token:" + accessToken.getKey(), accessToken);
-        expirableMap.put("consumer_token:" + accessToken.getKey(), consumerKey);
+        Cache<String, Object> cache = engine.getGeneralCache();
+
+        AuthCredentials authCredentials = (AuthCredentials) cache.getIfPresent("request_token:" + requestToken);
+        String consumerKey = (String) cache.getIfPresent("consumer_token:" + requestToken);
+        String newRandToken = RandomStringUtils.randomAlphanumeric(16);
+        accessToken = new AuthCredentials(newRandToken, authCredentials.getSecret());
+        cache.invalidate("request_token:" + requestToken);
+        cache.invalidate("consumer_token:" + requestToken);
+        cache.put("access_token:" + accessToken.getKey(), accessToken);
+        cache.put("consumer_token:" + accessToken.getKey(), consumerKey);
+
         InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
         principal.setOauthCredentials(accessToken);
-
         Database database = Environment.getInstance().getDatabase();
         database.updatePrincipal(principal);
-
-        expirableMap.put("principal:" + accessToken.getKey(), principal);
+        cache.put("principal:" + accessToken.getKey(), principal);
         oauthToken = accessToken.getKey();
+
         if (!StringUtils.isEmpty(callback)) {
             log.info("callback: [" + callback + "]");
             UriBuilder builder = UriBuilder.fromUri(callback);
@@ -102,8 +107,7 @@ public class ConsumersBean implements Serializable {
 
     public Consumer getAuthorizationConsumer() {
         Engine engine = Environment.getInstance().getEngine();
-        ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-        String consumerKey = (String) expirableMap.get("consumer_token:" + oauthToken);
+        String consumerKey = (String) engine.getGeneralCache().getIfPresent("consumer_token:" + oauthToken);
         Database database = Environment.getInstance().getDatabase();
         Consumer consumer = database.readConsumerByKey(consumerKey);
         return consumer;

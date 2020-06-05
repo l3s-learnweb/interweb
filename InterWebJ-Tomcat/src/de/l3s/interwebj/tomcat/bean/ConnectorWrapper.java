@@ -1,6 +1,6 @@
 package de.l3s.interwebj.tomcat.bean;
 
-import de.l3s.interwebj.core.core.ServiceConnector;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 
 public class ConnectorWrapper {
     private ServiceConnector connector;

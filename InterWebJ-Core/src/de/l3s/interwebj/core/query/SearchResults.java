@@ -17,11 +17,11 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interwebj.core.xml.XmlResponse;
+import de.l3s.interwebj.core.connector.ConnectorSearchResults;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class QueryResults extends XmlResponse implements Serializable {
+public class SearchResults implements Serializable {
     private static final long serialVersionUID = -2762679444319967129L;
 
     @XmlElement(name = "query")
@@ -44,16 +44,16 @@ public class QueryResults extends XmlResponse implements Serializable {
     @XmlElement(name = "elapsed_time")
     private long elapsedTime;
 
-    public QueryResults() {
+    public SearchResults() {
     }
 
-    public QueryResults(Query query) {
+    public SearchResults(Query query) {
         this.query = query;
         this.resultItems = new LinkedList<>();
         this.resultsPerService = new HashMap<>();
     }
 
-    public void addConnectorResults(ConnectorResults queryResult) {
+    public void addConnectorResults(ConnectorSearchResults queryResult) {
         resultItems.addAll(queryResult.getResultItems());
         totalResults += queryResult.getTotalResultCount();
         resultsPerService.put(queryResult.getConnectorName(), queryResult.getTotalResultCount());

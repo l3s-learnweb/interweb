@@ -2,7 +2,9 @@ package de.l3s.interwebj.client.model;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.StringJoiner;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -208,25 +210,25 @@ public class SearchResult implements Serializable {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", SearchResult.class.getSimpleName() + "[", "]")
-            .add("service='" + service + "'")
-            .add("rankAtService=" + rankAtService)
-            .add("idAtService='" + idAtService + "'")
-            .add("type='" + type + "'")
-            .add("title='" + title + "'")
-            .add("description='" + description + "'")
-            .add("url='" + url + "'")
-            .add("date='" + date + "'")
-            .add("snippet='" + snippet + "'")
-            .add("duration=" + duration)
-            .add("tags=" + tags)
-            .add("numberOfViews=" + numberOfViews)
-            .add("numberOfComments=" + numberOfComments)
-            .add("embeddedCode='" + embeddedCode + "'")
-            .add("thumbnailSmall=" + thumbnailSmall)
-            .add("thumbnailMedium=" + thumbnailMedium)
-            .add("thumbnailLarge=" + thumbnailLarge)
-            .add("thumbnailOriginal=" + thumbnailOriginal)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("service", service)
+            .append("rankAtService", rankAtService)
+            .append("idAtService", idAtService)
+            .append("type", type)
+            .append("title", title)
+            .append("description", description)
+            .append("url", url)
+            .append("date", date)
+            .append("snippet", snippet)
+            .append("duration", duration)
+            .append("tags", tags)
+            .append("numberOfViews", numberOfViews)
+            .append("numberOfComments", numberOfComments)
+            .append("embeddedCode", embeddedCode)
+            .append("thumbnailSmall", thumbnailSmall)
+            .append("thumbnailMedium", thumbnailMedium)
+            .append("thumbnailLarge", thumbnailLarge)
+            .append("thumbnailOriginal", thumbnailOriginal)
             .toString();
     }
 }

@@ -3,17 +3,14 @@ package de.l3s.interwebj.client.model;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.google.gson.annotations.SerializedName;
 
 public class SearchResponse implements Serializable {
     private static final long serialVersionUID = 3566212743897913566L;
-
-    @SerializedName("status")
-    private String status;
-    @SerializedName("error")
-    private SearchError error;
 
     @SerializedName("query")
     private SearchQuery query;
@@ -29,22 +26,6 @@ public class SearchResponse implements Serializable {
     private String createdTime;
     @SerializedName("elapsed_time")
     private String elapsedTime;
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(final String status) {
-        this.status = status;
-    }
-
-    public SearchError getError() {
-        return error;
-    }
-
-    public void setError(final SearchError error) {
-        this.error = error;
-    }
 
     public SearchQuery getQuery() {
         return query;
@@ -96,15 +77,13 @@ public class SearchResponse implements Serializable {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", SearchResponse.class.getSimpleName() + "[", "]")
-            .add("status='" + status + "'")
-            .add("error=" + error)
-            .add("query=" + query)
-            .add("totalResults=" + totalResults)
-            .add("resultsPerService=" + resultsPerService)
-            .add("results=" + results)
-            .add("createdTime='" + createdTime + "'")
-            .add("elapsedTime='" + elapsedTime + "'")
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("query", query)
+            .append("totalResults", totalResults)
+            .append("resultsPerService", resultsPerService)
+            .append("results", results)
+            .append("createdTime", createdTime)
+            .append("elapsedTime", elapsedTime)
             .toString();
     }
 }

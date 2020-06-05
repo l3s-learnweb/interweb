@@ -4,6 +4,7 @@ public class Assertions {
 
     public static void notEmpty(Object object, String name) {
         notNull(object, name);
+
         if (object.toString().length() == 0) {
             throw new IllegalArgumentException("Argument [" + name + "] must not be empty string");
         }

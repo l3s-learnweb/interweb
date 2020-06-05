@@ -13,14 +13,14 @@ import com.trievosoftware.giphy4j.entity.search.SearchFeed;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
-import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.connector.ConnectorSearchResults;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 
-public class GiphyConnector extends ServiceConnector implements Cloneable {
+public class GiphyConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(GiphyConnector.class);
 
     public GiphyConnector() {
@@ -38,7 +38,7 @@ public class GiphyConnector extends ServiceConnector implements Cloneable {
     }
 
     @Override
-    public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
 
         if (authCredentials == null) {
@@ -50,7 +50,7 @@ public class GiphyConnector extends ServiceConnector implements Cloneable {
 
             SearchFeed feed = giphy.search(query.getQuery(), query.getPerPage(), (query.getPage() - 1) * query.getPerPage(), query.getLanguage());
 
-            ConnectorResults results = new ConnectorResults(query, getName());
+            ConnectorSearchResults results = new ConnectorSearchResults(query, getName());
 
             if (feed.getDataList() != null && !feed.getDataList().isEmpty()) {
                 results.setTotalResultCount(feed.getPagination().getTotalCount());
@@ -98,21 +98,6 @@ public class GiphyConnector extends ServiceConnector implements Cloneable {
         } catch (Exception e) {
             throw new InterWebException(e);
         }
-    }
-
-    @Override
-    public boolean isConnectorRegistrationDataRequired() {
-        return false;
-    }
-
-    @Override
-    public boolean isUserRegistrationDataRequired() {
-        return false;
-    }
-
-    @Override
-    public boolean isUserRegistrationRequired() {
-        return false;
     }
 
     private static Thumbnail createThumbnail(GiphyImage image) {

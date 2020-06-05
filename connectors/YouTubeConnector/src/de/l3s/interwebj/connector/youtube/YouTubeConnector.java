@@ -47,16 +47,16 @@ import com.google.api.services.youtube.model.VideoStatus;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
+import de.l3s.interwebj.core.connector.ConnectorSearchResults;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
-import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.ConnectorResults;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
-public class YouTubeConnector extends ServiceConnector implements Cloneable {
+public class YouTubeConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(YouTubeConnector.class);
 
     private static final String API_KEY = "***REMOVED***";
@@ -140,13 +140,13 @@ public class YouTubeConnector extends ServiceConnector implements Cloneable {
     }
 
     @Override
-    public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
         }
 
-        ConnectorResults queryResult = new ConnectorResults(query, getName());
+        ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
         TokenStorage tokens = TokenStorage.getInstance();
 
         if (!query.getContentTypes().contains(ContentType.video)) {
@@ -389,16 +389,6 @@ public class YouTubeConnector extends ServiceConnector implements Cloneable {
             log.error(e);
             throw new InterWebException(e);
         }
-    }
-
-    @Override
-    public boolean isConnectorRegistrationDataRequired() {
-        return true;
-    }
-
-    @Override
-    public boolean isUserRegistrationDataRequired() {
-        return false;
     }
 
     @Override

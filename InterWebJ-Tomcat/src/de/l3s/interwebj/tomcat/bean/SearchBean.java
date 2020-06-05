@@ -19,16 +19,16 @@ import org.apache.logging.log4j.Logger;
 import com.sun.istack.NotNull;
 
 import de.l3s.interwebj.core.InterWebException;
+import de.l3s.interwebj.core.connector.QueryResultCollector;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
-import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
-import de.l3s.interwebj.core.query.QueryResultCollector;
-import de.l3s.interwebj.core.query.QueryResults;
 import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.SearchResults;
 import de.l3s.interwebj.core.query.SearchScope;
 import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 
@@ -42,7 +42,7 @@ public class SearchBean implements Serializable {
     private String query;
     private int page = 1;
     private String language = "en";
-    private QueryResults queryResults;
+    private SearchResults searchResults;
     private Set<ContentType> selectedContentTypes;
     private Set<String> selectedConnectorNames;
     @NotNull
@@ -97,8 +97,8 @@ public class SearchBean implements Serializable {
         this.query = query;
     }
 
-    public QueryResults getQueryResults() {
-        return queryResults;
+    public SearchResults getSearchResults() {
+        return searchResults;
     }
 
     public int getResultCount() {
@@ -110,7 +110,7 @@ public class SearchBean implements Serializable {
     }
 
     public int getResultIndex(ResultItem resultItem) {
-        return queryResults.getResultItems().indexOf(resultItem);
+        return searchResults.getResultItems().indexOf(resultItem);
     }
 
     public Set<String> getSelectedConnectorNames() {
@@ -151,7 +151,7 @@ public class SearchBean implements Serializable {
     }
 
     public boolean hasResults() {
-        return queryResults != null;
+        return searchResults != null;
     }
 
     public void init() {
@@ -177,12 +177,12 @@ public class SearchBean implements Serializable {
         query.setLanguage(language);
         query.setTimeout(timeout);
 
-        QueryResults queryResults = new QueryResults(query);
+        SearchResults searchResults = new SearchResults(query);
         Engine engine = Environment.getInstance().getEngine();
         InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
         try {
             QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
-            queryResults = collector.retrieve();
+            searchResults = collector.retrieve();
         } catch (InterWebException e) {
             log.error(e);
             FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
@@ -191,7 +191,7 @@ public class SearchBean implements Serializable {
         ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
         expirableMap.put(queryResult.getQuery().getId(), queryResult);
         */
-        this.queryResults = queryResults;
+        this.searchResults = searchResults;
     }
 
     public int getPage() {

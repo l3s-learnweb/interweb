@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.l3s.interwebj.core.connector.ServiceConnector;
+
 public class ConnectorLoader {
     private static final Logger log = LogManager.getLogger(ConnectorLoader.class);
 

@@ -1,4 +1,4 @@
-package de.l3s.interwebj.core.query;
+package de.l3s.interwebj.core.connector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,8 @@ import com.google.common.cache.Cache;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.Environment;
-import de.l3s.interwebj.core.core.ServiceConnector;
+import de.l3s.interwebj.core.query.Query;
+import de.l3s.interwebj.core.query.SearchResults;
 
 public class QueryResultCollector {
     private static final Logger log = LogManager.getLogger(QueryResultCollector.class);
@@ -33,10 +34,10 @@ public class QueryResultCollector {
         retrievers.add(new QueryResultRetriever(connector, authCredentials));
     }
 
-    public QueryResults retrieve() throws InterWebException {
-        Cache<Query, QueryResults> cache = Environment.getInstance().getEngine().getCache();
+    public SearchResults retrieve() throws InterWebException {
+        Cache<Query, SearchResults> cache = Environment.getInstance().getEngine().getSearchCache();
 
-        QueryResults result = cache.getIfPresent(query);
+        SearchResults result = cache.getIfPresent(query);
         if (result != null) {
             log.info("Return cached results for: " + query);
             return result;
@@ -44,19 +45,19 @@ public class QueryResultCollector {
 
         log.info("Search for: " + query);
 
-        List<FutureTask<ConnectorResults>> tasks = new ArrayList<>();
+        List<FutureTask<ConnectorSearchResults>> tasks = new ArrayList<>();
         for (QueryResultRetriever retriever : retrievers) {
-            FutureTask<ConnectorResults> task = new FutureTask<>(retriever);
+            FutureTask<ConnectorSearchResults> task = new FutureTask<>(retriever);
             tasks.add(task);
             Thread t = new Thread(task);
             t.start();
         }
 
-        QueryResults results = new QueryResults(query);
+        SearchResults results = new SearchResults(query);
         long startTime = System.currentTimeMillis();
         results.setCreatedTime(startTime);
         boolean errorOccurred = false;
-        for (FutureTask<ConnectorResults> task : tasks) {
+        for (FutureTask<ConnectorSearchResults> task : tasks) {
             try {
                 results.addConnectorResults(task.get(query.getTimeout(), TimeUnit.SECONDS));
             } catch (InterruptedException | ExecutionException e) {
@@ -77,7 +78,7 @@ public class QueryResultCollector {
         return results;
     }
 
-    private class QueryResultRetriever implements Callable<ConnectorResults> {
+    private class QueryResultRetriever implements Callable<ConnectorSearchResults> {
 
         private final ServiceConnector connector;
         private final AuthCredentials authCredentials;
@@ -88,16 +89,16 @@ public class QueryResultCollector {
         }
 
         @Override
-        public ConnectorResults call() {
+        public ConnectorSearchResults call() {
             long startTime = System.currentTimeMillis();
             log.info("[" + connector.getName() + "] Start querying: " + query);
 
-            ConnectorResults queryResult;
+            ConnectorSearchResults queryResult;
             try {
                 queryResult = connector.get(query, authCredentials);
             } catch (Throwable e) {
                 log.error(e);
-                return new ConnectorResults(query, connector.getName());
+                return new ConnectorSearchResults(query, connector.getName());
             }
 
             long endTime = System.currentTimeMillis();

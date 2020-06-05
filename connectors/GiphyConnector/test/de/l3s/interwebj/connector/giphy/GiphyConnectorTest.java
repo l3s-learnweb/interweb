@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
-import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.connector.ConnectorSearchResults;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
@@ -36,7 +36,7 @@ class GiphyConnectorTest {
         Query query = queryFactory.createQuery("hello world");
         query.addContentType(ContentType.image);
 
-        ConnectorResults queryResult = connector.get(query, null);
+        ConnectorSearchResults queryResult = connector.get(query, null);
 
         for (ResultItem res : queryResult.getResultItems()) {
             log.info(res);

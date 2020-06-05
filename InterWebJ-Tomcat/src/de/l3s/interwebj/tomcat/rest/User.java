@@ -1,7 +1,5 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import static de.l3s.interwebj.tomcat.webutil.RestUtils.throwWebApplicationException;
-
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -13,7 +11,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,14 +21,11 @@ import org.glassfish.jersey.oauth1.signature.OAuth1Parameters;
 
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
-import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.core.xml.ErrorResponse;
-import de.l3s.interwebj.core.xml.OkResponse;
-import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationLinkEntity;
 import de.l3s.interwebj.tomcat.jaxb.services.AuthorizationLinkResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.ServiceEntity;
@@ -46,22 +43,25 @@ public class User extends Endpoint {
     @POST
     @Path("/services/{service}/auth")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse authenticateOnService(@PathParam("service") String connectorName, @QueryParam("callback") String callback,
-                                             @FormParam("username") String userName, @FormParam("password") String password) {
+    public AuthorizationLinkResponse authenticateOnService(@PathParam("service") String connectorName, @QueryParam("callback") String callback,
+        @FormParam("username") String userName, @FormParam("password") String password) {
         Engine engine = Environment.getInstance().getEngine();
+
         ServiceConnector connector = engine.getConnector(connectorName);
         if (connector == null) {
-            return ErrorResponse.UNKNOWN_SERVICE;
+            throw new WebApplicationException("Service unknown", Response.Status.BAD_REQUEST);
         }
+
         InterWebPrincipal principal = getPrincipal();
         if (principal == null) {
-            return ErrorResponse.NO_USER;
+            throw new WebApplicationException("User does not exist", Response.Status.UNAUTHORIZED);
         }
+
         InterWebPrincipal targetPrincipal = getTargetPrincipal();
         if (!principal.equals(targetPrincipal)) {
-
-            return ErrorResponse.TOKEN_NOT_AUTHORIZED;
+            throw new WebApplicationException("Token is not authorized", Response.Status.UNAUTHORIZED);
         }
+
         String baseApiUrl = getBaseUri().resolve("..").toASCIIString();
         Parameters parameters = new Parameters();
         parameters.add(Parameters.IWJ_USER_ID, principal.getName());
@@ -98,15 +98,16 @@ public class User extends Endpoint {
             }
         } catch (InterWebException e) {
             log.error(e);
-            return new ErrorResponse(999, e.getMessage());
+            throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
         }
-        return ErrorResponse.AUTHENTICATION_FAILED;
+
+        throw new WebApplicationException("Authentication on service failed", Response.Status.BAD_REQUEST);
     }
 
     @GET
     @Path("/services/{service}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse getService(@PathParam("service") String serviceName) {
+    public ServiceResponse getService(@PathParam("service") String serviceName) {
         ServiceEntity serviceEntity = Services.createServiceEntity(serviceName, getBaseUri().toASCIIString(), getTargetPrincipal());
         ServiceResponse serviceResponse = new ServiceResponse();
         serviceResponse.setServiceEntity(serviceEntity);
@@ -116,7 +117,7 @@ public class User extends Endpoint {
     @GET
     @Path("/services")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse getServices() {
+    public ServicesResponse getServices() {
         List<ServiceEntity> serviceEntities = Services.createServiceEntities(getBaseUri().toASCIIString(), getTargetPrincipal());
         ServicesResponse servicesResponse = new ServicesResponse();
         servicesResponse.setServiceEntities(serviceEntities);
@@ -134,51 +135,59 @@ public class User extends Endpoint {
     @Path("/mediator")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse registerUser(@FormParam("mediator_token") String mediatorToken) {
+    public Response registerUser(@FormParam("mediator_token") String mediatorToken) {
         Database database = Environment.getInstance().getDatabase();
+
         InterWebPrincipal mediator = database.readPrincipalByKey(mediatorToken);
         if (mediator == null) {
-            return ErrorResponse.NO_ACCOUNT_FOR_TOKEN;
+            throw new WebApplicationException("No account for this token", Response.Status.BAD_REQUEST);
         }
+
         InterWebPrincipal principal = getPrincipal();
         if (principal == null || !principal.equals(getTargetPrincipal())) {
-            return ErrorResponse.NOT_AUTHORIZED;
+            throw new WebApplicationException("API call not authorized for user", Response.Status.FORBIDDEN);
         }
+
         database.saveMediator(principal.getName(), mediator.getName());
-        return new OkResponse();
+        return Response.status(Response.Status.CREATED).build();
     }
 
     @DELETE
     @Path("/mediator")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse removeMediator() {
+    public Response removeMediator() {
         Database database = Environment.getInstance().getDatabase();
+
         InterWebPrincipal principal = getPrincipal();
         if (principal == null || !principal.equals(getTargetPrincipal())) {
-            return ErrorResponse.NOT_AUTHORIZED;
+            throw new WebApplicationException("API call not authorized for user", Response.Status.FORBIDDEN);
         }
+
         database.deleteMediator(principal.getName());
-        return new OkResponse();
+        return Response.ok().build();
     }
 
     @DELETE
     @Path("/services/{service}/auth")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse revokeAuthorizationOnService(@PathParam("service") String serviceName) {
+    public ServiceResponse revokeAuthorizationOnService(@PathParam("service") String serviceName) {
         log.info("revoking user authentication");
         InterWebPrincipal principal = getTargetPrincipal();
         Engine engine = Environment.getInstance().getEngine();
+
         ServiceConnector connector = engine.getConnector(serviceName);
         if (connector == null) {
-            return ErrorResponse.UNKNOWN_SERVICE;
+            throw new WebApplicationException("Service unknown", Response.Status.BAD_REQUEST);
         }
+
         engine.setUserAuthCredentials(connector.getName(), principal, null, null);
         try {
             connector.revokeAuthentication();
         } catch (InterWebException e) {
             log.error(e);
-            return new ErrorResponse(999, e.getMessage());
+            throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
         }
+
         ServiceEntity serviceEntity = Services.createServiceEntity(serviceName, getBaseUri().toASCIIString(), principal);
         serviceEntity.setMessage("Authorization successfully revoked");
         ServiceResponse serviceResponse = new ServiceResponse();
@@ -195,7 +204,7 @@ public class User extends Endpoint {
                 targetPrincipal = database.readPrincipalByName(userName);
             }
             if (targetPrincipal == null) {
-                throwWebApplicationException(ErrorResponse.NO_USER);
+                throw new WebApplicationException("User does not exist", Response.Status.BAD_REQUEST);
             }
         }
         return targetPrincipal;

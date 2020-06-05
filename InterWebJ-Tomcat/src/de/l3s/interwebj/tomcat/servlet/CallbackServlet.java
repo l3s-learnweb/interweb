@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -21,13 +22,11 @@ import org.apache.logging.log4j.Logger;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
-import de.l3s.interwebj.core.core.ServiceConnector;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.core.xml.ErrorResponse;
-import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.services.ServiceResponse;
 import de.l3s.interwebj.tomcat.rest.Endpoint;
 
@@ -122,25 +121,28 @@ public class CallbackServlet extends HttpServlet {
     }
 
     private void processRestRequest(HttpServletRequest request, HttpServletResponse response, InterWebPrincipal principal,
-                                    ServiceConnector connector, Parameters parameters) throws ServletException, IOException {
+        ServiceConnector connector, Parameters parameters) throws IOException {
         String callback = parameters.get(Parameters.CALLBACK);
         log.info("callback: [" + callback + "]");
+
         if (StringUtils.isNotEmpty(callback)) {
             response.sendRedirect(callback);
             return;
         }
+
         if (parameters.hasParameter(Parameters.ERROR)) {
-            ErrorResponse errorResponse = new ErrorResponse(999, parameters.get(Parameters.ERROR));
-            writeIntoServletResponse(response, errorResponse);
-            return;
+            throw new WebApplicationException(parameters.get(Parameters.ERROR), Response.Status.BAD_REQUEST);
         }
+
         String consumerKey = parameters.get(Parameters.CONSUMER_KEY);
         Database database = Environment.getInstance().getDatabase();
         AuthCredentials consumerAuthCredentials = database.readConsumerByKey(consumerKey).getAuthCredentials();
+
         AuthCredentials userAuthCredentials = principal.getOauthCredentials();
         URI baseUri = URI.create(request.getRequestURL().toString()).resolve(".");
         String serviceApiPath = baseUri.toASCIIString() + "api/users/default/services/" + connector.getName();
         WebTarget target = Endpoint.createWebTarget(serviceApiPath, consumerAuthCredentials, userAuthCredentials);
+
         Response clientResponse = target.request(MediaType.APPLICATION_XML).get();
         ServiceResponse serviceResponse = clientResponse.readEntity(ServiceResponse.class);
         writeIntoServletResponse(response, serviceResponse);
@@ -163,8 +165,8 @@ public class CallbackServlet extends HttpServlet {
         }
     }
 
-    private void writeIntoServletResponse(HttpServletResponse servletResponse, XmlResponse xmlResponse) throws IOException {
-        byte[] content = xmlResponse.toString().getBytes(StandardCharsets.UTF_8);
+    private void writeIntoServletResponse(HttpServletResponse servletResponse, ServiceResponse serviceResponse) throws IOException {
+        byte[] content = serviceResponse.toString().getBytes(StandardCharsets.UTF_8);
         OutputStream os = servletResponse.getOutputStream();
         os.write(content);
         os.close();

@@ -68,13 +68,13 @@
         </h:form>
 
         <ui:fragment rendered="#{searchBean.hasResults()}">
-            <h:outputText value="No results found" rendered="${searchBean.queryResults.size()==0}"/>
-            <h:outputText value="${searchBean.queryResults.resultItems.size()} result(s) found (${searchBean.queryResults.elapsedTime/1000} s), total results available ${searchBean.queryResults.totalResults}."
-                          rendered="${searchBean.queryResults.size()>0}"/>
+            <h:outputText value="No results found" rendered="${searchBean.searchResults.size()==0}"/>
+            <h:outputText value="${searchBean.searchResults.resultItems.size()} result(s) found (${searchBean.searchResults.elapsedTime/1000} s), total results available ${searchBean.searchResults.totalResults}."
+                          rendered="${searchBean.searchResults.size()>0}"/>
         </ui:fragment>
 
         <h:form rendered="#{searchBean.hasResults()}">
-            <h:dataTable value="#{searchBean.queryResults.resultItems}" var="resultItem" id="result_table" styleClass="iw-datatable w-100">
+            <h:dataTable value="#{searchBean.searchResults.resultItems}" var="resultItem" id="result_table" styleClass="iw-datatable w-100">
                 <h:column>
                     <span style="text-align: left;">#{searchBean.getResultIndex(resultItem)+1}</span>
                 </h:column>
@@ -101,20 +101,27 @@
                         <div>
                             <h:outputLink value="#{resultItem.url}" target="_blank" style="border-width: 0;">
                                 <ui:fragment rendered="#{resultItem.thumbnailSmall ne null}">
-                                    <img src="#{resultItem.thumbnailSmall.url}" alt="#{resultItem.title}"
+                                    <img src="#{resultItem.thumbnailSmall.url}" alt="#{resultItem.title}" class="img-fluid"
                                          width="#{resultItem.thumbnailSmall.width}" height="#{resultItem.thumbnailSmall.height}"/>
                                     <hr/>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{resultItem.thumbnailMedium ne null}">
-                                    <img src="#{resultItem.thumbnailMedium.url}" alt="#{resultItem.title}"
+                                    <img src="#{resultItem.thumbnailMedium.url}" alt="#{resultItem.title}" class="img-fluid"
                                          width="#{resultItem.thumbnailMedium.width}" height="#{resultItem.thumbnailMedium.height}"/>
                                     <hr/>
                                 </ui:fragment>
+                                <ui:fragment rendered="#{resultItem.thumbnailLarge ne null}">
+                                    <img src="#{resultItem.thumbnailLarge.url}" alt="#{resultItem.title}" class="img-fluid"
+                                         width="#{resultItem.thumbnailLarge.width}" height="#{resultItem.thumbnailLarge.height}"/>
+                                    <hr/>
+                                </ui:fragment>
                             </h:outputLink>
+
                             <h:outputText value="#{resultItem.embeddedCode}" escape="false" rendered="#{resultItem.embeddedCode ne null}"/>
 
                             <div>
-                                <h:outputText value="#{resultItem.description}" escape="false" styleClass="search-desc"/>
+                                <h:outputText value="#{resultItem.description}" escape="false"/>
+
                                 <ui:fragment rendered="#{not empty resultItem.snippet}">
                                     <pre style="color: #3399FF;"><h:outputText value="#{resultItem.snippet}" escape="false"/></pre>
                                 </ui:fragment>

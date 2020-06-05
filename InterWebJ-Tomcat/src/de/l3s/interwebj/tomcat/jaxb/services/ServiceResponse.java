@@ -5,11 +5,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.l3s.interwebj.core.xml.XmlResponse;
-
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ServiceResponse extends XmlResponse {
+public class ServiceResponse {
 
     @XmlElement(name = "service")
     protected ServiceEntity serviceEntity;

@@ -1,12 +1,12 @@
 package de.l3s.interwebj.tomcat.servlet.provider;
 
-import static de.l3s.interwebj.tomcat.webutil.RestUtils.throwWebApplicationException;
-
 import java.io.IOException;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
@@ -23,7 +23,6 @@ import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.core.xml.ErrorResponse;
 
 @Provider
 public class OAuthFilter implements ContainerRequestFilter {
@@ -49,13 +48,15 @@ public class OAuthFilter implements ContainerRequestFilter {
         OAuth1Secrets secrets = new OAuth1Secrets();
         String consumerKey = params.getConsumerKey();
         if (consumerKey == null) {
-            throwWebApplicationException(ErrorResponse.NO_CONSUMER_KEY_GIVEN);
+            throw new WebApplicationException("No consumer key given", Response.Status.UNAUTHORIZED);
         }
+
         final Database database = Environment.getInstance().getDatabase();
         final Consumer consumer = database.readConsumerByKey(consumerKey);
         if (consumer == null) {
-            throwWebApplicationException(ErrorResponse.INVALID_SIGNATURE);
+            throw new WebApplicationException("Invalid signature", Response.Status.UNAUTHORIZED);
         }
+
         String consumerSecret = consumer.getAuthCredentials().getSecret();
         secrets.consumerSecret(consumerSecret);
         String token = params.getToken();
@@ -63,7 +64,8 @@ public class OAuthFilter implements ContainerRequestFilter {
         if (token != null) {
             String tokenSecret = null;
             Engine engine = Environment.getInstance().getEngine();
-            InterWebPrincipal principal = (InterWebPrincipal) engine.getExpirableMap().get("principal:" + token);
+            InterWebPrincipal principal = (InterWebPrincipal) engine.getGeneralCache().getIfPresent("principal:" + token);
+
             if (principal != null && principal.getOauthCredentials() != null) {
                 log.info("temporary token");
             } else {
@@ -72,9 +74,11 @@ public class OAuthFilter implements ContainerRequestFilter {
                     log.info("permanent token");
                 }
             }
+
             if (principal != null && principal.getOauthCredentials() != null) {
                 tokenSecret = principal.getOauthCredentials().getSecret();
             }
+
             secrets.tokenSecret(tokenSecret);
         }
 
@@ -83,11 +87,10 @@ public class OAuthFilter implements ContainerRequestFilter {
                 log.error("failed to verify signature");
                 log.error("received signature: [" + params.getSignature() + "]");
                 log.error("generated signature: [" + oAuth1Signature.generate(osr, params, secrets) + "]");
-                throwWebApplicationException(ErrorResponse.INVALID_SIGNATURE);
+                throw new WebApplicationException("Invalid signature", Response.Status.UNAUTHORIZED);
             }
         } catch (OAuth1SignatureException e) {
-            ErrorResponse errorResponse = new ErrorResponse(999, e.getMessage());
-            throwWebApplicationException(errorResponse);
+            throw new WebApplicationException(e, Response.Status.UNAUTHORIZED);
         }
     }
 }

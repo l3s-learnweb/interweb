@@ -1,4 +1,4 @@
-package de.l3s.interwebj.core.core;
+package de.l3s.interwebj.core.connector;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -11,13 +11,14 @@ import org.apache.commons.lang3.NotImplementedException;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
+import de.l3s.interwebj.core.core.Environment;
+import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.core.query.ConnectorResults;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 
-public abstract class ServiceConnector {
+public abstract class ServiceConnector implements Cloneable {
 
     private final String name;
     private final String baseUrl;
@@ -35,43 +36,43 @@ public abstract class ServiceConnector {
         this.contentTypes = contentTypes;
     }
 
-    public abstract ServiceConnector clone();
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        ServiceConnector other = (ServiceConnector) obj;
-        if (name == null) {
-            return other.name == null;
-        } else {
-            return name.equals(other.name);
-        }
+    /**
+     * Whether the connector is requiring credentials. If set to false, means connector can run without any credentials.
+     */
+    public boolean isConnectorRegistrationDataRequired() {
+        return true;
     }
 
+    /**
+     * Whether the connector is requiring user authentication.
+     */
+    public boolean isUserRegistrationRequired() {
+        return false;
+    }
+
+    /**
+     * If set to {@code true}, user needs to provide login and password, otherwise user needs to provide token.
+     */
+    public boolean isUserRegistrationDataRequired() {
+        return false;
+    }
+
+    /**
+     * Whether the user finished authentication procedure or not. If not, the connector will not be used.
+     */
+    public boolean isRegistered() {
+        return !isUserRegistrationRequired() || consumerAuthCredentials != null;
+    }
+
+    /**
+     * Returns {@code true} if the connector is supporting given {@link ContentType}.
+     */
+    public boolean supportContentType(ContentType contentType) {
+        return (contentType != null) && contentTypes.contains(contentType);
+    }
 
     public Parameters getRefinedCallbackParameters(Parameters parameters) {
         return parameters;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
-
-    public boolean isRegistered() {
-        return consumerAuthCredentials != null;
-    }
-
-    public boolean supportContentType(ContentType contentType) {
-        return (contentType != null) && contentTypes.contains(contentType);
     }
 
     public InterWebPrincipal getPrincipal(Parameters parameters) throws InterWebException {
@@ -91,36 +92,20 @@ public abstract class ServiceConnector {
         throw new InterWebException("Unable to fetch user name from the callback URL");
     }
 
-    public Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException {
+    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         throw new NotImplementedException();
     }
-
-    public AuthCredentials completeAuthentication(Parameters params) throws InterWebException {
-        throw new NotImplementedException();
-    }
-
-    public abstract ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException;
 
     public String getEmbedded(AuthCredentials authCredentials, String url, int width, int height) throws InterWebException {
-        return null;
+        throw new NotImplementedException();
     }
 
     public String getUserId(AuthCredentials userAuthCredentials) throws InterWebException {
         throw new NotImplementedException();
     }
 
-    public abstract boolean isConnectorRegistrationDataRequired();
-
-    public abstract boolean isUserRegistrationDataRequired();
-
-    public abstract boolean isUserRegistrationRequired();
-
     public ResultItem put(byte[] data, ContentType contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException {
         throw new NotImplementedException();
-    }
-
-    public void revokeAuthentication() throws InterWebException {
-        // not supported. do nothing
     }
 
     /**
@@ -141,16 +126,20 @@ public abstract class ServiceConnector {
         throw new NotImplementedException();
     }
 
+    public Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException {
+        throw new NotImplementedException();
+    }
+
+    public AuthCredentials completeAuthentication(Parameters params) throws InterWebException {
+        throw new NotImplementedException();
+    }
+
+    public void revokeAuthentication() throws InterWebException {
+        throw new NotImplementedException();
+    }
+
     public String generateCallbackUrl(String baseApiUrl, Parameters parameters) {
         return baseApiUrl + "callback?" + parameters.toQueryString();
-    }
-
-    public AuthCredentials getAuthCredentials() {
-        return consumerAuthCredentials;
-    }
-
-    public void setAuthCredentials(AuthCredentials authCredentials) {
-        this.consumerAuthCredentials = authCredentials;
     }
 
     public String getName() {
@@ -163,5 +152,40 @@ public abstract class ServiceConnector {
 
     public List<ContentType> getContentTypes() {
         return contentTypes;
+    }
+
+    public AuthCredentials getAuthCredentials() {
+        return consumerAuthCredentials;
+    }
+
+    public void setAuthCredentials(AuthCredentials authCredentials) {
+        this.consumerAuthCredentials = authCredentials;
+    }
+
+    @Override
+    public abstract ServiceConnector clone();
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ServiceConnector other = (ServiceConnector) obj;
+        if (name == null) {
+            return other.name == null;
+        } else {
+            return name.equals(other.name);
+        }
     }
 }

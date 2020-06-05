@@ -6,11 +6,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.l3s.interwebj.core.AuthCredentials;
-import de.l3s.interwebj.core.xml.XmlResponse;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class OAuthRequestTokenResponse extends XmlResponse {
+public class OAuthRequestTokenResponse {
 
     @XmlElement(name = "request_token")
     protected OAuthRequestTokenEntity requestToken;

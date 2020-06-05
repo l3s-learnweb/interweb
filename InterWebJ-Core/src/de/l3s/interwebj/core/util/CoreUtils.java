@@ -9,12 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class CoreUtils {
-    private static final Logger log = LogManager.getLogger(CoreUtils.class);
-
     private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static List<String> convertToUniqueList(String s) {

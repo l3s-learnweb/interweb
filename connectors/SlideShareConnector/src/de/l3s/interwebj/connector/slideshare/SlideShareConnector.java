@@ -32,8 +32,8 @@ import de.l3s.interwebj.connector.slideshare.jaxb.TagsResponse;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
-import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.connector.ConnectorSearchResults;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
@@ -42,7 +42,7 @@ import de.l3s.interwebj.core.query.SearchScope;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
-public class SlideShareConnector extends ServiceConnector implements Cloneable {
+public class SlideShareConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(SlideShareConnector.class);
 
     public SlideShareConnector() {
@@ -75,9 +75,9 @@ public class SlideShareConnector extends ServiceConnector implements Cloneable {
     }
 
     @Override
-    public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
-        ConnectorResults queryResult = new ConnectorResults(query, getName());
+        ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
 
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("https://www.slideshare.net/api/2/search_slideshows")
@@ -183,11 +183,6 @@ public class SlideShareConnector extends ServiceConnector implements Cloneable {
     }
 
     @Override
-    public boolean isConnectorRegistrationDataRequired() {
-        return true;
-    }
-
-    @Override
     public boolean isUserRegistrationDataRequired() {
         return true;
     }
@@ -220,7 +215,7 @@ public class SlideShareConnector extends ServiceConnector implements Cloneable {
     }
 
     private String createSearchScope(Set<SearchScope> searchScopes) {
-        if (!searchScopes.contains(SearchScope.text)) {
+        if (searchScopes.contains(SearchScope.tags)) {
             return "tag";
         }
         return null;

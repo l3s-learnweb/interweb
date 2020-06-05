@@ -27,15 +27,15 @@ import com.microsoft.azure.cognitiveservices.search.websearch.models.WebWebAnswe
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
-import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.connector.ConnectorSearchResults;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
-public class BingConnector extends ServiceConnector implements Cloneable {
+public class BingConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(BingConnector.class);
 
     public BingConnector() {
@@ -53,7 +53,7 @@ public class BingConnector extends ServiceConnector implements Cloneable {
     }
 
     @Override
-    public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
 
         if (authCredentials == null) {
@@ -83,7 +83,7 @@ public class BingConnector extends ServiceConnector implements Cloneable {
      * <p>
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
      */
-    private ConnectorResults getWebSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
+    private ConnectorSearchResults getWebSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
         List<AnswerType> answerTypes = new ArrayList<>();
         for (ContentType contentType : query.getContentTypes()) {
             if (contentType == ContentType.text) {
@@ -109,7 +109,7 @@ public class BingConnector extends ServiceConnector implements Cloneable {
                 .execute();
 
             // Results go here
-            ConnectorResults results = new ConnectorResults(query, getName());
+            ConnectorSearchResults results = new ConnectorSearchResults(query, getName());
 
 
             if (webData != null && webData.webPages() != null && webData.webPages().value() != null && !webData.webPages().value().isEmpty()) {
@@ -209,7 +209,7 @@ public class BingConnector extends ServiceConnector implements Cloneable {
      * <p>
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
      */
-    private ConnectorResults getImagesSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
+    private ConnectorSearchResults getImagesSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
         try {
             // Init Bing Client
             BingImageSearchAPI client = BingImageSearchManager.authenticate(authCredentials.getSecret());
@@ -223,7 +223,7 @@ public class BingConnector extends ServiceConnector implements Cloneable {
                 .execute();
 
             // Results go here
-            ConnectorResults results = new ConnectorResults(query, getName());
+            ConnectorSearchResults results = new ConnectorSearchResults(query, getName());
 
             if (imageResults != null && imageResults.value() != null && !imageResults.value().isEmpty()) {
                 if (imageResults.totalEstimatedMatches() != null) {
@@ -267,7 +267,7 @@ public class BingConnector extends ServiceConnector implements Cloneable {
      * <p>
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-video-search/quickstarts/client-libraries?pivots=programming-language-java
      */
-    private ConnectorResults getVideoSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
+    private ConnectorSearchResults getVideoSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
         try {
             // Init Bing Client
             BingVideoSearchAPI client = BingVideoSearchManager.authenticate(authCredentials.getSecret());
@@ -281,7 +281,7 @@ public class BingConnector extends ServiceConnector implements Cloneable {
                 .execute();
 
             // Results go here
-            ConnectorResults results = new ConnectorResults(query, getName());
+            ConnectorSearchResults results = new ConnectorSearchResults(query, getName());
 
             if (videoResults != null && videoResults.value() != null && !videoResults.value().isEmpty()) {
                 if (videoResults.totalEstimatedMatches() != null) {
@@ -317,26 +317,6 @@ public class BingConnector extends ServiceConnector implements Cloneable {
         } catch (Exception e) {
             throw new InterWebException(e);
         }
-    }
-
-    @Override
-    public boolean isConnectorRegistrationDataRequired() {
-        return false;
-    }
-
-    @Override
-    public boolean isRegistered() {
-        return true;
-    }
-
-    @Override
-    public boolean isUserRegistrationDataRequired() {
-        return false;
-    }
-
-    @Override
-    public boolean isUserRegistrationRequired() {
-        return false;
     }
 
     private static String createMarket(String language) {

@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interwebj.core.AuthCredentials;
-import de.l3s.interwebj.core.query.QueryResults;
+import de.l3s.interwebj.core.query.SearchResults;
 import de.l3s.interwebj.tomcat.TestUtils;
 import de.l3s.interwebj.tomcat.jaxb.auth.OAuthAccessTokenResponse;
 import de.l3s.interwebj.tomcat.jaxb.auth.OAuthRequestTokenResponse;
@@ -76,7 +76,7 @@ class OAuthTest {
         resource = resource.queryParam("types", "image,video,text");
         System.out.println("querying InterWebJ URL: " + resource.toString());
         Response response = resource.request().get();
-        QueryResults searchResponse = response.readEntity(QueryResults.class);
+        SearchResults searchResponse = response.readEntity(SearchResults.class);
         System.out.println(searchResponse);
     }
 }

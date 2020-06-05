@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
+import de.l3s.interwebj.core.connector.QueryResultCollector;
 import de.l3s.interwebj.core.db.Database;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
-import de.l3s.interwebj.core.query.QueryResultCollector;
-import de.l3s.interwebj.core.query.QueryResults;
 import de.l3s.interwebj.core.query.SearchRanking;
+import de.l3s.interwebj.core.query.SearchResults;
 import de.l3s.interwebj.core.query.SearchScope;
 
 class EngineTest {
@@ -55,8 +55,8 @@ class EngineTest {
         }
         QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
 
-        QueryResults queryResults = collector.retrieve();
+        SearchResults searchResults = collector.retrieve();
         log.info("query: [" + query + "]");
-        log.info("elapsed time : [" + queryResults.getElapsedTime() + "]");
+        log.info("elapsed time : [" + searchResults.getElapsedTime() + "]");
     }
 }

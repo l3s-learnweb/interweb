@@ -22,16 +22,15 @@ import de.l3s.interwebj.connector.ipernity.jaxb.IpernityResponse;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.Parameters;
-import de.l3s.interwebj.core.core.ServiceConnector;
-import de.l3s.interwebj.core.query.ConnectorResults;
+import de.l3s.interwebj.core.connector.ConnectorSearchResults;
+import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.SearchRanking;
 import de.l3s.interwebj.core.query.Thumbnail;
-import de.l3s.interwebj.core.util.CoreUtils;
 
-public class IpernityConnector extends ServiceConnector implements Cloneable {
+public class IpernityConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(IpernityConnector.class);
 
     private static final String REQUEST_TOKEN_PATH = "http://www.ipernity.com/apps/oauth/request";
@@ -58,34 +57,32 @@ public class IpernityConnector extends ServiceConnector implements Cloneable {
      * http://www.ipernity.com/help/api/method/doc.search
      */
     @Override
-    public ConnectorResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
         }
-        ConnectorResults queryResult = new ConnectorResults(query, getName());
 
-        if (!query.getContentTypes().contains(ContentType.image)
-            && !query.getContentTypes().contains(ContentType.video)
-            && !query.getContentTypes().contains(ContentType.audio)) {
+        ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
+        if (!query.getContentTypes().contains(ContentType.image)) {
             return queryResult;
         }
 
         if (query.getQuery().startsWith("user::")) {
             //String username = query.getQuery().substring(6).trim();
-
             return queryResult;
         }
 
         WebTarget resource = createWebTarget(IPERNITY_BASE + "doc.search/xml", getAuthCredentials(), null);
 
         resource = resource.queryParam("text", query.getQuery());
-        resource = resource.queryParam("media", "photo"); // TODO media values are : photo, audio, video  query.getContentTypes()  Query.CT_AUDIO
+        resource = resource.queryParam("media", "photo");
         resource = resource.queryParam("page", Integer.toString(query.getPage()));
         resource = resource.queryParam("per_page", Integer.toString(query.getPerPage()));
-        resource = resource.queryParam("sort", createSortOrder(query.getRanking()));
-        resource = resource.queryParam("thumbsize", "2048");
-        resource = resource.queryParam("extra", "medias,count"); //,dates,original
+        resource = resource.queryParam("sort", createSort(query.getRanking()));
+        resource = resource.queryParam("thumbsize", "1024"); // 75x, 100, 240, 250x, 500, 560, 640, 800, 1024, 1600 or 2048
+        resource = resource.queryParam("share", "4"); // 4 - only public docs
+        resource = resource.queryParam("extra", "count,original"); // owner, dates, count, license, medias, geo, original
 
         if (query.getDateFrom() != null) {
             try {
@@ -119,49 +116,12 @@ public class IpernityConnector extends ServiceConnector implements Cloneable {
             resultItem.setCommentCount(doc.getCount().getComments());
             resultItem.setViewCount(doc.getCount().getVisits());
 
-            // valid labels are: 75x, 100, 240, 250x, 500, 560, 640, 800, 1024, 1600 or 2048
-            // original: 2048, 1600
-            // large: 640, 800 or 1024
-            // medium: 500, 560
-            // small: 100, 240
-            // we are trying to retrieve max, and then smaller values, the API always return the max value they have
-            String thumbLabel = doc.getThumb().getLabel();
-            String thumbUrl = doc.getThumb().getUrl();
-            int thumWidth = doc.getThumb().getW();
-            int thumHeight = doc.getThumb().getH();
-
-            if (thumbLabel.equals("2048") || thumbLabel.equals("1600")) {
-                resultItem.setThumbnailOriginal(new Thumbnail(thumbUrl, thumWidth, thumHeight));
-
-                thumbUrl = thumbUrl.replace("." + thumbLabel + ".", ".1024.");
-                thumbLabel = "1024";
-                int[] newSize = CoreUtils.scaleThumbnail(thumWidth, thumHeight, 1024);
-                thumWidth = newSize[0];
-                thumHeight = newSize[1];
+            if (doc.getThumb() != null) {
+                resultItem.setThumbnailLarge(new Thumbnail(doc.getThumb().getUrl(), doc.getThumb().getW(), doc.getThumb().getH()));
             }
 
-            if (thumbLabel.equals("1024") || thumbLabel.equals("800") || thumbLabel.equals("640")) {
-                resultItem.setThumbnailLarge(new Thumbnail(thumbUrl, thumWidth, thumHeight));
-
-                thumbUrl = thumbUrl.replace("." + thumbLabel + ".", ".560.");
-                thumbLabel = "560";
-                int[] newSize = CoreUtils.scaleThumbnail(thumWidth, thumHeight, 560);
-                thumWidth = newSize[0];
-                thumHeight = newSize[1];
-            }
-
-            if (thumbLabel.equals("560") || thumbLabel.equals("500")) {
-                resultItem.setThumbnailMedium(new Thumbnail(thumbUrl, thumWidth, thumHeight));
-
-                thumbUrl = thumbUrl.replace("." + thumbLabel + ".", ".240.");
-                thumbLabel = "240";
-                int[] newSize = CoreUtils.scaleThumbnail(thumWidth, thumHeight, 240);
-                thumWidth = newSize[0];
-                thumHeight = newSize[1];
-            }
-
-            if (thumbLabel.equals("240") || thumbLabel.equals("100")) {
-                resultItem.setThumbnailSmall(new Thumbnail(thumbUrl, thumWidth, thumHeight));
+            if (doc.getOriginal() != null) {
+                resultItem.setThumbnailOriginal(new Thumbnail(doc.getOriginal().getUrl(), doc.getOriginal().getW(), doc.getOriginal().getH()));
             }
 
             queryResult.addResultItem(resultItem);
@@ -232,24 +192,14 @@ public class IpernityConnector extends ServiceConnector implements Cloneable {
     }
 
     @Override
-    public boolean isConnectorRegistrationDataRequired() {
-        return true;
-    }
-
-    @Override
-    public boolean isUserRegistrationDataRequired() {
-        return false;
-    }
-
-    @Override
     public boolean isUserRegistrationRequired() {
         return true;
     }
 
-    private static String createSortOrder(SearchRanking searchRanking) {
-        /*
-         * Method to sort by: relevant, newest, oldest, most_played, most_commented, or most_liked.
-         */
+    /**
+     * Supported values are: relevance, popular, posted-desc, posted-asc.
+     */
+    private static String createSort(SearchRanking searchRanking) {
         switch (searchRanking) {
             case relevance:
                 return "relevance";

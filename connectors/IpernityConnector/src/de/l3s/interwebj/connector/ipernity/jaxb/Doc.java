@@ -103,7 +103,7 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {"owner", "thumb", "dates", "count", "medias"})
+@XmlType(name = "", propOrder = {"owner", "thumb", "dates", "count", "medias", "original"})
 public class Doc {
 
     @XmlElement(required = true)
@@ -116,6 +116,8 @@ public class Doc {
     protected Count count;
     @XmlElement()
     protected Medias medias;
+    @XmlElement()
+    protected Original original;
     @XmlAttribute(name = "doc_id")
     protected Integer docId;
     @XmlAttribute(name = "media")
@@ -225,6 +227,14 @@ public class Doc {
      */
     public void setMedias(Medias value) {
         this.medias = value;
+    }
+
+    public Original getOriginal() {
+        return original;
+    }
+
+    public void setOriginal(final Original original) {
+        this.original = original;
     }
 
     /**

@@ -1,7 +1,5 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import static de.l3s.interwebj.tomcat.webutil.RestUtils.throwWebApplicationException;
-
 import java.net.URI;
 
 import javax.ws.rs.Consumes;
@@ -19,15 +17,13 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.cache.Cache;
+
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.db.Database;
-import de.l3s.interwebj.core.util.ExpirableMap;
-import de.l3s.interwebj.core.util.RandomGenerator;
-import de.l3s.interwebj.core.xml.ErrorResponse;
-import de.l3s.interwebj.core.xml.XmlResponse;
 import de.l3s.interwebj.tomcat.jaxb.auth.OAuthAccessTokenResponse;
 import de.l3s.interwebj.tomcat.jaxb.auth.OAuthRequestTokenResponse;
 
@@ -38,7 +34,7 @@ public class OAuth extends Endpoint {
     @GET
     @Path("/OAuthAuthorizeToken")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse authorizeToken(@QueryParam("oauth_token") String requestToken, @QueryParam("oauth_callback") String callbackUrl) {
+    public Response authorizeToken(@QueryParam("oauth_token") String requestToken, @QueryParam("oauth_callback") String callbackUrl) {
         log.info("callbackUrl: [" + callbackUrl + "]");
         URI uri = getBaseUri().resolve("../view/authorize_consumer.xhtml");
         UriBuilder builder = UriBuilder.fromUri(uri);
@@ -47,69 +43,75 @@ public class OAuth extends Endpoint {
             builder = builder.queryParam("oauth_callback", callbackUrl);
         }
         uri = builder.build();
-        Response response = Response.seeOther(uri).build();
-        throw new WebApplicationException(response);
+
+        return Response.seeOther(uri).build();
     }
 
     @GET
     @Path("/OAuthGetAccessToken")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse getAccessToken() {
+    public OAuthAccessTokenResponse getAccessToken() {
         String token = getOAuthParameters().getToken();
         Engine engine = Environment.getInstance().getEngine();
-        ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-        expirableMap.remove("access_token:" + token);
-        expirableMap.remove("consumer_token:" + token);
-        InterWebPrincipal principal = (InterWebPrincipal) expirableMap.remove("principal:" + token);
+
+        Cache<String, Object> cache = engine.getGeneralCache();
+        InterWebPrincipal principal = (InterWebPrincipal) cache.getIfPresent("principal:" + token);
+        cache.invalidate("access_token:" + token);
+        cache.invalidate("consumer_token:" + token);
+        cache.invalidate("principal:" + token);
+
         Database database = Environment.getInstance().getDatabase();
-        AuthCredentials accessToken = RandomGenerator.getInstance().nextOAuthCredentials();
+        AuthCredentials accessToken = AuthCredentials.random();
         principal.setOauthCredentials(accessToken);
         database.updatePrincipal(principal);
-        OAuthAccessTokenResponse response = new OAuthAccessTokenResponse(accessToken);
-        return response;
+
+        return new OAuthAccessTokenResponse(accessToken);
     }
 
     @GET
     @Path("/OAuthGetRequestToken")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse getRequestToken() {
-        AuthCredentials authCredentials = RandomGenerator.getInstance().nextOAuthCredentials();
-        OAuthRequestTokenResponse response = new OAuthRequestTokenResponse(authCredentials);
+    public OAuthRequestTokenResponse getRequestToken() {
         Engine engine = Environment.getInstance().getEngine();
-        ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
-        expirableMap.put("request_token:" + authCredentials.getKey(), authCredentials);
+        AuthCredentials authCredentials = AuthCredentials.random();
         String consumerKey = getOAuthParameters().getConsumerKey();
-        expirableMap.put("consumer_token:" + authCredentials.getKey(), consumerKey);
-        return response;
+
+        Cache<String, Object> cache = engine.getGeneralCache();
+        cache.put("request_token:" + authCredentials.getKey(), authCredentials);
+        cache.put("consumer_token:" + authCredentials.getKey(), consumerKey);
+        return new OAuthRequestTokenResponse(authCredentials);
     }
 
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public XmlResponse registerUser(@FormParam("username") String userName, @FormParam("password") String password,
-                                    @FormParam("mediator_username") String mediatorUserName, @FormParam("mediator_password") String mediatorPassword) {
+    public OAuthAccessTokenResponse registerUser(@FormParam("username") String userName, @FormParam("password") String password,
+        @FormParam("mediator_username") String mediatorUserName, @FormParam("mediator_password") String mediatorPassword) {
         Database database = Environment.getInstance().getDatabase();
+
         InterWebPrincipal mediator = null;
         if (mediatorUserName != null) {
             mediator = database.authenticate(mediatorUserName, mediatorPassword);
             if (mediator == null) {
-                return ErrorResponse.NO_ACCOUNT_FOR_TOKEN;
+                throw new WebApplicationException("No account for this token", Response.Status.BAD_REQUEST);
             }
         }
+
         InterWebPrincipal principal = InterWebPrincipal.createDefault(userName);
         if (database.hasPrincipal(userName)) {
-            throwWebApplicationException(ErrorResponse.USER_EXISTS);
+            throw new WebApplicationException("User already exists", Response.Status.CONFLICT);
         }
-        AuthCredentials accessToken = RandomGenerator.getInstance().nextOAuthCredentials();
+
+        AuthCredentials accessToken = AuthCredentials.random();
         principal.setOauthCredentials(accessToken);
         log.info(principal.toString());
         database.savePrincipal(principal, password);
         if (mediator != null) {
             database.saveMediator(principal.getName(), mediator.getName());
         }
-        OAuthAccessTokenResponse response = new OAuthAccessTokenResponse(accessToken);
-        return response;
+
+        return new OAuthAccessTokenResponse(accessToken);
     }
 
     // @POST
