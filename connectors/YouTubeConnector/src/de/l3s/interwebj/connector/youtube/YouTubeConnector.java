@@ -9,10 +9,13 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +46,8 @@ import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
 import com.google.api.services.youtube.model.VideoStatus;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
@@ -53,6 +58,7 @@ import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.SearchRanking;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
@@ -74,6 +80,11 @@ public class YouTubeConnector extends ServiceConnector {
      */
     public static final JsonFactory JSON_FACTORY = new JacksonFactory();
     private static GoogleAuthorizationCodeFlow flow = null;
+
+    /**
+     * Because there is no easy way to get next page (like settings offset), we need to store a token to the next page for each query
+     */
+    private static final Cache<Integer, HashMap<Integer, String>> tokensCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 
     public YouTubeConnector() {
         super("YouTube", "http://www.youtube.com", ContentType.video);
@@ -147,7 +158,6 @@ public class YouTubeConnector extends ServiceConnector {
         }
 
         ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
-        TokenStorage tokens = TokenStorage.getInstance();
 
         if (!query.getContentTypes().contains(ContentType.video)) {
             return queryResult;
@@ -156,8 +166,7 @@ public class YouTubeConnector extends ServiceConnector {
         try {
             // This object is used to make YouTube Data API requests. The last argument is required, but since we don't need anything
             // initialized when the HttpRequest is initialized, we override the interface and provide a no-op function.
-            YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, request -> {
-            }).setApplicationName("Interweb").build();
+            YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, request -> {}).setApplicationName("Interweb").build();
 
             // Define the API request for retrieving search results.
             YouTube.Search.List search = youtube.search().list("id");
@@ -203,14 +212,12 @@ public class YouTubeConnector extends ServiceConnector {
              * The pageToken parameter identifies a specific page in the result set that
              * should be returned. In an API response, the nextPageToken and prevPageToken
              * properties identify other pages that could be retrieved.
-             *
-             * Old solution:
-             * ytq.setStartIndex(Math.min(50, query.getResultCount()) * (query.getPage()-1)+1);
              */
             if (query.getPage() > 1) {
-                if (tokens.get(query.getPage()) != null) {
-                    search.setPageToken(tokens.get(query.getPage()));
-                } else if (tokens.get(-1) != null && tokens.get(-1).equals("no-more-pages")) {
+                HashMap<Integer, String> tokensMap = getTokensMap(query);
+                if (tokensMap.containsKey(query.getPage())) {
+                    search.setPageToken(tokensMap.get(query.getPage()));
+                } else if (tokensMap.containsKey(-1)) {
                     log.warn("No more results for page " + query.getPage());
                     return queryResult;
                 } else {
@@ -221,24 +228,8 @@ public class YouTubeConnector extends ServiceConnector {
             // Restrict the search results to only include videos. See:
             // https://developers.google.com/youtube/v3/docs/search/list#type
             search.setType("video");
-            search.setSafeSearch("none"); // moderate | none | strict
-
-            switch (query.getRanking()) {
-                case relevance:
-                    search.setOrder("relevance");
-                    break;
-                //ytq.addCustomParameter(new CustomParameter("orderby", "relevance_lang_"+ query.getLanguage())); break;
-                case date:
-                    search.setOrder("date");
-                    break;
-                case interestingness:
-                    search.setOrder("viewCount");
-                    break;
-                default:
-                    // The default value is relevance (by Google)
-                    //search.setOrder("relevance");
-                    break;
-            }
+            search.setSafeSearch("moderate"); // moderate | none | strict
+            search.setOrder(getOrder(query.getRanking()));
 
             // To increase efficiency, only retrieve the fields that the application uses.
             search.setFields("nextPageToken,pageInfo/totalResults,items(id/videoId)");
@@ -248,16 +239,16 @@ public class YouTubeConnector extends ServiceConnector {
             log.info("Request url: " + search.buildHttpRequestUrl());
             SearchListResponse searchResponse = search.execute();
 
-            // Limiting YouTube data API, see more: http://stackoverflow.com/questions/23255957
+            // Limit of YouTube data API, see more: http://stackoverflow.com/questions/23255957
             long totalResults = searchResponse.getPageInfo().getTotalResults();
-            queryResult.setTotalResultCount(totalResults > 500 ? 500 : totalResults);
+            queryResult.setTotalResultCount(Math.min(totalResults, 500));
 
             if (searchResponse.getNextPageToken() != null) {
-                log.info("Next page " + (query.getPage() + 1) + " its token " + searchResponse.getNextPageToken());
-                tokens.put(query.getPage() + 1, searchResponse.getNextPageToken());
+                log.debug("Next page " + (query.getPage() + 1) + " its token " + searchResponse.getNextPageToken());
+                getTokensMap(query).put(query.getPage() + 1, searchResponse.getNextPageToken());
             } else {
-                log.info("No more results");
-                tokens.put(-1, "no-more-pages");
+                log.debug("No more results");
+                getTokensMap(query).put(-1, "no-more-pages");
             }
 
             List<SearchResult> searchResultList = searchResponse.getItems();
@@ -280,12 +271,11 @@ public class YouTubeConnector extends ServiceConnector {
 
                 if (videoList != null) {
                     Iterator<Video> iteratorVideoResults = videoList.iterator();
-                    int rank = Math.min(50, query.getPerPage()) * (query.getPage() - 1) + 1;
-                    int resultCount = (int) queryResult.getTotalResultCount();
+                    int rank = query.getPerPage() * (query.getPage() - 1);
 
                     while (iteratorVideoResults.hasNext()) {
                         Video singleVideo = iteratorVideoResults.next();
-                        ResultItem resultItem = createResultItem(singleVideo, rank++, resultCount);
+                        ResultItem resultItem = createResultItem(singleVideo, rank++);
                         if (resultItem != null) {
                             queryResult.addResultItem(resultItem);
                         }
@@ -301,7 +291,28 @@ public class YouTubeConnector extends ServiceConnector {
         return queryResult;
     }
 
-    private ResultItem createResultItem(Video singleVideo, int rank, int totalResultCount) {
+    private static String getOrder(SearchRanking ranking) {
+        switch (ranking) {
+            case relevance:
+                return "relevance";
+            case date:
+                return "date";
+            case interestingness:
+                return "viewCount";
+            default:
+                return null;
+        }
+    }
+
+    private HashMap<Integer, String> getTokensMap(Query query) {
+        try {
+            return tokensCache.get(query.hashCodeWithoutPage(), HashMap::new);
+        } catch (ExecutionException ignored) {
+            return new HashMap<>(); // actually, never happens
+        }
+    }
+
+    private ResultItem createResultItem(Video singleVideo, int rank) {
         // Confirm that the result represents a video. Otherwise, the item will not contain a video ID.
         if (!singleVideo.getKind().equals("youtube#video")) {
             return null;
@@ -482,7 +493,7 @@ public class YouTubeConnector extends ServiceConnector {
             uploader.setProgressListener(progressListener);
 
             Video returnedVideo = videoInsert.execute();
-            resultItem = createResultItem(returnedVideo, 0, 0);
+            resultItem = createResultItem(returnedVideo, 0);
 
         } catch (Throwable e) {
             log.error(e);

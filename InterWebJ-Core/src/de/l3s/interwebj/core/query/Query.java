@@ -4,6 +4,7 @@ import static de.l3s.interwebj.core.util.Assertions.notNull;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -13,8 +14,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -198,43 +197,29 @@ public class Query implements Serializable {
         if (this == o) {
             return true;
         }
-
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         final Query query1 = (Query) o;
-
-        return new EqualsBuilder()
-            .append(page, query1.page)
-            .append(perPage, query1.perPage)
-            .append(timeout, query1.timeout)
-            .append(query, query1.query)
-            .append(dateFrom, query1.dateFrom)
-            .append(dateTill, query1.dateTill)
-            .append(language, query1.language)
-            .append(connectorNames, query1.connectorNames)
-            .append(contentTypes, query1.contentTypes)
-            .append(searchScopes, query1.searchScopes)
-            .append(ranking, query1.ranking)
-            .isEquals();
+        return page == query1.page
+            && perPage == query1.perPage
+            && ranking == query1.ranking
+            && Objects.equals(query, query1.query)
+            && Objects.equals(dateFrom, query1.dateFrom)
+            && Objects.equals(dateTill, query1.dateTill)
+            && Objects.equals(language, query1.language)
+            && Objects.equals(connectorNames, query1.connectorNames)
+            && Objects.equals(contentTypes, query1.contentTypes)
+            && Objects.equals(searchScopes, query1.searchScopes);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-            .append(query)
-            .append(dateFrom)
-            .append(dateTill)
-            .append(language)
-            .append(connectorNames)
-            .append(contentTypes)
-            .append(searchScopes)
-            .append(page)
-            .append(perPage)
-            .append(ranking)
-            .append(timeout)
-            .toHashCode();
+        return Objects.hash(query, dateFrom, dateTill, language, connectorNames, contentTypes, searchScopes, page, perPage, ranking);
+    }
+
+    public int hashCodeWithoutPage() {
+        return Objects.hash(query, dateFrom, dateTill, language, connectorNames, contentTypes, searchScopes, perPage, ranking);
     }
 
     @Override
