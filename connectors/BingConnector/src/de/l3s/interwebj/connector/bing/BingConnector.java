@@ -47,7 +47,6 @@ import de.l3s.interwebj.core.util.CoreUtils;
  */
 public class BingConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(BingConnector.class);
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public BingConnector() {
         super("Bing", "https://www.bing.com/", ContentType.text, ContentType.image, ContentType.video);
@@ -359,8 +358,9 @@ public class BingConnector extends ServiceConnector {
         }
 
         if (dateFrom != null) {
-            String dateFromFormat = DATE_FORMAT.format(dateFrom);
-            String dateTillFormat = DATE_FORMAT.format(dateTill);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String dateFromFormat = dateFormat.format(dateFrom);
+            String dateTillFormat = dateFormat.format(dateTill);
             return dateFromFormat.equals(dateTillFormat) ? dateFromFormat : dateFromFormat + ".." + dateTillFormat;
         }
 
