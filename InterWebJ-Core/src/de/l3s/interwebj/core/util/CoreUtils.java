@@ -47,20 +47,6 @@ public class CoreUtils {
         return parseDate(DEFAULT_DATE_FORMAT, dateString);
     }
 
-    public static int[] scaleThumbnail(int width, int height, int maxDimension) {
-        double aspect = (double) width / height;
-
-        int newWidth = maxDimension;
-        int newHeight = maxDimension;
-        if (width > height) {
-            newHeight = (int) Math.ceil(maxDimension / aspect);
-        } else {
-            newWidth = (int) Math.ceil(maxDimension * aspect);
-        }
-
-        return new int[] {newWidth, newHeight};
-    }
-
     /**
      * If the string is longer than maxLength it is split at the nearest blank space.
      */

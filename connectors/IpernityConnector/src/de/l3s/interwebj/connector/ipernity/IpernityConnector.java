@@ -28,8 +28,15 @@ import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.SearchRanking;
+import de.l3s.interwebj.core.query.SearchScope;
 import de.l3s.interwebj.core.query.Thumbnail;
 
+/**
+ * Ipernity is a non-commercial photo sharing community which is financed exclusively by membership dues without any intention of making a profit.
+ * TODO missing search implementations: extras, language.
+ *
+ * @see <a href="http://www.ipernity.com/help/api/method/doc.search">Ipernity Search API</a>
+ */
 public class IpernityConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(IpernityConnector.class);
 
@@ -39,7 +46,7 @@ public class IpernityConnector extends ServiceConnector {
     private static final String IPERNITY_BASE = "http://api.ipernity.com/api/";
 
     public IpernityConnector() {
-        super("Ipernity", "http://www.ipernity.com", ContentType.image);
+        super("Ipernity", "http://www.ipernity.com/", ContentType.image);
     }
 
     public IpernityConnector(AuthCredentials consumerAuthCredentials) {
@@ -75,11 +82,16 @@ public class IpernityConnector extends ServiceConnector {
 
         WebTarget resource = createWebTarget(IPERNITY_BASE + "doc.search/xml", getAuthCredentials(), null);
 
-        resource = resource.queryParam("text", query.getQuery());
+        if (query.getSearchScope() == SearchScope.text) {
+            resource = resource.queryParam("text", query.getQuery());
+        } else if (query.getSearchScope() == SearchScope.tags) {
+            resource = resource.queryParam("tags", query.getQuery());
+        }
+
         resource = resource.queryParam("media", "photo");
         resource = resource.queryParam("page", Integer.toString(query.getPage()));
         resource = resource.queryParam("per_page", Integer.toString(query.getPerPage()));
-        resource = resource.queryParam("sort", createSort(query.getRanking()));
+        resource = resource.queryParam("sort", convertRanking(query.getRanking()));
         resource = resource.queryParam("thumbsize", "1024"); // 75x, 100, 240, 250x, 500, 560, 640, 800, 1024, 1600 or 2048
         resource = resource.queryParam("share", "4"); // 4 - only public docs
         resource = resource.queryParam("extra", "count,original"); // owner, dates, count, license, medias, geo, original
@@ -137,7 +149,7 @@ public class IpernityConnector extends ServiceConnector {
         }
 
         AuthCredentials authCredentials = getAuthCredentials();
-        log.info("auth cred" + authCredentials);
+        log.info("auth cred{}", authCredentials);
 
         final ConsumerCredentials consumerCredentials = new ConsumerCredentials(authCredentials.getKey(), authCredentials.getSecret());
         final OAuth1AuthorizationFlow authFlow = OAuth1ClientSupport.builder(consumerCredentials)
@@ -145,7 +157,7 @@ public class IpernityConnector extends ServiceConnector {
             .callbackUri(callbackUrl).build();
 
         final String authorizationUri = authFlow.start();
-        log.info("requesting url: " + authorizationUri);
+        log.info("requesting url: {}", authorizationUri);
 
         Parameters params = new Parameters();
         params.add(Parameters.AUTHORIZATION_URL, authorizationUri);
@@ -161,14 +173,14 @@ public class IpernityConnector extends ServiceConnector {
         }
 
         String oauthToken = params.get(Parameters.OAUTH_TOKEN);
-        log.info("oauth_token: " + oauthToken);
+        log.info("oauth_token: {}", oauthToken);
         String oauthTokenSecret = params.get(Parameters.OAUTH_TOKEN_SECRET);
-        log.info("oauth_token_secret: " + oauthTokenSecret);
+        log.info("oauth_token_secret: {}", oauthTokenSecret);
         String oauthVerifier = params.get(Parameters.OAUTH_VERIFIER);
-        log.info("oauth_verifier: " + oauthVerifier);
+        log.info("oauth_verifier: {}", oauthVerifier);
 
         AuthCredentials authCredentials = getAuthCredentials();
-        log.info("auth cred" + authCredentials);
+        log.info("auth cred{}", authCredentials);
 
         final ConsumerCredentials consumerCredentials = new ConsumerCredentials(authCredentials.getKey(), authCredentials.getSecret());
         final OAuth1AuthorizationFlow authFlow = OAuth1ClientSupport.builder(consumerCredentials)
@@ -177,7 +189,7 @@ public class IpernityConnector extends ServiceConnector {
         log.info("requesting access token");
         final AccessToken accessToken = authFlow.finish(oauthVerifier);
 
-        log.info("ipernity response: " + accessToken);
+        log.info("ipernity response: {}", accessToken);
         params.add(Parameters.OAUTH_TOKEN, accessToken.getToken());
         params.add(Parameters.OAUTH_TOKEN_SECRET, accessToken.getAccessTokenSecret());
 
@@ -199,14 +211,13 @@ public class IpernityConnector extends ServiceConnector {
     /**
      * Supported values are: relevance, popular, posted-desc, posted-asc.
      */
-    private static String createSort(SearchRanking searchRanking) {
-        switch (searchRanking) {
-            case relevance:
-                return "relevance";
+    private static String convertRanking(SearchRanking ranking) {
+        switch (ranking) {
             case date:
                 return "posted-desc";
             case interestingness:
                 return "popular";
+            case relevance:
             default:
                 return "relevance";
         }

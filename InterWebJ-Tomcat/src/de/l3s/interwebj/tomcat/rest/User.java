@@ -68,7 +68,7 @@ public class User extends Endpoint {
         parameters.add(Parameters.IWJ_CONNECTOR_ID, connector.getName());
         parameters.add(Parameters.CLIENT_TYPE, "rest");
         String interwebjCallbackUrl = connector.generateCallbackUrl(baseApiUrl, parameters);
-        log.info("interwebjCallbackUrl: [" + interwebjCallbackUrl + "]");
+        log.info("interwebjCallbackUrl: [{}]", interwebjCallbackUrl);
 
         try {
             Parameters params = connector.authenticate(interwebjCallbackUrl, parameters);
@@ -84,7 +84,7 @@ public class User extends Endpoint {
             }
             String authorizationUrl = params.get(Parameters.AUTHORIZATION_URL);
             if (authorizationUrl != null) {
-                log.info("redirecting to service authorization url: " + authorizationUrl);
+                log.info("redirecting to service authorization url: {}", authorizationUrl);
                 OAuth1Parameters oauthParameters = getOAuthParameters();
                 params.add(Parameters.CONSUMER_KEY, oauthParameters.getConsumerKey());
                 if (callback != null) {

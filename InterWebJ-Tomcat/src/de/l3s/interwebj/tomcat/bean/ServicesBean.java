@@ -69,7 +69,7 @@ public class ServicesBean {
         parameters.add(Parameters.CLIENT_TYPE, "servlet");
 
         String interwebjCallbackUrl = connector.generateCallbackUrl(baseApiUrl, parameters);
-        log.info("interwebjCallbackUrl: [" + interwebjCallbackUrl + "]");
+        log.info("interwebjCallbackUrl: [{}]", interwebjCallbackUrl);
         parameters = connector.authenticate(interwebjCallbackUrl, parameters);
         if (connectorWrapper.getKey() != null) {
             parameters.add(Parameters.USER_KEY, connectorWrapper.getKey());
@@ -79,7 +79,7 @@ public class ServicesBean {
         }
         String authorizationUrl = parameters.get(Parameters.AUTHORIZATION_URL);
         if (authorizationUrl != null) {
-            log.info("redirecting to service authorization url: " + authorizationUrl);
+            log.info("redirecting to service authorization url: {}", authorizationUrl);
             engine.addPendingAuthorizationConnector(principal, connector, parameters);
             try {
                 FacesUtils.getExternalContext().redirect(authorizationUrl);
@@ -90,11 +90,11 @@ public class ServicesBean {
         }
     }
 
-    public List<ConnectorWrapper> getAwaitingConnectorWrappers() throws InterWebException {
+    public List<ConnectorWrapper> getAwaitingConnectorWrappers() {
         return awaitingConnectorWrappers;
     }
 
-    public List<ConnectorWrapper> getConnectorWrappers() throws InterWebException {
+    public List<ConnectorWrapper> getConnectorWrappers() {
         return connectorWrappers;
     }
 
@@ -102,7 +102,7 @@ public class ServicesBean {
         return error;
     }
 
-    public boolean isUserAuthenticated(Object obj) throws InterWebException {
+    public boolean isUserAuthenticated(Object obj) {
         if (principal != null) {
             ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
             ServiceConnector connector = connectorWrapper.getConnector();
@@ -111,7 +111,7 @@ public class ServicesBean {
         return false;
     }
 
-    public boolean isUserRegistrationRequired(Object obj) throws InterWebException {
+    public boolean isUserRegistrationRequired(Object obj) {
         ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
         ServiceConnector connector = connectorWrapper.getConnector();
         return connector.isUserRegistrationDataRequired() && !isUserAuthenticated(obj);

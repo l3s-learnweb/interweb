@@ -29,15 +29,13 @@ class SlideShareConnectorTest {
 
     @Test
     void get() throws InterWebException {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery("hello world");
+        Query query = QueryFactory.createQuery("hello world");
         query.addContentType(ContentType.video);
         query.addContentType(ContentType.image);
         query.addContentType(ContentType.text);
         query.addContentType(ContentType.presentation);
         query.addContentType(ContentType.audio);
-        query.addSearchScope(SearchScope.text);
-        query.addSearchScope(SearchScope.tags);
+        query.setSearchScope(SearchScope.text);
         query.setPerPage(5);
         // query.setDateFrom("2009-01-01 00:00:00");
         // query.setDateTill("2009-06-01 00:00:00");

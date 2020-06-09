@@ -73,7 +73,7 @@ class OAuthTest {
     void testSearch() {
         WebTarget resource = TestUtils.createWebTarget("api/search");
         resource = resource.queryParam("q", "people");
-        resource = resource.queryParam("types", "image,video,text");
+        resource = resource.queryParam("media_types", "image,video,text");
         System.out.println("querying InterWebJ URL: " + resource.toString());
         Response response = resource.request().get();
         SearchResults searchResponse = response.readEntity(SearchResults.class);

@@ -32,8 +32,7 @@ class GiphyConnectorTest {
 
     @Test
     void get() throws InterWebException {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery("hello world");
+        Query query = QueryFactory.createQuery("hello world");
         query.addContentType(ContentType.image);
 
         ConnectorSearchResults queryResult = connector.get(query, null);

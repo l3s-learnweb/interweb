@@ -39,11 +39,11 @@ public class QueryResultCollector {
 
         SearchResults result = cache.getIfPresent(query);
         if (result != null) {
-            log.info("Return cached results for: " + query);
+            log.info("Return cached results for: {}", query);
             return result;
         }
 
-        log.info("Search for: " + query);
+        log.info("Search for: {}", query);
 
         List<FutureTask<ConnectorSearchResults>> tasks = new ArrayList<>();
         for (QueryResultRetriever retriever : retrievers) {
@@ -91,7 +91,7 @@ public class QueryResultCollector {
         @Override
         public ConnectorSearchResults call() {
             long startTime = System.currentTimeMillis();
-            log.info("[" + connector.getName() + "] Start querying: " + query);
+            log.info("[{}] Start querying: {}", connector.getName(), query);
 
             ConnectorSearchResults queryResult;
             try {

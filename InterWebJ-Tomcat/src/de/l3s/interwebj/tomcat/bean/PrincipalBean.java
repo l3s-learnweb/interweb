@@ -46,14 +46,14 @@ public class PrincipalBean implements Serializable {
         String savedRequestUrl = sessionBean.getSavedRequestUrl();
         if (savedRequestUrl != null) {
             sessionBean.setSavedRequestUrl(null);
-            log.info("redirecting to: " + savedRequestUrl);
+            log.info("redirecting to: {}", savedRequestUrl);
             String contextPath = FacesUtils.getContextPath();
             FacesUtils.redirect(contextPath + savedRequestUrl);
         }
         return "index";
     }
 
-    public String logout() throws IOException {
+    public String logout() {
         SessionBean sessionBean = (SessionBean) FacesUtils.getManagedBean("sessionBean");
         sessionBean.setPrincipal(null);
         HttpServletRequest request = FacesUtils.getRequest();

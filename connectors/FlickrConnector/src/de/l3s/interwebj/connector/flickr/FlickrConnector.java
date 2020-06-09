@@ -43,6 +43,12 @@ import de.l3s.interwebj.core.query.SearchScope;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
+/**
+ * Flickr is an American image hosting and video hosting service, as well as an online community.
+ * TODO missing search implementations: extras, language.
+ *
+ * @see <a href="https://www.flickr.com/services/api/flickr.photos.search.html">Flickr Search API</a>
+ */
 public class FlickrConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(FlickrConnector.class);
 
@@ -51,7 +57,7 @@ public class FlickrConnector extends ServiceConnector {
     private static final String MEDIA_VIDEOS = "videos";
 
     public FlickrConnector() {
-        super("Flickr", "http://www.flickr.com", ContentType.image, ContentType.video);
+        super("Flickr", "https://www.flickr.com/", ContentType.image, ContentType.video);
     }
 
     public FlickrConnector(AuthCredentials consumerAuthCredentials) {
@@ -74,8 +80,8 @@ public class FlickrConnector extends ServiceConnector {
             log.info("requestToken: [{} - {}]", requestToken.getToken(), requestToken.getTokenSecret());
 
             String requestTokenUrl = authInterface.getAuthorizationUrl(requestToken, Permission.DELETE);
-            log.info("callbackUrl: [" + callbackUrl + "]");
-            log.info("requestTokenUrl: [" + requestTokenUrl + "]");
+            log.info("callbackUrl: [{}]", callbackUrl);
+            log.info("requestTokenUrl: [{}]", requestTokenUrl);
             params.add(Parameters.AUTHORIZATION_URL, requestTokenUrl);
         } catch (Exception e) {
             log.error(e);
@@ -101,7 +107,7 @@ public class FlickrConnector extends ServiceConnector {
             AuthInterface authInterface = new AuthInterface(consumerAuthCredentials.getKey(), consumerAuthCredentials.getSecret(), new REST());
 
             String verifier = params.get(Parameters.OAUTH_VERIFIER);
-            log.info("request verifier: " + verifier);
+            log.info("request verifier: {}", verifier);
 
             OAuth1RequestToken requestToken = new OAuth1RequestToken(params.get(Parameters.OAUTH_TOKEN), params.get(Parameters.OAUTH_TOKEN_SECRET));
             OAuth1Token accessToken = authInterface.getAccessToken(requestToken, verifier);
@@ -268,35 +274,6 @@ public class FlickrConnector extends ServiceConnector {
         return new Flickr(consumerAuthCredentials.getKey(), consumerAuthCredentials.getSecret(), new REST());
     }
 
-    private ResultItem createResultItem(Photo photo, int rank) {
-        ResultItem resultItem = new ResultItem(getName(), rank);
-        resultItem.setId(photo.getId());
-        resultItem.setType(createContentType(photo.getMedia()));
-        resultItem.setTitle(photo.getTitle());
-        resultItem.setDescription(photo.getDescription());
-        resultItem.setUrl(photo.getUrl());
-        if (photo.getDatePosted() != null) {
-            resultItem.setDate(CoreUtils.formatDate(photo.getDatePosted().getTime()));
-        }
-        if (photo.getTags() != null) {
-            for (Tag tag : photo.getTags()) {
-                resultItem.getTags().add(tag.getValue());
-            }
-        }
-        resultItem.setCommentCount((long) photo.getComments());
-
-        resultItem.setThumbnailSmall(createThumbnail(photo.getSmallSize()));
-        resultItem.setThumbnailMedium(createThumbnail(photo.getMediumSize()));
-        resultItem.setThumbnailLarge(createThumbnail(photo.getLargeSize()));
-        resultItem.setThumbnailOriginal(createThumbnail(photo.getOriginalSize()));
-
-        return resultItem;
-    }
-
-    private String[] createTags(String query) {
-        return query.split("[\\W]+");
-    }
-
     private ConnectorSearchResults getMedia(Query query, AuthCredentials authCredentials) throws InterWebException {
         ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
         if (supportContentTypes(query.getContentTypes())) {
@@ -335,7 +312,7 @@ public class FlickrConnector extends ServiceConnector {
                     }
                 }
 
-                params.setSort(getSortOrder(query.getRanking()));
+                params.setSort(convertRanking(query.getRanking()));
 
                 PhotoList<Photo> photoList = null;
 
@@ -347,13 +324,10 @@ public class FlickrConnector extends ServiceConnector {
                 } else if (query.getQuery().startsWith("recent::")) {
                     photoList = pi.getRecent(getExtras(), query.getPerPage(), query.getPage());
                 } else {
-                    if (query.getSearchScopes().contains(SearchScope.text)) {
+                    if (query.getSearchScope() == SearchScope.text) {
                         params.setText(query.getQuery());
-
-                    }
-                    if (query.getSearchScopes().contains(SearchScope.tags)) {
-                        String[] tags = createTags(query.getQuery());
-                        params.setTags(tags);
+                    } else if (query.getSearchScope() == SearchScope.tags) {
+                        params.setTags(createTags(query.getQuery()));
                     }
                 }
 
@@ -384,6 +358,35 @@ public class FlickrConnector extends ServiceConnector {
         return queryResult;
     }
 
+    private ResultItem createResultItem(Photo photo, int rank) {
+        ResultItem resultItem = new ResultItem(getName(), rank);
+        resultItem.setId(photo.getId());
+        resultItem.setType(createContentType(photo.getMedia()));
+        resultItem.setTitle(photo.getTitle());
+        resultItem.setDescription(photo.getDescription());
+        resultItem.setUrl(photo.getUrl());
+        if (photo.getDatePosted() != null) {
+            resultItem.setDate(CoreUtils.formatDate(photo.getDatePosted().getTime()));
+        }
+        if (photo.getTags() != null) {
+            for (Tag tag : photo.getTags()) {
+                resultItem.getTags().add(tag.getValue());
+            }
+        }
+        resultItem.setCommentCount((long) photo.getComments());
+
+        resultItem.setThumbnailSmall(createThumbnail(photo.getSmallSize()));
+        resultItem.setThumbnailMedium(createThumbnail(photo.getMediumSize()));
+        resultItem.setThumbnailLarge(createThumbnail(photo.getLargeSize()));
+        resultItem.setThumbnailOriginal(createThumbnail(photo.getOriginalSize()));
+
+        return resultItem;
+    }
+
+    private String[] createTags(String query) {
+        return query.split("[\\W]+");
+    }
+
     private String getMediaType(Query query) {
         notNull(query, "query");
 
@@ -396,18 +399,16 @@ public class FlickrConnector extends ServiceConnector {
         }
     }
 
-    private int getSortOrder(SearchRanking searchRanking) {
-        switch (searchRanking) {
-            case relevance:
-                return SearchParameters.RELEVANCE;
+    private static int convertRanking(SearchRanking ranking) {
+        switch (ranking) {
             case date:
                 return SearchParameters.DATE_POSTED_DESC;
             case interestingness:
                 return SearchParameters.INTERESTINGNESS_DESC;
+            case relevance:
             default:
-                log.error("Unknown order {}", searchRanking);
+                return SearchParameters.RELEVANCE;
         }
-        return SearchParameters.RELEVANCE;
     }
 
     private boolean supportContentTypes(Set<ContentType> contentTypes) {
@@ -456,18 +457,7 @@ public class FlickrConnector extends ServiceConnector {
     }
 
     private static Set<String> getExtras() {
-        Set<String> extras = new HashSet<>();
-        extras.add("description");
-        extras.add("tags");
-        extras.add("date_upload");
-        extras.add("views");
-        extras.add("media");
-        extras.add("url_t");
-        extras.add("url_s");
-        extras.add("url_m");
-        extras.add("url_l");
-
-        return extras;
+        return Set.of("description", "tags", "date_upload", "views", "media", "url_t", "url_s", "url_m", "url_l");
     }
 
 }

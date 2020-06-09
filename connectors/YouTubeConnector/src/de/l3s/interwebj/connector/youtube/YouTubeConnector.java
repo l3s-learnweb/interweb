@@ -7,13 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -34,11 +33,11 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.Joiner;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
+import com.google.api.services.youtube.model.SearchResultSnippet;
 import com.google.api.services.youtube.model.ThumbnailDetails;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoContentDetails;
@@ -58,36 +57,33 @@ import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.SearchExtra;
 import de.l3s.interwebj.core.query.SearchRanking;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
+/**
+ * YouTube is an American online video-sharing platform headquartered in San Bruno, California.
+ * TODO missing search implementations: extras, search_in.
+ *
+ * @see <a href="https://developers.google.com/youtube/v3/docs/search/list">YouTube Search API</a>
+ */
 public class YouTubeConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(YouTubeConnector.class);
 
     private static final String API_KEY = "***REMOVED***";
-    /**
-     * Define a global instance of the scopes.
-     */
-    private static final List<String> SCOPES =
-        Arrays.asList("https://www.googleapis.com/auth/youtube.upload", "profile", "https://www.googleapis.com/auth/youtube");
-    /**
-     * Define a global instance of the HTTP transport.
-     */
+    private static final List<String> SCOPES = Arrays.asList("profile", "https://www.googleapis.com/auth/youtube", "https://www.googleapis.com/auth/youtube.upload");
     public static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-    /**
-     * Define a global instance of the JSON factory.
-     */
     public static final JsonFactory JSON_FACTORY = new JacksonFactory();
     private static GoogleAuthorizationCodeFlow flow = null;
 
     /**
-     * Because there is no easy way to get next page (like settings offset), we need to store a token to the next page for each query
+     * Because there is no easy way to get next page (like settings offset), we need to store a token to the next page for each query.
      */
     private static final Cache<Integer, HashMap<Integer, String>> tokensCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 
     public YouTubeConnector() {
-        super("YouTube", "http://www.youtube.com", ContentType.video);
+        super("YouTube", "https://www.youtube.com/", ContentType.video);
     }
 
     public YouTubeConnector(AuthCredentials consumerAuthCredentials) {
@@ -110,7 +106,7 @@ public class YouTubeConnector extends ServiceConnector {
 
             params.add(Parameters.AUTHORIZATION_URL, url);
 
-            log.info("requesting url: " + url);
+            log.info("requesting url: {}", url);
         } catch (Exception e) {
             log.error(e);
             throw new InterWebException(e);
@@ -132,7 +128,7 @@ public class YouTubeConnector extends ServiceConnector {
         }
 
         String authorizationCode = params.get("code");
-        log.info("authorization_code: " + authorizationCode);
+        log.info("authorization_code: {}", authorizationCode);
 
         AuthCredentials authCredentials;
         Credential cred;
@@ -168,121 +164,79 @@ public class YouTubeConnector extends ServiceConnector {
             // initialized when the HttpRequest is initialized, we override the interface and provide a no-op function.
             YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, request -> {}).setApplicationName("Interweb").build();
 
-            // Define the API request for retrieving search results.
-            YouTube.Search.List search = youtube.search().list("id");
-
-            // Set your developer key from the {{ Google Cloud Console }} for non-authenticated requests.
-            search.setKey(API_KEY);
-
-            if (query.getQuery().startsWith("user::")) {
-                String[] splitQuery = query.getQuery().split(" ", 2);
-                ChannelListResponse channelListResponse = youtube.channels().list("id")
-                    .setKey(API_KEY).setForUsername(splitQuery[0].substring(6)).setFields("items(id)").execute();
-
-                search.setChannelId(channelListResponse.getItems().get(0).getId());
-
-                if (splitQuery.length > 1 && splitQuery[1] != null) {
-                    search.setQ(splitQuery[1]);
-                }
-            } else {
-                search.setQ(query.getQuery());
-            }
-
-            search.setMaxResults((long) query.getPerPage());
-
-            if (query.getDateFrom() != null) {
-                try {
-                    DateTime dateFrom = new DateTime(CoreUtils.parseDate(query.getDateFrom()));
-                    search.setPublishedAfter(dateFrom);
-                } catch (Exception e) {
-                    log.error(e);
-                }
-            }
-
-            if (query.getDateTill() != null) {
-                try {
-                    DateTime dateTill = new DateTime(CoreUtils.parseDate(query.getDateTill()));
-                    search.setPublishedBefore(dateTill);
-                } catch (Exception e) {
-                    log.error(e);
-                }
-            }
+            YouTube.Search.List search = createSearch(query, youtube);
 
             /*
-             * The pageToken parameter identifies a specific page in the result set that
-             * should be returned. In an API response, the nextPageToken and prevPageToken
-             * properties identify other pages that could be retrieved.
+             * The pageToken parameter identifies a specific page in the result set that should be returned.
+             * In an API response, the nextPageToken and prevPageToken properties identify other pages that could be retrieved.
              */
             if (query.getPage() > 1) {
                 HashMap<Integer, String> tokensMap = getTokensMap(query);
                 if (tokensMap.containsKey(query.getPage())) {
                     search.setPageToken(tokensMap.get(query.getPage()));
                 } else if (tokensMap.containsKey(-1)) {
-                    log.warn("No more results for page " + query.getPage());
+                    log.warn("No more results for page {}", query.getPage());
                     return queryResult;
                 } else {
-                    throw new InterWebException("YouTube does not support search by specific page numbers without requesting prevent page.");
+                    throw new InterWebException("YouTube does not support search by specific page numbers without requesting previous page.");
                 }
             }
 
-            // Restrict the search results to only include videos. See:
-            // https://developers.google.com/youtube/v3/docs/search/list#type
-            search.setType("video");
-            search.setSafeSearch("moderate"); // moderate | none | strict
-            search.setOrder(getOrder(query.getRanking()));
-
-            // To increase efficiency, only retrieve the fields that the application uses.
-            search.setFields("nextPageToken,pageInfo/totalResults,items(id/videoId)");
-            search.setMaxResults((long) query.getPerPage());
-
-            // Call the API and print results.
-            log.info("Request url: " + search.buildHttpRequestUrl());
             SearchListResponse searchResponse = search.execute();
 
             // Limit of YouTube data API, see more: http://stackoverflow.com/questions/23255957
-            long totalResults = searchResponse.getPageInfo().getTotalResults();
-            queryResult.setTotalResultCount(Math.min(totalResults, 500));
+            queryResult.setTotalResultCount(Math.min(searchResponse.getPageInfo().getTotalResults(), 500));
 
             if (searchResponse.getNextPageToken() != null) {
-                log.debug("Next page " + (query.getPage() + 1) + " its token " + searchResponse.getNextPageToken());
+                log.debug("Next page {} its token {}", query.getPage() + 1, searchResponse.getNextPageToken());
                 getTokensMap(query).put(query.getPage() + 1, searchResponse.getNextPageToken());
             } else {
                 log.debug("No more results");
                 getTokensMap(query).put(-1, "no-more-pages");
             }
 
+            // at this point we will have video ID and snippet information
             List<SearchResult> searchResultList = searchResponse.getItems();
-            List<String> videoIds = new ArrayList<>();
 
-            if (searchResultList != null) {
-                // Merge video IDs
+            if (searchResultList == null || searchResultList.isEmpty()) {
+                return queryResult;
+            }
+
+            HashMap<String, Video> videosDetails = new HashMap<>();
+            // in the next step we check if we need to request additional information
+            if (query.getExtras() != null && !query.getExtras().isEmpty()) {
+                StringJoiner videoIds = new StringJoiner(",");
                 for (SearchResult searchResult : searchResultList) {
                     videoIds.add(searchResult.getId().getVideoId());
                 }
-                Joiner stringJoiner = Joiner.on(',');
-                String videoId = stringJoiner.join(videoIds);
 
-                // Call the YouTube Data API's youtube.videos.list method to retrieve the resources that represent the specified videos.
-                YouTube.Videos.List listVideosRequest = youtube.videos().list("snippet, statistics, contentDetails").setId(videoId);
-                listVideosRequest.setKey(API_KEY);
-                VideoListResponse listResponse = listVideosRequest.execute();
+                StringJoiner list = new StringJoiner(",");
+                if (query.getExtras().contains(SearchExtra.tags)) {
+                    list.add("snippet");
+                }
+                if (query.getExtras().contains(SearchExtra.statistics)) {
+                    list.add("statistics");
+                }
+                if (query.getExtras().contains(SearchExtra.duration)) {
+                    list.add("contentDetails");
+                }
 
-                List<Video> videoList = listResponse.getItems();
+                // Call the YouTube Data API's youtube.videos.list method to retrieve additional information for the specified videos
+                VideoListResponse videosResponse = youtube.videos().list(list.toString())
+                    .setId(videoIds.toString()).setKey(API_KEY).execute();
 
-                if (videoList != null) {
-                    Iterator<Video> iteratorVideoResults = videoList.iterator();
-                    int rank = query.getPerPage() * (query.getPage() - 1);
-
-                    while (iteratorVideoResults.hasNext()) {
-                        Video singleVideo = iteratorVideoResults.next();
-                        ResultItem resultItem = createResultItem(singleVideo, rank++);
-                        if (resultItem != null) {
-                            queryResult.addResultItem(resultItem);
-                        }
-                    }
+                for (Video video : videosResponse.getItems()) {
+                    videosDetails.put(video.getId(), video);
                 }
             }
 
+            int rank = query.getPerPage() * (query.getPage() - 1);
+            for (SearchResult video : searchResultList) {
+                ResultItem resultItem = createResultItem(video, videosDetails.get(video.getId().getVideoId()), rank++);
+                if (resultItem != null) {
+                    queryResult.addResultItem(resultItem);
+                }
+            }
         } catch (Throwable e) {
             log.error(e);
             throw new InterWebException(e);
@@ -291,16 +245,63 @@ public class YouTubeConnector extends ServiceConnector {
         return queryResult;
     }
 
-    private static String getOrder(SearchRanking ranking) {
+    private static YouTube.Search.List createSearch(Query query, final YouTube youtube) throws IOException {
+        // Define the API request for retrieving search results.
+        YouTube.Search.List search = youtube.search().list("id,snippet");
+
+        // Set your developer key from the {{ Google Cloud Console }} for non-authenticated requests.
+        search.setKey(API_KEY);
+        search.setRelevanceLanguage(query.getLanguage());
+
+        if (query.getQuery().startsWith("user::")) {
+            String[] splitQuery = query.getQuery().split(" ", 2);
+            ChannelListResponse channelListResponse = youtube.channels().list("id")
+                .setKey(API_KEY).setForUsername(splitQuery[0].substring(6)).execute();
+
+            search.setChannelId(channelListResponse.getItems().get(0).getId());
+
+            if (splitQuery.length > 1 && splitQuery[1] != null) {
+                search.setQ(splitQuery[1]);
+            }
+        } else {
+            search.setQ(query.getQuery());
+        }
+
+        if (query.getDateFrom() != null) {
+            try {
+                DateTime dateFrom = new DateTime(CoreUtils.parseDate(query.getDateFrom()));
+                search.setPublishedAfter(dateFrom);
+            } catch (Exception e) {
+                log.error(e);
+            }
+        }
+
+        if (query.getDateTill() != null) {
+            try {
+                DateTime dateTill = new DateTime(CoreUtils.parseDate(query.getDateTill()));
+                search.setPublishedBefore(dateTill);
+            } catch (Exception e) {
+                log.error(e);
+            }
+        }
+
+        search.setType("video"); // Restrict the search results to only include videos.
+        search.setMaxResults((long) query.getPerPage());
+        search.setOrder(convertRanking(query.getRanking()));
+
+        search.setMaxResults((long) query.getPerPage());
+        return search;
+    }
+
+    private static String convertRanking(SearchRanking ranking) {
         switch (ranking) {
-            case relevance:
-                return "relevance";
             case date:
                 return "date";
             case interestingness:
                 return "viewCount";
+            case relevance:
             default:
-                return null;
+                return "relevance";
         }
     }
 
@@ -312,63 +313,100 @@ public class YouTubeConnector extends ServiceConnector {
         }
     }
 
-    private ResultItem createResultItem(Video singleVideo, int rank) {
-        // Confirm that the result represents a video. Otherwise, the item will not contain a video ID.
-        if (!singleVideo.getKind().equals("youtube#video")) {
-            return null;
-        }
-
+    private ResultItem createResultItem(SearchResult searchResult, Video videoResult, int rank) {
         ResultItem resultItem = new ResultItem(getName(), rank);
         resultItem.setType(ContentType.video);
-        resultItem.setId(singleVideo.getId());
-        resultItem.setUrl("https://www.youtube.com/watch?v=" + singleVideo.getId());
 
-        VideoSnippet vSnippet = singleVideo.getSnippet();
-        if (vSnippet != null) {
-            if (vSnippet.getTitle() != null) {
-                resultItem.setTitle(vSnippet.getTitle());
+        if (searchResult != null) {
+            // Confirm that the result represents a video. Otherwise, the item will not contain a video ID.
+            if (!searchResult.getId().getKind().equals("youtube#video")) {
+                return null;
             }
-            if (vSnippet.getDescription() != null) {
-                resultItem.setDescription(vSnippet.getDescription());
+
+            resultItem.setId(searchResult.getId().getVideoId());
+
+            SearchResultSnippet vSnippet = searchResult.getSnippet();
+            if (vSnippet != null) {
+                if (vSnippet.getTitle() != null) {
+                    resultItem.setTitle(vSnippet.getTitle());
+                }
+                if (vSnippet.getDescription() != null) {
+                    resultItem.setDescription(vSnippet.getDescription());
+                }
+                if (vSnippet.getPublishedAt() != null) {
+                    resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
+                }
+
+                ThumbnailDetails thumbnails = vSnippet.getThumbnails();
+                if (thumbnails.getMedium() != null) {
+                    resultItem.setThumbnailSmall(createThumbnail(thumbnails.getMedium()));
+                }
+                if (thumbnails.getHigh() != null) {
+                    resultItem.setThumbnailMedium(createThumbnail(thumbnails.getHigh()));
+                }
+                if (thumbnails.getMaxres() != null) {
+                    resultItem.setThumbnailLarge(createThumbnail(thumbnails.getMaxres()));
+                }
             }
-            if (vSnippet.getPublishedAt() != null) {
-                resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
+        } else if (videoResult != null) {
+            // This is required for a case when `searchResult == null`, e.g. from `put` method
+            if (!videoResult.getKind().equals("youtube#video")) {
+                return null;
             }
+
+            resultItem.setId(videoResult.getId());
+
+            VideoSnippet vSnippet = videoResult.getSnippet();
+            if (vSnippet != null) {
+                if (vSnippet.getTitle() != null) {
+                    resultItem.setTitle(vSnippet.getTitle());
+                }
+                if (vSnippet.getDescription() != null) {
+                    resultItem.setDescription(vSnippet.getDescription());
+                }
+                if (vSnippet.getPublishedAt() != null) {
+                    resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
+                }
+
+                ThumbnailDetails thumbnails = vSnippet.getThumbnails();
+                if (thumbnails.getMedium() != null) {
+                    resultItem.setThumbnailSmall(createThumbnail(thumbnails.getMedium()));
+                }
+                if (thumbnails.getHigh() != null) {
+                    resultItem.setThumbnailMedium(createThumbnail(thumbnails.getHigh()));
+                }
+                if (thumbnails.getMaxres() != null) {
+                    resultItem.setThumbnailLarge(createThumbnail(thumbnails.getMaxres()));
+                }
+            }
+        }
+
+        if (videoResult != null) {
+            VideoSnippet vSnippet = videoResult.getSnippet();
             if (vSnippet.getTags() != null) {
                 resultItem.getTags().addAll(vSnippet.getTags());
             }
 
-            ThumbnailDetails thumbnails = vSnippet.getThumbnails();
-            if (thumbnails.getMedium() != null) {
-                resultItem.setThumbnailSmall(createThumbnail(thumbnails.getMedium()));
+            VideoStatistics vStatistics = videoResult.getStatistics();
+            if (vStatistics != null) {
+                if (vStatistics.getViewCount() != null) {
+                    resultItem.setViewCount(vStatistics.getViewCount().longValue());
+                }
+                if (vStatistics.getCommentCount() != null) {
+                    resultItem.setViewCount(vStatistics.getCommentCount().longValue());
+                }
             }
-            if (thumbnails.getHigh() != null) {
-                resultItem.setThumbnailMedium(createThumbnail(thumbnails.getHigh()));
-            }
-            if (thumbnails.getMaxres() != null) {
-                resultItem.setThumbnailLarge(createThumbnail(thumbnails.getMaxres()));
+
+            VideoContentDetails vContentDetails = videoResult.getContentDetails();
+            if (vContentDetails != null) {
+                if (vContentDetails.getDuration() != null) {
+                    resultItem.setDuration(Duration.parse(vContentDetails.getDuration()).get(ChronoUnit.SECONDS));
+                }
             }
         }
 
-        VideoStatistics vStatistics = singleVideo.getStatistics();
-        if (vStatistics != null) {
-            if (vStatistics.getViewCount() != null) {
-                resultItem.setViewCount(vStatistics.getViewCount().longValue());
-            }
-            if (vStatistics.getCommentCount() != null) {
-                resultItem.setViewCount(vStatistics.getCommentCount().longValue());
-            }
-        }
-
-        VideoContentDetails vContentDetails = singleVideo.getContentDetails();
-        if (vContentDetails != null) {
-            if (vContentDetails.getDuration() != null) {
-                resultItem.setDuration(Duration.parse(vContentDetails.getDuration()).get(ChronoUnit.SECONDS));
-            }
-        }
-
-        resultItem.setEmbeddedCode(createEmbeddedCode(singleVideo.getId()));
-
+        resultItem.setUrl("https://www.youtube.com/watch?v=" + resultItem.getId());
+        resultItem.setEmbeddedCode(createEmbeddedCode(resultItem.getId()));
         return resultItem;
     }
 
@@ -391,8 +429,7 @@ public class YouTubeConnector extends ServiceConnector {
         try {
             YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials)).setApplicationName("Interweb").build();
 
-            ChannelListResponse channelListResponse = youtube.channels().list("id,contentDetails")
-                .setMine(true).setFields("items(contentDetails/relatedPlaylists/uploads,id)").execute();
+            ChannelListResponse channelListResponse = youtube.channels().list("id,contentDetails").setMine(true).execute();
 
             return channelListResponse.getItems().get(0).getId();
         } catch (IOException e) {
@@ -449,24 +486,18 @@ public class YouTubeConnector extends ServiceConnector {
             InputStream is = new ByteArrayInputStream(data);
             InputStreamContent mediaContent = new InputStreamContent("video/*", is);
 
-            // Insert the video. The command sends three arguments. The first
-            // specifies which information the API request is setting and which
-            // information the API response should return. The second argument
-            // is the video resource that contains metadata about the new video.
+            // Insert the video. The command sends three arguments. The first specifies which information the API request is setting and which
+            // information the API response should return. The second argument  is the video resource that contains metadata about the new video.
             // The third argument is the actual video content.
             YouTube.Videos.Insert videoInsert = youtube.videos().insert("snippet,statistics,status", videoObjectDefiningMetadata, mediaContent);
 
             // Set the upload type and add an event listener.
             MediaHttpUploader uploader = videoInsert.getMediaHttpUploader();
 
-            // Indicate whether direct media upload is enabled. A value of
-            // "True" indicates that direct media upload is enabled and that
-            // the entire media content will be uploaded in a single request.
-            // A value of "False," which is the default, indicates that the
-            // request will use the resumable media upload protocol, which
-            // supports the ability to resume an upload operation after a
-            // network interruption or other transmission failure, saving
-            // time and bandwidth in the event of network failures.
+            // Indicate whether direct media upload is enabled. A value of "True" indicates that direct media upload is enabled and that
+            // the entire media content will be uploaded in a single request. A value of "False," which is the default, indicates that the
+            // request will use the resumable media upload protocol, which supports the ability to resume an upload operation after a
+            // network interruption or other transmission failure, saving time and bandwidth in the event of network failures.
             uploader.setDirectUploadEnabled(false);
 
             MediaHttpUploaderProgressListener progressListener = uploader1 -> {
@@ -493,7 +524,7 @@ public class YouTubeConnector extends ServiceConnector {
             uploader.setProgressListener(progressListener);
 
             Video returnedVideo = videoInsert.execute();
-            resultItem = createResultItem(returnedVideo, 0);
+            resultItem = createResultItem(null, returnedVideo, 0);
 
         } catch (Throwable e) {
             log.error(e);
@@ -513,10 +544,10 @@ public class YouTubeConnector extends ServiceConnector {
         }).setApplicationName("Interweb").build();
 
         ChannelListResponse channelListResponse = youtube.channels().list("id")
-            .setKey(API_KEY).setForUsername(username).setFields("items(id)").execute();
+            .setKey(API_KEY).setForUsername(username).execute();
 
         ChannelListResponse detailedItem = youtube.channels().list("id, brandingSettings")
-            .setKey(API_KEY).setId(channelListResponse.getItems().get(0).getId()).setFields("items(id, brandingSettings)").execute();
+            .setKey(API_KEY).setId(channelListResponse.getItems().get(0).getId()).execute();
 
         String keywords = detailedItem.getItems().get(0).getBrandingSettings().getChannel().getKeywords();
 

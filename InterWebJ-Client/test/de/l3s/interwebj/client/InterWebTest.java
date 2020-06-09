@@ -20,7 +20,7 @@ class InterWebTest {
     void simpleTest() {
         TreeMap<String, String> params = new TreeMap<>();
         params.put("language", "en");
-        params.put("types", "video");
+        params.put("media_types", "video");
         params.put("services", "YouTube,Vimeo");
         params.put("per_page", "32");
         params.put("page", "1");

@@ -35,7 +35,7 @@ public class OAuth extends Endpoint {
     @Path("/OAuthAuthorizeToken")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response authorizeToken(@QueryParam("oauth_token") String requestToken, @QueryParam("oauth_callback") String callbackUrl) {
-        log.info("callbackUrl: [" + callbackUrl + "]");
+        log.info("callbackUrl: [{}]", callbackUrl);
         URI uri = getBaseUri().resolve("../view/authorize_consumer.xhtml");
         UriBuilder builder = UriBuilder.fromUri(uri);
         builder = builder.queryParam("oauth_token", requestToken);

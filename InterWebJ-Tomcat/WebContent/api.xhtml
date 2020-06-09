@@ -5,6 +5,93 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="content">
+        <h3>GET /api/search</h3>
+        <p>A web search across multiple services.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>param name</th>
+                    <th>type</th>
+                    <th>description</th>
+                    <th>possible values</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>q *</td>
+                    <td>string</td>
+                    <td>Search query</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>services *</td>
+                    <td>string, multivalued (csv)</td>
+                    <td>A services to search in</td>
+                    <td>bing, flickr, giphy, ipernity, slideshare, vimeo, youtube</td>
+                </tr>
+                <tr>
+                    <td>media_types *</td>
+                    <td>string, multivalued (csv)</td>
+                    <td>A content type to search for</td>
+                    <td>text, video, image, audio, presentation</td>
+                </tr>
+                <tr>
+                    <td>search_in</td>
+                    <td>string</td>
+                    <td></td>
+                    <td>text, tags</td>
+                </tr>
+                <tr>
+                    <td>date_from</td>
+                    <td>string</td>
+                    <td></td>
+                    <td>format: yyyy-MM-dd HH:mm:ss</td>
+                </tr>
+                <tr>
+                    <td>date_till</td>
+                    <td>string</td>
+                    <td></td>
+                    <td>format: yyyy-MM-dd HH:mm:ss</td>
+                </tr>
+                <tr>
+                    <td>ranking</td>
+                    <td>string</td>
+                    <td></td>
+                    <td>date, relevance, interestingness</td>
+                </tr>
+                <tr>
+                    <td>page</td>
+                    <td>number</td>
+                    <td></td>
+                    <td>1..100</td>
+                </tr>
+                <tr>
+                    <td>per_page</td>
+                    <td>number</td>
+                    <td></td>
+                    <td>1..500</td>
+                </tr>
+                <tr>
+                    <td>language</td>
+                    <td>string</td>
+                    <td>A two letter language code</td>
+                    <td>en, de, es, fr, ...</td>
+                </tr>
+                <tr>
+                    <td>extras</td>
+                    <td>string, multivalued (csv)</td>
+                    <td></td>
+                    <td>statistics, duration, tags</td>
+                </tr>
+                <tr>
+                    <td>timeout</td>
+                    <td>number</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
     </ui:define>
 
 </ui:composition>

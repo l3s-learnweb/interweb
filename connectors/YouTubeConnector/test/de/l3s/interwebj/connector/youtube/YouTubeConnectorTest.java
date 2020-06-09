@@ -15,6 +15,7 @@ import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
 import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.SearchExtra;
 import de.l3s.interwebj.core.query.SearchRanking;
 
 class YouTubeConnectorTest {
@@ -33,13 +34,15 @@ class YouTubeConnectorTest {
 
     @Test
     void get() throws InterWebException {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery("spacex");
+        Query query = QueryFactory.createQuery("spacex");
         query.addContentType(ContentType.video);
         query.setPerPage(10);
         // query.setDateFrom("2009-01-01 00:00:00");
         // query.setDateTill("2009-06-01 00:00:00");
         query.setRanking(SearchRanking.relevance);
+        // query.addSearchExtra(SearchExtra.statistics);
+        query.addSearchExtra(SearchExtra.duration);
+        query.addSearchExtra(SearchExtra.tags);
 
         ConnectorSearchResults page1 = connector.get(query, null);
         assertEquals(10, page1.getResultItems().size());

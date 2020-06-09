@@ -60,8 +60,7 @@ public class Services extends Endpoint {
         if (connector == null) {
             throw new WebApplicationException("Service unknown", Response.Status.BAD_REQUEST);
         }
-        ServiceEntity serviceEntity = createServiceEntity(baseUri, principal, connector);
-        return serviceEntity;
+        return createServiceEntity(baseUri, principal, connector);
     }
 
     private static AuthorizationEntity createAuthorizationEntity(String baseUri, ServiceConnector connector, boolean isAuthenticated) {

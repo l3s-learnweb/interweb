@@ -7,11 +7,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class QueryFactory {
 
-    public Query createQuery(String stringQuery) {
+    public static Query createQuery(String stringQuery) {
         return createQuery(stringQuery, new HashSet<>());
     }
 
-    public Query createQuery(String stringQuery, Set<ContentType> contentTypes) {
+    public static Query createQuery(String stringQuery, Set<ContentType> contentTypes) {
         return new Query(createQueryId(), stringQuery, contentTypes);
     }
 

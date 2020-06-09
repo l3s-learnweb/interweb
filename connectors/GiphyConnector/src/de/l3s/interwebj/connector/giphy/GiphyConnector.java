@@ -20,11 +20,18 @@ import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 
+/**
+ * Giphy, styled as GIPHY, is an American online database and search engine that allows users to search for
+ * and share short looping videos with no sound, that resemble animated GIF files.
+ * TODO missing search implementations: extras, search_in, date, ranking.
+ *
+ * @see <a href="https://developers.giphy.com/docs/api/endpoint#search">Giphy Search API</a>
+ */
 public class GiphyConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(GiphyConnector.class);
 
     public GiphyConnector() {
-        super("Giphy", "https://giphy.com", ContentType.image);
+        super("Giphy", "https://giphy.com/", ContentType.image);
     }
 
     public GiphyConnector(AuthCredentials consumerAuthCredentials) {

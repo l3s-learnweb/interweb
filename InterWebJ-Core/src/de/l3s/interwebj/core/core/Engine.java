@@ -76,8 +76,8 @@ public class Engine {
         notNull(principal, "principal");
         notNull(connector, "connector");
         notNull(params, "params");
-        log.info("Adding pending authorization connector [" + connector.getName() + "] for user [" + principal.getName() + "]");
-        log.info("params: [" + params + "]");
+        log.info("Adding pending authorization connector [{}] for user [{}]", connector.getName(), principal.getName());
+        log.info("params: [{}]", params);
         Cache<ServiceConnector, Parameters> expirableCache = createExpirableCache(60);
 
         if (pendingAuthorizationConnectors.containsKey(principal.getName())) {
@@ -156,13 +156,13 @@ public class Engine {
     public void processAuthenticationCallback(InterWebPrincipal principal, ServiceConnector connector, Parameters params) throws InterWebException {
         notNull(principal, "principal");
         notNull(connector, "connector");
-        log.info("Trying to find pending authorization connector [" + connector.getName() + "] for user [" + principal.getName() + "]");
+        log.info("Trying to find pending authorization connector [{}] for user [{}]", connector.getName(), principal.getName());
         Parameters pendingParameters = getPendingAuthorizationParameters(principal, connector);
         params.add(pendingParameters, false);
         AuthCredentials authCredentials = connector.completeAuthentication(params);
         log.info(authCredentials);
         String userId = connector.getUserId(authCredentials);
-        log.info("Connector [" + connector.getName() + "] for user [" + principal.getName() + "] authenticated");
+        log.info("Connector [{}] for user [{}] authenticated", connector.getName(), principal.getName());
         setUserAuthCredentials(connector.getName(), principal, userId, authCredentials);
         log.info("authentication data saved");
     }
@@ -180,10 +180,10 @@ public class Engine {
     public ResultItem upload(byte[] data, Principal principal, List<String> connectorNames, ContentType contentType, Parameters params) throws InterWebException {
         log.info("start uploading ...");
         for (String connectorName : connectorNames) {
-            log.info("connectorName: [" + connectorName + "]");
+            log.info("connectorName: [{}]", connectorName);
             ServiceConnector connector = getConnector(connectorName);
             if (connector != null && connector.supportContentType(contentType) && connector.isRegistered() && isUserAuthenticated(connector, principal)) {
-                log.info("uploading to connector: " + connectorName);
+                log.info("uploading to connector: {}", connectorName);
                 AuthCredentials userAuthCredentials = getUserAuthCredentials(connector, principal);
                 ResultItem result = connector.put(data, contentType, params, userAuthCredentials);
                 log.info("done");

@@ -34,13 +34,13 @@ public class ConnectorLoader {
     }
 
     private ServiceConnector loadConnector(String className) {
-        log.info("trying load connector: [" + className + "]");
+        log.info("trying load connector: [{}]", className);
         try {
             ServiceConnector connector = instantiate(className, ServiceConnector.class);
-            log.info("Connector [" + connector.getName() + "] successfully loaded");
+            log.info("Connector [{}] successfully loaded", connector.getName());
             return connector;
         } catch (ReflectiveOperationException e) {
-            log.error("No class found for connector [" + className + "]", e);
+            log.error("No class found for connector [{}]", className, e);
             return null;
         }
     }

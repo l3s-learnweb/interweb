@@ -48,7 +48,7 @@ public class Embedded extends Endpoint {
         for (ServiceConnector connector : connectors) {
             if (connector.isRegistered()) {
                 try {
-                    log.info("querying connector: " + connector.getName());
+                    log.info("querying connector: {}", connector.getName());
                     embedded = connector.getEmbedded(authCredentials, url, maxWidth, maxHeight);
                     if (embedded != null) {
                         break;

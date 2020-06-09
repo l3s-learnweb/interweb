@@ -42,11 +42,17 @@ import de.l3s.interwebj.core.query.SearchScope;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
+/**
+ * LinkedIn SlideShare is an American hosting service for professional content including presentations, infographics, documents, and videos.
+ * TODO missing search implementations: extras, date.
+ *
+ * @see <a href="https://www.slideshare.net/developers/documentation#search_slideshows">SlideShare Search API</a>
+ */
 public class SlideShareConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(SlideShareConnector.class);
 
     public SlideShareConnector() {
-        super("SlideShare", "https://www.slideshare.net", ContentType.text, ContentType.presentation, ContentType.video);
+        super("SlideShare", "https://www.slideshare.net/", ContentType.text, ContentType.presentation, ContentType.video);
     }
 
     public SlideShareConnector(AuthCredentials consumerAuthCredentials) {
@@ -86,14 +92,13 @@ public class SlideShareConnector extends ServiceConnector {
             .queryParam("page", Integer.toString(query.getPage()))
             .queryParam("items_per_page", Integer.toString(query.getPerPage()))
             // .queryParam("detailed", "1")
-            .queryParam("sort", createSortOrder(query.getRanking()));
+            .queryParam("sort", convertRanking(query.getRanking()));
 
-        String searchScope = createSearchScope(query.getSearchScopes());
-        if (searchScope != null) {
-            target = target.queryParam("what", searchScope);
+        if (query.getSearchScope() == SearchScope.tags) {
+            target = target.queryParam("what", "tag");
         }
 
-        String fileType = createFileType(query.getContentTypes());
+        String fileType = convertContentType(query.getContentTypes());
         if (fileType == null) {
             return queryResult;
         }
@@ -192,7 +197,7 @@ public class SlideShareConnector extends ServiceConnector {
         return true;
     }
 
-    private String createFileType(Set<ContentType> contentTypes) {
+    private String convertContentType(Set<ContentType> contentTypes) {
         List<String> fileTypes = new ArrayList<>();
 
         if (contentTypes.contains(ContentType.presentation)) {
@@ -214,21 +219,13 @@ public class SlideShareConnector extends ServiceConnector {
         return "all";
     }
 
-    private String createSearchScope(Set<SearchScope> searchScopes) {
-        if (searchScopes.contains(SearchScope.tags)) {
-            return "tag";
-        }
-        return null;
-    }
-
-    private String createSortOrder(SearchRanking searchRanking) {
-        switch (searchRanking) {
-            case relevance:
-                return "relevance";
+    private static String convertRanking(SearchRanking ranking) {
+        switch (ranking) {
             case date:
                 return "latest";
             case interestingness:
                 return "mostviewed";
+            case relevance:
             default:
                 return "relevance";
         }

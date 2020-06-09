@@ -6,7 +6,6 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.db.Database;
@@ -53,7 +52,7 @@ public class UserDataBean {
         username = userName;
     }
 
-    public void register() throws InterWebException {
+    public void register() {
         Environment environment = Environment.getInstance();
         Database database = environment.getDatabase();
         if (validate(database)) {

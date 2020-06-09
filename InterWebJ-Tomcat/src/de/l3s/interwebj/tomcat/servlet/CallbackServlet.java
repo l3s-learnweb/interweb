@@ -43,8 +43,7 @@ public class CallbackServlet extends HttpServlet {
     }
 
     public void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        log.info("query string: [" + request.getQueryString() + "]");
+        log.info("query string: [{}]", request.getQueryString());
 
         Parameters parameters = new Parameters();
         parameters.addMultivaluedParams(request.getParameterMap());
@@ -123,7 +122,7 @@ public class CallbackServlet extends HttpServlet {
     private void processRestRequest(HttpServletRequest request, HttpServletResponse response, InterWebPrincipal principal,
         ServiceConnector connector, Parameters parameters) throws IOException {
         String callback = parameters.get(Parameters.CALLBACK);
-        log.info("callback: [" + callback + "]");
+        log.info("callback: [{}]", callback);
 
         if (StringUtils.isNotEmpty(callback)) {
             response.sendRedirect(callback);
@@ -148,7 +147,7 @@ public class CallbackServlet extends HttpServlet {
         writeIntoServletResponse(response, serviceResponse);
     }
 
-    private void processServletRequest(HttpServletRequest request, HttpServletResponse response, Parameters parameters) throws ServletException, IOException {
+    private void processServletRequest(HttpServletRequest request, HttpServletResponse response, Parameters parameters) throws IOException {
         String redirectUrl = request.getContextPath() + "/view/services.xhtml";
         if (parameters.hasParameter(Parameters.ERROR)) {
             String error = parameters.get(Parameters.ERROR);

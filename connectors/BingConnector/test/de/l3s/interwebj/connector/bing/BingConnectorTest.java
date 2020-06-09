@@ -32,8 +32,7 @@ class BingConnectorTest {
 
     @Test
     void get() throws InterWebException {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery("hello world");
+        Query query = QueryFactory.createQuery("hello world");
         query.addContentType(ContentType.video);
         query.addContentType(ContentType.image);
         // query.setDateFrom("2009-01-01 00:00:00");
@@ -51,8 +50,7 @@ class BingConnectorTest {
 
     @Test
     void getImages() throws InterWebException {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery("hannover");
+        Query query = QueryFactory.createQuery("hannover");
         query.addContentType(ContentType.image);
         query.setPerPage(30);
         query.setPage(2);
@@ -69,8 +67,7 @@ class BingConnectorTest {
 
     @Test
     void getVideos() throws InterWebException {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery("hannover");
+        Query query = QueryFactory.createQuery("hannover");
         query.addContentType(ContentType.video);
         query.setPerPage(30);
         query.setPage(2);

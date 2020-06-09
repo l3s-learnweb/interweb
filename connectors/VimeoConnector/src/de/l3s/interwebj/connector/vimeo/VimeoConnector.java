@@ -30,14 +30,21 @@ import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.SearchRanking;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
+/**
+ * Vimeo is a video hosting, sharing, and services platform headquartered in New York City.
+ * TODO missing search implementations: extras, search_in, date, language.
+ *
+ * @see <a href="https://developer.vimeo.com/api/reference/videos#search_videos">Vimeo Search API</a>
+ */
 public class VimeoConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(VimeoConnector.class);
 
     public VimeoConnector() {
-        super("Vimeo", "http://www.vimeo.com", ContentType.video);
+        super("Vimeo", "https://vimeo.com/", ContentType.video);
     }
 
     public VimeoConnector(AuthCredentials consumerAuthCredentials) {
@@ -49,22 +56,6 @@ public class VimeoConnector extends ServiceConnector {
     public ServiceConnector clone() {
         return new VimeoConnector(getAuthCredentials());
     }
-
-    /*
-    private static String createSortOrder(SortOrder sortOrder)
-    {
-        switch(sortOrder)
-        {
-        case RELEVANCE:
-            return "relevant";
-        case DATE:
-            return "date";
-        case INTERESTINGNESS:
-            return "plays";
-        default:
-            return "relevant";
-        }
-    }*/
 
     @Override
     public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
@@ -89,6 +80,7 @@ public class VimeoConnector extends ServiceConnector {
         try {
             String requestUrl = "https://api.vimeo.com/videos?page=" + query.getPage()
                 + "&per_page=" + query.getPerPage()
+                + "&sort=" + createSortOrder(query.getRanking())
                 + "&query=" + URLEncoder.encode(query.getQuery(), StandardCharsets.UTF_8);
             String response = httpRequest(requestUrl, Map.ofEntries(
                 Map.entry("Accept", "application/vnd.vimeo.*+json; version=3.2"),
@@ -140,6 +132,18 @@ public class VimeoConnector extends ServiceConnector {
             log.error(e);
         }
         return queryResult;
+    }
+
+    private static String createSortOrder(SearchRanking ranking) {
+        switch (ranking) {
+            case date:
+                return "date";
+            case interestingness:
+                return "plays";
+            case relevance:
+            default:
+                return "relevant";
+        }
     }
 
     @Override

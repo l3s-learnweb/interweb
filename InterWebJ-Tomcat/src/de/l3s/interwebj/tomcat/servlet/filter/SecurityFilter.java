@@ -39,8 +39,8 @@ public class SecurityFilter implements Filter {
             InterWebPrincipal principal = sessionBean.getPrincipal();
             boolean authorized = accessControl.isAuthorized(principal, requestUrl, null);
             if (!authorized) {
-                log.info("Login required. User: " + principal + " is not authorized to access the resource: " + requestUrl);
-                log.info("saving requested URL: " + requestUrl);
+                log.info("Login required. User: {} is not authorized to access the resource: {}", principal, requestUrl);
+                log.info("saving requested URL: {}", requestUrl);
                 sessionBean.setSavedRequestUrl(requestUrl);
                 httpResponse.sendRedirect(httpRequest.getContextPath() + LOGIN_PAGE);
                 return;

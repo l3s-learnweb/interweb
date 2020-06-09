@@ -34,7 +34,7 @@ class UploadTest {
         multiPart = multiPart.bodyPart(new FormDataBodyPart("data", "the data"));
 
         WebTarget target = TestUtils.createWebTarget("users/default/uploads");
-        log.info("testing upload to interwebj: " + target.toString());
+        log.info("testing upload to interwebj: {}", target.toString());
         Response response = target.request(MediaType.APPLICATION_XML).post(Entity.entity(multiPart, multiPart.getMediaType()));
         multiPart.close();
 

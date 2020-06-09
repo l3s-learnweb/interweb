@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.cache.Cache;
 
 import de.l3s.interwebj.core.AuthCredentials;
-import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.core.Consumer;
 import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
@@ -54,7 +53,7 @@ public class ConsumersBean implements Serializable {
 
         Consumer consumer = new Consumer(name, url, description, authCredentials);
         database.saveConsumer(principal.getName(), consumer);
-        log.info("consumer: [" + consumer.getName() + "] successfully added");
+        log.info("consumer: [{}] successfully added", consumer.getName());
 
         String contextPath = FacesUtils.getContextPath();
         FacesUtils.redirect(contextPath + "/view/consumers.xhtml");
@@ -83,12 +82,12 @@ public class ConsumersBean implements Serializable {
         oauthToken = accessToken.getKey();
 
         if (!StringUtils.isEmpty(callback)) {
-            log.info("callback: [" + callback + "]");
+            log.info("callback: [{}]", callback);
             UriBuilder builder = UriBuilder.fromUri(callback);
             builder = builder.queryParam("oauth_token", accessToken.getKey());
             builder = builder.queryParam("oauth_token_secret", accessToken.getSecret());
             String callbackUrl = builder.build().toASCIIString();
-            log.info("redirecting to callback URL: " + callbackUrl);
+            log.info("redirecting to callback URL: {}", callbackUrl);
             FacesUtils.redirect(callbackUrl);
         } else {
             UriBuilder builder = UriBuilder.fromUri(request.getRequestURI());
@@ -96,7 +95,7 @@ public class ConsumersBean implements Serializable {
             builder = (callback == null) ? builder : builder.queryParam("oauth_callback", callback);
             builder = builder.queryParam("registered", "true");
             String url = builder.build().toASCIIString();
-            log.info("forwarding to URL: " + url);
+            log.info("forwarding to URL: {}", url);
             FacesUtils.redirect(url);
         }
     }
@@ -109,8 +108,7 @@ public class ConsumersBean implements Serializable {
         Engine engine = Environment.getInstance().getEngine();
         String consumerKey = (String) engine.getGeneralCache().getIfPresent("consumer_token:" + oauthToken);
         Database database = Environment.getInstance().getDatabase();
-        Consumer consumer = database.readConsumerByKey(consumerKey);
-        return consumer;
+        return database.readConsumerByKey(consumerKey);
     }
 
     public String getCallback() {
@@ -137,7 +135,7 @@ public class ConsumersBean implements Serializable {
         return oauthToken;
     }
 
-    public List<Consumer> getRegisteredConsumers() throws InterWebException {
+    public List<Consumer> getRegisteredConsumers() {
         Environment environment = Environment.getInstance();
         Database database = environment.getDatabase();
         InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
@@ -162,9 +160,9 @@ public class ConsumersBean implements Serializable {
         FacesUtils.redirect(contextPath + "/view/add_consumer.xhtml");
     }
 
-    public void revoke(Object consumer) throws InterWebException {
+    public void revoke(Object consumer) {
         String consumerName = ((Consumer) consumer).getName();
-        log.info("revoking consumer [" + consumerName + "]");
+        log.info("revoking consumer [{}]", consumerName);
         Environment environment = Environment.getInstance();
         Database database = environment.getDatabase();
         InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();

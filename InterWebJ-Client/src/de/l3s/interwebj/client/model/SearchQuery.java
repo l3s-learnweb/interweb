@@ -27,7 +27,7 @@ public class SearchQuery implements Serializable {
 
     @SerializedName("services")
     private List<String> services;
-    @SerializedName("types")
+    @SerializedName("media_types")
     private List<String> contentTypes;
     @SerializedName("search_in")
     private List<String> searchScopes;

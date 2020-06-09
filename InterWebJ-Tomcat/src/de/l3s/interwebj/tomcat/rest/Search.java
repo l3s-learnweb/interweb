@@ -1,9 +1,7 @@
 package de.l3s.interwebj.tomcat.rest;
 
 import java.text.ParseException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -17,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,6 +27,7 @@ import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
+import de.l3s.interwebj.core.query.SearchExtra;
 import de.l3s.interwebj.core.query.SearchRanking;
 import de.l3s.interwebj.core.query.SearchResults;
 import de.l3s.interwebj.core.query.SearchScope;
@@ -44,25 +44,25 @@ public class Search extends Endpoint {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public SearchResults getQueryResult(@QueryParam("q") String queryString, @QueryParam("services") String services,
-        @QueryParam("search_in") String searchIn, @QueryParam("types") String mediaTypes,
-        @QueryParam("date_from") String dateFrom, @QueryParam("date_till") String dateTill,
-        @QueryParam("page") String page, @QueryParam("per_page") String resultCount, @QueryParam("ranking") String ranking,
-        @QueryParam("language") String language, @QueryParam("timeout") String timeout) {
+    public SearchResults getQueryResult(@QueryParam("q") String queryString,
+        @QueryParam("services") String services, @QueryParam("media_types") String mediaTypes, @QueryParam("search_in") String searchIn,
+        @QueryParam("date_from") String dateFrom, @QueryParam("date_till") String dateTill, @QueryParam("ranking") String ranking,
+        @QueryParam("page") String page, @QueryParam("per_page") String perPage, @QueryParam("language") String language,
+        @QueryParam("extras") String extras, @QueryParam("timeout") String timeout) {
 
-        QueryFactory queryFactory = new QueryFactory();
         checkQueryString(queryString);
 
-        Query query = queryFactory.createQuery(queryString.trim());
+        Query query = QueryFactory.createQuery(queryString.trim());
         query.setLink(uriInfo.getAbsolutePath() + "/" + query.getId() + ".xml");
 
-        checkSearchIn(query, searchIn);
+        checkServices(query, services);
         checkMediaTypes(query, mediaTypes);
+        checkSearchIn(query, searchIn);
         checkDates(query, dateFrom, dateTill);
         checkRanking(query, ranking);
-        checkResultCount(query, resultCount);
-        checkServices(query, services);
         checkPage(query, page);
+        checkPerPage(query, perPage);
+        checkExtras(query, extras);
 
         if (null != language) {
             query.setLanguage(language);
@@ -75,13 +75,13 @@ public class Search extends Endpoint {
         try {
             Engine engine = Environment.getInstance().getEngine();
             InterWebPrincipal principal = getPrincipal();
-            log.info("principal: [" + principal + "]");
+            log.info("principal: [{}]", principal);
 
             QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
             SearchResults searchResults = collector.retrieve();
 
             engine.getGeneralCache().put(searchResults.getQuery().getId(), searchResults);
-            log.info(searchResults.getResultItems().size() + " results found in " + searchResults.getElapsedTime() + " ms");
+            log.info("{} results found in {} ms", searchResults.getResultItems().size(), searchResults.getElapsedTime());
             return searchResults;
         } catch (InterWebException e) {
             log.error(e);
@@ -107,11 +107,11 @@ public class Search extends Endpoint {
     private static boolean checkDate(String date) {
         try {
             CoreUtils.parseDate(date);
+            return true;
         } catch (ParseException e) {
             log.error(e);
             return false;
         }
-        return true;
     }
 
     private static void checkDates(Query query, String dateFrom, String dateTill) {
@@ -133,106 +133,100 @@ public class Search extends Endpoint {
     }
 
     private static void checkMediaTypes(Query query, String mediaTypes) {
-        if (mediaTypes == null || mediaTypes.trim().length() == 0) {
+        if (StringUtils.isBlank(mediaTypes)) {
             throw new WebApplicationException("Media type missing. You have to specify 'type' query param.", Response.Status.BAD_REQUEST);
         }
 
-        String[] mediaTypeArray = mediaTypes.split(",");
-        Engine engine = Environment.getInstance().getEngine();
-
-        List<ContentType> contentTypes = engine.getContentTypes();
-        for (String mediaType : mediaTypeArray) {
-            ContentType contentType = ContentType.find(mediaType);
+        String[] types = mediaTypes.split(",");
+        List<ContentType> contentTypes = Environment.getInstance().getEngine().getContentTypes();
+        for (String type : types) {
+            ContentType contentType = ContentType.find(type);
             if (contentType == null || !contentTypes.contains(contentType)) {
-                throw new WebApplicationException("Unknown media type", Response.Status.BAD_REQUEST);
+                throw new WebApplicationException("Unknown media type: " + type, Response.Status.BAD_REQUEST);
+            } else {
+                query.addContentType(contentType);
             }
-            query.addContentType(contentType);
         }
     }
 
     private static void checkQueryString(String queryString) {
-        if (queryString == null || queryString.trim().length() == 0) {
+        if (StringUtils.isBlank(queryString)) {
             throw new WebApplicationException("Query not set. You have to specify 'q' query param.", Response.Status.BAD_REQUEST);
         }
     }
 
     private static void checkRanking(Query query, String ranking) {
-        if (ranking == null || ranking.trim().length() == 0) {
-            query.setRanking(SearchRanking.relevance);
+        if (StringUtils.isBlank(ranking)) {
             return;
         }
 
         SearchRanking searchRanking = SearchRanking.find(ranking);
-        if (searchRanking == null) {
-            query.setRanking(SearchRanking.relevance);
-            return;
-        }
-
-        query.setRanking(searchRanking);
-    }
-
-    private static void checkResultCount(Query query, String resultCount) {
-        if (resultCount == null || resultCount.trim().length() == 0) {
-            return;
-        }
-
-        try {
-            int i = Integer.parseInt(resultCount);
-            i = Math.max(1, i);
-            i = Math.min(500, i);
-            query.setPerPage(i);
-        } catch (NumberFormatException e) {
-            log.error(e);
+        if (searchRanking != null) {
+            query.setRanking(searchRanking);
         }
     }
 
     private static void checkPage(Query query, String page) {
-        if (page == null || page.trim().length() == 0) {
+        if (StringUtils.isBlank(page)) {
             return;
         }
 
         try {
-            int i = Integer.parseInt(page);
-            i = Math.max(1, i);
-            i = Math.min(100, i);
-            query.setPage(i);
+            int pageNumber = Integer.parseInt(page);
+            query.setPage(Math.min(100, Math.max(1, pageNumber)));
         } catch (NumberFormatException e) {
             log.error(e);
         }
     }
 
-    private static void checkSearchIn(Query query, String searchIn) {
-        if (searchIn == null || searchIn.trim().length() == 0) {
-            query.addSearchScope(SearchScope.text);
+    private static void checkPerPage(Query query, String perPageStr) {
+        if (StringUtils.isBlank(perPageStr)) {
             return;
         }
 
-        String[] scopes = searchIn.split(",");
-        for (String scope : scopes) {
-            SearchScope searchScope = SearchScope.find(scope);
-            if (searchScope == null) {
-                Set<SearchScope> searchScopes = new HashSet<>();
-                query.setSearchScopes(searchScopes);
-                return;
-            }
-            query.addSearchScope(searchScope);
+        try {
+            int perPage = Integer.parseInt(perPageStr);
+            query.setPerPage(Math.min(500, Math.max(1, perPage)));
+        } catch (NumberFormatException e) {
+            log.error(e);
         }
     }
 
-    private static void checkServices(Query query, String services) {
-        Engine engine = Environment.getInstance().getEngine();
-        if (services == null || services.trim().length() == 0) {
-            List<String> connectorNames = engine.getConnectorNames();
-            for (String connectorName : connectorNames) {
-                query.addConnectorName(connectorName);
-            }
+    private static void checkSearchIn(Query query, String scopesStr) {
+        if (StringUtils.isBlank(scopesStr)) {
             return;
         }
 
-        String[] serviceArray = services.split(",");
-        List<String> connectorNames = engine.getConnectorNames();
-        for (String service : serviceArray) {
-            service = service.toLowerCase();
+        SearchScope searchScope = SearchScope.find(scopesStr);
+        if (searchScope != null) {
+            query.setSearchScope(searchScope);
+        }
+    }
+
+    private static void checkExtras(Query query, String extraStr) {
+        if (StringUtils.isBlank(extraStr)) {
+            return;
+        }
+
+        String[] extras = extraStr.split(",");
+        for (String extra : extras) {
+            SearchExtra searchExtra = SearchExtra.find(extra);
+            if (searchExtra != null) {
+                query.addSearchExtra(searchExtra);
+            }
+        }
+    }
+
+    private static void checkServices(Query query, String servicesStr) {
+        List<String> connectorNames = Environment.getInstance().getEngine().getConnectorNames();
+
+        if (StringUtils.isBlank(servicesStr)) {
+            query.setConnectorNames(connectorNames);
+            return;
+        }
+
+        String[] services = servicesStr.toLowerCase().split(",");
+        for (String service : services) {
             if (connectorNames.contains(service)) {
                 query.addConnectorName(service);
             }

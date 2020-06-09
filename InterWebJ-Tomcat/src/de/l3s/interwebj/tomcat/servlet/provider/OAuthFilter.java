@@ -1,7 +1,5 @@
 package de.l3s.interwebj.tomcat.servlet.provider;
 
-import java.io.IOException;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -35,10 +33,10 @@ public class OAuthFilter implements ContainerRequestFilter {
     OAuth1Signature oAuth1Signature;
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext) {
         log.info("OAuth filter processing.");
-        log.info("request path: [" + requestContext.getUriInfo().getPath() + "]");
-        log.info("authorization: " + requestContext.getHeaderString("authorization"));
+        log.info("request path: [{}]", requestContext.getUriInfo().getPath());
+        log.info("authorization: {}", requestContext.getHeaderString("authorization"));
         if (requestContext.getUriInfo().getPath().equals("oauth/OAuthAuthorizeToken")) {
             return;
         }
@@ -85,8 +83,8 @@ public class OAuthFilter implements ContainerRequestFilter {
         try {
             if (!oAuth1Signature.verify(osr, params, secrets)) {
                 log.error("failed to verify signature");
-                log.error("received signature: [" + params.getSignature() + "]");
-                log.error("generated signature: [" + oAuth1Signature.generate(osr, params, secrets) + "]");
+                log.error("received signature: [{}]", params.getSignature());
+                log.error("generated signature: [{}]", oAuth1Signature.generate(osr, params, secrets));
                 throw new WebApplicationException("Invalid signature", Response.Status.UNAUTHORIZED);
             }
         } catch (OAuth1SignatureException e) {

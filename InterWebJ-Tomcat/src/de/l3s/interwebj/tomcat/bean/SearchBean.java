@@ -53,13 +53,13 @@ public class SearchBean implements Serializable {
         init();
     }
 
-    public String getConnectorBaseUrl(String connectorName) throws InterWebException {
+    public String getConnectorBaseUrl(String connectorName) {
         Engine engine = Environment.getInstance().getEngine();
         ServiceConnector connector = engine.getConnector(connectorName);
         return connector.getBaseUrl();
     }
 
-    public List<SelectItem> getConnectorNames() throws InterWebException {
+    public List<SelectItem> getConnectorNames() {
         List<SelectItem> connectorSelectItems = new ArrayList<>();
         Engine engine = Environment.getInstance().getEngine();
         for (ServiceConnector connector : engine.getConnectors()) {
@@ -71,7 +71,7 @@ public class SearchBean implements Serializable {
         return connectorSelectItems;
     }
 
-    public List<SelectItem> getContentTypes() throws InterWebException {
+    public List<SelectItem> getContentTypes() {
         if (selectedConnectorNames == null) {
             init();
         }
@@ -165,13 +165,11 @@ public class SearchBean implements Serializable {
     }
 
     public void search() {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery(this.query, selectedContentTypes);
+        Query query = QueryFactory.createQuery(this.query, selectedContentTypes);
         query.setConnectorNames(selectedConnectorNames);
         String link = FacesUtils.getInterWebJBean().getBaseUrl() + "api/search/" + query.getId() + ".xml";
         query.setLink(link);
-        query.addSearchScope(SearchScope.text);
-        query.addSearchScope(SearchScope.tags);
+        query.setSearchScope(SearchScope.text);
         query.setPerPage(resultCount);
         query.setPage(page);
         query.setLanguage(language);

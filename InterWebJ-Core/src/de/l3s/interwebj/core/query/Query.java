@@ -3,6 +3,7 @@ package de.l3s.interwebj.core.query;
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -42,19 +43,21 @@ public class Query implements Serializable {
     @XmlElementWrapper(name = "services")
     @XmlElement(name = "service")
     private Set<String> connectorNames;
-    @JsonProperty("types")
-    @XmlElementWrapper(name = "types")
+    @JsonProperty("media_types")
+    @XmlElementWrapper(name = "media_types")
     @XmlElement(name = "type")
     private Set<ContentType> contentTypes;
-    @JsonProperty("search_in")
-    @XmlElementWrapper(name = "search_in")
-    @XmlElement(name = "scope")
-    private Set<SearchScope> searchScopes;
+    @JsonProperty("extras")
+    @XmlElementWrapper(name = "extras")
+    @XmlElement(name = "extra")
+    private Set<SearchExtra> extras;
 
     @XmlElement(name = "page")
     private int page = 1;
     @XmlElement(name = "per_page")
     private int perPage = 10;
+    @XmlElement(name = "search_in")
+    private SearchScope searchScope = SearchScope.text;
     @XmlElement(name = "ranking")
     private SearchRanking ranking = SearchRanking.relevance;
 
@@ -73,7 +76,7 @@ public class Query implements Serializable {
         this.query = query;
         this.connectorNames = new HashSet<>();
         this.contentTypes = contentTypes;
-        this.searchScopes = new HashSet<>();
+        this.extras = new HashSet<>();
     }
 
     public String getId() {
@@ -128,8 +131,8 @@ public class Query implements Serializable {
         return connectorNames;
     }
 
-    public void setConnectorNames(final Set<String> connectorNames) {
-        this.connectorNames = connectorNames;
+    public void setConnectorNames(final Collection<String> connectorNames) {
+        this.connectorNames = new HashSet<>(connectorNames);
     }
 
     public void addConnectorName(String connectorName) {
@@ -148,16 +151,24 @@ public class Query implements Serializable {
         contentTypes.add(contentType);
     }
 
-    public Set<SearchScope> getSearchScopes() {
-        return searchScopes;
+    public SearchScope getSearchScope() {
+        return searchScope;
     }
 
-    public void setSearchScopes(final Set<SearchScope> searchScopes) {
-        this.searchScopes = searchScopes;
+    public void setSearchScope(final SearchScope searchScope) {
+        this.searchScope = searchScope;
     }
 
-    public void addSearchScope(SearchScope searchScope) {
-        searchScopes.add(searchScope);
+    public Set<SearchExtra> getExtras() {
+        return extras;
+    }
+
+    public void setExtras(final Set<SearchExtra> extras) {
+        this.extras = extras;
+    }
+
+    public void addSearchExtra(SearchExtra part) {
+        extras.add(part);
     }
 
     public int getPage() {
@@ -203,6 +214,7 @@ public class Query implements Serializable {
         final Query query1 = (Query) o;
         return page == query1.page
             && perPage == query1.perPage
+            && searchScope == query1.searchScope
             && ranking == query1.ranking
             && Objects.equals(query, query1.query)
             && Objects.equals(dateFrom, query1.dateFrom)
@@ -210,16 +222,16 @@ public class Query implements Serializable {
             && Objects.equals(language, query1.language)
             && Objects.equals(connectorNames, query1.connectorNames)
             && Objects.equals(contentTypes, query1.contentTypes)
-            && Objects.equals(searchScopes, query1.searchScopes);
+            && Objects.equals(extras, query1.extras);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(query, dateFrom, dateTill, language, connectorNames, contentTypes, searchScopes, page, perPage, ranking);
+        return Objects.hash(query, dateFrom, dateTill, language, connectorNames, contentTypes, searchScope, extras, page, perPage, ranking);
     }
 
     public int hashCodeWithoutPage() {
-        return Objects.hash(query, dateFrom, dateTill, language, connectorNames, contentTypes, searchScopes, perPage, ranking);
+        return Objects.hash(query, dateFrom, dateTill, language, connectorNames, contentTypes, searchScope, extras, perPage, ranking);
     }
 
     @Override
@@ -233,9 +245,10 @@ public class Query implements Serializable {
             .append("language", language)
             .append("connectorNames", connectorNames)
             .append("contentTypes", contentTypes)
-            .append("searchScopes", searchScopes)
+            .append("searchExtra", extras)
             .append("page", page)
             .append("perPage", perPage)
+            .append("searchScopes", searchScope)
             .append("ranking", ranking)
             .append("timeout", timeout)
             .toString();

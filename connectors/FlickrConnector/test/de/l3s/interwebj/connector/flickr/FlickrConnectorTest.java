@@ -28,8 +28,7 @@ class FlickrConnectorTest {
 
     @Test
     void get() throws InterWebException {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery("hello world");
+        Query query = QueryFactory.createQuery("hello world");
         query.addContentType(ContentType.text);
         query.addContentType(ContentType.video);
         query.setPerPage(5);

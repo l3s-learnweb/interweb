@@ -49,7 +49,7 @@ public class UploadBean implements Serializable {
         publicAccess = true;
     }
 
-    public List<SelectItem> getConnectors() throws InterWebException {
+    public List<SelectItem> getConnectors() {
         List<SelectItem> connectors = new ArrayList<>();
         Engine engine = Environment.getInstance().getEngine();
         InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
@@ -62,7 +62,7 @@ public class UploadBean implements Serializable {
         return connectors;
     }
 
-    public List<ContentType> getContentTypes() throws InterWebException {
+    public List<ContentType> getContentTypes() {
         Engine engine = Environment.getInstance().getEngine();
         return engine.getContentTypes();
     }
@@ -142,44 +142,40 @@ public class UploadBean implements Serializable {
         byte[] data = ByteStreams.toByteArray(uploadedFile.getInputStream());
 
         if (selectedConnectors != null) {
+            Parameters params = createUploadParameters();
+            params.add(Parameters.FILENAME, fileName);
+
             Engine engine = Environment.getInstance().getEngine();
             InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
-            Parameters params = new Parameters();
-            if (title != null) {
-                params.add(Parameters.TITLE, title);
-            }
-            if (description != null) {
-                params.add(Parameters.DESCRIPTION, description);
-            }
-            if (tags != null) {
-                params.add(Parameters.TAGS, tags);
-            }
-            String privacy = isPublicAccess() ? "0" : "1";
-            params.add(Parameters.PRIVACY, privacy);
-            params.add(Parameters.FILENAME, fileName);
             engine.upload(data, principal, selectedConnectors, selectedContentType, params);
         }
     }
 
     public void uploadText() throws InterWebException {
-        log.info("text to upload: [" + text + "]");
+        log.info("text to upload: [{}]", text);
         if (text != null && selectedConnectors != null) {
+            Parameters params = createUploadParameters();
+
             Engine engine = Environment.getInstance().getEngine();
             InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
-            Parameters params = new Parameters();
-            if (title != null) {
-                params.add(Parameters.TITLE, title);
-            }
-            if (description != null) {
-                params.add(Parameters.DESCRIPTION, description);
-            }
-            if (tags != null) {
-                params.add(Parameters.TAGS, tags);
-            }
-            String privacy = isPublicAccess() ? "0" : "1";
-            params.add(Parameters.PRIVACY, privacy);
             engine.upload(text.getBytes(StandardCharsets.UTF_8), principal, selectedConnectors, selectedContentType, params);
             text = null;
         }
+    }
+
+    private Parameters createUploadParameters() {
+        Parameters params = new Parameters();
+        if (title != null) {
+            params.add(Parameters.TITLE, title);
+        }
+        if (description != null) {
+            params.add(Parameters.DESCRIPTION, description);
+        }
+        if (tags != null) {
+            params.add(Parameters.TAGS, tags);
+        }
+        String privacy = isPublicAccess() ? "0" : "1";
+        params.add(Parameters.PRIVACY, privacy);
+        return params;
     }
 }

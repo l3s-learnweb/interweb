@@ -61,7 +61,6 @@ public class Endpoint {
             return null;
         }
         Database database = Environment.getInstance().getDatabase();
-        InterWebPrincipal principal = database.readPrincipalByKey(token);
-        return principal;
+        return database.readPrincipalByKey(token);
     }
 }

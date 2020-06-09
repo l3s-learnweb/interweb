@@ -28,8 +28,7 @@ class VimeoConnectorTest {
 
     @Test
     void get() throws InterWebException {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery("hello world");
+        Query query = QueryFactory.createQuery("hello world");
         query.addContentType(ContentType.video);
         query.setPerPage(20);
         // query.setDateFrom("2009-01-01 00:00:00");
@@ -38,7 +37,7 @@ class VimeoConnectorTest {
 
         ConnectorSearchResults queryResult = connector.get(query, null);
 
-        assertEquals(5, queryResult.getResultItems().size());
+        assertEquals(20, queryResult.getResultItems().size());
         assertTrue(queryResult.getTotalResultCount() > 100);
     }
 }

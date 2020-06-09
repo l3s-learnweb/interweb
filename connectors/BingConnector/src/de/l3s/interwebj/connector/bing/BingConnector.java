@@ -2,7 +2,10 @@ package de.l3s.interwebj.connector.bing;
 
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +20,7 @@ import com.microsoft.azure.cognitiveservices.search.videosearch.models.VideosMod
 import com.microsoft.azure.cognitiveservices.search.websearch.BingWebSearchAPI;
 import com.microsoft.azure.cognitiveservices.search.websearch.BingWebSearchManager;
 import com.microsoft.azure.cognitiveservices.search.websearch.models.AnswerType;
+import com.microsoft.azure.cognitiveservices.search.websearch.models.Freshness;
 import com.microsoft.azure.cognitiveservices.search.websearch.models.ImageObject;
 import com.microsoft.azure.cognitiveservices.search.websearch.models.Images;
 import com.microsoft.azure.cognitiveservices.search.websearch.models.SearchResponse;
@@ -35,11 +39,18 @@ import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.Thumbnail;
 import de.l3s.interwebj.core.util.CoreUtils;
 
+/**
+ * Bing is a web search engine owned and operated by Microsoft.
+ * TODO missing search implementations: extras, search_in, ranking.
+ *
+ * @see <a href="https://docs.microsoft.com/en-us/rest/api/cognitiveservices-bingsearch/bing-web-api-v7-reference">Bing Search API</a>
+ */
 public class BingConnector extends ServiceConnector {
     private static final Logger log = LogManager.getLogger(BingConnector.class);
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public BingConnector() {
-        super("Bing", "http://www.bing.com", ContentType.text, ContentType.image, ContentType.video);
+        super("Bing", "https://www.bing.com/", ContentType.text, ContentType.image, ContentType.video);
     }
 
     public BingConnector(AuthCredentials consumerAuthCredentials) {
@@ -80,7 +91,7 @@ public class BingConnector extends ServiceConnector {
     /**
      * Make a search using Bing Web Search API.
      * It can retrieve any type of content, but only limited amount and no estimated results count.
-     * <p>
+     *
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
      */
     private ConnectorSearchResults getWebSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
@@ -103,6 +114,7 @@ public class BingConnector extends ServiceConnector {
             SearchResponse webData = client.bingWebs().search()
                 .withQuery(query.getQuery())
                 .withMarket(language)
+                .withFreshness(Freshness.fromString(createFreshness(query)))
                 .withCount(count)
                 .withResponseFilter(answerTypes)
                 .withOffset((query.getPage() - 1) * count)
@@ -206,7 +218,7 @@ public class BingConnector extends ServiceConnector {
 
     /**
      * Make a search using Bing Image Search API.
-     * <p>
+     *
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
      */
     private ConnectorSearchResults getImagesSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
@@ -218,6 +230,7 @@ public class BingConnector extends ServiceConnector {
             ImagesModel imageResults = client.bingImages().search()
                 .withQuery(query.getQuery())
                 .withMarket(language)
+                .withFreshness(com.microsoft.azure.cognitiveservices.search.imagesearch.models.Freshness.fromString(createFreshness(query)))
                 .withCount(count)
                 .withOffset(((query.getPage() - 1L) * count))
                 .execute();
@@ -264,7 +277,7 @@ public class BingConnector extends ServiceConnector {
 
     /**
      * Make a search using Bing Video Search API.
-     * <p>
+     *
      * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-video-search/quickstarts/client-libraries?pivots=programming-language-java
      */
     private ConnectorSearchResults getVideoSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
@@ -276,6 +289,7 @@ public class BingConnector extends ServiceConnector {
             VideosModel videoResults = client.bingVideos().search()
                 .withQuery(query.getQuery())
                 .withMarket(language)
+                .withFreshness(com.microsoft.azure.cognitiveservices.search.videosearch.models.Freshness.fromString(createFreshness(query)))
                 .withCount(count)
                 .withOffset(((query.getPage() - 1) * count))
                 .execute();
@@ -317,6 +331,40 @@ public class BingConnector extends ServiceConnector {
         } catch (Exception e) {
             throw new InterWebException(e);
         }
+    }
+
+    /**
+     * To get articles discovered by Bing during a specific timeframe, specify a date range in the form, YYYY-MM-DD..YYYY-MM-DD.
+     * For example, &freshness=2019-02-01..2019-05-30. To limit the results to a single date, set this parameter to a specific date.
+     * For example, &freshness=2019-02-04.
+     */
+    private static String createFreshness(Query query) {
+        Date dateFrom = null;
+        Date dateTill = new Date();
+
+        if (query.getDateFrom() != null) {
+            try {
+                dateFrom = new Date(CoreUtils.parseDate(query.getDateFrom()));
+            } catch (Exception e) {
+                log.error(e);
+            }
+        }
+
+        if (query.getDateTill() != null) {
+            try {
+                dateTill = new Date(CoreUtils.parseDate(query.getDateTill()));
+            } catch (Exception e) {
+                log.error(e);
+            }
+        }
+
+        if (dateFrom != null) {
+            String dateFromFormat = DATE_FORMAT.format(dateFrom);
+            String dateTillFormat = DATE_FORMAT.format(dateTill);
+            return dateFromFormat.equals(dateTillFormat) ? dateFromFormat : dateFromFormat + ".." + dateTillFormat;
+        }
+
+        return null;
     }
 
     private static String createMarket(String language) {

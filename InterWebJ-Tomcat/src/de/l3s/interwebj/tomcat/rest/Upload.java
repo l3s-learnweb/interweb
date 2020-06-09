@@ -37,7 +37,7 @@ public class Upload extends Endpoint {
 
         Engine engine = Environment.getInstance().getEngine();
         Principal principal = getPrincipal();
-        log.info("principal: [" + principal + "]");
+        log.info("principal: [{}]", principal);
 
         Parameters params = new Parameters();
         if (title != null) {

@@ -83,14 +83,14 @@ public class JdbcDatabase implements Database {
     public InterWebPrincipal authenticate(String userName, String password) {
         notNull(userName, "userName");
         notNull(password, "userPassword");
-        log.info("authenticating InterWebJ user [" + userName + "]");
+        log.info("authenticating InterWebJ user [{}]", userName);
         InterWebPrincipal dbPrincipal = getPrincipal(userName, password);
         if (dbPrincipal != null) {
             List<String> roles = getRoles(userName);
             for (String role : roles) {
                 dbPrincipal.addRole(role);
             }
-            log.info("InterWebJ user [" + userName + "] authenticated");
+            log.info("InterWebJ user [{}] authenticated", userName);
         }
         return dbPrincipal;
     }
@@ -726,7 +726,7 @@ public class JdbcDatabase implements Database {
             numberOfTries--;
         }
         if (dbConnection == null) {
-            log.error("Opening connection to database " + connectionURL + " failed!");
+            log.error("Opening connection to database {} failed!", connectionURL);
         } else {
             initPreparedStatements();
         }

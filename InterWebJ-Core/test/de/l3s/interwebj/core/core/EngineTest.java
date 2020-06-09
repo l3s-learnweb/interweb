@@ -32,7 +32,7 @@ class EngineTest {
         engine.loadConnectors();
 
         List<String> connectorNames = engine.getConnectorNames();
-        log.info("Searching in connectors: " + connectorNames);
+        log.info("Searching in connectors: {}", connectorNames);
         int retryCount = 5;
         for (int i = 0; i < retryCount; i++) {
             testSearch("london", connectorNames, engine, principal);
@@ -42,12 +42,10 @@ class EngineTest {
     }
 
     private static void testSearch(String word, List<String> connectorNames, Engine engine, InterWebPrincipal principal) throws InterWebException {
-        QueryFactory queryFactory = new QueryFactory();
-        Query query = queryFactory.createQuery(word);
+        Query query = QueryFactory.createQuery(word);
         query.addContentType(ContentType.video);
         query.addContentType(ContentType.image);
-        query.addSearchScope(SearchScope.text);
-        query.addSearchScope(SearchScope.tags);
+        query.setSearchScope(SearchScope.text);
         query.setPerPage(10);
         query.setRanking(SearchRanking.relevance);
         for (String connectorName : connectorNames) {
@@ -56,7 +54,7 @@ class EngineTest {
         QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
 
         SearchResults searchResults = collector.retrieve();
-        log.info("query: [" + query + "]");
-        log.info("elapsed time : [" + searchResults.getElapsedTime() + "]");
+        log.info("query: [{}]", query);
+        log.info("elapsed time : [{}]", searchResults.getElapsedTime());
     }
 }
