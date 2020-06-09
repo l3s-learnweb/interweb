@@ -24,6 +24,7 @@ class InterWebTest {
         params.put("services", "YouTube,Vimeo");
         params.put("per_page", "32");
         params.put("page", "1");
+        params.put("extras", "duration,tags");
         params.put("timeout", "50");
 
         InterWeb iw = new InterWeb(SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET);
@@ -34,7 +35,7 @@ class InterWebTest {
         assertTrue(response.getResultsPerService().get("Vimeo") > 0);
 
         for (SearchResult result : response.getResults()) {
-            System.out.println(result.getTitle());
+            System.out.println(result.getTitle() + " [" + result.getDuration() + "]");
             System.out.println(result.getUrl());
         }
     }

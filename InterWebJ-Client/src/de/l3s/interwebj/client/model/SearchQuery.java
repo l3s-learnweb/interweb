@@ -29,13 +29,13 @@ public class SearchQuery implements Serializable {
     private List<String> services;
     @SerializedName("media_types")
     private List<String> contentTypes;
-    @SerializedName("search_in")
-    private List<String> searchScopes;
 
     @SerializedName("page")
     private Integer page;
     @SerializedName("per_page")
     private Integer perPage;
+    @SerializedName("search_in")
+    private String searchScopes;
     @SerializedName("ranking")
     private String ranking;
 
@@ -106,14 +106,6 @@ public class SearchQuery implements Serializable {
         this.contentTypes = contentTypes;
     }
 
-    public List<String> getSearchScopes() {
-        return searchScopes;
-    }
-
-    public void setSearchScopes(final List<String> searchScopes) {
-        this.searchScopes = searchScopes;
-    }
-
     public Integer getPage() {
         return page;
     }
@@ -128,6 +120,14 @@ public class SearchQuery implements Serializable {
 
     public void setPerPage(final Integer perPage) {
         this.perPage = perPage;
+    }
+
+    public String getSearchScopes() {
+        return searchScopes;
+    }
+
+    public void setSearchScopes(final String searchScopes) {
+        this.searchScopes = searchScopes;
     }
 
     public String getRanking() {
@@ -157,9 +157,9 @@ public class SearchQuery implements Serializable {
             .append("language", language)
             .append("services", services)
             .append("contentTypes", contentTypes)
-            .append("searchScopes", searchScopes)
             .append("page", page)
             .append("perPage", perPage)
+            .append("searchScopes", searchScopes)
             .append("ranking", ranking)
             .append("timeout", timeout)
             .toString();
