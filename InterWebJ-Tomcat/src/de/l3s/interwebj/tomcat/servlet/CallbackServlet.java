@@ -59,7 +59,7 @@ public class CallbackServlet extends HttpServlet {
             Engine engine = Environment.getInstance().getEngine();
             engine.processAuthenticationCallback(principal, connector, parameters);
         } catch (InterWebException e) {
-            log.error(e);
+            log.catching(e);
             parameters.add(Parameters.ERROR, e.getMessage());
         }
         if ("rest".equals(clientType)) {

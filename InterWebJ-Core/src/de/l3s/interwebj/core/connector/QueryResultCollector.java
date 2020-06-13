@@ -61,12 +61,12 @@ public class QueryResultCollector {
             try {
                 results.addConnectorResults(task.get(query.getTimeout(), TimeUnit.SECONDS));
             } catch (InterruptedException | ExecutionException e) {
-                log.error(e);
+                log.catching(e);
                 throw new InterWebException(e);
             } catch (TimeoutException e) {
                 errorOccurred = true;
                 task.cancel(true);
-                log.error(e);
+                log.catching(e);
             }
         }
         results.setElapsedTime(System.currentTimeMillis() - startTime);
@@ -97,7 +97,7 @@ public class QueryResultCollector {
             try {
                 queryResult = connector.get(query, authCredentials);
             } catch (Throwable e) {
-                log.error(e);
+                log.error("An error during Connector.get execution", e);
                 return new ConnectorSearchResults(query, connector.getName());
             }
 

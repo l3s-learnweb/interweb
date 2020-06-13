@@ -111,7 +111,7 @@ public class SlideShareConnector extends ServiceConnector {
             // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
             sr = response.readEntity(SlideShareResponse.class);
         } catch (Exception e) {
-            log.error(e);
+            log.catching(e);
             return queryResult;
         }
 
@@ -262,7 +262,7 @@ public class SlideShareConnector extends ServiceConnector {
         try {
             return dateFormat.parse(dateString);
         } catch (ParseException e) {
-            log.error(e);
+            log.catching(e);
             throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
         }
     }

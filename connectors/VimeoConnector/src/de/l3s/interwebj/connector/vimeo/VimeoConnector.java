@@ -129,7 +129,7 @@ public class VimeoConnector extends ServiceConnector {
                 }
             }
         } catch (Throwable e) {
-            log.error(e);
+            log.catching(e);
         }
         return queryResult;
     }
@@ -160,7 +160,7 @@ public class VimeoConnector extends ServiceConnector {
         try {
             return dateFormat.parse(dateString);
         } catch (ParseException e) {
-            log.error(e);
+            log.catching(e);
             throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
         }
     }

@@ -54,7 +54,7 @@ public class Embedded extends Endpoint {
                         break;
                     }
                 } catch (InterWebException e) {
-                    log.error(e);
+                    log.catching(e);
                 }
             }
         }

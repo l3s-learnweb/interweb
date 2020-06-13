@@ -82,9 +82,9 @@ public class OAuthFilter implements ContainerRequestFilter {
 
         try {
             if (!oAuth1Signature.verify(osr, params, secrets)) {
-                log.error("failed to verify signature");
-                log.error("received signature: [{}]", params.getSignature());
-                log.error("generated signature: [{}]", oAuth1Signature.generate(osr, params, secrets));
+                log.warn("received signature: [{}]", params.getSignature());
+                log.warn("generated signature: [{}]", oAuth1Signature.generate(osr, params, secrets));
+                log.error("Failed to verify signature!");
                 throw new WebApplicationException("Invalid signature", Response.Status.UNAUTHORIZED);
             }
         } catch (OAuth1SignatureException e) {

@@ -52,6 +52,7 @@ class BingConnectorTest {
     void getImages() throws InterWebException {
         Query query = QueryFactory.createQuery("hannover");
         query.addContentType(ContentType.image);
+        query.setDateFrom("2020-05-10 20:58:16");
         query.setPerPage(30);
         query.setPage(2);
 

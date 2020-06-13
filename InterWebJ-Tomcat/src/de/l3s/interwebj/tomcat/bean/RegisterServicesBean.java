@@ -55,7 +55,7 @@ public class RegisterServicesBean implements Serializable {
             connector.setAuthCredentials(authCredentials);
             engine.setConsumerAuthCredentials(connector.getName(), authCredentials);
         } catch (Exception e) {
-            log.error(e);
+            log.catching(e);
         }
     }
 
@@ -67,7 +67,7 @@ public class RegisterServicesBean implements Serializable {
             connector.setAuthCredentials(null);
             engine.setConsumerAuthCredentials(connector.getName(), null);
         } catch (Exception e) {
-            log.error(e);
+            log.catching(e);
         }
     }
 

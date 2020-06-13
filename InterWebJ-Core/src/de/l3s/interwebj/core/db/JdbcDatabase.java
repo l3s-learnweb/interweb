@@ -120,7 +120,7 @@ public class JdbcDatabase implements Database {
                 dbConnection.commit();
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -138,7 +138,7 @@ public class JdbcDatabase implements Database {
                 dbConnection.commit();
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -154,7 +154,7 @@ public class JdbcDatabase implements Database {
                 dbConnection.commit();
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -174,7 +174,7 @@ public class JdbcDatabase implements Database {
                 silentCloseResultSet(rs);
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return exists;
@@ -195,7 +195,7 @@ public class JdbcDatabase implements Database {
                 silentCloseResultSet(rs);
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return exists;
@@ -222,7 +222,7 @@ public class JdbcDatabase implements Database {
                 silentCloseResultSet(rs);
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return authCredentials;
@@ -245,7 +245,7 @@ public class JdbcDatabase implements Database {
                 silentCloseResultSet(rs);
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return userId;
@@ -271,7 +271,7 @@ public class JdbcDatabase implements Database {
                 silentCloseResultSet(rs);
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return consumer;
@@ -299,7 +299,7 @@ public class JdbcDatabase implements Database {
                 silentCloseResultSet(rs);
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return consumers;
@@ -320,7 +320,7 @@ public class JdbcDatabase implements Database {
                 silentCloseResultSet(rs);
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return mediator;
@@ -351,7 +351,7 @@ public class JdbcDatabase implements Database {
                 }
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return principal;
@@ -384,7 +384,7 @@ public class JdbcDatabase implements Database {
                 }
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return principal;
@@ -413,7 +413,7 @@ public class JdbcDatabase implements Database {
                 silentCloseResultSet(rs);
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return authCredentials;
@@ -435,7 +435,7 @@ public class JdbcDatabase implements Database {
                 dbConnection.commit();
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -461,7 +461,7 @@ public class JdbcDatabase implements Database {
                 dbConnection.commit();
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -480,7 +480,7 @@ public class JdbcDatabase implements Database {
                 dbConnection.commit();
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -510,7 +510,7 @@ public class JdbcDatabase implements Database {
                 dbConnection.commit();
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -537,7 +537,7 @@ public class JdbcDatabase implements Database {
                 dbConnection.commit();
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -559,7 +559,7 @@ public class JdbcDatabase implements Database {
                 dbConnection.commit();
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -581,7 +581,7 @@ public class JdbcDatabase implements Database {
                 dbConnection.commit();
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -616,7 +616,7 @@ public class JdbcDatabase implements Database {
                 }
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return dbPrincipal;
@@ -639,7 +639,7 @@ public class JdbcDatabase implements Database {
                 silentCloseResultSet(rs);
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
         return roles;
@@ -652,7 +652,7 @@ public class JdbcDatabase implements Database {
         try {
             openConnection();
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
         }
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("Shutdown intercepted. Cleaning up Database resources");
@@ -746,7 +746,7 @@ public class JdbcDatabase implements Database {
                 silentCloseResultSet(rs);
             }
         } catch (SQLException e) {
-            log.error(e);
+            log.catching(e);
             close();
         }
     }
@@ -764,7 +764,7 @@ public class JdbcDatabase implements Database {
             try {
                 dbConnection.close();
             } catch (SQLException e) {
-                log.error(e);
+                log.catching(e);
             }
         }
     }
@@ -774,7 +774,7 @@ public class JdbcDatabase implements Database {
             try {
                 rs.close();
             } catch (SQLException e) {
-                log.error(e);
+                log.catching(e);
             }
         }
     }
@@ -784,7 +784,7 @@ public class JdbcDatabase implements Database {
             try {
                 stmt.close();
             } catch (SQLException e) {
-                log.error(e);
+                log.catching(e);
             }
         }
     }

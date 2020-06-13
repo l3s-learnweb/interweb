@@ -36,7 +36,7 @@ public class FacesUtils {
 
     public static void addGlobalMessage(FacesMessage.Severity severity, Throwable e) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        log.error(e);
+        log.catching(e);
         String message = new String(os.toByteArray(), StandardCharsets.UTF_8);
         addGlobalMessage(severity, message);
     }
@@ -78,7 +78,7 @@ public class FacesUtils {
         try {
             return elResolver.getValue(fc.getELContext(), null, beanName);
         } catch (Exception e) {
-            log.error(e);
+            log.catching(e);
         }
         return null;
     }

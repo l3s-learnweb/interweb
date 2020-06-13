@@ -84,7 +84,7 @@ public class Search extends Endpoint {
             log.info("{} results found in {} ms", searchResults.getResultItems().size(), searchResults.getElapsedTime());
             return searchResults;
         } catch (InterWebException e) {
-            log.error(e);
+            log.catching(e);
             throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
         }
     }
@@ -109,7 +109,7 @@ public class Search extends Endpoint {
             CoreUtils.parseDate(date);
             return true;
         } catch (ParseException e) {
-            log.error(e);
+            log.catching(e);
             return false;
         }
     }
@@ -175,7 +175,7 @@ public class Search extends Endpoint {
             int pageNumber = Integer.parseInt(page);
             query.setPage(Math.min(100, Math.max(1, pageNumber)));
         } catch (NumberFormatException e) {
-            log.error(e);
+            log.catching(e);
         }
     }
 
@@ -188,7 +188,7 @@ public class Search extends Endpoint {
             int perPage = Integer.parseInt(perPageStr);
             query.setPerPage(Math.min(500, Math.max(1, perPage)));
         } catch (NumberFormatException e) {
-            log.error(e);
+            log.catching(e);
         }
     }
 

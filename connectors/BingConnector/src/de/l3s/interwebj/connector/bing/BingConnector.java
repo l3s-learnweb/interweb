@@ -345,7 +345,7 @@ public class BingConnector extends ServiceConnector {
             try {
                 dateFrom = new Date(CoreUtils.parseDate(query.getDateFrom()));
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error parsing from date", e);
             }
         }
 
@@ -353,7 +353,7 @@ public class BingConnector extends ServiceConnector {
             try {
                 dateTill = new Date(CoreUtils.parseDate(query.getDateTill()));
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error parsing to date", e);
             }
         }
 

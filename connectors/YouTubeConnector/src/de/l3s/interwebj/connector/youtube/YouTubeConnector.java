@@ -108,7 +108,7 @@ public class YouTubeConnector extends ServiceConnector {
 
             log.info("requesting url: {}", url);
         } catch (Exception e) {
-            log.error(e);
+            log.catching(e);
             throw new InterWebException(e);
         }
 
@@ -139,7 +139,7 @@ public class YouTubeConnector extends ServiceConnector {
 
             authCredentials = new AuthCredentials(cred.getAccessToken(), cred.getRefreshToken());
         } catch (IOException e) {
-            log.error(e);
+            log.catching(e);
             throw new InterWebException(e);
         }
 
@@ -238,7 +238,7 @@ public class YouTubeConnector extends ServiceConnector {
                 }
             }
         } catch (Throwable e) {
-            log.error(e);
+            log.catching(e);
             throw new InterWebException(e);
         }
 
@@ -272,7 +272,7 @@ public class YouTubeConnector extends ServiceConnector {
                 DateTime dateFrom = new DateTime(CoreUtils.parseDate(query.getDateFrom()));
                 search.setPublishedAfter(dateFrom);
             } catch (Exception e) {
-                log.error(e);
+                log.catching(e);
             }
         }
 
@@ -281,7 +281,7 @@ public class YouTubeConnector extends ServiceConnector {
                 DateTime dateTill = new DateTime(CoreUtils.parseDate(query.getDateTill()));
                 search.setPublishedBefore(dateTill);
             } catch (Exception e) {
-                log.error(e);
+                log.catching(e);
             }
         }
 
@@ -433,8 +433,7 @@ public class YouTubeConnector extends ServiceConnector {
 
             return channelListResponse.getItems().get(0).getId();
         } catch (IOException e) {
-            log.error(e);
-            log.error(e);
+            log.catching(e);
             throw new InterWebException(e);
         }
     }
@@ -527,7 +526,7 @@ public class YouTubeConnector extends ServiceConnector {
             resultItem = createResultItem(null, returnedVideo, 0);
 
         } catch (Throwable e) {
-            log.error(e);
+            log.catching(e);
             throw new InterWebException(e);
         }
 

@@ -154,7 +154,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             feed = gson.fromJson(response.getBody(), SearchFeed.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e);
+            log.catching(e);
             throw new GiphyException(e);
         }
 
@@ -186,7 +186,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             giphy = gson.fromJson(response.getBody(), SearchGiphy.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e);
+            log.catching(e);
             throw new GiphyException(e);
         }
 
@@ -220,7 +220,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             giphy = gson.fromJson(response.getBody(), SearchGiphy.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e);
+            log.catching(e);
             throw new GiphyException(e);
         }
 
@@ -253,7 +253,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             random = gson.fromJson(response.getBody(), SearchRandom.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e);
+            log.catching(e);
             throw new GiphyException(e);
         }
 
@@ -286,7 +286,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             feed = gson.fromJson(response.getBody(), SearchFeed.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e);
+            log.catching(e);
             throw new GiphyException(e);
         }
 
@@ -345,7 +345,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             feed = gson.fromJson(response.getBody(), SearchFeed.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e);
+            log.catching(e);
             throw new GiphyException(e);
         }
 
@@ -379,7 +379,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             giphy = gson.fromJson(response.getBody(), SearchGiphy.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e);
+            log.catching(e);
             throw new GiphyException(e);
         }
 
@@ -412,7 +412,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             feed = gson.fromJson(response.getBody(), SearchFeed.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e);
+            log.catching(e);
             throw new GiphyException(e);
         }
 
@@ -445,7 +445,7 @@ public class Giphy {
             Response response = sender.sendRequest(request);
             random = gson.fromJson(response.getBody(), SearchRandom.class);
         } catch (JsonSyntaxException | IOException e) {
-            log.error(e);
+            log.catching(e);
             throw new GiphyException(e);
         }
 

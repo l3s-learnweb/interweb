@@ -84,7 +84,7 @@ public class FlickrConnector extends ServiceConnector {
             log.info("requestTokenUrl: [{}]", requestTokenUrl);
             params.add(Parameters.AUTHORIZATION_URL, requestTokenUrl);
         } catch (Exception e) {
-            log.error(e);
+            log.catching(e);
             throw new InterWebException(e);
         }
         return params;
@@ -116,7 +116,7 @@ public class FlickrConnector extends ServiceConnector {
             Auth auth = authInterface.checkToken(accessToken);
             authCredentials = new AuthCredentials(auth.getToken());
         } catch (Exception e) {
-            log.error(e);
+            log.catching(e);
             throw new InterWebException(e);
         }
         return authCredentials;
@@ -168,7 +168,7 @@ public class FlickrConnector extends ServiceConnector {
 
             return "<img src=\"" + size.getSource() + "\" height=\"" + size.getHeight() + "\" width=\"" + size.getWidth() + "\"/>";
         } catch (FlickrException e) {
-            log.error(e);
+            log.catching(e);
             throw new InterWebException(e);
         }
     }
@@ -196,7 +196,7 @@ public class FlickrConnector extends ServiceConnector {
             User user = auth.getUser();
             return user.getId();
         } catch (FlickrException e) {
-            log.error(e);
+            log.catching(e);
             throw new InterWebException(e);
         }
     }
@@ -242,7 +242,7 @@ public class FlickrConnector extends ServiceConnector {
 
                 return createResultItem(photo, 0);
             } catch (FlickrException e) {
-                log.error(e);
+                log.catching(e);
                 throw new InterWebException(e);
             }
         }
@@ -299,7 +299,7 @@ public class FlickrConnector extends ServiceConnector {
                         Date dateFrom = new Date(CoreUtils.parseDate(query.getDateFrom()));
                         params.setMinUploadDate(dateFrom);
                     } catch (Exception e) {
-                        log.error(e);
+                        log.catching(e);
                     }
                 }
 
@@ -308,7 +308,7 @@ public class FlickrConnector extends ServiceConnector {
                         Date dateTill = new Date(CoreUtils.parseDate(query.getDateTill()));
                         params.setMaxUploadDate(dateTill);
                     } catch (Exception e) {
-                        log.error(e);
+                        log.catching(e);
                     }
                 }
 
@@ -350,7 +350,7 @@ public class FlickrConnector extends ServiceConnector {
                 if (e.getErrorMessage().equals("User not found")) {
                     System.err.println("Unknown user");
                 } else {
-                    log.error(e);
+                    log.catching(e);
                     throw new InterWebException(e);
                 }
             }

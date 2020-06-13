@@ -100,7 +100,7 @@ public class IpernityConnector extends ServiceConnector {
             try {
                 resource = resource.queryParam("created_min", query.getDateFrom());
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error parsing from date", e);
             }
         }
 
@@ -108,7 +108,7 @@ public class IpernityConnector extends ServiceConnector {
             try {
                 resource = resource.queryParam("created_max", query.getDateTill());
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error parsing to date", e);
             }
         }
 

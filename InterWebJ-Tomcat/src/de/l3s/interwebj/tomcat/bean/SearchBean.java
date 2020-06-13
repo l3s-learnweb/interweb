@@ -182,7 +182,7 @@ public class SearchBean implements Serializable {
             QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
             searchResults = collector.retrieve();
         } catch (InterWebException e) {
-            log.error(e);
+            log.catching(e);
             FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
         }
         /* standing queries are never used

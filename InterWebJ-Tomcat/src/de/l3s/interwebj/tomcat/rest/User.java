@@ -97,7 +97,7 @@ public class User extends Endpoint {
                 return response;
             }
         } catch (InterWebException e) {
-            log.error(e);
+            log.catching(e);
             throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
         }
 
@@ -184,7 +184,7 @@ public class User extends Endpoint {
         try {
             connector.revokeAuthentication();
         } catch (InterWebException e) {
-            log.error(e);
+            log.catching(e);
             throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
         }
 

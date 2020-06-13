@@ -84,7 +84,7 @@ public class ServicesBean {
             try {
                 FacesUtils.getExternalContext().redirect(authorizationUrl);
             } catch (IOException e) {
-                log.error(e);
+                log.catching(e);
                 FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
             }
         }
@@ -135,7 +135,7 @@ public class ServicesBean {
             String userId = connector.getUserId(authCredentials);
             database.saveUserAuthCredentials(connector.getName(), principal.getName(), userId, authCredentials);
         } catch (InterWebException e) {
-            log.error(e);
+            log.catching(e);
             FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
         }
     }
