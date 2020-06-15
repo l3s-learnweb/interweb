@@ -108,7 +108,6 @@ public class YouTubeConnector extends ServiceConnector {
 
             log.info("requesting url: {}", url);
         } catch (Exception e) {
-            log.catching(e);
             throw new InterWebException(e);
         }
 
@@ -139,7 +138,6 @@ public class YouTubeConnector extends ServiceConnector {
 
             authCredentials = new AuthCredentials(cred.getAccessToken(), cred.getRefreshToken());
         } catch (IOException e) {
-            log.catching(e);
             throw new InterWebException(e);
         }
 
@@ -238,7 +236,6 @@ public class YouTubeConnector extends ServiceConnector {
                 }
             }
         } catch (Throwable e) {
-            log.catching(e);
             throw new InterWebException(e);
         }
 
@@ -435,7 +432,6 @@ public class YouTubeConnector extends ServiceConnector {
 
             return channelListResponse.getItems().get(0).getId();
         } catch (IOException e) {
-            log.catching(e);
             throw new InterWebException(e);
         }
     }
@@ -528,7 +524,6 @@ public class YouTubeConnector extends ServiceConnector {
             resultItem = createResultItem(null, returnedVideo, 0);
 
         } catch (Throwable e) {
-            log.catching(e);
             throw new InterWebException(e);
         }
 

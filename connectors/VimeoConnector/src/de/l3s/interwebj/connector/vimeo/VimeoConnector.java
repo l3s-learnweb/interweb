@@ -160,7 +160,6 @@ public class VimeoConnector extends ServiceConnector {
         try {
             return dateFormat.parse(dateString);
         } catch (ParseException e) {
-            log.catching(e);
             throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
         }
     }
