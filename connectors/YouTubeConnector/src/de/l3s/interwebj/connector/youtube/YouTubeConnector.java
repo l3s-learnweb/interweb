@@ -383,8 +383,10 @@ public class YouTubeConnector extends ServiceConnector {
 
         if (videoResult != null) {
             VideoSnippet vSnippet = videoResult.getSnippet();
-            if (vSnippet.getTags() != null) {
-                resultItem.getTags().addAll(vSnippet.getTags());
+            if (vSnippet != null) {
+                if (vSnippet.getTags() != null) {
+                    resultItem.getTags().addAll(vSnippet.getTags());
+                }
             }
 
             VideoStatistics vStatistics = videoResult.getStatistics();
