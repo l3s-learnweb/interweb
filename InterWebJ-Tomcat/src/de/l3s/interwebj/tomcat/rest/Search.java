@@ -1,6 +1,6 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import java.text.ParseException;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -108,7 +108,7 @@ public class Search extends Endpoint {
         try {
             CoreUtils.parseDate(date);
             return true;
-        } catch (ParseException e) {
+        } catch (DateTimeParseException e) {
             log.catching(e);
             return false;
         }

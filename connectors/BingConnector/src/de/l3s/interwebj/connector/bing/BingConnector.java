@@ -2,10 +2,9 @@ package de.l3s.interwebj.connector.bing;
 
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -338,12 +337,12 @@ public class BingConnector extends ServiceConnector {
      * For example, &freshness=2019-02-04.
      */
     private static String createFreshness(Query query) {
-        Date dateFrom = null;
-        Date dateTill = new Date();
+        ZonedDateTime dateFrom = null;
+        ZonedDateTime dateTill = ZonedDateTime.now();
 
         if (query.getDateFrom() != null) {
             try {
-                dateFrom = new Date(CoreUtils.parseDate(query.getDateFrom()));
+                dateFrom = CoreUtils.parseDate(query.getDateFrom());
             } catch (Exception e) {
                 log.error("Error parsing from date", e);
             }
@@ -351,16 +350,15 @@ public class BingConnector extends ServiceConnector {
 
         if (query.getDateTill() != null) {
             try {
-                dateTill = new Date(CoreUtils.parseDate(query.getDateTill()));
+                dateTill = CoreUtils.parseDate(query.getDateTill());
             } catch (Exception e) {
                 log.error("Error parsing to date", e);
             }
         }
 
         if (dateFrom != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String dateFromFormat = dateFormat.format(dateFrom);
-            String dateTillFormat = dateFormat.format(dateTill);
+            String dateFromFormat = DateTimeFormatter.ISO_DATE.format(dateFrom);
+            String dateTillFormat = DateTimeFormatter.ISO_DATE.format(dateTill);
             return dateFromFormat.equals(dateTillFormat) ? dateFromFormat : dateFromFormat + ".." + dateTillFormat;
         }
 

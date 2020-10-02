@@ -3,6 +3,7 @@ package de.l3s.interwebj.connector.flickr;
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
 import java.net.URI;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -291,18 +292,16 @@ public class FlickrConnector extends ServiceConnector {
 
                 if (query.getDateFrom() != null) {
                     try {
-                        Date dateFrom = new Date(CoreUtils.parseDate(query.getDateFrom()));
-                        params.setMinUploadDate(dateFrom);
-                    } catch (Exception e) {
+                        params.setMinUploadDate(Date.from(CoreUtils.parseDate(query.getDateFrom()).toInstant()));
+                    } catch (DateTimeParseException e) {
                         log.catching(e);
                     }
                 }
 
                 if (query.getDateTill() != null) {
                     try {
-                        Date dateTill = new Date(CoreUtils.parseDate(query.getDateTill()));
-                        params.setMaxUploadDate(dateTill);
-                    } catch (Exception e) {
+                        params.setMaxUploadDate(Date.from(CoreUtils.parseDate(query.getDateTill()).toInstant()));
+                    } catch (DateTimeParseException e) {
                         log.catching(e);
                     }
                 }

@@ -7,11 +7,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -151,15 +150,14 @@ public class VimeoConnector extends ServiceConnector {
         return true;
     }
 
-    private static Date parseDate(String dateString) throws InterWebException {
+    private static ZonedDateTime parseDate(String dateString) throws InterWebException {
         if (dateString == null) {
             return null;
         }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
         try {
-            return dateFormat.parse(dateString);
-        } catch (ParseException e) {
+            return ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } catch (DateTimeParseException e) {
             throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
         }
     }

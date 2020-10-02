@@ -4,10 +4,11 @@ import static de.l3s.interwebj.core.util.Assertions.notNull;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -257,11 +258,14 @@ public class SlideShareConnector extends ServiceConnector {
         return target.request().get();
     }
 
-    private Date parseDate(String dateString) throws InterWebException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+    private ZonedDateTime parseDate(String dateString) throws InterWebException {
+        if (dateString == null) {
+            return null;
+        }
+
         try {
-            return dateFormat.parse(dateString);
-        } catch (ParseException e) {
+            return ZonedDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z").withZone(ZoneId.systemDefault()));
+        } catch (DateTimeParseException e) {
             throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
         }
     }

@@ -6,13 +6,17 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -203,12 +207,12 @@ public class YouTubeConnector extends ServiceConnector {
             HashMap<String, Video> videosDetails = new HashMap<>();
             // in the next step we check if we need to request additional information
             if (query.getExtras() != null && !query.getExtras().isEmpty()) {
-                StringJoiner videoIds = new StringJoiner(",");
+                List<String> videoIds = new ArrayList<>();
                 for (SearchResult searchResult : searchResultList) {
                     videoIds.add(searchResult.getId().getVideoId());
                 }
 
-                StringJoiner list = new StringJoiner(",");
+                List<String> list = new ArrayList<>();
                 if (query.getExtras().contains(SearchExtra.tags)) {
                     list.add("snippet");
                 }
@@ -220,8 +224,7 @@ public class YouTubeConnector extends ServiceConnector {
                 }
 
                 // Call the YouTube Data API's youtube.videos.list method to retrieve additional information for the specified videos
-                VideoListResponse videosResponse = youtube.videos().list(list.toString())
-                    .setId(videoIds.toString()).setKey(API_KEY).execute();
+                VideoListResponse videosResponse = youtube.videos().list(list).setId(videoIds).setKey(API_KEY).execute();
 
                 for (Video video : videosResponse.getItems()) {
                     videosDetails.put(video.getId(), video);
@@ -244,7 +247,7 @@ public class YouTubeConnector extends ServiceConnector {
 
     private static YouTube.Search.List createSearch(Query query, final YouTube youtube) throws IOException {
         // Define the API request for retrieving search results.
-        YouTube.Search.List search = youtube.search().list("id,snippet");
+        YouTube.Search.List search = youtube.search().list(Arrays.asList("id", "snippet"));
 
         // Set your developer key from the {{ Google Cloud Console }} for non-authenticated requests.
         search.setKey(API_KEY);
@@ -252,7 +255,7 @@ public class YouTubeConnector extends ServiceConnector {
 
         if (query.getQuery().startsWith("user::")) {
             String[] splitQuery = query.getQuery().split(" ", 2);
-            ChannelListResponse channelListResponse = youtube.channels().list("id")
+            ChannelListResponse channelListResponse = youtube.channels().list(Collections.singletonList("id"))
                 .setKey(API_KEY).setForUsername(splitQuery[0].substring(6)).execute();
 
             search.setChannelId(channelListResponse.getItems().get(0).getId());
@@ -266,23 +269,23 @@ public class YouTubeConnector extends ServiceConnector {
 
         if (query.getDateFrom() != null) {
             try {
-                DateTime dateFrom = new DateTime(CoreUtils.parseDate(query.getDateFrom()));
-                search.setPublishedAfter(dateFrom);
-            } catch (Exception e) {
+                DateTime dateFrom = new DateTime(CoreUtils.parseDate(query.getDateFrom()).toInstant().toEpochMilli());
+                search.setPublishedAfter(dateFrom.toStringRfc3339());
+            } catch (DateTimeParseException e) {
                 log.catching(e);
             }
         }
 
         if (query.getDateTill() != null) {
             try {
-                DateTime dateTill = new DateTime(CoreUtils.parseDate(query.getDateTill()));
-                search.setPublishedBefore(dateTill);
-            } catch (Exception e) {
+                DateTime dateTill = new DateTime(CoreUtils.parseDate(query.getDateTill()).toInstant().toEpochMilli());
+                search.setPublishedBefore(dateTill.toStringRfc3339());
+            } catch (DateTimeParseException e) {
                 log.catching(e);
             }
         }
 
-        search.setType("video"); // Restrict the search results to only include videos.
+        search.setType(Collections.singletonList("video")); // Restrict the search results to only include videos.
         search.setMaxResults((long) query.getPerPage());
         search.setOrder(convertRanking(query.getRanking()));
 
@@ -310,7 +313,7 @@ public class YouTubeConnector extends ServiceConnector {
         }
     }
 
-    private ResultItem createResultItem(SearchResult searchResult, Video videoResult, int rank) {
+    private ResultItem createResultItem(SearchResult searchResult, Video videoResult, int rank) throws InterWebException {
         ResultItem resultItem = new ResultItem(getName(), rank);
         resultItem.setType(ContentType.video);
 
@@ -331,7 +334,7 @@ public class YouTubeConnector extends ServiceConnector {
                     resultItem.setDescription(vSnippet.getDescription());
                 }
                 if (vSnippet.getPublishedAt() != null) {
-                    resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
+                    resultItem.setDate(CoreUtils.formatDate(parseDate(vSnippet.getPublishedAt())));
                 }
 
                 ThumbnailDetails thumbnails = vSnippet.getThumbnails();
@@ -362,7 +365,7 @@ public class YouTubeConnector extends ServiceConnector {
                     resultItem.setDescription(vSnippet.getDescription());
                 }
                 if (vSnippet.getPublishedAt() != null) {
-                    resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
+                    resultItem.setDate(CoreUtils.formatDate(parseDate(vSnippet.getPublishedAt())));
                 }
 
                 ThumbnailDetails thumbnails = vSnippet.getThumbnails();
@@ -428,7 +431,7 @@ public class YouTubeConnector extends ServiceConnector {
         try {
             YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials)).setApplicationName("Interweb").build();
 
-            ChannelListResponse channelListResponse = youtube.channels().list("id,contentDetails").setMine(true).execute();
+            ChannelListResponse channelListResponse = youtube.channels().list(Arrays.asList("id", "contentDetails")).setMine(true).execute();
 
             return channelListResponse.getItems().get(0).getId();
         } catch (IOException e) {
@@ -486,7 +489,7 @@ public class YouTubeConnector extends ServiceConnector {
             // Insert the video. The command sends three arguments. The first specifies which information the API request is setting and which
             // information the API response should return. The second argument  is the video resource that contains metadata about the new video.
             // The third argument is the actual video content.
-            YouTube.Videos.Insert videoInsert = youtube.videos().insert("snippet,statistics,status", videoObjectDefiningMetadata, mediaContent);
+            YouTube.Videos.Insert videoInsert = youtube.videos().insert(Arrays.asList("snippet", "statistics", "status"), videoObjectDefiningMetadata, mediaContent);
 
             // Set the upload type and add an event listener.
             MediaHttpUploader uploader = videoInsert.getMediaHttpUploader();
@@ -539,11 +542,11 @@ public class YouTubeConnector extends ServiceConnector {
         YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, request -> {
         }).setApplicationName("Interweb").build();
 
-        ChannelListResponse channelListResponse = youtube.channels().list("id")
+        ChannelListResponse channelListResponse = youtube.channels().list(Collections.singletonList("id"))
             .setKey(API_KEY).setForUsername(username).execute();
 
-        ChannelListResponse detailedItem = youtube.channels().list("id, brandingSettings")
-            .setKey(API_KEY).setId(channelListResponse.getItems().get(0).getId()).execute();
+        ChannelListResponse detailedItem = youtube.channels().list(Arrays.asList("id", "brandingSettings"))
+            .setKey(API_KEY).setId(Collections.singletonList(channelListResponse.getItems().get(0).getId())).execute();
 
         String keywords = detailedItem.getItems().get(0).getBrandingSettings().getChannel().getKeywords();
 
@@ -589,6 +592,18 @@ public class YouTubeConnector extends ServiceConnector {
     public String generateCallbackUrl(String baseApiUrl, Parameters parameters) {
         parameters.remove(Parameters.IWJ_USER_ID);
         return baseApiUrl + "callback?" + parameters.toQueryString();
+    }
+
+    private static ZonedDateTime parseDate(String dateString) throws InterWebException {
+        if (dateString == null) {
+            return null;
+        }
+
+        try {
+            return ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_ZONED_DATE_TIME);
+        } catch (DateTimeParseException e) {
+            throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
+        }
     }
 
     private static Thumbnail createThumbnail(com.google.api.services.youtube.model.Thumbnail vThumbnail) {

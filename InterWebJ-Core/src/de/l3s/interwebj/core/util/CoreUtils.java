@@ -1,17 +1,42 @@
 package de.l3s.interwebj.core.util;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class CoreUtils {
-    private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
+    public static String formatDate(long millis) {
+        return formatDate(Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()));
+    }
+
+    public static String formatDate(TemporalAccessor dateTime) {
+        return formatDate(DEFAULT_DATE_TIME_FORMAT, dateTime);
+    }
+
+    public static String formatDate(DateTimeFormatter formatter, TemporalAccessor dateTime) {
+        return (dateTime == null) ? null : formatter.format(dateTime);
+    }
+
+    public static ZonedDateTime parseDate(String dateString) throws DateTimeParseException {
+        return parseDate(DEFAULT_DATE_TIME_FORMAT, dateString);
+    }
+
+    public static ZonedDateTime parseDate(DateTimeFormatter formatter, String dateString) throws DateTimeParseException {
+        return ZonedDateTime.parse(dateString, formatter);
+    }
+
+    /**
+     * Splits CSV string to list removing duplicates
+     */
     public static List<String> convertToUniqueList(String s) {
         Set<String> list = new HashSet<>();
         String[] tokens = s.split("[,\\s]");
@@ -21,30 +46,6 @@ public class CoreUtils {
             }
         }
         return new ArrayList<>(list);
-    }
-
-    public static String formatDate(DateFormat df, Date date) {
-        return (date == null) ? null : df.format(date);
-    }
-
-    public static String formatDate(Date date) {
-        return formatDate(DEFAULT_DATE_FORMAT, date);
-    }
-
-    public static String formatDate(DateFormat df, long millis) {
-        return df.format(new Date(millis));
-    }
-
-    public static String formatDate(long millis) {
-        return formatDate(DEFAULT_DATE_FORMAT, millis);
-    }
-
-    public static long parseDate(DateFormat df, String dateString) throws ParseException {
-        return df.parse(dateString).getTime();
-    }
-
-    public static long parseDate(String dateString) throws ParseException {
-        return parseDate(DEFAULT_DATE_FORMAT, dateString);
     }
 
     /**
