@@ -150,15 +150,15 @@ public class VimeoConnector extends ServiceConnector {
         return true;
     }
 
-    private static ZonedDateTime parseDate(String dateString) throws InterWebException {
+    protected static ZonedDateTime parseDate(String dateString) throws InterWebException {
         if (dateString == null) {
             return null;
         }
 
         try {
-            return ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            return ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         } catch (DateTimeParseException e) {
-            throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
+            throw new InterWebException("dateString: [" + dateString + "]. " + e.getMessage());
         }
     }
 

@@ -2,6 +2,9 @@ package de.l3s.interwebj.connector.youtube;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
@@ -57,5 +60,11 @@ class YouTubeConnectorTest {
         for (ResultItem result : page2.getResultItems()) {
             log.info("{}: {}", result.getRank(), result.getTitle());
         }
+    }
+
+    @Test
+    void parseDate() throws InterWebException {
+        ZonedDateTime localDateTime = YouTubeConnector.parseDate("2020-10-04T20:23:33Z");
+        assertEquals(ZonedDateTime.of(2020, 10, 4, 20, 23, 33, 0, ZoneId.of("+0")), localDateTime);
     }
 }

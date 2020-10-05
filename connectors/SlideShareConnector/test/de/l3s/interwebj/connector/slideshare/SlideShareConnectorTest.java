@@ -2,6 +2,9 @@ package de.l3s.interwebj.connector.slideshare;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +46,7 @@ class SlideShareConnectorTest {
 
         ConnectorSearchResults queryResult = connector.get(query, null);
 
-        assertEquals(16, queryResult.getResultItems().size());
+        assertEquals(17, queryResult.getResultItems().size());
         assertTrue(queryResult.getTotalResultCount() > 100);
 
         String embedded = connector.getEmbedded(null, "https://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
@@ -54,5 +57,11 @@ class SlideShareConnectorTest {
     void getEmbedded() throws InterWebException {
         String embedded = connector.getEmbedded(null, "https://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
         System.out.println(embedded);
+    }
+
+    @Test
+    void parseDate() throws InterWebException {
+        ZonedDateTime localDateTime = SlideShareConnector.parseDate("2015-09-23 16:15:57 UTC");
+        assertEquals(ZonedDateTime.of(2015, 9, 23, 16, 15, 57, 0, ZoneId.of("UTC")), localDateTime);
     }
 }

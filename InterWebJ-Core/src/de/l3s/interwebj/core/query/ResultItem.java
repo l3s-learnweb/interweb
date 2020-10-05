@@ -29,10 +29,13 @@ public class ResultItem implements Serializable {
     public static final int THUMBNAIL_LARGE_MAX_HEIGHT = 920;
 
     // base
+    @JsonbProperty("service")
     @XmlElement(name = "service")
     private String serviceName;
+    @JsonbProperty("rank_at_service")
     @XmlElement(name = "rank_at_service")
     private int rank;
+    @JsonbProperty("id_at_service")
     @XmlElement(name = "id_at_service")
     private String id;
 
@@ -57,32 +60,39 @@ public class ResultItem implements Serializable {
     private Set<String> tags = new HashSet<>();
 
     // statistic
+    @JsonbProperty("number_of_views")
     @XmlElement(name = "number_of_views")
     private Long viewCount;
+    @JsonbProperty("number_of_comments")
     @XmlElement(name = "number_of_comments")
     private Long commentCount;
 
     // media
+    @JsonbProperty("embedded_code")
     @XmlElement(name = "embedded_code")
     private String embeddedCode;
     /**
      * Usually an image with HEIGHT between 100 and 180 px.
      */
+    @JsonbProperty("thumbnail_small")
     @XmlElement(name = "thumbnail_small")
     private Thumbnail thumbnailSmall;
     /**
      * Usually an image with HEIGHT between 200 and 440 px.
      */
+    @JsonbProperty("thumbnail_medium")
     @XmlElement(name = "thumbnail_medium")
     private Thumbnail thumbnailMedium;
     /**
      * Usually an image with HEIGHT between 600 and 920 px.
      */
+    @JsonbProperty("thumbnail_large")
     @XmlElement(name = "thumbnail_large")
     private Thumbnail thumbnailLarge;
     /**
      * Image in max available quality, if bigger than large.
      */
+    @JsonbProperty("thumbnail_original")
     @XmlElement(name = "thumbnail_original")
     private Thumbnail thumbnailOriginal;
 

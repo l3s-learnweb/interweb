@@ -29,10 +29,13 @@ public class Query implements Serializable {
     @XmlAttribute(name = "link")
     private String link;
 
+    @JsonbProperty("q")
     @XmlElement(name = "q")
     private String query;
+    @JsonbProperty("date_from")
     @XmlElement(name = "date_from")
     private String dateFrom;
+    @JsonbProperty("date_till")
     @XmlElement(name = "date_till")
     private String dateTill;
     @XmlElement(name = "language")
@@ -53,8 +56,10 @@ public class Query implements Serializable {
 
     @XmlElement(name = "page")
     private int page = 1;
+    @JsonbProperty("per_page")
     @XmlElement(name = "per_page")
     private int perPage = 10;
+    @JsonbProperty("search_in")
     @XmlElement(name = "search_in")
     private SearchScope searchScope = SearchScope.text;
     @XmlElement(name = "ranking")

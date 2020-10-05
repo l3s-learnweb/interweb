@@ -594,7 +594,7 @@ public class YouTubeConnector extends ServiceConnector {
         return baseApiUrl + "callback?" + parameters.toQueryString();
     }
 
-    private static ZonedDateTime parseDate(String dateString) throws InterWebException {
+    protected static ZonedDateTime parseDate(String dateString) throws InterWebException {
         if (dateString == null) {
             return null;
         }

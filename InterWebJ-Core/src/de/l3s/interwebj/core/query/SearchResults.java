@@ -26,6 +26,7 @@ public class SearchResults implements Serializable {
     @XmlElement(name = "query")
     private Query query;
 
+    @JsonbProperty("total_results")
     @XmlElement(name = "total_results")
     private long totalResults = 0;
     @JsonbProperty("results_per_service")
@@ -38,8 +39,10 @@ public class SearchResults implements Serializable {
     @XmlElement(name = "result")
     private List<ResultItem> resultItems;
 
+    @JsonbProperty("created_time")
     @XmlElement(name = "created_time")
     private long createdTime;
+    @JsonbProperty("elapsed_time")
     @XmlElement(name = "elapsed_time")
     private long elapsedTime;
 
