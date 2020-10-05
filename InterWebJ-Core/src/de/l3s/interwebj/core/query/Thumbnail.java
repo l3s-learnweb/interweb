@@ -3,6 +3,7 @@ package de.l3s.interwebj.core.query;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.json.bind.annotation.JsonbProperty;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -18,6 +19,7 @@ public class Thumbnail implements Serializable {
     private static final long serialVersionUID = -792701713759619246L;
 
     @XmlValue
+    @JsonbProperty("value")
     private String url;
     @XmlAttribute(name = "width")
     private int width;
