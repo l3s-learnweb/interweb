@@ -2,7 +2,7 @@ package de.l3s.interwebj.tomcat;
 
 import javax.ws.rs.ApplicationPath;
 
-import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.jsonb.JsonBindingFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.oauth1.signature.OAuth1SignatureFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -20,7 +20,7 @@ public class RestApplication extends ResourceConfig {
         property(ServerProperties.WADL_FEATURE_DISABLE, true);
 
         register(MultiPartFeature.class);
-        register(JacksonFeature.class);
+        register(JsonBindingFeature.class);
         // register(OAuth1ServerFeature.class);
         // register(InterwebOAuth1Provider.class);
         register(OAuth1SignatureFeature.class);

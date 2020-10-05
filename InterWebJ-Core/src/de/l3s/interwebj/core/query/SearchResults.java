@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.json.bind.annotation.JsonbProperty;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -14,8 +15,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interwebj.core.connector.ConnectorSearchResults;
 
@@ -29,12 +28,12 @@ public class SearchResults implements Serializable {
 
     @XmlElement(name = "total_results")
     private long totalResults = 0;
-    @JsonProperty("results_per_service")
+    @JsonbProperty("results_per_service")
     @XmlElementWrapper(name = "results_per_service")
     @XmlElement(name = "count")
     private Map<String, Long> resultsPerService;
 
-    @JsonProperty("results")
+    @JsonbProperty("results")
     @XmlElementWrapper(name = "results")
     @XmlElement(name = "result")
     private List<ResultItem> resultItems;

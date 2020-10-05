@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.json.bind.annotation.JsonbProperty;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -17,8 +18,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement(name = "query")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -39,15 +38,15 @@ public class Query implements Serializable {
     @XmlElement(name = "language")
     private String language = "en";
 
-    @JsonProperty("services")
+    @JsonbProperty("services")
     @XmlElementWrapper(name = "services")
     @XmlElement(name = "service")
     private Set<String> connectorNames;
-    @JsonProperty("media_types")
+    @JsonbProperty("media_types")
     @XmlElementWrapper(name = "media_types")
     @XmlElement(name = "type")
     private Set<ContentType> contentTypes;
-    @JsonProperty("extras")
+    @JsonbProperty("extras")
     @XmlElementWrapper(name = "extras")
     @XmlElement(name = "extra")
     private Set<SearchExtra> extras;

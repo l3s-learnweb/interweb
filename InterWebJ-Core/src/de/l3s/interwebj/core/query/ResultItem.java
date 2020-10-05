@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.json.bind.annotation.JsonbProperty;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -12,8 +13,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interwebj.core.util.CoreUtils;
 
@@ -52,7 +51,7 @@ public class ResultItem implements Serializable {
     private String snippet;
     @XmlElement(name = "duration")
     private Long duration;
-    @JsonProperty("tags")
+    @JsonbProperty("tags")
     @XmlElementWrapper(name = "tags")
     @XmlElement(name = "tag")
     private Set<String> tags = new HashSet<>();
