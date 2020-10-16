@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.gson.Gson;
 
 import de.l3s.interwebj.connector.vimeo.entity.Datum;
+import de.l3s.interwebj.connector.vimeo.entity.Pictures;
 import de.l3s.interwebj.connector.vimeo.entity.Size;
 import de.l3s.interwebj.connector.vimeo.entity.Tag;
 import de.l3s.interwebj.connector.vimeo.entity.VimeoResponse;
@@ -117,9 +118,15 @@ public class VimeoConnector extends ServiceConnector {
 
                     resultItem.setEmbeddedCode(createEmbeddedCode(resultItem.getId()));
 
-                    List<Size> pictures = video.getPictures().getSizes();
-                    for (Size picture : pictures) {
-                        resultItem.setThumbnail(new Thumbnail(picture.getLink(), picture.getWidth(), picture.getHeight()));
+                    Pictures pictures = video.getPictures();
+                    if (pictures == null) {
+                        queryResult.addTotalResultCount(-1);
+                        continue; // makes no sense, we can't show them
+                    }
+
+                    List<Size> pictureSizes = pictures.getSizes();
+                    for (Size size : pictureSizes) {
+                        resultItem.setThumbnail(new Thumbnail(size.getLink(), size.getWidth(), size.getHeight()));
                     }
 
                     queryResult.addResultItem(resultItem);
