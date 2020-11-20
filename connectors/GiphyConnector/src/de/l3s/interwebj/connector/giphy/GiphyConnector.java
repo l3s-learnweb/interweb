@@ -70,6 +70,10 @@ public class GiphyConnector extends ServiceConnector {
                     resultItem.setTitle(image.getTitle());
                     resultItem.setDate(image.getImportDatetime());
                     resultItem.setUrl(image.getUrl());
+                    if (image.getUser() != null) {
+                        resultItem.setAuthor(image.getUser().getDisplayName());
+                        resultItem.setAuthorUrl(image.getUser().getProfileUrl());
+                    }
 
                     GiphyContainer giphyThumbnails = image.getImages();
 

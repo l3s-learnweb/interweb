@@ -59,6 +59,12 @@ public class ResultItem implements Serializable {
     @XmlElement(name = "tag")
     private Set<String> tags = new HashSet<>();
 
+    // author
+    @XmlElement(name = "author")
+    private String author;
+    @XmlElement(name = "author_url")
+    private String authorUrl;
+
     // statistic
     @JsonbProperty("number_of_views")
     @XmlElement(name = "number_of_views")
@@ -196,6 +202,22 @@ public class ResultItem implements Serializable {
         this.tags = tags;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(final String author) {
+        this.author = author;
+    }
+
+    public String getAuthorUrl() {
+        return authorUrl;
+    }
+
+    public void setAuthorUrl(final String authorUrl) {
+        this.authorUrl = authorUrl;
+    }
+
     public Long getViewCount() {
         return viewCount;
     }
@@ -286,6 +308,8 @@ public class ResultItem implements Serializable {
             .append("snippet", snippet)
             .append("duration", duration)
             .append("tags", tags)
+            .append("author", author)
+            .append("authorUrl", authorUrl)
             .append("viewCount", viewCount)
             .append("commentCount", commentCount)
             .append("embeddedCode", embeddedCode)

@@ -51,8 +51,8 @@ class YouTubeConnectorTest {
         assertEquals(10, page1.getResultItems().size());
         assertTrue(page1.getTotalResultCount() > 100);
 
-        for (ResultItem result : page1.getResultItems()) {
-            log.info("{}: {}", result.getRank(), result.getTitle());
+        for (ResultItem res : page1.getResultItems()) {
+            log.info(res);
         }
 
         query.setPage(2);

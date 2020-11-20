@@ -358,6 +358,12 @@ public class FlickrConnector extends ServiceConnector {
         resultItem.setTitle(photo.getTitle());
         resultItem.setDescription(photo.getDescription());
         resultItem.setUrl(photo.getUrl());
+
+        if (photo.getOwner() != null) {
+            resultItem.setAuthor(photo.getOwner().getUsername());
+            resultItem.setAuthorUrl("https://www.flickr.com/photos/" + photo.getOwner().getId());
+        }
+
         if (photo.getDatePosted() != null) {
             resultItem.setDate(CoreUtils.formatDate(photo.getDatePosted().getTime()));
         }
@@ -450,7 +456,7 @@ public class FlickrConnector extends ServiceConnector {
     }
 
     private static Set<String> getExtras() {
-        return Set.of("description", "tags", "date_upload", "views", "media", "url_t", "url_s", "url_m", "url_l");
+        return Set.of("description", "tags", "owner_name", "date_upload", "views", "media", "url_t", "url_s", "url_m", "url_l");
     }
 
 }

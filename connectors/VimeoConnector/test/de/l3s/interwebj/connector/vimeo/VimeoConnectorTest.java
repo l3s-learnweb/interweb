@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -16,9 +18,12 @@ import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
+import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.SearchRanking;
 
 class VimeoConnectorTest {
+    private static final Logger log = LogManager.getLogger(VimeoConnectorTest.class);
+
     private static final String TEST_KEY = "accesskey";
     private static final String TEST_SECRET = "***REMOVED***";
 
@@ -40,6 +45,10 @@ class VimeoConnectorTest {
         query.setRanking(SearchRanking.relevance);
 
         ConnectorSearchResults queryResult = connector.get(query, null);
+
+        for (ResultItem res : queryResult.getResultItems()) {
+            log.info(res);
+        }
 
         assertEquals(20, queryResult.getResultItems().size());
         assertTrue(queryResult.getTotalResultCount() > 100);

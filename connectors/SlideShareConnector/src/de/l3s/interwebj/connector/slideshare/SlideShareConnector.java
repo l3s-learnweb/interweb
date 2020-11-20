@@ -131,6 +131,8 @@ public class SlideShareConnector extends ServiceConnector {
             resultItem.setDescription(sre.getDescription());
             resultItem.setUrl(sre.getUrl());
             resultItem.setDate(CoreUtils.formatDate(parseDate(sre.getUpdated())));
+            resultItem.setAuthor(sre.getUserName());
+            resultItem.setAuthorUrl("https://www.slideshare.net/" + sre.getUserName());
 
             // slideshare api return always the same wrong thumbnail size
             //String[] size = sre.getThumbnailSize().substring(1, sre.getThumbnailSize().length()-1).split(",");

@@ -333,6 +333,12 @@ public class YouTubeConnector extends ServiceConnector {
                 if (vSnippet.getDescription() != null) {
                     resultItem.setDescription(vSnippet.getDescription());
                 }
+                if (vSnippet.getChannelTitle() != null) {
+                    resultItem.setAuthor(vSnippet.getChannelTitle());
+                }
+                if (vSnippet.getChannelId() != null) {
+                    resultItem.setAuthorUrl("https://www.youtube.com/channel/" + vSnippet.getChannelId());
+                }
                 if (vSnippet.getPublishedAt() != null) {
                     resultItem.setDate(CoreUtils.formatDate(parseDate(vSnippet.getPublishedAt())));
                 }
@@ -363,6 +369,12 @@ public class YouTubeConnector extends ServiceConnector {
                 }
                 if (vSnippet.getDescription() != null) {
                     resultItem.setDescription(vSnippet.getDescription());
+                }
+                if (vSnippet.getChannelTitle() != null) {
+                    resultItem.setAuthor(vSnippet.getChannelTitle());
+                }
+                if (vSnippet.getChannelId() != null) {
+                    resultItem.setAuthor("https://www.youtube.com/channel/" + vSnippet.getChannelId());
                 }
                 if (vSnippet.getPublishedAt() != null) {
                     resultItem.setDate(CoreUtils.formatDate(parseDate(vSnippet.getPublishedAt())));

@@ -86,6 +86,9 @@ public class GiphyData {
     @SerializedName("trending_datetime")
     private String trendingDatetime;
 
+    @SerializedName("user")
+    private GiphyUser user;
+
     @SerializedName("images")
     private GiphyContainer images;
 
@@ -375,6 +378,14 @@ public class GiphyData {
         this.trendingDatetime = trendingDatetime;
     }
 
+    public GiphyUser getUser() {
+        return user;
+    }
+
+    public void setUser(final GiphyUser user) {
+        this.user = user;
+    }
+
     /**
      * Returns the image.
      *
@@ -399,6 +410,7 @@ public class GiphyData {
         outputString += "\n    id = " + id;
         outputString += "\n    slug = " + slug;
         outputString += "\n    url = " + url;
+        outputString += "\n    user = " + user;
         outputString += "\n    " + images;
         outputString += "\n  ]";
         return outputString;

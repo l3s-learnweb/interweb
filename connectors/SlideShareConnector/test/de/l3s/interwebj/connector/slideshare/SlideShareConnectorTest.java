@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -15,10 +17,13 @@ import de.l3s.interwebj.core.connector.ServiceConnector;
 import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
+import de.l3s.interwebj.core.query.ResultItem;
 import de.l3s.interwebj.core.query.SearchRanking;
 import de.l3s.interwebj.core.query.SearchScope;
 
 class SlideShareConnectorTest {
+    private static final Logger log = LogManager.getLogger(SlideShareConnectorTest.class);
+
     private static final String TEST_KEY = "***REMOVED***";
     private static final String TEST_SECRET = "***REMOVED***";
 
@@ -46,7 +51,11 @@ class SlideShareConnectorTest {
 
         ConnectorSearchResults queryResult = connector.get(query, null);
 
-        assertEquals(17, queryResult.getResultItems().size());
+        for (ResultItem res : queryResult.getResultItems()) {
+            log.info(res);
+        }
+
+        assertEquals(18, queryResult.getResultItems().size());
         assertTrue(queryResult.getTotalResultCount() > 100);
 
         String embedded = connector.getEmbedded(null, "https://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
