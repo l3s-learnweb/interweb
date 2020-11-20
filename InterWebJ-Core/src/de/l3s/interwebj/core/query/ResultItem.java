@@ -62,6 +62,7 @@ public class ResultItem implements Serializable {
     // author
     @XmlElement(name = "author")
     private String author;
+    @JsonbProperty("author_url")
     @XmlElement(name = "author_url")
     private String authorUrl;
 
