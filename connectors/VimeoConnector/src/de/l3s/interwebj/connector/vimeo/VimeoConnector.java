@@ -140,7 +140,7 @@ public class VimeoConnector extends ServiceConnector {
                 }
             }
         } catch (Throwable e) {
-            log.catching(e);
+            log.error("Failed to retrieve results for query {}", query, e);
         }
         return queryResult;
     }

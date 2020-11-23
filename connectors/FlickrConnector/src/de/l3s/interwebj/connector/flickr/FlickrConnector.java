@@ -294,7 +294,7 @@ public class FlickrConnector extends ServiceConnector {
                     try {
                         params.setMinUploadDate(Date.from(CoreUtils.parseDate(query.getDateFrom()).toInstant()));
                     } catch (DateTimeParseException e) {
-                        log.catching(e);
+                        log.error("Failed to parse date {}", query.getDateFrom(), e);
                     }
                 }
 
@@ -302,7 +302,7 @@ public class FlickrConnector extends ServiceConnector {
                     try {
                         params.setMaxUploadDate(Date.from(CoreUtils.parseDate(query.getDateTill()).toInstant()));
                     } catch (DateTimeParseException e) {
-                        log.catching(e);
+                        log.error("Failed to parse date {}", query.getDateTill(), e);
                     }
                 }
 

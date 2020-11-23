@@ -105,46 +105,45 @@ public class SlideShareConnector extends ServiceConnector {
         }
         target = target.queryParam("file_type", fileType);
 
-        Response response = postQuery(target);
-
-        SlideShareResponse sr;
         try {
+            Response response = postQuery(target);
+
             // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
-            sr = response.readEntity(SlideShareResponse.class);
+            SlideShareResponse sr = response.readEntity(SlideShareResponse.class);
+
+            queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
+            int count = sr.getMeta().getResultOffset() - 1;
+            List<SearchResultEntity> searchResults = sr.getSearchResults();
+            if (searchResults == null) {
+                return queryResult;
+            }
+
+            for (SearchResultEntity sre : searchResults) {
+                ResultItem resultItem = new ResultItem(getName(), count++);
+                resultItem.setType(createType(sre.getSlideshowType()));
+                resultItem.setId(Integer.toString(sre.getId()));
+                resultItem.setTitle(sre.getTitle());
+                resultItem.setDescription(sre.getDescription());
+                resultItem.setUrl(sre.getUrl());
+                resultItem.setDate(CoreUtils.formatDate(parseDate(sre.getUpdated())));
+                resultItem.setAuthor(sre.getUserName());
+                resultItem.setAuthorUrl("https://www.slideshare.net/" + sre.getUserName());
+
+                // slideshare api return always the same wrong thumbnail size
+                //String[] size = sre.getThumbnailSize().substring(1, sre.getThumbnailSize().length()-1).split(",");
+
+                int width = 170; // Integer.parseInt(size[0]);
+                int height = fileType.equals("documents") ? 220 : 128; // Integer.parseInt(size[1]);
+
+                resultItem.setThumbnailSmall(new Thumbnail(sre.getThumbnailURL(), width, height));
+                resultItem.setEmbeddedCode(getEmbeddedCode(sre.getEmbed()));
+
+                queryResult.addResultItem(resultItem);
+            }
         } catch (Exception e) {
-            log.catching(e);
-            return queryResult;
+            log.error("Failed to retrieve results for query {}", query, e);
         }
 
-        queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
-        int count = sr.getMeta().getResultOffset() - 1;
-        List<SearchResultEntity> searchResults = sr.getSearchResults();
-        if (searchResults == null) {
-            return queryResult;
-        }
-
-        for (SearchResultEntity sre : searchResults) {
-            ResultItem resultItem = new ResultItem(getName(), count++);
-            resultItem.setType(createType(sre.getSlideshowType()));
-            resultItem.setId(Integer.toString(sre.getId()));
-            resultItem.setTitle(sre.getTitle());
-            resultItem.setDescription(sre.getDescription());
-            resultItem.setUrl(sre.getUrl());
-            resultItem.setDate(CoreUtils.formatDate(parseDate(sre.getUpdated())));
-            resultItem.setAuthor(sre.getUserName());
-            resultItem.setAuthorUrl("https://www.slideshare.net/" + sre.getUserName());
-
-            // slideshare api return always the same wrong thumbnail size
-            //String[] size = sre.getThumbnailSize().substring(1, sre.getThumbnailSize().length()-1).split(",");
-
-            int width = 170; // Integer.parseInt(size[0]);
-            int height = fileType.equals("documents") ? 220 : 128; // Integer.parseInt(size[1]);
-
-            resultItem.setThumbnailSmall(new Thumbnail(sre.getThumbnailURL(), width, height));
-            resultItem.setEmbeddedCode(getEmbeddedCode(sre.getEmbed()));
-
-            queryResult.addResultItem(resultItem);
-        }
         return queryResult;
     }
 

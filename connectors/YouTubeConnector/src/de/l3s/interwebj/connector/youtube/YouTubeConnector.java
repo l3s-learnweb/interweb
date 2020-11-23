@@ -272,7 +272,7 @@ public class YouTubeConnector extends ServiceConnector {
                 DateTime dateFrom = new DateTime(CoreUtils.parseDate(query.getDateFrom()).toInstant().toEpochMilli());
                 search.setPublishedAfter(dateFrom.toStringRfc3339());
             } catch (DateTimeParseException e) {
-                log.catching(e);
+                log.error("Failed to parse date {}", query.getDateFrom(), e);
             }
         }
 
@@ -281,7 +281,7 @@ public class YouTubeConnector extends ServiceConnector {
                 DateTime dateTill = new DateTime(CoreUtils.parseDate(query.getDateTill()).toInstant().toEpochMilli());
                 search.setPublishedBefore(dateTill.toStringRfc3339());
             } catch (DateTimeParseException e) {
-                log.catching(e);
+                log.error("Failed to parse date {}", query.getDateTill(), e);
             }
         }
 

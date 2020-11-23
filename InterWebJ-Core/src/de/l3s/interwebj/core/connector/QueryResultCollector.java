@@ -61,12 +61,12 @@ public class QueryResultCollector {
             try {
                 results.addConnectorResults(task.get(query.getTimeout(), TimeUnit.SECONDS));
             } catch (InterruptedException | ExecutionException e) {
-                log.catching(e);
+                log.error("Failed to execute request", e);
                 throw new InterWebException(e);
             } catch (TimeoutException e) {
                 errorOccurred = true;
                 task.cancel(true);
-                log.catching(e);
+                log.error("Request timed out", e);
             }
         }
         results.setElapsedTime(System.currentTimeMillis() - startTime);
