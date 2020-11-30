@@ -30,7 +30,7 @@
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-bing</artifactId>
-            <version>3.0.0</version>
+            <version>7.0.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>

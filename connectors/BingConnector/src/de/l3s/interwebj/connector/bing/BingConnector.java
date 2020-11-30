@@ -2,32 +2,28 @@ package de.l3s.interwebj.connector.bing;
 
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
+import java.time.Duration;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.microsoft.azure.cognitiveservices.search.imagesearch.BingImageSearchAPI;
-import com.microsoft.azure.cognitiveservices.search.imagesearch.BingImageSearchManager;
-import com.microsoft.azure.cognitiveservices.search.imagesearch.models.ImagesModel;
-import com.microsoft.azure.cognitiveservices.search.videosearch.BingVideoSearchAPI;
-import com.microsoft.azure.cognitiveservices.search.videosearch.BingVideoSearchManager;
-import com.microsoft.azure.cognitiveservices.search.videosearch.models.VideosModel;
-import com.microsoft.azure.cognitiveservices.search.websearch.BingWebSearchAPI;
-import com.microsoft.azure.cognitiveservices.search.websearch.BingWebSearchManager;
-import com.microsoft.azure.cognitiveservices.search.websearch.models.AnswerType;
-import com.microsoft.azure.cognitiveservices.search.websearch.models.Freshness;
-import com.microsoft.azure.cognitiveservices.search.websearch.models.ImageObject;
-import com.microsoft.azure.cognitiveservices.search.websearch.models.Images;
-import com.microsoft.azure.cognitiveservices.search.websearch.models.SearchResponse;
-import com.microsoft.azure.cognitiveservices.search.websearch.models.VideoObject;
-import com.microsoft.azure.cognitiveservices.search.websearch.models.Videos;
-import com.microsoft.azure.cognitiveservices.search.websearch.models.WebPage;
-import com.microsoft.azure.cognitiveservices.search.websearch.models.WebWebAnswer;
-
+import de.l3s.bingService.models.BingResponse;
+import de.l3s.bingService.models.Image;
+import de.l3s.bingService.models.ImageHolder;
+import de.l3s.bingService.models.Video;
+import de.l3s.bingService.models.VideoHolder;
+import de.l3s.bingService.models.WebPage;
+import de.l3s.bingService.models.WebPagesHolder;
+import de.l3s.bingService.models.query.BingQuery;
+import de.l3s.bingService.models.query.ResponseFilterParam;
+import de.l3s.bingService.services.BingApiService;
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.connector.ConnectorSearchResults;
@@ -77,98 +73,80 @@ public class BingConnector extends ServiceConnector {
             language = createMarket(language);
         }
 
-        if (query.getContentTypes().size() == 1 && query.getContentTypes().contains(ContentType.image)) {
-            return getImagesSearch(query, count, language, authCredentials);
-        } else if (query.getContentTypes().size() == 1 && query.getContentTypes().contains(ContentType.video)) {
-            return getVideoSearch(query, count, language, authCredentials);
-        } else {
-            return getWebSearch(query, count, language, authCredentials);
-        }
-    }
-
-    /**
-     * Make a search using Bing Web Search API.
-     * It can retrieve any type of content, but only limited amount and no estimated results count.
-     *
-     * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
-     */
-    private ConnectorSearchResults getWebSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
-        List<AnswerType> answerTypes = new ArrayList<>();
+        List<ResponseFilterParam> answerTypes = new ArrayList<>();
         for (ContentType contentType : query.getContentTypes()) {
             if (contentType == ContentType.text) {
-                answerTypes.add(AnswerType.WEB_PAGES);
+                answerTypes.add(ResponseFilterParam.WEB_PAGES);
             } else if (contentType == ContentType.image) {
-                answerTypes.add(AnswerType.IMAGES);
+                answerTypes.add(ResponseFilterParam.IMAGES);
             } else if (contentType == ContentType.video) {
-                answerTypes.add(AnswerType.VIDEOS);
+                answerTypes.add(ResponseFilterParam.VIDEOS);
             }
         }
 
         try {
-            // Init Bing Client
-            BingWebSearchAPI client = BingWebSearchManager.authenticate(authCredentials.getSecret());
+            // Create bing request
+            BingQuery bingQuery = new BingQuery();
+            bingQuery.setQuery(query.getQuery());
+            bingQuery.setMarket(language);
+            bingQuery.setFreshness(createFreshness(query));
+            bingQuery.setCount(count);
+            bingQuery.setResponseFilter(answerTypes);
+            bingQuery.setOffset((query.getPage() - 1) * count);
 
-            // Build query
-            SearchResponse webData = client.bingWebs().search()
-                .withQuery(query.getQuery())
-                .withMarket(language)
-                .withFreshness(Freshness.fromString(createFreshness(query)))
-                .withCount(count)
-                .withResponseFilter(answerTypes)
-                .withOffset((query.getPage() - 1) * count)
-                .execute();
+            BingApiService bingApiService = new BingApiService(authCredentials.getSecret());
+            BingResponse response = bingApiService.getResponseFromBingApi(bingQuery);
 
             // Results go here
             ConnectorSearchResults results = new ConnectorSearchResults(query, getName());
 
+            if (response != null && response.getWebPages() != null && response.getWebPages().getValues() != null) {
+                WebPagesHolder webResults = response.getWebPages();
 
-            if (webData != null && webData.webPages() != null && webData.webPages().value() != null && !webData.webPages().value().isEmpty()) {
-                WebWebAnswer webResults = webData.webPages();
-
-                if (webResults.totalEstimatedMatches() != null) {
-                    results.addTotalResultCount(webResults.totalEstimatedMatches());
+                if (webResults.getTotalEstimatedMatches() != null) {
+                    results.addTotalResultCount(webResults.getTotalEstimatedMatches());
                 } else {
-                    results.addTotalResultCount(webResults.value().size());
+                    results.addTotalResultCount(webResults.getValues().size());
                 }
 
                 int index = 1;
-                for (WebPage page : webResults.value()) {
+                for (WebPage page : webResults.getValues()) {
                     ResultItem resultItem = new ResultItem(getName(), index++);
                     resultItem.setType(ContentType.text);
-                    resultItem.setTitle(page.name());
-                    resultItem.setDescription(page.snippet());
-                    resultItem.setUrl(page.url());
-                    resultItem.setDate(page.dateLastCrawled());
+                    resultItem.setTitle(page.getName());
+                    resultItem.setDescription(page.getSnippet());
+                    resultItem.setUrl(page.getUrl());
+                    resultItem.setDate(CoreUtils.formatDate(parseDate(page.getDateLastCrawled())));
 
                     results.addResultItem(resultItem);
                 }
             }
 
-            if (webData != null && webData.images() != null && webData.images().value() != null && !webData.images().value().isEmpty()) {
-                Images imagesResults = webData.images();
+            if (response != null && response.getImages() != null && response.getImages().getValues() != null) {
+                ImageHolder imagesResults = response.getImages();
 
-                if (imagesResults.totalEstimatedMatches() != null) {
-                    results.addTotalResultCount(imagesResults.totalEstimatedMatches());
+                if (imagesResults.getTotalEstimatedMatches() != null) {
+                    results.addTotalResultCount(imagesResults.getTotalEstimatedMatches());
                 } else {
-                    results.addTotalResultCount(imagesResults.value().size());
+                    results.addTotalResultCount(imagesResults.getValues().size());
                 }
 
                 int index = 1;
-                for (ImageObject image : imagesResults.value()) {
+                for (Image image : imagesResults.getValues()) {
                     ResultItem resultItem = new ResultItem(getName(), index++);
                     resultItem.setType(ContentType.image);
-                    resultItem.setTitle(image.name());
-                    resultItem.setDescription(image.description());
-                    resultItem.setUrl(image.contentUrl());
+                    resultItem.setTitle(image.getName());
+                    resultItem.setUrl(image.getContentUrl());
+                    resultItem.setDate(CoreUtils.formatDate(parseDate(image.getDatePublished())));
 
                     try {
-                        resultItem.setThumbnailMedium(new Thumbnail(image.thumbnailUrl(), image.thumbnail().width(), image.thumbnail().height()));
+                        resultItem.setThumbnailMedium(new Thumbnail(image.getThumbnailUrl(), image.getThumbnail().getWidth(), image.getThumbnail().getHeight()));
                     } catch (Exception e) {
                         log.warn(e);
                     }
 
                     try {
-                        resultItem.setThumbnail(new Thumbnail(image.contentUrl(), image.width(), image.height()));
+                        resultItem.setThumbnail(new Thumbnail(image.getContentUrl(), image.getWidth(), image.getHeight()));
                     } catch (Exception e) {
                         log.warn(e);
                     }
@@ -177,31 +155,37 @@ public class BingConnector extends ServiceConnector {
                 }
             }
 
-            if (webData != null && webData.videos() != null && webData.videos().value() != null && !webData.videos().value().isEmpty()) {
-                Videos videosResults = webData.videos();
+            if (response != null && response.getVideos() != null && response.getVideos().getValues() != null) {
+                VideoHolder videosResults = response.getVideos();
 
-                if (videosResults.totalEstimatedMatches() != null) {
-                    results.addTotalResultCount(videosResults.totalEstimatedMatches());
+                if (videosResults.getTotalEstimatedMatches() != null) {
+                    results.addTotalResultCount(videosResults.getTotalEstimatedMatches());
                 } else {
-                    results.addTotalResultCount(videosResults.value().size());
+                    results.addTotalResultCount(videosResults.getValues().size());
                 }
 
                 int index = 1;
-                for (VideoObject video : videosResults.value()) {
+                for (Video video : videosResults.getValues()) {
                     ResultItem resultItem = new ResultItem(getName(), index++);
                     resultItem.setType(ContentType.video);
-                    resultItem.setTitle(video.name());
-                    resultItem.setDescription(video.description());
-                    resultItem.setUrl(video.contentUrl());
+                    resultItem.setTitle(video.getName());
+                    resultItem.setDescription(video.getDescription());
+                    resultItem.setUrl(video.getContentUrl());
+                    resultItem.setDate(CoreUtils.formatDate(parseDate(video.getDatePublished())));
+
+                    if (video.getDuration() != null) {
+                        Duration duration = Duration.parse(video.getDuration());
+                        resultItem.setDuration(duration.getSeconds());
+                    }
 
                     try {
-                        resultItem.setThumbnailMedium(new Thumbnail(video.thumbnailUrl(), video.thumbnail().width(), video.thumbnail().height()));
+                        resultItem.setThumbnailMedium(new Thumbnail(video.getThumbnailUrl(), video.getThumbnail().getWidth(), video.getThumbnail().getHeight()));
                     } catch (Exception e) {
                         log.warn(e);
                     }
 
-                    if (video.embedHtml() != null) {
-                        resultItem.setEmbeddedCode(CoreUtils.cleanupEmbedHtml(video.embedHtml()));
+                    if (video.getEmbedHtml() != null) {
+                        resultItem.setEmbeddedCode(CoreUtils.cleanupEmbedHtml(video.getEmbedHtml()));
                     }
 
                     results.addResultItem(resultItem);
@@ -214,120 +198,15 @@ public class BingConnector extends ServiceConnector {
         }
     }
 
-    /**
-     * Make a search using Bing Image Search API.
-     *
-     * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/client-libraries?pivots=programming-language-java
-     */
-    private ConnectorSearchResults getImagesSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
-        try {
-            // Init Bing Client
-            BingImageSearchAPI client = BingImageSearchManager.authenticate(authCredentials.getSecret());
-
-            // Build query
-            ImagesModel imageResults = client.bingImages().search()
-                .withQuery(query.getQuery())
-                .withMarket(language)
-                .withFreshness(com.microsoft.azure.cognitiveservices.search.imagesearch.models.Freshness.fromString(createFreshness(query)))
-                .withCount(count)
-                .withOffset(((query.getPage() - 1L) * count))
-                .execute();
-
-            // Results go here
-            ConnectorSearchResults results = new ConnectorSearchResults(query, getName());
-
-            if (imageResults != null && imageResults.value() != null && !imageResults.value().isEmpty()) {
-                if (imageResults.totalEstimatedMatches() != null) {
-                    results.setTotalResultCount(imageResults.totalEstimatedMatches());
-                } else {
-                    results.setTotalResultCount(imageResults.value().size());
-                }
-
-                int index = 1;
-                for (com.microsoft.azure.cognitiveservices.search.imagesearch.models.ImageObject image : imageResults.value()) {
-                    ResultItem resultItem = new ResultItem(getName(), index++);
-                    resultItem.setType(ContentType.image);
-                    resultItem.setTitle(image.name());
-                    resultItem.setDescription(image.description());
-                    resultItem.setUrl(image.contentUrl());
-
-                    try {
-                        resultItem.setThumbnailMedium(new Thumbnail(image.thumbnailUrl(), image.thumbnail().width(), image.thumbnail().height()));
-                    } catch (Exception e) {
-                        log.warn(e);
-                    }
-
-                    try {
-                        resultItem.setThumbnail(new Thumbnail(image.contentUrl(), image.width(), image.height()));
-                    } catch (Exception e) {
-                        log.warn(e);
-                    }
-
-                    results.addResultItem(resultItem);
-                }
-            }
-
-            return results;
-        } catch (Exception e) {
-            throw new InterWebException(e);
+    protected static ZonedDateTime parseDate(String dateString) throws InterWebException {
+        if (dateString == null) {
+            return null;
         }
-    }
 
-    /**
-     * Make a search using Bing Video Search API.
-     *
-     * https://docs.microsoft.com/en-us/azure/cognitive-services/bing-video-search/quickstarts/client-libraries?pivots=programming-language-java
-     */
-    private ConnectorSearchResults getVideoSearch(Query query, int count, String language, AuthCredentials authCredentials) throws InterWebException {
         try {
-            // Init Bing Client
-            BingVideoSearchAPI client = BingVideoSearchManager.authenticate(authCredentials.getSecret());
-
-            // Build query
-            VideosModel videoResults = client.bingVideos().search()
-                .withQuery(query.getQuery())
-                .withMarket(language)
-                .withFreshness(com.microsoft.azure.cognitiveservices.search.videosearch.models.Freshness.fromString(createFreshness(query)))
-                .withCount(count)
-                .withOffset(((query.getPage() - 1) * count))
-                .execute();
-
-            // Results go here
-            ConnectorSearchResults results = new ConnectorSearchResults(query, getName());
-
-            if (videoResults != null && videoResults.value() != null && !videoResults.value().isEmpty()) {
-                if (videoResults.totalEstimatedMatches() != null) {
-                    results.setTotalResultCount(videoResults.totalEstimatedMatches());
-                } else {
-                    results.setTotalResultCount(videoResults.value().size());
-                }
-
-                int index = 1;
-                for (com.microsoft.azure.cognitiveservices.search.videosearch.models.VideoObject video : videoResults.value()) {
-                    ResultItem resultItem = new ResultItem(getName(), index++);
-                    resultItem.setType(ContentType.video);
-                    resultItem.setTitle(video.name());
-                    resultItem.setDescription(video.description());
-                    resultItem.setUrl(video.contentUrl());
-                    resultItem.setViewCount(video.viewCount().longValue());
-
-                    try {
-                        resultItem.setThumbnailMedium(new Thumbnail(video.thumbnailUrl(), video.thumbnail().width(), video.thumbnail().height()));
-                    } catch (Exception e) {
-                        log.warn(e);
-                    }
-
-                    if (video.embedHtml() != null) {
-                        resultItem.setEmbeddedCode(CoreUtils.cleanupEmbedHtml(video.embedHtml()));
-                    }
-
-                    results.addResultItem(resultItem);
-                }
-            }
-
-            return results;
-        } catch (Exception e) {
-            throw new InterWebException(e);
+            return ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()));
+        } catch (DateTimeParseException e) {
+            throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
         }
     }
 
@@ -357,8 +236,8 @@ public class BingConnector extends ServiceConnector {
         }
 
         if (dateFrom != null) {
-            String dateFromFormat = DateTimeFormatter.ISO_DATE.format(dateFrom);
-            String dateTillFormat = DateTimeFormatter.ISO_DATE.format(dateTill);
+            String dateFromFormat = DateTimeFormatter.ISO_LOCAL_DATE.format(dateFrom);
+            String dateTillFormat = DateTimeFormatter.ISO_LOCAL_DATE.format(dateTill);
             return dateFromFormat.equals(dateTillFormat) ? dateFromFormat : dateFromFormat + ".." + dateTillFormat;
         }
 

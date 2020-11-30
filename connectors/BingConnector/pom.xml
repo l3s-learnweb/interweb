@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>connector-bing</artifactId>
-    <version>3.0.0</version>
+    <version>7.0.0</version>
     <packaging>jar</packaging>
 
     <name>BingConnector</name>
@@ -24,23 +24,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.microsoft.azure.cognitiveservices</groupId>
-            <artifactId>azure-cognitiveservices-websearch</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.azure.cognitiveservices</groupId>
-            <artifactId>azure-cognitiveservices-imagesearch</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.azure.cognitiveservices</groupId>
-            <artifactId>azure-cognitiveservices-videosearch</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
 </project>
