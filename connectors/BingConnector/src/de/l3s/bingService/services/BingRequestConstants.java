@@ -1,5 +1,11 @@
 package de.l3s.bingService.services;
 
+import java.io.IOException;
+
+import de.l3s.bingService.models.BingResponse;
+import de.l3s.bingService.models.query.BingQuery;
+import de.l3s.interwebj.core.InterWebException;
+
 public interface BingRequestConstants {
     String API_HOST = "https://api.cognitive.microsoft.com";
     String API_BASE_PATH = "/bing/v7.0/search";
@@ -18,4 +24,6 @@ public interface BingRequestConstants {
     String PARAMETER_VALUE_HTML = "HTML";
     String PARAMETER_TEXT_DECORATIONS = "textDecorations";
     String PARAMETER_VALUE_TRUE = "true";
+
+    BingResponse getResponseFromBingApi(BingQuery bingQuery) throws InterWebException, IOException, InterruptedException;
 }

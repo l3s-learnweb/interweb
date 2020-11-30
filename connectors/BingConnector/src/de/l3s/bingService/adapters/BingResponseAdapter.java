@@ -11,10 +11,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import de.l3s.bingService.models.BingResponse;
+import de.l3s.bingService.models.Error;
 import de.l3s.bingService.models.ImageHolder;
 import de.l3s.bingService.models.VideoHolder;
 import de.l3s.bingService.models.WebPagesHolder;
-import de.l3s.bingService.models.Error;
 
 public class BingResponseAdapter implements JsonDeserializer<BingResponse> {
 
