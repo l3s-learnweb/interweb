@@ -6,18 +6,14 @@ public enum ResponseFilterParam {
     VIDEOS("videos"),
     WEB_PAGES("webpages");
 
-    private String value;
+    private final String value;
 
     ResponseFilterParam(String value) {
-        this.setValue(value);
+        this.value = value;
     }
 
     public String getValue() {
         return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value.toLowerCase();
     }
 
 }
