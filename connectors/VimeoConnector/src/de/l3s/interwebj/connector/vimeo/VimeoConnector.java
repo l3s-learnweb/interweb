@@ -77,12 +77,13 @@ public class VimeoConnector extends ServiceConnector {
             return queryResult;
         }
 
+        String response = null;
         try {
             String requestUrl = "https://api.vimeo.com/videos?page=" + query.getPage()
                 + "&per_page=" + query.getPerPage()
                 + "&sort=" + createSortOrder(query.getRanking())
                 + "&query=" + URLEncoder.encode(query.getQuery(), StandardCharsets.UTF_8);
-            String response = httpRequest(requestUrl, Map.ofEntries(
+            response = httpRequest(requestUrl, Map.ofEntries(
                 Map.entry("Accept", "application/vnd.vimeo.*+json; version=3.2"),
                 Map.entry("Authorization", "bearer " + authCredentials.getSecret())
             ));
@@ -140,7 +141,7 @@ public class VimeoConnector extends ServiceConnector {
                 }
             }
         } catch (Throwable e) {
-            log.error("Failed to retrieve results for query {}", query, e);
+            log.error("Failed to retrieve results for query {}, response: {}", query, response, e);
         }
         return queryResult;
     }
