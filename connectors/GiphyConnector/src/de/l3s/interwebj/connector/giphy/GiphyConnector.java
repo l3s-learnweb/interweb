@@ -112,6 +112,11 @@ public class GiphyConnector extends ServiceConnector {
     }
 
     private static Thumbnail createThumbnail(GiphyImage image) {
-        return new Thumbnail(image.getUrl(), Integer.parseInt(image.getWidth()), Integer.parseInt(image.getHeight()));
+        try {
+            return new Thumbnail(image.getUrl(), Integer.parseInt(image.getWidth()), Integer.parseInt(image.getHeight()));
+        } catch (Exception e) {
+            log.error("Failed to parse numbers in {}", image, e);
+            return null;
+        }
     }
 }
