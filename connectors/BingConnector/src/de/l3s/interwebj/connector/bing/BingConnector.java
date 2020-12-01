@@ -203,7 +203,7 @@ public class BingConnector extends ServiceConnector {
         }
 
         try {
-            return ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()));
+            return ZonedDateTime.parse(dateString.split("\\.")[0], DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()));
         } catch (DateTimeParseException e) {
             throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
         }

@@ -2,6 +2,9 @@ package de.l3s.interwebj.connector.bing;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
@@ -80,5 +83,18 @@ class BingConnectorTest {
 
         assertEquals(30, queryResult.getResultItems().size());
         assertTrue(queryResult.getTotalResultCount() > 100);
+    }
+
+    @Test
+    void parseDate() throws InterWebException {
+        ZonedDateTime date0 = BingConnector.parseDate("2020-01-28T17:18:45");
+        ZonedDateTime date1 = BingConnector.parseDate("2020-01-28T17:18:45.0000000");
+        ZonedDateTime date2 = BingConnector.parseDate("2019-11-12T12:37:00.0000000Z");
+        ZonedDateTime date3 = BingConnector.parseDate("2020-11-28T23:17:00.0000000Z");
+
+        assertEquals(ZonedDateTime.of(2020, 1, 28, 17, 18, 45, 0, ZoneId.systemDefault()), date0);
+        assertEquals(ZonedDateTime.of(2020, 1, 28, 17, 18, 45, 0, ZoneId.systemDefault()), date1);
+        assertEquals(ZonedDateTime.of(2019, 11, 12, 12, 37, 0, 0, ZoneId.systemDefault()), date2);
+        assertEquals(ZonedDateTime.of(2020, 11, 28, 23, 17, 0, 0, ZoneId.systemDefault()), date3);
     }
 }
