@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,7 @@ import de.l3s.interwebj.core.query.ContentType;
 import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.QueryFactory;
 import de.l3s.interwebj.core.query.ResultItem;
+import de.l3s.interwebj.core.query.SearchExtra;
 import de.l3s.interwebj.core.query.SearchRanking;
 
 class VimeoConnectorTest {
@@ -52,6 +54,23 @@ class VimeoConnectorTest {
 
         assertEquals(20, queryResult.getResultItems().size());
         assertTrue(queryResult.getTotalResultCount() > 100);
+    }
+
+    @Test
+    void getTest() throws InterWebException {
+        Query query = QueryFactory.createQuery("mass disaster 1941");
+        query.addContentType(ContentType.video);
+        query.setLanguage("it");
+        query.setExtras(Collections.singleton(SearchExtra.duration));
+        query.setPerPage(32);
+        query.setPage(2);
+        ConnectorSearchResults queryResult = connector.get(query, null);
+
+        for (ResultItem res : queryResult.getResultItems()) {
+            log.info(res);
+        }
+
+        assertEquals(0, queryResult.getResultItems().size());
     }
 
     @Test

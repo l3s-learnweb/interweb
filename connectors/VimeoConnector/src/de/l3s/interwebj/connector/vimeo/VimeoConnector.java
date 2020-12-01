@@ -77,22 +77,28 @@ public class VimeoConnector extends ServiceConnector {
             return queryResult;
         }
 
-        String response = null;
         try {
-            String requestUrl = "https://api.vimeo.com/videos?page=" + query.getPage()
+            final String requestUrl = "https://api.vimeo.com/videos?page=" + query.getPage()
                 + "&per_page=" + query.getPerPage()
                 + "&sort=" + createSortOrder(query.getRanking())
                 + "&query=" + URLEncoder.encode(query.getQuery(), StandardCharsets.UTF_8);
-            response = httpRequest(requestUrl, Map.ofEntries(
+            final String response = httpRequest(requestUrl, Map.ofEntries(
                 Map.entry("Accept", "application/vnd.vimeo.*+json; version=3.2"),
                 Map.entry("Authorization", "bearer " + authCredentials.getSecret())
             ));
 
-            VimeoResponse vimeoResponse = new Gson().fromJson(response, VimeoResponse.class);
+            final VimeoResponse vimeoResponse = new Gson().fromJson(response, VimeoResponse.class);
+
+            if (vimeoResponse.getError() != null && vimeoResponse.getErrorCode() != 2286) { // 2286 - no results for this page (when not first page requested)
+                throw new InterWebException(vimeoResponse.getErrorCode() + ": " + vimeoResponse.getDeveloperMessage());
+            }
+
+            if (vimeoResponse.getTotal() == 0) {
+                return queryResult;
+            }
 
             int count = (query.getPage() - 1) * query.getPerPage();
-            long totalResultCount = vimeoResponse.getTotal();
-            queryResult.setTotalResultCount(totalResultCount);
+            queryResult.setTotalResultCount(vimeoResponse.getTotal());
 
             for (Datum video : vimeoResponse.getData()) {
                 try {
@@ -141,7 +147,7 @@ public class VimeoConnector extends ServiceConnector {
                 }
             }
         } catch (Throwable e) {
-            log.error("Failed to retrieve results for query {}, response: {}", query, response, e);
+            log.error("Failed to retrieve results for query {}", query, e);
         }
         return queryResult;
     }
