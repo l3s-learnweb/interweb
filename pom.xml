@@ -15,9 +15,9 @@
         <maven.compiler.release>11</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <maven.dependency.tomcat.version>9.0.40</maven.dependency.tomcat.version>
+        <maven.dependency.tomcat.version>9.0.41</maven.dependency.tomcat.version>
         <maven.dependency.log4j.version>2.14.0</maven.dependency.log4j.version>
-        <maven.dependency.jersey2.version>2.32</maven.dependency.jersey2.version>
+        <maven.dependency.jersey2.version>2.33</maven.dependency.jersey2.version>
     </properties>
 
     <modules>
@@ -50,7 +50,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>30.0-jre</version>
+                <version>30.1-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
