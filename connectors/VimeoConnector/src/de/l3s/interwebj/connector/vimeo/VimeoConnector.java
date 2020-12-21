@@ -89,7 +89,9 @@ public class VimeoConnector extends ServiceConnector {
 
             final VimeoResponse vimeoResponse = new Gson().fromJson(response, VimeoResponse.class);
 
-            if (vimeoResponse.getError() != null && vimeoResponse.getErrorCode() != 2286) { // 2286 - no results for this page (when not first page requested)
+            if (vimeoResponse.getError() != null
+                && vimeoResponse.getErrorCode() != 2286 // 2286 - no results for this page (when not first page requested)
+                && vimeoResponse.getErrorCode() != 2969) { // 2969 - requested a page of results that does not exist
                 throw new InterWebException(vimeoResponse.getErrorCode() + ": " + vimeoResponse.getDeveloperMessage());
             }
 

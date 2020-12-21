@@ -180,7 +180,8 @@ public class YouTubeConnector extends ServiceConnector {
                     log.warn("No more results for page {}", query.getPage());
                     return queryResult;
                 } else {
-                    throw new InterWebException("YouTube does not support search by specific page numbers without requesting previous page.");
+                    log.warn("YouTube does not support search by specific page numbers without requesting previous page.");
+                    return queryResult;
                 }
             }
 
