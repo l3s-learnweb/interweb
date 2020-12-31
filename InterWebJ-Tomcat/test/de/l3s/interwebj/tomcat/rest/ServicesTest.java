@@ -1,6 +1,6 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.WebTarget;
 
 import org.junit.jupiter.api.Test;
 

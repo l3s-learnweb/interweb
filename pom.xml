@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <maven.dependency.log4j.version>2.14.1</maven.dependency.log4j.version>
-        <maven.dependency.jersey2.version>2.33</maven.dependency.jersey2.version>
+        <maven.dependency.jersey2.version>3.0.2</maven.dependency.jersey2.version>
     </properties>
 
     <modules>
@@ -65,22 +65,22 @@
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
-                <version>2.3.3</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>2.3.3</version>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
                 <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>2.1.6</version>
+                <version>3.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.json.bind</groupId>
                 <artifactId>jakarta.json.bind-api</artifactId>
-                <version>1.0.2</version>
+                <version>2.0.0</version>
             </dependency>
 
             <dependency>
@@ -161,7 +161,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.7.0</version>
+            <version>5.7.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -286,7 +286,7 @@
         <profile>
             <id>prod</id>
             <properties>
-                <javax.faces.project_stage>Production</javax.faces.project_stage>
+                <jakarta.faces.project_stage>Production</jakarta.faces.project_stage>
             </properties>
         </profile>
     </profiles>
