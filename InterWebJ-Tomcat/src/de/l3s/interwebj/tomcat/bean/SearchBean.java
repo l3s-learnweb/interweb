@@ -10,13 +10,13 @@ import java.util.TreeSet;
 import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.sun.istack.NotNull;
 
 import de.l3s.interwebj.core.InterWebException;
 import de.l3s.interwebj.core.connector.QueryResultCollector;
@@ -49,8 +49,18 @@ public class SearchBean implements Serializable {
     private int resultCount;
     private int timeout = 60;
 
+    @Inject
+    private SessionBean sessionBean;
+
     public SearchBean() {
         init();
+    }
+
+    public void init() {
+        Engine engine = Environment.getInstance().getEngine();
+        selectedConnectorNames = new HashSet<>(engine.getConnectorNames());
+        selectedContentTypes = new HashSet<>(engine.getContentTypes());
+        resultCount = 10;
     }
 
     public String getConnectorBaseUrl(String connectorName) {
@@ -154,20 +164,13 @@ public class SearchBean implements Serializable {
         return searchResults != null;
     }
 
-    public void init() {
-        Engine engine = Environment.getInstance().getEngine();
-        selectedConnectorNames = new HashSet<>(engine.getConnectorNames());
-        selectedContentTypes = new HashSet<>(engine.getContentTypes());
-        resultCount = 10;
-    }
-
     public void save() {
     }
 
     public void search() {
         Query query = QueryFactory.createQuery(this.query, selectedContentTypes);
         query.setConnectorNames(selectedConnectorNames);
-        String link = FacesUtils.getInterWebJBean().getBaseUrl() + "api/search/" + query.getId() + ".xml";
+        String link = FacesUtils.getRequestBaseURL() + "api/search/" + query.getId() + ".xml";
         query.setLink(link);
         query.setSearchScope(SearchScope.text);
         query.setPerPage(resultCount);
@@ -177,7 +180,7 @@ public class SearchBean implements Serializable {
 
         SearchResults searchResults = new SearchResults(query);
         Engine engine = Environment.getInstance().getEngine();
-        InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+        InterWebPrincipal principal = sessionBean.getPrincipal();
         try {
             QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
             searchResults = collector.retrieve();

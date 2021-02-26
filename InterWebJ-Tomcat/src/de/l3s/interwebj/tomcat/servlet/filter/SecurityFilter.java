@@ -22,8 +22,9 @@ import de.l3s.interwebj.tomcat.bean.SessionBean;
 
 @WebFilter("/view/*")
 public class SecurityFilter implements Filter {
-    public static final String LOGIN_PAGE = "/view/login.xhtml";
     private static final Logger log = LogManager.getLogger(SecurityFilter.class);
+    public static final String LOGIN_PAGE = "/view/login.xhtml";
+
     @Inject
     private SessionBean sessionBean;
 

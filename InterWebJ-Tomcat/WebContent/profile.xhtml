@@ -7,12 +7,12 @@
     <ui:define name="content">
 		<h:form id="change_password_form">
 			<h:panelGrid columns="3">
-				<h:outputLabel value="username: " />
-				<h:outputLabel value="#{sessionBean.principal.name}" />
+				<h:outputText value="username: " />
+				<h:outputText value="#{sessionBean.principal.name}" />
 				<h:column/>
 
-				<h:outputLabel value="e-mail: " />
-				<h:outputLabel value="#{sessionBean.principal.email}" />
+				<h:outputText value="e-mail: " />
+				<h:outputText value="#{sessionBean.principal.email}" />
 				<h:column/>
 
 				<h:outputLabel for="old_password" value="old password: "/>

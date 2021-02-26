@@ -21,7 +21,7 @@
                             <h:outputText value="Params"/>
                         </h:panelGroup>
                         <h:panelGroup layout="block" styleClass="iw-panel-content table-form">
-                            <h:outputLabel value="Results: " for="count_input"/>
+                            <h:outputLabel for="count_input" value="Results: "/>
                             <h:inputText id="count_input" label="results count" required="true" value="#{searchBean.resultCount}" size="4"/>
 
                             <h:outputLabel for="page_input" value="Page: "/>
@@ -91,7 +91,7 @@
                 <h:column>
                     <div>
                         <h6>
-                            <img src="#{interwebj.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}" alt="#{resultItem.type}}"
+                            <img src="#{request.contextPath}/img/#{searchBean.getTypeImageUrl(resultItem.type)}" alt="#{resultItem.type}}"
                                  style="vertical-align: middle; margin: 3px; width: 16px;"/>
 
                             <h:outputLink value="#{resultItem.url}" target="_blank">

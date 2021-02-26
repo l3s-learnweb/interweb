@@ -5,7 +5,7 @@
 				xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="content">
-		<h:outputLabel styleClass="error" value="#{servicesBean.error}"/>
+		<h:outputText styleClass="error" value="#{servicesBean.error}"/>
 		<h:form>
 			<h:dataTable var="connectorWrapper" value="#{servicesBean.connectorWrappers}" cellpadding="10">
 				<h:column>
@@ -20,10 +20,10 @@
 				<h:column>
 					<h:panelGrid columns="2" cellpadding="0" cellspacing="0" style="font-size: 0.8em; color:#5C5C5C;"
 						rendered="#{servicesBean.isUserRegistrationRequired(connectorWrapper)}">
-						<h:outputLabel value="Key:" style="margin-right:5px" />
-						<h:inputText id="key" label="key" value="#{connectorWrapper.key}" style="margin-bottom:5px" />
-						<h:outputLabel value="Secret:" style="margin-right:5px" />
-						<h:inputSecret id="secret" label="secret" value="#{connectorWrapper.secret}" />
+						<h:outputLabel for="key" value="Key:" style="margin-right:5px" />
+						<h:inputText id="key" value="#{connectorWrapper.key}" style="margin-bottom:5px" />
+						<h:outputLabel for="secret" value="Secret:" style="margin-right:5px" />
+						<h:inputSecret id="secret" value="#{connectorWrapper.secret}" />
 					</h:panelGrid>
 				</h:column>
 				<h:column>
@@ -38,7 +38,7 @@
 			<br/>
 			<br/>
 			<span style="border-top: 1px dotted black; padding: 10px;">
-                <h:outputLink value="#{interwebj.contextPath}/view/awaiting_services.xhtml">Manage</h:outputLink>
+                <h:outputLink value="#{request.contextPath}/view/awaiting_services.xhtml">Manage</h:outputLink>
 				connectors awaiting authorization manually.
 			</span>
 		</h:panelGroup>

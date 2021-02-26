@@ -15,7 +15,6 @@
         <maven.compiler.release>11</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <maven.dependency.tomcat.version>9.0.41</maven.dependency.tomcat.version>
         <maven.dependency.log4j.version>2.14.0</maven.dependency.log4j.version>
         <maven.dependency.jersey2.version>2.33</maven.dependency.jersey2.version>
     </properties>
@@ -44,7 +43,7 @@
             <dependency>
                 <groupId>org.mariadb.jdbc</groupId>
                 <artifactId>mariadb-java-client</artifactId>
-                <version>2.7.1</version>
+                <version>2.7.2</version>
             </dependency>
 
             <dependency>
@@ -150,12 +149,6 @@
                 <artifactId>log4j-slf4j-impl</artifactId>
                 <version>${maven.dependency.log4j.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-catalina</artifactId>
-                <version>${maven.dependency.tomcat.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -258,7 +251,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>8.38</version>
+                        <version>8.40</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -274,7 +267,7 @@
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.2.0</version>
+                        <version>4.2.1</version>
                     </dependency>
                 </dependencies>
             </plugin>

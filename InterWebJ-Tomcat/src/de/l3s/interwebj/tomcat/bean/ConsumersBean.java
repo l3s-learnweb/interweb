@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
@@ -37,6 +38,9 @@ public class ConsumersBean implements Serializable {
     private String oauthToken;
     private final String callback;
 
+    @Inject
+    private SessionBean sessionBean;
+
     public ConsumersBean() {
         HttpServletRequest request = FacesUtils.getRequest();
         oauthToken = request.getParameter("oauth_token");
@@ -48,15 +52,14 @@ public class ConsumersBean implements Serializable {
 
     public void addConsumer() throws IOException {
         Database database = Environment.getInstance().getDatabase();
-        InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+        InterWebPrincipal principal = sessionBean.getPrincipal();
         AuthCredentials authCredentials = AuthCredentials.random();
 
         Consumer consumer = new Consumer(name, url, description, authCredentials);
         database.saveConsumer(principal.getName(), consumer);
         log.info("consumer: [{}] successfully added", consumer.getName());
 
-        String contextPath = FacesUtils.getContextPath();
-        FacesUtils.redirect(contextPath + "/view/consumers.xhtml");
+        FacesUtils.redirectLocal("/view/consumers.xhtml");
     }
 
     public void authorizeConsumer() throws IOException {
@@ -74,7 +77,7 @@ public class ConsumersBean implements Serializable {
         cache.put("access_token:" + accessToken.getKey(), accessToken);
         cache.put("consumer_token:" + accessToken.getKey(), consumerKey);
 
-        InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+        InterWebPrincipal principal = sessionBean.getPrincipal();
         principal.setOauthCredentials(accessToken);
         Database database = Environment.getInstance().getDatabase();
         database.updatePrincipal(principal);
@@ -138,7 +141,7 @@ public class ConsumersBean implements Serializable {
     public List<Consumer> getRegisteredConsumers() {
         Environment environment = Environment.getInstance();
         Database database = environment.getDatabase();
-        InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+        InterWebPrincipal principal = sessionBean.getPrincipal();
         return database.readConsumers(principal.getName());
     }
 
@@ -156,8 +159,7 @@ public class ConsumersBean implements Serializable {
     }
 
     public void newConsumer() throws IOException {
-        String contextPath = FacesUtils.getContextPath();
-        FacesUtils.redirect(contextPath + "/view/add_consumer.xhtml");
+        FacesUtils.redirectLocal("/view/add_consumer.xhtml");
     }
 
     public void revoke(Object consumer) {
@@ -165,7 +167,7 @@ public class ConsumersBean implements Serializable {
         log.info("revoking consumer [{}]", consumerName);
         Environment environment = Environment.getInstance();
         Database database = environment.getDatabase();
-        InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+        InterWebPrincipal principal = sessionBean.getPrincipal();
         database.deleteConsumer(principal.getName(), consumerName);
     }
 }

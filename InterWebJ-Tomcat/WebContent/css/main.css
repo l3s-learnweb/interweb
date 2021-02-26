@@ -206,6 +206,10 @@ body {
     display: inline-block;
 }
 
+#menu ul li {
+    display: inline-block;
+}
+
 #menu a {
     display: block;
     padding: 10px;

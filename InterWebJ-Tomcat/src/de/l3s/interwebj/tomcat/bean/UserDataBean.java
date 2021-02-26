@@ -2,6 +2,7 @@ package de.l3s.interwebj.tomcat.bean;
 
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,9 @@ public class UserDataBean {
     private String password;
     private String password2;
     private String email;
+
+    @Inject
+    private SessionBean sessionBean;
 
     public String getEmail() {
         return email;
@@ -58,7 +62,7 @@ public class UserDataBean {
         if (validate(database)) {
             InterWebPrincipal principal = InterWebPrincipal.createDefault(username, email);
             database.savePrincipal(principal, password);
-            FacesUtils.getSessionBean().setPrincipal(principal);
+            sessionBean.setPrincipal(principal);
         }
     }
 

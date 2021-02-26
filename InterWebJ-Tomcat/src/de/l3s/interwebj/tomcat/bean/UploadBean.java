@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.Part;
 
@@ -24,7 +25,6 @@ import de.l3s.interwebj.core.core.Engine;
 import de.l3s.interwebj.core.core.Environment;
 import de.l3s.interwebj.core.core.InterWebPrincipal;
 import de.l3s.interwebj.core.query.ContentType;
-import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 
 /**
  * @author olex
@@ -41,18 +41,17 @@ public class UploadBean implements Serializable {
     private String description;
     private String tags;
     private String text;
-    private boolean publicAccess;
+    private boolean publicAccess = true;
 
     private transient Part uploadedFile;
 
-    public UploadBean() {
-        publicAccess = true;
-    }
+    @Inject
+    private SessionBean sessionBean;
 
     public List<SelectItem> getConnectors() {
         List<SelectItem> connectors = new ArrayList<>();
         Engine engine = Environment.getInstance().getEngine();
-        InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+        InterWebPrincipal principal = sessionBean.getPrincipal();
         for (ServiceConnector connector : engine.getConnectors()) {
             if (connector.supportContentType(selectedContentType) && connector.isRegistered() && engine.isUserAuthenticated(connector, principal)) {
                 SelectItem selectItem = new SelectItem(connector.getName());
@@ -146,7 +145,7 @@ public class UploadBean implements Serializable {
             params.add(Parameters.FILENAME, fileName);
 
             Engine engine = Environment.getInstance().getEngine();
-            InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+            InterWebPrincipal principal = sessionBean.getPrincipal();
             engine.upload(data, principal, selectedConnectors, selectedContentType, params);
         }
     }
@@ -157,7 +156,7 @@ public class UploadBean implements Serializable {
             Parameters params = createUploadParameters();
 
             Engine engine = Environment.getInstance().getEngine();
-            InterWebPrincipal principal = FacesUtils.getSessionBean().getPrincipal();
+            InterWebPrincipal principal = sessionBean.getPrincipal();
             engine.upload(text.getBytes(StandardCharsets.UTF_8), principal, selectedConnectors, selectedContentType, params);
             text = null;
         }

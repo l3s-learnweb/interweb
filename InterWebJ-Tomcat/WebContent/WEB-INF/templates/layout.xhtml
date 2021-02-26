@@ -5,41 +5,41 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
     <title>InterWebJ</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" media="screen" href="#{interwebj.contextPath}/css/main.css" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="screen" href="#{request.contextPath}/css/main.css" />
 </h:head>
 <body>
     <div id="topnav">
         <h:form>
             <ul>
                 <li>
-                    <h:outputLink value="#{interwebj.contextPath}/view/index.xhtml">
+                    <h:outputLink value="#{request.contextPath}/view/index.xhtml">
                         <h:outputText value="Home" />
                     </h:outputLink>
                 </li>
                 <li>
-                    <h:outputLink value="#{interwebj.contextPath}/view/api.xhtml">
+                    <h:outputLink value="#{request.contextPath}/view/api.xhtml">
                         <h:outputText value="API Docs" />
                     </h:outputLink>
                 </li>
-                <ui:fragment rendered="#{!principalBean.loggedIn}">
+                <ui:fragment rendered="#{!sessionBean.loggedIn}">
                     <li>
-                        <h:outputLink value="#{interwebj.contextPath}/view/register.xhtml">
+                        <h:outputLink value="#{request.contextPath}/view/register.xhtml">
                             <h:outputText value="Register" />
                         </h:outputLink>
                     </li>
                     <li>
-                        <h:outputLink value="#{interwebj.contextPath}/view/login.xhtml" >
+                        <h:outputLink value="#{request.contextPath}/view/login.xhtml" >
                             <h:outputText value="Login" />
                         </h:outputLink>
                     </li>
                 </ui:fragment>
-                <ui:fragment rendered="#{principalBean.loggedIn}">
+                <ui:fragment rendered="#{sessionBean.loggedIn}">
                     <li>
-                        <h:commandLink action="#{principalBean.logout()}" value="Logout"/>
+                        <h:commandLink action="#{sessionBean.logout()}" value="Logout"/>
                     </li>
                     <!--<li>
-                        <h:outputLink value="#{interwebj.contextPath}/view/profile.xhtml">
+                        <h:outputLink value="#{request.contextPath}/view/profile.xhtml">
                             <h:outputText value="Profile: #{sessionBean.principal.name}" />
                         </h:outputLink>
                     </li>-->
@@ -54,30 +54,30 @@
             <h:form>
                 <ul>
                     <li>
-                        <h:outputLink value="#{interwebj.contextPath}/view/search.xhtml">
+                        <h:outputLink value="#{request.contextPath}/view/search.xhtml">
                             <h:outputText value="Search" />
                         </h:outputLink>
                     </li>
-                    <ui:fragment rendered="#{principalBean.loggedIn}">
+                    <ui:fragment rendered="#{sessionBean.loggedIn}">
                         <li>
-                            <h:outputLink value="#{interwebj.contextPath}/view/upload.xhtml">
+                            <h:outputLink value="#{request.contextPath}/view/upload.xhtml">
                                 <h:outputText value="Upload" />
                             </h:outputLink>
                         </li>
                         <li>
-                            <h:outputLink value="#{interwebj.contextPath}/view/consumers.xhtml">
+                            <h:outputLink value="#{request.contextPath}/view/consumers.xhtml">
                                 <h:outputText value="Apps" />
                             </h:outputLink>
                         </li>
                         <li>
-                            <h:outputLink value="#{interwebj.contextPath}/view/services.xhtml">
+                            <h:outputLink value="#{request.contextPath}/view/services.xhtml">
                                 <h:outputText value="Services" />
                             </h:outputLink>
                         </li>
                     </ui:fragment>
-                    <ui:fragment rendered="#{principalBean.hasRole('manager')}">
+                    <ui:fragment rendered="#{sessionBean.hasRole('manager')}">
                         <li>
-                            <h:outputLink value="#{interwebj.contextPath}/view/admin/register_services.xhtml" styleClass="admin_menu_item">
+                            <h:outputLink value="#{request.contextPath}/view/admin/register_services.xhtml" styleClass="admin_menu_item">
                                 <h:outputText value="WS Registration" />
                             </h:outputLink>
                         </li>

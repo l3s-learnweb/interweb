@@ -5,7 +5,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="content">
-        <h:outputLabel value="Services with OAuth support:" />
+        <h:outputText value="Services with OAuth support:" />
         <h:form>
             <h:dataTable value="#{registerServicesBean.connectorWrappers}" var="connectorWrapper" cellpadding="10">
                 <h:column>
@@ -14,21 +14,17 @@
                 </h:column>
                 <h:column>
                     <h:outputLink value="#{connectorWrapper.connector.baseUrl}" style="margin-right: 10px;">
-                        <h:outputLabel value="#{connectorWrapper.connector.name}" />
+                        <h:outputText value="#{connectorWrapper.connector.name}" />
                     </h:outputLink>
                 </h:column>
                 <h:column>
                     <h:panelGrid columns="2" cellpadding="0" cellspacing="0" style="font-size: 0.8em; color:#5C5C5C;">
-                        <h:outputLabel value="Key:" style="margin-right:5px" />
-                        <h:outputLabel value="#{connectorWrapper.connector.authCredentials.key}"
-                            rendered="#{registerServicesBean.isRegistered(connectorWrapper)}" />
-                        <h:inputText id="key" label="key" value="#{connectorWrapper.key}" style="margin-bottom:5px"
-                            rendered="${!registerServicesBean.isRegistered(connectorWrapper)}"/>
-                        <h:outputLabel value="Secret:" style="margin-right:5px" />
-                        <h:outputLabel value="#{connectorWrapper.connector.authCredentials.secret}"
-                            rendered="#{registerServicesBean.isRegistered(connectorWrapper)}" />
-                        <h:inputText id="secret" label="secret" value="#{connectorWrapper.secret}"
-                            rendered="${not registerServicesBean.isRegistered(connectorWrapper)}" />
+                        <h:outputText value="Key:" style="margin-right:5px" />
+                        <h:outputLabel for="key" value="#{connectorWrapper.connector.authCredentials.key}" rendered="#{registerServicesBean.isRegistered(connectorWrapper)}" />
+                        <h:inputText id="key" label="key" value="#{connectorWrapper.key}" style="margin-bottom:5px" rendered="${!registerServicesBean.isRegistered(connectorWrapper)}"/>
+                        <h:outputText value="Secret:" style="margin-right:5px" />
+                        <h:outputLabel for="secret" value="#{connectorWrapper.connector.authCredentials.secret}" rendered="#{registerServicesBean.isRegistered(connectorWrapper)}" />
+                        <h:inputText id="secret" label="secret" value="#{connectorWrapper.secret}" rendered="${not registerServicesBean.isRegistered(connectorWrapper)}" />
                     </h:panelGrid>
                 </h:column>
                 <h:column>

@@ -341,7 +341,7 @@ public class YouTubeConnector extends ServiceConnector {
                     resultItem.setAuthorUrl("https://www.youtube.com/channel/" + vSnippet.getChannelId());
                 }
                 if (vSnippet.getPublishedAt() != null) {
-                    resultItem.setDate(CoreUtils.formatDate(parseDate(vSnippet.getPublishedAt())));
+                    resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
                 }
 
                 ThumbnailDetails thumbnails = vSnippet.getThumbnails();
@@ -378,7 +378,7 @@ public class YouTubeConnector extends ServiceConnector {
                     resultItem.setAuthor("https://www.youtube.com/channel/" + vSnippet.getChannelId());
                 }
                 if (vSnippet.getPublishedAt() != null) {
-                    resultItem.setDate(CoreUtils.formatDate(parseDate(vSnippet.getPublishedAt())));
+                    resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
                 }
 
                 ThumbnailDetails thumbnails = vSnippet.getThumbnails();

@@ -7,7 +7,7 @@
     <ui:define name="content">
 		<p>
 			Welcome to InterWebJ Web 2.0 Integration Service
-			<h:outputLabel rendered="#{principalBean.loggedIn}">, #{sessionBean.principal.name} </h:outputLabel>
+			<h:outputText rendered="#{sessionBean.loggedIn}">, #{sessionBean.principal.name}</h:outputText>
 			!
 		</p>
     </ui:define>

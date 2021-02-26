@@ -2,8 +2,7 @@ package de.l3s.interwebj.tomcat.bean;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-
-import com.sun.istack.NotNull;
+import javax.validation.constraints.NotNull;
 
 @Named
 @RequestScoped

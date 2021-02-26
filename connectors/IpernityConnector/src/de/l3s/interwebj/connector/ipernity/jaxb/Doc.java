@@ -103,15 +103,13 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {"owner", "thumb", "dates", "count", "medias", "original"})
+@XmlType(name = "", propOrder = {"owner", "thumb", "count", "medias", "original"})
 public class Doc {
 
     @XmlElement(required = true)
     protected Owner owner;
     @XmlElement(required = true)
     protected Thumb thumb;
-    @XmlElement()
-    protected Dates dates;
     @XmlElement()
     protected Count count;
     @XmlElement()
@@ -167,26 +165,6 @@ public class Doc {
      */
     public void setThumb(Thumb value) {
         this.thumb = value;
-    }
-
-    /**
-     * Gets the value of the dates property.
-     *
-     * @return possible object is
-     * {@link Dates }
-     */
-    public Dates getDates() {
-        return dates;
-    }
-
-    /**
-     * Sets the value of the dates property.
-     *
-     * @param value allowed object is
-     * {@link Dates }
-     */
-    public void setDates(Dates value) {
-        this.dates = value;
     }
 
     /**
