@@ -35,6 +35,12 @@ public class SearchResult implements Serializable {
     @SerializedName("tags")
     private List<String> tags;
 
+    // author
+    @SerializedName("author")
+    private String author;
+    @SerializedName("author_url")
+    private String authorUrl;
+
     @SerializedName("number_of_views")
     private Long numberOfViews;
     @SerializedName("number_of_comments")
@@ -152,6 +158,22 @@ public class SearchResult implements Serializable {
         this.tags = tags;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(final String author) {
+        this.author = author;
+    }
+
+    public String getAuthorUrl() {
+        return authorUrl;
+    }
+
+    public void setAuthorUrl(final String authorUrl) {
+        this.authorUrl = authorUrl;
+    }
+
     public Long getNumberOfViews() {
         return numberOfViews;
     }
@@ -222,6 +244,8 @@ public class SearchResult implements Serializable {
             .append("snippet", snippet)
             .append("duration", duration)
             .append("tags", tags)
+            .append("author", author)
+            .append("authorUrl", authorUrl)
             .append("numberOfViews", numberOfViews)
             .append("numberOfComments", numberOfComments)
             .append("embeddedCode", embeddedCode)
