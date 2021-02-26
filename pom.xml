@@ -29,7 +29,7 @@
         <module>connectors/VimeoConnector</module>
         <module>connectors/YouTubeConnector</module>
         <module>InterWebJ-Tomcat</module>
-        <module>InterWebJ-Client</module>
+        <!--<module>InterWebJ-Client</module>-->
     </modules>
 
     <dependencyManagement>
