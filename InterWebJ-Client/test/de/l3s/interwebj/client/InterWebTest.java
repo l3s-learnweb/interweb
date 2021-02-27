@@ -11,7 +11,7 @@ import de.l3s.interwebj.client.model.SearchResult;
 
 class InterWebTest {
     private static final String SERVER_URL = "***REMOVED***";
-    // private static final String SERVER_URL = "***REMOVED***/api/";
+    // private static final String SERVER_URL = "https://learnweb.l3s.uni-hannover.de/interweb/api/";
 
     private static final String CONSUMER_KEY = "***REMOVED***";
     private static final String CONSUMER_SECRET = "***REMOVED***";

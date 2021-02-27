@@ -9,6 +9,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
 import de.l3s.interwebj.tomcat.servlet.provider.OAuthFilter;
+import de.l3s.interwebj.tomcat.servlet.provider.RequestUriFilter;
 import de.l3s.interwebj.tomcat.servlet.provider.ServletExceptionMapper;
 
 @ApplicationPath("/api")
@@ -19,6 +20,7 @@ public class RestApplication extends ResourceConfig {
 
         property(ServerProperties.WADL_FEATURE_DISABLE, true);
 
+        register(RequestUriFilter.class);
         register(MultiPartFeature.class);
         register(JsonBindingFeature.class);
         // register(OAuth1ServerFeature.class);

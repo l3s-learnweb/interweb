@@ -35,14 +35,14 @@ public class OAuthFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) {
         log.info("OAuth filter processing.");
-        log.info("request path: [{}]", requestContext.getUriInfo().getPath());
+        log.info("absolute path: [{}]", requestContext.getUriInfo().getAbsolutePath());
         log.info("authorization: {}", requestContext.getHeaderString("authorization"));
         if (requestContext.getUriInfo().getPath().equals("oauth/OAuthAuthorizeToken")) {
             return;
         }
 
-        OAuthServerRequest osr = new OAuthServerRequest(requestContext);
-        OAuth1Parameters params = new OAuth1Parameters().readRequest(osr);
+        OAuthServerRequest request = new OAuthServerRequest(requestContext);
+        OAuth1Parameters params = new OAuth1Parameters().readRequest(request);
         OAuth1Secrets secrets = new OAuth1Secrets();
         String consumerKey = params.getConsumerKey();
         if (consumerKey == null) {
@@ -81,9 +81,9 @@ public class OAuthFilter implements ContainerRequestFilter {
         }
 
         try {
-            if (!oAuth1Signature.verify(osr, params, secrets)) {
+            if (!oAuth1Signature.verify(request, params, secrets)) {
                 log.warn("received signature: [{}]", params.getSignature());
-                log.warn("generated signature: [{}]", oAuth1Signature.generate(osr, params, secrets));
+                log.warn("generated signature: [{}]", oAuth1Signature.generate(request, params, secrets));
                 log.error("Failed to verify signature!");
                 throw new WebApplicationException("Invalid signature", Response.Status.UNAUTHORIZED);
             }
