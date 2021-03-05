@@ -54,6 +54,10 @@ public class ResultItem implements Serializable {
     private String snippet;
     @XmlElement(name = "duration")
     private Long duration;
+    @XmlElement(name = "width")
+    private Integer width;
+    @XmlElement(name = "height")
+    private Integer height;
     @JsonbProperty("tags")
     @XmlElementWrapper(name = "tags")
     @XmlElement(name = "tag")
@@ -195,6 +199,22 @@ public class ResultItem implements Serializable {
         this.duration = duration;
     }
 
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(final Integer width) {
+        this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(final Integer height) {
+        this.height = height;
+    }
+
     public Set<String> getTags() {
         return tags;
     }
@@ -308,6 +328,8 @@ public class ResultItem implements Serializable {
             .append("date", date)
             .append("snippet", snippet)
             .append("duration", duration)
+            .append("width", width)
+            .append("height", height)
             .append("tags", tags)
             .append("author", author)
             .append("authorUrl", authorUrl)

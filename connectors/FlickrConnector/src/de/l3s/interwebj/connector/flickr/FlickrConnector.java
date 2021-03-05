@@ -358,6 +358,8 @@ public class FlickrConnector extends ServiceConnector {
         resultItem.setTitle(photo.getTitle());
         resultItem.setDescription(photo.getDescription());
         resultItem.setUrl(photo.getUrl());
+        resultItem.setWidth(photo.getOriginalWidth());
+        resultItem.setHeight(photo.getOriginalHeight());
 
         if (photo.getOwner() != null) {
             resultItem.setAuthor(photo.getOwner().getUsername());

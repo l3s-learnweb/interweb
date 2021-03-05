@@ -112,6 +112,8 @@ public class VimeoConnector extends ServiceConnector {
                     resultItem.setUrl(video.getLink());
                     resultItem.setDuration(video.getDuration().longValue());
                     resultItem.setDate(CoreUtils.formatDate(parseDate(video.getCreatedTime())));
+                    resultItem.setWidth(video.getWidth());
+                    resultItem.setHeight(video.getHeight());
 
                     if (video.getUser() != null) {
                         resultItem.setAuthor(video.getUser().getName());

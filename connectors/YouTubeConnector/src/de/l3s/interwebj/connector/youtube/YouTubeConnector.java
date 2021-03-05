@@ -45,6 +45,7 @@ import com.google.api.services.youtube.model.SearchResultSnippet;
 import com.google.api.services.youtube.model.ThumbnailDetails;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoContentDetails;
+import com.google.api.services.youtube.model.VideoFileDetails;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
@@ -347,12 +348,18 @@ public class YouTubeConnector extends ServiceConnector {
                 ThumbnailDetails thumbnails = vSnippet.getThumbnails();
                 if (thumbnails.getMedium() != null) {
                     resultItem.setThumbnailSmall(createThumbnail(thumbnails.getMedium()));
+                    resultItem.setWidth(240);
+                    resultItem.setHeight(240);
                 }
                 if (thumbnails.getHigh() != null) {
                     resultItem.setThumbnailMedium(createThumbnail(thumbnails.getHigh()));
+                    resultItem.setWidth(640);
+                    resultItem.setHeight(480);
                 }
                 if (thumbnails.getMaxres() != null) {
                     resultItem.setThumbnailLarge(createThumbnail(thumbnails.getMaxres()));
+                    resultItem.setWidth(1280);
+                    resultItem.setHeight(720);
                 }
             }
         } else if (videoResult != null) {
@@ -384,12 +391,18 @@ public class YouTubeConnector extends ServiceConnector {
                 ThumbnailDetails thumbnails = vSnippet.getThumbnails();
                 if (thumbnails.getMedium() != null) {
                     resultItem.setThumbnailSmall(createThumbnail(thumbnails.getMedium()));
+                    resultItem.setWidth(240);
+                    resultItem.setHeight(240);
                 }
                 if (thumbnails.getHigh() != null) {
                     resultItem.setThumbnailMedium(createThumbnail(thumbnails.getHigh()));
+                    resultItem.setWidth(640);
+                    resultItem.setHeight(480);
                 }
                 if (thumbnails.getMaxres() != null) {
                     resultItem.setThumbnailLarge(createThumbnail(thumbnails.getMaxres()));
+                    resultItem.setWidth(1280);
+                    resultItem.setHeight(720);
                 }
             }
         }
@@ -416,6 +429,14 @@ public class YouTubeConnector extends ServiceConnector {
             if (vContentDetails != null) {
                 if (vContentDetails.getDuration() != null) {
                     resultItem.setDuration(Duration.parse(vContentDetails.getDuration()).get(ChronoUnit.SECONDS));
+                }
+            }
+
+            VideoFileDetails vFileDetails = videoResult.getFileDetails();
+            if (vFileDetails != null) {
+                if (vFileDetails.getVideoStreams() != null) {
+                    resultItem.setWidth(vFileDetails.getVideoStreams().get(0).getWidthPixels().intValue());
+                    resultItem.setHeight(vFileDetails.getVideoStreams().get(0).getHeightPixels().intValue());
                 }
             }
         }

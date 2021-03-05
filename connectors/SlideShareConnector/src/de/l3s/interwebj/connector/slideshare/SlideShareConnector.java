@@ -132,10 +132,12 @@ public class SlideShareConnector extends ServiceConnector {
                 // slideshare api return always the same wrong thumbnail size
                 //String[] size = sre.getThumbnailSize().substring(1, sre.getThumbnailSize().length()-1).split(",");
 
-                int width = 170; // Integer.parseInt(size[0]);
-                int height = fileType.equals("documents") ? 220 : 128; // Integer.parseInt(size[1]);
+                int width = 170;
+                int height = fileType.equals("documents") ? 220 : 128;
 
                 resultItem.setThumbnailSmall(new Thumbnail(sre.getThumbnailURL(), width, height));
+                resultItem.setWidth(width);
+                resultItem.setHeight(height);
                 resultItem.setEmbeddedCode(getEmbeddedCode(sre.getEmbed()));
 
                 queryResult.addResultItem(resultItem);

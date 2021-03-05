@@ -130,10 +130,14 @@ public class IpernityConnector extends ServiceConnector {
 
             if (doc.getThumb() != null) {
                 resultItem.setThumbnailLarge(new Thumbnail(doc.getThumb().getUrl(), doc.getThumb().getW(), doc.getThumb().getH()));
+                resultItem.setWidth(doc.getThumb().getW());
+                resultItem.setHeight(doc.getThumb().getH());
             }
 
             if (doc.getOriginal() != null) {
                 resultItem.setThumbnailOriginal(new Thumbnail(doc.getOriginal().getUrl(), doc.getOriginal().getW(), doc.getOriginal().getH()));
+                resultItem.setWidth(doc.getOriginal().getW());
+                resultItem.setHeight(doc.getOriginal().getH());
             }
 
             queryResult.addResultItem(resultItem);

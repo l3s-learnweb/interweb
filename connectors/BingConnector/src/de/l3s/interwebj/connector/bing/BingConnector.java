@@ -137,6 +137,8 @@ public class BingConnector extends ServiceConnector {
                     resultItem.setTitle(image.getName());
                     resultItem.setUrl(image.getContentUrl());
                     resultItem.setDate(CoreUtils.formatDate(parseDate(image.getDatePublished())));
+                    resultItem.setWidth(image.getWidth());
+                    resultItem.setHeight(image.getHeight());
 
                     try {
                         resultItem.setThumbnailMedium(new Thumbnail(image.getThumbnailUrl(), image.getThumbnail().getWidth(), image.getThumbnail().getHeight()));
@@ -171,6 +173,8 @@ public class BingConnector extends ServiceConnector {
                     resultItem.setDescription(video.getDescription());
                     resultItem.setUrl(video.getContentUrl());
                     resultItem.setDate(CoreUtils.formatDate(parseDate(video.getDatePublished())));
+                    resultItem.setWidth(video.getWidth());
+                    resultItem.setHeight(video.getHeight());
 
                     if (video.getDuration() != null) {
                         Duration duration = Duration.parse(video.getDuration());

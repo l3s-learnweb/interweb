@@ -97,8 +97,12 @@ public class GiphyConnector extends ServiceConnector {
 
                     if (giphyThumbnails.getOriginal() != null) {
                         resultItem.setThumbnailOriginal(createThumbnail(giphyThumbnails.getOriginal()));
+                        resultItem.setWidth(Integer.parseInt(giphyThumbnails.getOriginal().getWidth()));
+                        resultItem.setHeight(Integer.parseInt(giphyThumbnails.getOriginal().getHeight()));
                     } else if (giphyThumbnails.getOriginalStill() != null) {
                         resultItem.setThumbnailOriginal(createThumbnail(giphyThumbnails.getOriginalStill()));
+                        resultItem.setWidth(Integer.parseInt(giphyThumbnails.getOriginalStill().getWidth()));
+                        resultItem.setHeight(Integer.parseInt(giphyThumbnails.getOriginalStill().getHeight()));
                     }
 
                     results.addResultItem(resultItem);
