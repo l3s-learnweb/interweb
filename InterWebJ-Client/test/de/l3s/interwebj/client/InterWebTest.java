@@ -10,8 +10,8 @@ import de.l3s.interwebj.client.model.SearchResponse;
 import de.l3s.interwebj.client.model.SearchResult;
 
 class InterWebTest {
-    private static final String SERVER_URL = "***REMOVED***";
-    // private static final String SERVER_URL = "https://learnweb.l3s.uni-hannover.de/interweb/api/";
+    // private static final String SERVER_URL = "***REMOVED***";
+    private static final String SERVER_URL = "https://learnweb.l3s.uni-hannover.de/interweb/api/";
 
     private static final String CONSUMER_KEY = "***REMOVED***";
     private static final String CONSUMER_SECRET = "***REMOVED***";
@@ -19,6 +19,7 @@ class InterWebTest {
     @Test
     void simpleTest() {
         TreeMap<String, String> params = new TreeMap<>();
+        params.put("q", "spacex");
         params.put("language", "en");
         params.put("media_types", "video");
         params.put("services", "YouTube,Vimeo");
@@ -29,7 +30,7 @@ class InterWebTest {
 
         InterWeb iw = new InterWeb(SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET);
 
-        SearchResponse response = iw.search("spacex", params);
+        SearchResponse response = iw.search(params);
         assertTrue(response.getResults().size() > 0);
         assertTrue(response.getResultsPerService().get("YouTube") > 0);
         assertTrue(response.getResultsPerService().get("Vimeo") > 0);

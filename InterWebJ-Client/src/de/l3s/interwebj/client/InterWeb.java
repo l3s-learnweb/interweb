@@ -62,16 +62,17 @@ public class InterWeb implements Serializable {
             .build();
     }
 
-    public SearchResponse search(String query, TreeMap<String, String> params) {
+    public SearchResponse search(TreeMap<String, String> params) {
+        String query = params.get("q");
         if (null == query || query.isEmpty()) {
             throw new IllegalArgumentException("empty query");
         }
 
-        HttpClient client = HttpClient.newHttpClient();
-        try {
-            params.put("q", query);
+        HttpRequest request = createRequest("search", params);
 
-            HttpResponse<String> response = client.send(createRequest("search", params), HttpResponse.BodyHandlers.ofString());
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String responseBody = response.body();
 
             if (response.statusCode() != 200) {
@@ -81,7 +82,7 @@ public class InterWeb implements Serializable {
 
             return new Gson().fromJson(responseBody, SearchResponse.class);
         } catch (IOException | InterruptedException e) {
-            log.fatal("An error occurred during Interweb request", e);
+            log.fatal("An error occurred during Interweb request {}", request, e);
             return null;
         }
     }
