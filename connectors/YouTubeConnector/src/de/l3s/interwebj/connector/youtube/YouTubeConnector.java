@@ -442,7 +442,7 @@ public class YouTubeConnector extends ServiceConnector {
         }
 
         resultItem.setUrl("https://www.youtube.com/watch?v=" + resultItem.getId());
-        resultItem.setEmbeddedCode(createEmbeddedCode(resultItem.getId()));
+        resultItem.setEmbeddedUrl("https://www.youtube-nocookie.com/embed/" + resultItem.getId());
         return resultItem;
     }
 
@@ -642,10 +642,5 @@ public class YouTubeConnector extends ServiceConnector {
 
     private static Thumbnail createThumbnail(com.google.api.services.youtube.model.Thumbnail vThumbnail) {
         return new Thumbnail(vThumbnail.getUrl(), vThumbnail.getWidth().intValue(), vThumbnail.getHeight().intValue());
-    }
-
-    private static String createEmbeddedCode(String id) {
-        String iframeUrl = "https://www.youtube-nocookie.com/embed/" + id;
-        return "<iframe src=\"" + iframeUrl + "\" allowfullscreen referrerpolicy=\"origin\">Your browser has blocked this iframe</iframe>";
     }
 }

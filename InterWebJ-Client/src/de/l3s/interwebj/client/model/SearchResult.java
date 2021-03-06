@@ -50,8 +50,8 @@ public class SearchResult implements Serializable {
     @SerializedName("number_of_comments")
     private Long numberOfComments;
 
-    @SerializedName("embedded_code")
-    private String embeddedCode;
+    @SerializedName("embedded_url")
+    private String embeddedUrl;
 
     /**
      * Usually an image with HEIGHT between 100 and 180 px.
@@ -210,12 +210,12 @@ public class SearchResult implements Serializable {
         this.numberOfComments = numberOfComments;
     }
 
-    public String getEmbeddedCode() {
-        return embeddedCode;
+    public String getEmbeddedUrl() {
+        return embeddedUrl;
     }
 
-    public void setEmbeddedCode(final String embeddedCode) {
-        this.embeddedCode = embeddedCode;
+    public void setEmbeddedUrl(final String embeddedUrl) {
+        this.embeddedUrl = embeddedUrl;
     }
 
     public SearchThumbnail getThumbnailSmall() {
@@ -270,7 +270,7 @@ public class SearchResult implements Serializable {
             .append("authorUrl", authorUrl)
             .append("numberOfViews", numberOfViews)
             .append("numberOfComments", numberOfComments)
-            .append("embeddedCode", embeddedCode)
+            .append("embeddedCode", embeddedUrl)
             .append("thumbnailSmall", thumbnailSmall)
             .append("thumbnailMedium", thumbnailMedium)
             .append("thumbnailLarge", thumbnailLarge)

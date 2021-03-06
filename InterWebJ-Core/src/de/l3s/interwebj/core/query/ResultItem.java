@@ -79,9 +79,9 @@ public class ResultItem implements Serializable {
     private Long commentCount;
 
     // media
-    @JsonbProperty("embedded_code")
-    @XmlElement(name = "embedded_code")
-    private String embeddedCode;
+    @JsonbProperty("embedded_url")
+    @XmlElement(name = "embedded_url")
+    private String embeddedUrl;
     /**
      * Usually an image with HEIGHT between 100 and 180 px.
      */
@@ -255,12 +255,12 @@ public class ResultItem implements Serializable {
         this.commentCount = commentCount;
     }
 
-    public String getEmbeddedCode() {
-        return embeddedCode;
+    public String getEmbeddedUrl() {
+        return embeddedUrl;
     }
 
-    public void setEmbeddedCode(final String embeddedCode) {
-        this.embeddedCode = embeddedCode;
+    public void setEmbeddedUrl(final String embeddedUrl) {
+        this.embeddedUrl = embeddedUrl;
     }
 
     public Thumbnail getThumbnailSmall() {
@@ -335,7 +335,7 @@ public class ResultItem implements Serializable {
             .append("authorUrl", authorUrl)
             .append("viewCount", viewCount)
             .append("commentCount", commentCount)
-            .append("embeddedCode", embeddedCode)
+            .append("embeddedUrl", embeddedUrl)
             .append("thumbnailSmall", thumbnailSmall)
             .append("thumbnailMedium", thumbnailMedium)
             .append("thumbnailLarge", thumbnailLarge)

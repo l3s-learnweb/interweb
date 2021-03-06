@@ -117,7 +117,9 @@
                                 </ui:fragment>
                             </h:outputLink>
 
-                            <h:outputText value="#{resultItem.embeddedCode}" escape="false" rendered="#{resultItem.embeddedCode ne null}"/>
+                            <ui:fragment rendered="#{resultItem.embeddedUrl ne null}">
+                                <iframe src="#{resultItem.embeddedUrl}" allowfullscreen="allowfullscreen" referrerpolicy="origin">Your browser has blocked this iframe</iframe>
+                            </ui:fragment>
 
                             <div>
                                 <h:outputText value="#{resultItem.description}" escape="false"/>

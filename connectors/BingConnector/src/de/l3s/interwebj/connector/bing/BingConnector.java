@@ -10,6 +10,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -188,7 +189,8 @@ public class BingConnector extends ServiceConnector {
                     }
 
                     if (video.getEmbedHtml() != null) {
-                        resultItem.setEmbeddedCode(CoreUtils.cleanupEmbedHtml(video.getEmbedHtml()));
+                        String embeddedCode = StringUtils.replaceEachRepeatedly(video.getEmbedHtml(), new String[] {"'", "&#34;", "&#39;", "&quot;", "&apos;"}, new String[]{"\"", "\"", "\"", "\"", "\""});
+                        resultItem.setEmbeddedUrl(CoreUtils.getEmbeddedUrl(embeddedCode));
                     }
 
                     results.addResultItem(resultItem);

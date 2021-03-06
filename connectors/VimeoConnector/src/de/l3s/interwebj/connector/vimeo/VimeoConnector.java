@@ -132,7 +132,7 @@ public class VimeoConnector extends ServiceConnector {
                         resultItem.setViewCount(video.getStats().getPlays());
                     }
 
-                    resultItem.setEmbeddedCode(createEmbeddedCode(resultItem.getId()));
+                    resultItem.setEmbeddedUrl("https://player.vimeo.com/video/" + resultItem.getId() + "?dnt=1");
 
                     Pictures pictures = video.getPictures();
                     if (pictures == null) {

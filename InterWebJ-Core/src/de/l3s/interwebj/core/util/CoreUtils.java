@@ -10,9 +10,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CoreUtils {
     private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
+    private static final Pattern IFRAME_SRC_PATTERN = Pattern.compile("src=\"([^\"]+)\"");
 
     public static String formatDate(long millis) {
         return formatDate(Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()));
@@ -35,7 +38,7 @@ public class CoreUtils {
     }
 
     /**
-     * Splits CSV string to list removing duplicates
+     * Splits CSV string to list removing duplicates.
      */
     public static List<String> convertToUniqueList(String s) {
         Set<String> list = new HashSet<>();
@@ -67,17 +70,8 @@ public class CoreUtils {
         return str;
     }
 
-    /**
-     * Removes width, height, autoplay, styles from embedded code.
-     */
-    public static String cleanupEmbedHtml(String embeddedCode) {
-        if (null == embeddedCode) {
-            return null;
-        }
-
-        // remove autoplay attribute
-        embeddedCode = embeddedCode.replace("?autoplay=1", "");
-        embeddedCode = embeddedCode.replaceAll("\\s(style|width|height)=\"[^\"]*\"", "");
-        return embeddedCode;
+    public static String getEmbeddedUrl(String embeddedCode) {
+        Matcher matcher = IFRAME_SRC_PATTERN.matcher(embeddedCode);
+        return matcher.find() ? matcher.group(1) : null;
     }
 }

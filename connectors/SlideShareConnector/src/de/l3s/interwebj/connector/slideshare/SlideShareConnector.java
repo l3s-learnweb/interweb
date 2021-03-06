@@ -11,8 +11,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -138,7 +136,7 @@ public class SlideShareConnector extends ServiceConnector {
                 resultItem.setThumbnailSmall(new Thumbnail(sre.getThumbnailURL(), width, height));
                 resultItem.setWidth(width);
                 resultItem.setHeight(height);
-                resultItem.setEmbeddedCode(getEmbeddedCode(sre.getEmbed()));
+                resultItem.setEmbeddedUrl(CoreUtils.getEmbeddedUrl(sre.getEmbed()));
 
                 queryResult.addResultItem(resultItem);
             }
@@ -291,19 +289,5 @@ public class SlideShareConnector extends ServiceConnector {
     @SuppressWarnings({"UnstableApiUsage", "deprecation"})
     private String getHash(String str) {
         return Hashing.sha1().hashString(str, StandardCharsets.UTF_8).toString();
-    }
-
-    /**
-     * Remove spam from the embedded code.
-     */
-    private static String getEmbeddedCode(String embed) {
-        Pattern pattern = Pattern.compile("(<object.*</object>)");
-        Matcher matcher = pattern.matcher(embed);
-
-        if (matcher.find()) {
-            return matcher.group(0);
-        } else {
-            return CoreUtils.cleanupEmbedHtml(embed);
-        }
     }
 }
