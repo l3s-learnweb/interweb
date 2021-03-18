@@ -3,6 +3,7 @@ package de.l3s.interwebj.client.model;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -222,12 +223,26 @@ public class SearchResult implements Serializable {
         return thumbnailSmall;
     }
 
+    /**
+     * @return thumbnailSmall or next available larger image
+     */
+    public SearchThumbnail getThumbnailSmallCombined() {
+        return ObjectUtils.firstNonNull(thumbnailSmall, thumbnailMedium, thumbnailLarge, thumbnailOriginal);
+    }
+
     public void setThumbnailSmall(final SearchThumbnail thumbnailSmall) {
         this.thumbnailSmall = thumbnailSmall;
     }
 
     public SearchThumbnail getThumbnailMedium() {
         return thumbnailMedium;
+    }
+
+    /**
+     * @return thumbnailMedium or next available larger image
+     */
+    public SearchThumbnail getThumbnailMediumCombined() {
+        return ObjectUtils.firstNonNull(thumbnailMedium, thumbnailLarge, thumbnailOriginal);
     }
 
     public void setThumbnailMedium(final SearchThumbnail thumbnailMedium) {
@@ -238,12 +253,26 @@ public class SearchResult implements Serializable {
         return thumbnailLarge;
     }
 
+    /**
+     * @return thumbnailLarge or next available larger image
+     */
+    public SearchThumbnail getThumbnailLargeCombined() {
+        return ObjectUtils.firstNonNull(thumbnailLarge, thumbnailOriginal);
+    }
+
     public void setThumbnailLarge(final SearchThumbnail thumbnailLarge) {
         this.thumbnailLarge = thumbnailLarge;
     }
 
     public SearchThumbnail getThumbnailOriginal() {
         return thumbnailOriginal;
+    }
+
+    /**
+     * @return thumbnailOriginal or largest available image quality
+     */
+    public SearchThumbnail getThumbnailOriginalCombined() {
+        return ObjectUtils.firstNonNull(thumbnailOriginal, thumbnailLarge, thumbnailMedium, thumbnailSmall, thumbnailMedium);
     }
 
     public void setThumbnailOriginal(final SearchThumbnail thumbnailOriginal) {
