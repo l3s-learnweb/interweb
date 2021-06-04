@@ -23,6 +23,13 @@
                 <BurstFilter level="OFF" rate="0.00056" maxBurst="2"/>
             </Filters>
         </SMTP>
+        <Sentry name="Sentry" dsn="https://7371ead6828b496b86901f1bce43d551@sentry.kbs.uni-hannover.de/3">
+            <Filters>
+                <ThresholdFilter level="${env:INTERWEB_MAIL_LOGLEVEL}" onMatch="NEUTRAL" onMismatch="DENY"/>
+                <!-- Rate is a number of events per second, current value is 10 messages per 1 hour (1/60/60 * maxBurst) -->
+                <BurstFilter level="OFF" rate="0.00056" maxBurst="10"/>
+            </Filters>
+        </Sentry>
     </Appenders>
     <Loggers>
         <Logger name="org.apache" level="FATAL"/>

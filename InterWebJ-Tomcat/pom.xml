@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>interwebj-tomcat</artifactId>
-    <version>3.06.00</version>
+    <version>3.06.01</version>
     <packaging>war</packaging>
 
     <name>InterWebJ-Tomcat</name>
@@ -66,6 +66,12 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
+        </dependency>
+        <!-- Integrate log tracking to GitLab dashboard via Sentry.io -->
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-log4j2</artifactId>
+            <version>4.3.0</version>
         </dependency>
 
         <dependency>
