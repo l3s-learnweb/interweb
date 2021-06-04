@@ -109,7 +109,7 @@
         <module name="InvalidJavadocPosition"/>
         <module name="JavadocMethod"> <!-- Changed: copied from Google, require doc only for public, do not require describing each param -->
             <property name="severity" value="ignore"/> <!-- Changed: decreased severity TODO: remove ignore -->
-            <property name="scope" value="public"/>
+            <property name="accessModifiers" value="public"/>
             <property name="allowMissingParamTags" value="true"/>
             <property name="allowMissingReturnTag" value="true"/>
             <property name="allowedAnnotations" value="Override, Test"/>
