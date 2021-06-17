@@ -358,8 +358,22 @@ public class FlickrConnector extends ServiceConnector {
         resultItem.setTitle(photo.getTitle());
         resultItem.setDescription(photo.getDescription());
         resultItem.setUrl(photo.getUrl());
-        resultItem.setWidth(photo.getOriginalWidth());
-        resultItem.setHeight(photo.getOriginalHeight());
+
+        if (photo.getOriginalWidth() != 0) {
+            resultItem.setWidth(photo.getOriginalWidth());
+            resultItem.setHeight(photo.getOriginalHeight());
+        } else if (photo.getLargeSize() != null) {
+            resultItem.setWidth(photo.getLargeSize().getWidth());
+            resultItem.setHeight(photo.getLargeSize().getHeight());
+        } else if (!photo.getSizes().isEmpty()) {
+            Collection<Size> sizes = photo.getSizes();
+            for (Size size : sizes) {
+                if (size.getWidth() > resultItem.getWidth()) {
+                    resultItem.setWidth(size.getWidth());
+                    resultItem.setHeight(size.getHeight());
+                }
+            }
+        }
 
         if (photo.getOwner() != null) {
             resultItem.setAuthor(photo.getOwner().getUsername());
@@ -458,7 +472,7 @@ public class FlickrConnector extends ServiceConnector {
     }
 
     private static Set<String> getExtras() {
-        return Set.of("description", "tags", "owner_name", "date_upload", "views", "media", "url_t", "url_s", "url_m", "url_l");
+        return Set.of("description", "tags", "owner_name", "date_upload", "views", "media", "url_t", "url_s", "url_m", "url_l", "url_o");
     }
 
 }
