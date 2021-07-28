@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.api.client.json.gson.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +35,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ChannelListResponse;
