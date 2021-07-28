@@ -251,7 +251,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>8.43</version>
+                        <version>8.44</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -267,7 +267,7 @@
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.2.3</version>
+                        <version>4.3.0</version>
                     </dependency>
                 </dependencies>
             </plugin>

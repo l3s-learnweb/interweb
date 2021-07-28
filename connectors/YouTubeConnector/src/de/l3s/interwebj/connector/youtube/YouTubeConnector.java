@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.api.client.json.gson.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +36,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ChannelListResponse;
@@ -79,7 +79,7 @@ public class YouTubeConnector extends ServiceConnector {
     private static final String API_KEY = "***REMOVED***";
     private static final List<String> SCOPES = Arrays.asList("profile", "https://www.googleapis.com/auth/youtube", "https://www.googleapis.com/auth/youtube.upload");
     public static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-    public static final JsonFactory JSON_FACTORY = new JacksonFactory();
+    public static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static GoogleAuthorizationCodeFlow flow = null;
 
     /**
