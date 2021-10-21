@@ -1,5 +1,6 @@
 package de.l3s.interwebj.core.connector;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +9,7 @@ import de.l3s.interwebj.core.query.Query;
 import de.l3s.interwebj.core.query.ResultItem;
 
 public class ConnectorSearchResults implements Serializable {
+    @Serial
     private static final long serialVersionUID = -2762679444319967129L;
 
     private final Query query;

@@ -11,7 +11,7 @@ class ServicesTest {
     @Test
     void testServices() {
         WebTarget target = TestUtils.createWebTarget("api/services", null);
-        System.out.println("querying InterWebJ URL: " + target.toString());
+        System.out.println("querying InterWebJ URL: " + target);
         ServicesResponse servicesResponse = target.request().get(ServicesResponse.class);
         System.out.println(servicesResponse);
     }

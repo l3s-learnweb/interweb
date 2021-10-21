@@ -1,6 +1,7 @@
 package de.l3s.interwebj.client;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -17,6 +18,7 @@ import com.google.gson.Gson;
 import de.l3s.interwebj.client.model.SearchResponse;
 
 public class InterWeb implements Serializable {
+    @Serial
     private static final long serialVersionUID = 7231324400348062196L;
     private static final Logger log = LogManager.getLogger(InterWeb.class);
 

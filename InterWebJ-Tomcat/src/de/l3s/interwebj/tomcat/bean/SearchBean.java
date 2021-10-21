@@ -1,5 +1,6 @@
 package de.l3s.interwebj.tomcat.bean;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 @ViewScoped
 public class SearchBean implements Serializable {
     private static final Logger log = LogManager.getLogger(SearchBean.class);
+    @Serial
     private static final long serialVersionUID = -4894599353026933768L;
 
     @NotNull

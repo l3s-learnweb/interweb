@@ -1,5 +1,6 @@
 package de.l3s.interwebj.core.query;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @XmlRootElement(name = "thumbnail")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Thumbnail implements Serializable {
+    @Serial
     private static final long serialVersionUID = -792701713759619246L;
 
     @XmlValue

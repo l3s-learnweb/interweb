@@ -296,15 +296,11 @@ public class YouTubeConnector extends ServiceConnector {
     }
 
     private static String convertRanking(SearchRanking ranking) {
-        switch (ranking) {
-            case date:
-                return "date";
-            case interestingness:
-                return "viewCount";
-            case relevance:
-            default:
-                return "relevance";
-        }
+        return switch (ranking) {
+            case date -> "date";
+            case interestingness -> "viewCount";
+            default -> "relevance";
+        };
     }
 
     private HashMap<Integer, String> getTokensMap(Query query) {
@@ -536,23 +532,12 @@ public class YouTubeConnector extends ServiceConnector {
 
             MediaHttpUploaderProgressListener progressListener = uploader1 -> {
                 switch (uploader1.getUploadState()) {
-                    case INITIATION_STARTED:
-                        log.info("Initiation Started");
-                        break;
-                    case INITIATION_COMPLETE:
-                        log.info("Initiation Completed");
-                        break;
-                    case MEDIA_IN_PROGRESS:
-                        log.info("Upload in progress");
-                        break;
-                    case MEDIA_COMPLETE:
-                        log.info("Upload Completed!");
-                        break;
-                    case NOT_STARTED:
-                        log.info("Upload Not Started!");
-                        break;
-                    default:
-                        log.error("Unknown upload state");
+                    case INITIATION_STARTED -> log.info("Initiation Started");
+                    case INITIATION_COMPLETE -> log.info("Initiation Completed");
+                    case MEDIA_IN_PROGRESS -> log.info("Upload in progress");
+                    case MEDIA_COMPLETE -> log.info("Upload Completed!");
+                    case NOT_STARTED -> log.info("Upload Not Started!");
+                    default -> log.error("Unknown upload state");
                 }
             };
             uploader.setProgressListener(progressListener);

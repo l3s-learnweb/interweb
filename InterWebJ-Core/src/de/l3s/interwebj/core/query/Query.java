@@ -2,6 +2,7 @@ package de.l3s.interwebj.core.query;
 
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @XmlRootElement(name = "query")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Query implements Serializable {
+    @Serial
     private static final long serialVersionUID = 3955897587724588474L;
 
     @XmlAttribute(name = "id")

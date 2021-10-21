@@ -3,6 +3,7 @@ package de.l3s.interwebj.core;
 import static de.l3s.interwebj.core.util.Assertions.notEmpty;
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class AuthCredentials implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1411969017572131214L;
 
     private final String key;

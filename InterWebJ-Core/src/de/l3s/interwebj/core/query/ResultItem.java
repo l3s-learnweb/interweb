@@ -1,5 +1,6 @@
 package de.l3s.interwebj.core.query;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ import de.l3s.interwebj.core.util.CoreUtils;
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ResultItem implements Serializable {
+    @Serial
     private static final long serialVersionUID = 8890673440048432524L;
 
     private static final int MAX_TITLE_LENGTH = 256;

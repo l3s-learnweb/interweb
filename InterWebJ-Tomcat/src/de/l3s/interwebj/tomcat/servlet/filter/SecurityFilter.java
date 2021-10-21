@@ -30,21 +30,21 @@ public class SecurityFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (request instanceof HttpServletRequest) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-            String requestUrl = getRequestUrl(httpRequest);
-            // log.debug("Requested URL: [" + requestUrl + "]");
+        if (request instanceof HttpServletRequest httpRequest) {
+            if (response instanceof HttpServletResponse httpResponse) {
+                String requestUrl = getRequestUrl(httpRequest);
+                // log.debug("Requested URL: [" + requestUrl + "]");
 
-            AccessControl accessControl = Environment.getInstance().getAccessControl();
-            InterWebPrincipal principal = sessionBean.getPrincipal();
-            boolean authorized = accessControl.isAuthorized(principal, requestUrl, null);
-            if (!authorized) {
-                log.info("Login required. User: {} is not authorized to access the resource: {}", principal, requestUrl);
-                log.info("saving requested URL: {}", requestUrl);
-                sessionBean.setSavedRequestUrl(requestUrl);
-                httpResponse.sendRedirect(httpRequest.getContextPath() + LOGIN_PAGE);
-                return;
+                AccessControl accessControl = Environment.getInstance().getAccessControl();
+                InterWebPrincipal principal = sessionBean.getPrincipal();
+                boolean authorized = accessControl.isAuthorized(principal, requestUrl, null);
+                if (!authorized) {
+                    log.info("Login required. User: {} is not authorized to access the resource: {}", principal, requestUrl);
+                    log.info("saving requested URL: {}", requestUrl);
+                    sessionBean.setSavedRequestUrl(requestUrl);
+                    httpResponse.sendRedirect(httpRequest.getContextPath() + LOGIN_PAGE);
+                    return;
+                }
             }
         }
 

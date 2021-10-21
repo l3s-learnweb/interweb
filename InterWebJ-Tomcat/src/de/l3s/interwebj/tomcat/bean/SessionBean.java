@@ -1,6 +1,7 @@
 package de.l3s.interwebj.tomcat.bean;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.enterprise.context.SessionScoped;
@@ -18,6 +19,7 @@ import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 @Named
 @SessionScoped
 public class SessionBean implements Serializable {
+    @Serial
     private static final long serialVersionUID = 2772677361579500292L;
     private static final Logger log = LogManager.getLogger(SessionBean.class);
 

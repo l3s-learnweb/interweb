@@ -1,6 +1,7 @@
 package de.l3s.interwebj.tomcat.bean;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 @RequestScoped
 public class ConsumersBean implements Serializable {
     private static final Logger log = LogManager.getLogger(ConsumersBean.class);
+    @Serial
     private static final long serialVersionUID = -2226768983834482837L;
 
     private String name;
@@ -57,7 +59,7 @@ public class ConsumersBean implements Serializable {
 
         Consumer consumer = new Consumer(name, url, description, authCredentials);
         database.saveConsumer(principal.getName(), consumer);
-        log.info("consumer: [{}] successfully added", consumer.getName());
+        log.info("consumer: [{}] successfully added", consumer.name());
 
         FacesUtils.redirectLocal("/view/consumers.xhtml");
     }
@@ -163,7 +165,7 @@ public class ConsumersBean implements Serializable {
     }
 
     public void revoke(Object consumer) {
-        String consumerName = ((Consumer) consumer).getName();
+        String consumerName = ((Consumer) consumer).name();
         log.info("revoking consumer [{}]", consumerName);
         Environment environment = Environment.getInstance();
         Database database = environment.getDatabase();

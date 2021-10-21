@@ -333,8 +333,7 @@ public class FlickrConnector extends ServiceConnector {
                 queryResult.setTotalResultCount(totalResultCount);
 
                 for (Object o : photoList) {
-                    if (o instanceof Photo) {
-                        Photo photo = (Photo) o;
+                    if (o instanceof Photo photo) {
                         ResultItem resultItem = createResultItem(photo, rank);
                         queryResult.addResultItem(resultItem);
                         rank++;
@@ -415,15 +414,11 @@ public class FlickrConnector extends ServiceConnector {
     }
 
     private static int convertRanking(SearchRanking ranking) {
-        switch (ranking) {
-            case date:
-                return SearchParameters.DATE_POSTED_DESC;
-            case interestingness:
-                return SearchParameters.INTERESTINGNESS_DESC;
-            case relevance:
-            default:
-                return SearchParameters.RELEVANCE;
-        }
+        return switch (ranking) {
+            case date -> SearchParameters.DATE_POSTED_DESC;
+            case interestingness -> SearchParameters.INTERESTINGNESS_DESC;
+            default -> SearchParameters.RELEVANCE;
+        };
     }
 
     private boolean supportContentTypes(Set<ContentType> contentTypes) {

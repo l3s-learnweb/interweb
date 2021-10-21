@@ -1,5 +1,6 @@
 package de.l3s.interwebj.tomcat.bean;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import de.l3s.interwebj.core.core.Environment;
 @Named
 @ViewScoped
 public class RegisterServicesBean implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1250989064923740720L;
     private static final Logger log = LogManager.getLogger(RegisterServicesBean.class);
 

@@ -6,9 +6,9 @@
 
     <ui:define name="content">
 		<h:panelGroup
-			rendered="#{!consumersBean.registered and !empty consumersBean.authorizationConsumer.name}">
+			rendered="#{!consumersBean.registered and !empty consumersBean.authorizationConsumer.name()}">
 			<p>
-				Application <b>#{consumersBean.authorizationConsumer.name}</b> wants
+				Application <b>#{consumersBean.authorizationConsumer.name()}</b> wants
 				to link to your InterWebJ account. You should not authorize unless
 				you trust them with access to your account.
 			</p>
@@ -24,7 +24,7 @@
 		</h:panelGroup>
 		<h:panelGroup rendered="#{consumersBean.registered}">
 			<p>
-				Application <b>#{consumersBean.authorizationConsumer.name}</b> was
+				Application <b>#{consumersBean.authorizationConsumer.name()}</b> was
 				successfully authorized to your InterWebJ account. Your OAuth access
 				token data:
 			</p>

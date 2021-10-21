@@ -444,15 +444,15 @@ public class JdbcDatabase implements Database {
     public void saveConsumer(String userName, Consumer consumer) {
         notNull(userName, "userName");
         notNull(consumer, "consumer");
-        deleteConsumer(userName, consumer.getName());
+        deleteConsumer(userName, consumer.name());
         try {
             if (openConnection()) {
                 PreparedStatement pstmt = preparedStatements.get(PSTMT_INSERT_CONSUMER);
                 pstmt.setString(1, userName);
-                pstmt.setString(2, consumer.getName());
-                pstmt.setString(3, consumer.getUrl());
-                pstmt.setString(4, consumer.getDescription());
-                AuthCredentials authCredentials = consumer.getAuthCredentials();
+                pstmt.setString(2, consumer.name());
+                pstmt.setString(3, consumer.url());
+                pstmt.setString(4, consumer.description());
+                AuthCredentials authCredentials = consumer.authCredentials();
                 String key = (authCredentials == null) ? null : authCredentials.getKey();
                 String secret = (authCredentials == null) ? null : authCredentials.getSecret();
                 setString(pstmt, 5, key);

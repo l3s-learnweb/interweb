@@ -55,7 +55,7 @@ public class OAuthFilter implements ContainerRequestFilter {
             throw new WebApplicationException("Invalid signature", Response.Status.UNAUTHORIZED);
         }
 
-        String consumerSecret = consumer.getAuthCredentials().getSecret();
+        String consumerSecret = consumer.authCredentials().getSecret();
         secrets.consumerSecret(consumerSecret);
         String token = params.getToken();
 

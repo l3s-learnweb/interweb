@@ -2,6 +2,7 @@ package de.l3s.interwebj.tomcat.servlet;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
@@ -33,6 +34,7 @@ import de.l3s.interwebj.tomcat.rest.Endpoint;
 @WebServlet(name = "CallbackServlet", description = "Authorization callback", urlPatterns = {"/callback"})
 public class CallbackServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(CallbackServlet.class);
+    @Serial
     private static final long serialVersionUID = 6534209215912582685L;
 
     /**
@@ -135,7 +137,7 @@ public class CallbackServlet extends HttpServlet {
 
         String consumerKey = parameters.get(Parameters.CONSUMER_KEY);
         Database database = Environment.getInstance().getDatabase();
-        AuthCredentials consumerAuthCredentials = database.readConsumerByKey(consumerKey).getAuthCredentials();
+        AuthCredentials consumerAuthCredentials = database.readConsumerByKey(consumerKey).authCredentials();
 
         AuthCredentials userAuthCredentials = principal.getOauthCredentials();
         URI baseUri = URI.create(request.getRequestURL().toString()).resolve(".");

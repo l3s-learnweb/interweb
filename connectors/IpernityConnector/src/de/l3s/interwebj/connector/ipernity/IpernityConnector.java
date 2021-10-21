@@ -216,15 +216,11 @@ public class IpernityConnector extends ServiceConnector {
      * Supported values are: relevance, popular, posted-desc, posted-asc.
      */
     private static String convertRanking(SearchRanking ranking) {
-        switch (ranking) {
-            case date:
-                return "posted-desc";
-            case interestingness:
-                return "popular";
-            case relevance:
-            default:
-                return "relevance";
-        }
+        return switch (ranking) {
+            case date -> "posted-desc";
+            case interestingness -> "popular";
+            default -> "relevance";
+        };
     }
 
     private static WebTarget createWebTarget(String apiUrl, AuthCredentials consumerAuthCredentials, AuthCredentials userAuthCredentials) {

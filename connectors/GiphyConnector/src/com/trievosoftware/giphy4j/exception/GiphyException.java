@@ -26,6 +26,8 @@
 
 package com.trievosoftware.giphy4j.exception;
 
+import java.io.Serial;
+
 /**
  * The GiphyException class is used to throw an exception whenever an error
  * occurred during the process.
@@ -34,6 +36,7 @@ package com.trievosoftware.giphy4j.exception;
  */
 public class GiphyException extends Exception {
 
+    @Serial
     private static final long serialVersionUID = -2564399168708610588L;
 
     /**

@@ -222,15 +222,11 @@ public class SlideShareConnector extends ServiceConnector {
     }
 
     private static String convertRanking(SearchRanking ranking) {
-        switch (ranking) {
-            case date:
-                return "latest";
-            case interestingness:
-                return "mostviewed";
-            case relevance:
-            default:
-                return "relevance";
-        }
+        return switch (ranking) {
+            case date -> "latest";
+            case interestingness -> "mostviewed";
+            default -> "relevance";
+        };
     }
 
     private ContentType createType(int slideshowType) {

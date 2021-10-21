@@ -1,6 +1,7 @@
 package de.l3s.interwebj.tomcat.bean;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import de.l3s.interwebj.core.query.ContentType;
 @ViewScoped
 public class UploadBean implements Serializable {
     private static final Logger log = LogManager.getLogger(UploadBean.class);
+    @Serial
     private static final long serialVersionUID = -3906461569264684939L;
 
     private ContentType selectedContentType;

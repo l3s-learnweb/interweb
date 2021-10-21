@@ -1,5 +1,6 @@
 package de.l3s.interwebj.core.query;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ import de.l3s.interwebj.core.connector.ConnectorSearchResults;
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SearchResults implements Serializable {
+    @Serial
     private static final long serialVersionUID = -2762679444319967129L;
 
     @XmlElement(name = "query")

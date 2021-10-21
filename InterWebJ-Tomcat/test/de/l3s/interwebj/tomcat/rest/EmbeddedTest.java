@@ -23,7 +23,7 @@ class EmbeddedTest {
         params.add("url", "https://www.slideshare.net/pacific2000/flowers-presentation-715934");
         params.add("max_width", "100");
         params.add("max_height", "100");
-        System.out.println("querying InterWebJ URL: " + target.toString());
+        System.out.println("querying InterWebJ URL: " + target);
 
         Response response = target.request().post(Entity.form(params));
         EmbeddedResponse embeddedResponse = response.readEntity(EmbeddedResponse.class);
