@@ -3,6 +3,7 @@ package de.l3s.interwebj.core.core;
 import static de.l3s.interwebj.core.util.Assertions.notEmpty;
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import de.l3s.interwebj.core.AuthCredentials;
 
 public class InterWebPrincipal implements java.security.Principal, Serializable {
+    @Serial
     private static final long serialVersionUID = 3491812866957391163L;
 
     public static final String DEFAULT_ROLE = "default";

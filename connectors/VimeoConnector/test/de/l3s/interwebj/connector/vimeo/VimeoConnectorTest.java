@@ -2,7 +2,6 @@ package de.l3s.interwebj.connector.vimeo;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;

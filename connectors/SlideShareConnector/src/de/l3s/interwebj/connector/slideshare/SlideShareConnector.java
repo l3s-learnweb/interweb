@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -222,15 +222,11 @@ public class SlideShareConnector extends ServiceConnector {
     }
 
     private static String convertRanking(SearchRanking ranking) {
-        switch (ranking) {
-            case date:
-                return "latest";
-            case interestingness:
-                return "mostviewed";
-            case relevance:
-            default:
-                return "relevance";
-        }
+        return switch (ranking) {
+            case date -> "latest";
+            case interestingness -> "mostviewed";
+            default -> "relevance";
+        };
     }
 
     private ContentType createType(int slideshowType) {

@@ -4,7 +4,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.glassfish.jersey.server.oauth1.OAuth1Consumer;
 import org.glassfish.jersey.server.oauth1.OAuth1Provider;
@@ -91,18 +91,18 @@ public class InterwebOAuth1Provider implements OAuth1Provider {
 
         @Override
         public String getKey() {
-            return consumer.getAuthCredentials().getKey();
+            return consumer.authCredentials().getKey();
         }
 
         @Override
         public String getSecret() {
-            return consumer.getAuthCredentials().getSecret();
+            return consumer.authCredentials().getSecret();
         }
 
         @Override
         public Principal getPrincipal() {
             final Database database = Environment.getInstance().getDatabase();
-            return database.readPrincipalByName(consumer.getName());
+            return database.readPrincipalByName(consumer.name());
         }
 
         @Override

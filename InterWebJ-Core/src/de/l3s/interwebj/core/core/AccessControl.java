@@ -69,7 +69,7 @@ public class AccessControl {
         constraints.add(buildPublicConstraint("/view/profile_matcher\\.xhtml"));
         constraints.add(buildPublicConstraint("/view/api\\.xhtml"));
         constraints.add(buildPublicConstraint("/view/rfRes/.*"));
-        constraints.add(buildPublicConstraint("/view/javax\\.faces\\.resource/.*"));
+        constraints.add(buildPublicConstraint("/view/jakarta\\.faces\\.resource/.*"));
         constraints.add(buildPublicConstraint("/view/login\\.xhtml"));
         // User access resources
         constraints.add(new ResourceConstraint("/.*", InterWebPrincipal.DEFAULT_ROLE, 10));

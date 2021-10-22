@@ -2,19 +2,20 @@ package de.l3s.interwebj.core.query;
 
 import static de.l3s.interwebj.core.util.Assertions.notNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.json.bind.annotation.JsonbProperty;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @XmlRootElement(name = "query")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Query implements Serializable {
+    @Serial
     private static final long serialVersionUID = 3955897587724588474L;
 
     @XmlAttribute(name = "id")

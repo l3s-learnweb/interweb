@@ -1,5 +1,6 @@
 package de.l3s.interwebj.tomcat.bean;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,12 +8,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.validation.constraints.NotNull;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,6 +37,7 @@ import de.l3s.interwebj.tomcat.webutil.FacesUtils;
 @ViewScoped
 public class SearchBean implements Serializable {
     private static final Logger log = LogManager.getLogger(SearchBean.class);
+    @Serial
     private static final long serialVersionUID = -4894599353026933768L;
 
     @NotNull

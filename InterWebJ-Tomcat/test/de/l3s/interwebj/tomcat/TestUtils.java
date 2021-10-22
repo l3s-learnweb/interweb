@@ -1,6 +1,6 @@
 package de.l3s.interwebj.tomcat;
 
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.WebTarget;
 
 import de.l3s.interwebj.core.AuthCredentials;
 import de.l3s.interwebj.tomcat.rest.Endpoint;

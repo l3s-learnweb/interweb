@@ -1,10 +1,10 @@
 package de.l3s.interwebj.tomcat.rest;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ class EmbeddedTest {
         params.add("url", "https://www.slideshare.net/pacific2000/flowers-presentation-715934");
         params.add("max_width", "100");
         params.add("max_height", "100");
-        System.out.println("querying InterWebJ URL: " + target.toString());
+        System.out.println("querying InterWebJ URL: " + target);
 
         Response response = target.request().post(Entity.form(params));
         EmbeddedResponse embeddedResponse = response.readEntity(EmbeddedResponse.class);

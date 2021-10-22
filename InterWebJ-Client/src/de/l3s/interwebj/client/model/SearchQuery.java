@@ -1,5 +1,6 @@
 package de.l3s.interwebj.client.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.google.gson.annotations.SerializedName;
 
 public class SearchQuery implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1982483611243356485L;
 
     @SerializedName("id")

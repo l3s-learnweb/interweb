@@ -7,11 +7,11 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +30,7 @@ class OAuthTest {
         MultivaluedMap<String, String> params = new MultivaluedHashMap<>();
         params.add("username", "testuser2020");
         params.add("password", "123456");
-        System.out.println("querying InterWebJ URL: " + resource.toString());
+        System.out.println("querying InterWebJ URL: " + resource);
 
         Response response = resource.request().post(Entity.form(params));
         OAuthAccessTokenResponse accessTokenResponse = response.readEntity(OAuthAccessTokenResponse.class);
@@ -40,7 +40,7 @@ class OAuthTest {
     @Test
     void testOauthAuthentication() throws IOException {
         WebTarget resource = TestUtils.createWebTarget("api/oauth/OAuthGetRequestToken", null);
-        System.out.println("querying InterWebJ request token: " + resource.toString());
+        System.out.println("querying InterWebJ request token: " + resource);
 
         Response response = resource.request().get();
         OAuthRequestTokenResponse requestTokenResponse = response.readEntity(OAuthRequestTokenResponse.class);
@@ -59,7 +59,7 @@ class OAuthTest {
         System.out.println(accessTokenAuthCredentials);
 
         resource = TestUtils.createWebTarget("api/oauth/OAuthGetAccessToken", accessTokenAuthCredentials);
-        System.out.println("querying InterWebJ access token: " + resource.toString());
+        System.out.println("querying InterWebJ access token: " + resource);
         response = resource.request().get();
         OAuthAccessTokenResponse accessTokenResponse = response.readEntity(OAuthAccessTokenResponse.class);
         System.out.println(accessTokenResponse);

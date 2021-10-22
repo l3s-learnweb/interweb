@@ -157,15 +157,11 @@ public class VimeoConnector extends ServiceConnector {
     }
 
     private static String createSortOrder(SearchRanking ranking) {
-        switch (ranking) {
-            case date:
-                return "date";
-            case interestingness:
-                return "plays";
-            case relevance:
-            default:
-                return "relevant";
-        }
+        return switch (ranking) {
+            case date -> "date";
+            case interestingness -> "plays";
+            default -> "relevant";
+        };
     }
 
     @Override

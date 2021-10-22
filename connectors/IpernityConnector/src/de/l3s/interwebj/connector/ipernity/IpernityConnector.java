@@ -4,9 +4,9 @@ import static de.l3s.interwebj.core.util.Assertions.notNull;
 
 import java.util.List;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -216,15 +216,11 @@ public class IpernityConnector extends ServiceConnector {
      * Supported values are: relevance, popular, posted-desc, posted-asc.
      */
     private static String convertRanking(SearchRanking ranking) {
-        switch (ranking) {
-            case date:
-                return "posted-desc";
-            case interestingness:
-                return "popular";
-            case relevance:
-            default:
-                return "relevance";
-        }
+        return switch (ranking) {
+            case date -> "posted-desc";
+            case interestingness -> "popular";
+            default -> "relevance";
+        };
     }
 
     private static WebTarget createWebTarget(String apiUrl, AuthCredentials consumerAuthCredentials, AuthCredentials userAuthCredentials) {

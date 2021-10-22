@@ -35,7 +35,7 @@ class FlickrConnectorTest {
     void get() throws InterWebException {
         Query query = QueryFactory.createQuery("hello world");
         query.addContentType(ContentType.image);
-//        query.addContentType(ContentType.video);
+        // query.addContentType(ContentType.video);
         query.setPerPage(5);
         // query.setDateFrom("2009-01-01 00:00:00");
         // query.setDateTill("2009-06-01 00:00:00");

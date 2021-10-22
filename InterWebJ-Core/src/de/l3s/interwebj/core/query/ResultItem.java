@@ -1,15 +1,16 @@
 package de.l3s.interwebj.core.query;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.json.bind.annotation.JsonbProperty;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -19,6 +20,7 @@ import de.l3s.interwebj.core.util.CoreUtils;
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ResultItem implements Serializable {
+    @Serial
     private static final long serialVersionUID = 8890673440048432524L;
 
     private static final int MAX_TITLE_LENGTH = 256;

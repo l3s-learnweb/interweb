@@ -1,5 +1,6 @@
 package de.l3s.interwebj.client.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -8,6 +9,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.google.gson.annotations.SerializedName;
 
 public class SearchThumbnail implements Serializable {
+    @Serial
     private static final long serialVersionUID = 4849378168629011137L;
 
     @SerializedName("value")

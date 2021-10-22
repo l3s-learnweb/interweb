@@ -23,7 +23,7 @@ class CoreUtilsTest {
 
     @Test
     void formatDate2() {
-        assertEquals(null, CoreUtils.formatDate(null));
+        assertNull(CoreUtils.formatDate(null));
     }
 
     @Test
