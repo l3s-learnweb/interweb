@@ -6,7 +6,7 @@
 
     <groupId>de.l3s.interweb</groupId>
     <artifactId>interwebj-parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <packaging>pom</packaging>
 
     <name>InterWebJ</name>
@@ -38,7 +38,7 @@
             <dependency>
                 <groupId>de.l3s.interweb</groupId>
                 <artifactId>interwebj-core</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
             </dependency>
 
             <dependency>

@@ -7,11 +7,11 @@
     <parent>
         <groupId>de.l3s.interweb</groupId>
         <artifactId>interwebj-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.0</version>
     </parent>
 
     <artifactId>interwebj-tomcat</artifactId>
-    <version>3.06.02</version>
+    <version>3.07.00</version>
     <packaging>war</packaging>
 
     <name>InterWebJ-Tomcat</name>
@@ -30,37 +30,37 @@
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-bing</artifactId>
-            <version>7.0.0</version>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-flickr</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-giphy</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-ipernity</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-slideshare</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-vimeo</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-youtube</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
         </dependency>
 
         <dependency>
