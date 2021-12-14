@@ -65,6 +65,10 @@
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
         </dependency>
         <!-- Integrate log tracking to GitLab dashboard via Sentry.io -->
