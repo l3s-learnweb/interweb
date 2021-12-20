@@ -15,7 +15,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <maven.dependency.log4j.version>2.16.0</maven.dependency.log4j.version>
+        <maven.dependency.log4j.version>2.17.0</maven.dependency.log4j.version>
         <maven.dependency.jersey2.version>3.0.3</maven.dependency.jersey2.version>
         <maven.dependency.junit.version>5.8.2</maven.dependency.junit.version>
     </properties>
