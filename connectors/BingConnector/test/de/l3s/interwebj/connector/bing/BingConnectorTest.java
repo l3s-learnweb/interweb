@@ -36,10 +36,10 @@ class BingConnectorTest {
     @Test
     void get() throws InterWebException {
         Query query = QueryFactory.createQuery("hello world");
-        query.addContentType(ContentType.video);
-        query.addContentType(ContentType.image);
-        // query.setDateFrom("2009-01-01 00:00:00");
-        // query.setDateTill("2009-06-01 00:00:00");
+        query.setPerPage(30);
+        query.addContentType(ContentType.text);
+        query.setDateFrom("2009-01-01 00:00:00");
+        query.setDateTill("2010-06-01 00:00:00");
 
         ConnectorSearchResults queryResult = connector.get(query, null);
 
