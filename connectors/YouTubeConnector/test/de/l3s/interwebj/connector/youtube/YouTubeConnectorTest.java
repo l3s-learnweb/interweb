@@ -47,18 +47,16 @@ class YouTubeConnectorTest {
         query.addSearchExtra(SearchExtra.duration);
         query.addSearchExtra(SearchExtra.tags);
 
-        ConnectorSearchResults page1 = connector.get(query, null);
-        assertEquals(10, page1.getResultItems().size());
-        assertTrue(page1.getTotalResultCount() > 100);
+        for (int i = 1; i < 4; ++i) {
+            query.setPage(i);
+            ConnectorSearchResults page = connector.get(query, null);
 
-        for (ResultItem res : page1.getResultItems()) {
-            log.info(res);
-        }
+            assertEquals(10, page.getResultItems().size());
+            assertTrue(page.getTotalResultCount() > 100);
 
-        query.setPage(2);
-        ConnectorSearchResults page2 = connector.get(query, null);
-        for (ResultItem result : page2.getResultItems()) {
-            log.info("{}: {}", result.getRank(), result.getTitle());
+            for (ResultItem result : page.getResultItems()) {
+                log.info("{}: {} {}", result.getRank(), result.getTitle(), result.getUrl());
+            }
         }
     }
 
