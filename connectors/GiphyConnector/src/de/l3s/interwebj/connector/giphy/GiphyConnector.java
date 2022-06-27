@@ -77,29 +77,29 @@ public class GiphyConnector extends ServiceConnector {
 
                     GiphyContainer giphyThumbnails = image.getImages();
 
-                    if (giphyThumbnails.getFixedHeightSmallStill() != null) {
+                    if (giphyThumbnails.getFixedHeightSmallStill() != null && giphyThumbnails.getFixedHeightSmallStill().getUrl() != null) {
                         resultItem.setThumbnailSmall(createThumbnail(giphyThumbnails.getFixedHeightSmallStill()));
-                    } else if (giphyThumbnails.getFixedHeightSmall() != null) {
+                    } else if (giphyThumbnails.getFixedHeightSmall() != null && giphyThumbnails.getFixedHeightSmall().getUrl() != null) {
                         resultItem.setThumbnailSmall(createThumbnail(giphyThumbnails.getFixedHeightSmall()));
                     }
 
-                    if (giphyThumbnails.getFixedHeightDownsampled() != null) {
+                    if (giphyThumbnails.getFixedHeightDownsampled() != null && giphyThumbnails.getFixedHeightDownsampled().getUrl() != null) {
                         resultItem.setThumbnailMedium(createThumbnail(giphyThumbnails.getFixedHeightDownsampled()));
-                    } else if (giphyThumbnails.getFixedHeight() != null) {
+                    } else if (giphyThumbnails.getFixedHeight() != null && giphyThumbnails.getFixedHeight().getUrl() != null) {
                         resultItem.setThumbnailMedium(createThumbnail(giphyThumbnails.getFixedHeight()));
                     }
 
-                    if (giphyThumbnails.getDownsizedMedium() != null) {
+                    if (giphyThumbnails.getDownsizedMedium() != null && giphyThumbnails.getDownsizedMedium().getUrl() != null) {
                         resultItem.setThumbnailLarge(createThumbnail(giphyThumbnails.getDownsizedMedium()));
-                    } else if (giphyThumbnails.getDownsizedLarge() != null) {
+                    } else if (giphyThumbnails.getDownsizedLarge() != null && giphyThumbnails.getDownsizedLarge().getUrl() != null) {
                         resultItem.setThumbnailLarge(createThumbnail(giphyThumbnails.getDownsizedLarge()));
                     }
 
-                    if (giphyThumbnails.getOriginal() != null) {
+                    if (giphyThumbnails.getOriginal() != null && giphyThumbnails.getOriginal().getUrl() != null) {
                         resultItem.setThumbnailOriginal(createThumbnail(giphyThumbnails.getOriginal()));
                         resultItem.setWidth(Integer.parseInt(giphyThumbnails.getOriginal().getWidth()));
                         resultItem.setHeight(Integer.parseInt(giphyThumbnails.getOriginal().getHeight()));
-                    } else if (giphyThumbnails.getOriginalStill() != null) {
+                    } else if (giphyThumbnails.getOriginalStill() != null && giphyThumbnails.getOriginalStill().getUrl() != null) {
                         resultItem.setThumbnailOriginal(createThumbnail(giphyThumbnails.getOriginalStill()));
                         resultItem.setWidth(Integer.parseInt(giphyThumbnails.getOriginalStill().getWidth()));
                         resultItem.setHeight(Integer.parseInt(giphyThumbnails.getOriginalStill().getHeight()));
