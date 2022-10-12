@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration packages="org.apache.logging.log4j.core">
+<Configuration packages="org.apache.logging.log4j.core,io.sentry.log4j2">
     <Properties>
         <Property name="INTERWEB_LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{9}:%line - %msg%n</Property>
         <Property name="INTERWEB_LOG_PATH">${sys:catalina.home:-.}/logs/interweb.log</Property>
-        <Property name="INTERWEB_MAIL_SUBJECT">[Log4J] Error detected on Interweb</Property>
-        <Property name="INTERWEB_MAIL_LOGLEVEL">OFF</Property>
     </Properties>
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
@@ -14,15 +12,8 @@
             <PatternLayout pattern="${INTERWEB_LOG_PATTERN}"/>
             <SizeBasedTriggeringPolicy size="250 MB"/>
         </RollingFile>
-        <SMTP name="email" bufferSize="256" smtpHost="l3s.de"
-              from="no-reply@l3s.de" to="kemkes@l3s.de,astappiev@l3s.de" subject="${env:INTERWEB_MAIL_SUBJECT}">
-            <PatternLayout pattern="${INTERWEB_LOG_PATTERN}"/>
-            <Filters>
-                <ThresholdFilter level="${env:INTERWEB_MAIL_LOGLEVEL}" onMatch="NEUTRAL" onMismatch="DENY"/>
-                <!-- Rate is a number of events per second, current value is 2 messages per 1 hour (1/60/60 * maxBurst) -->
-                <BurstFilter level="OFF" rate="0.00056" maxBurst="2"/>
-            </Filters>
-        </SMTP>
+        <Sentry name="sentry" dsn="https://7371ead6828b496b86901f1bce43d551@sentry.kbs.uni-hannover.de/3"
+                minimumBreadcrumbLevel="DEBUG" minimumEventLevel="ERROR"/>
     </Appenders>
     <Loggers>
         <Logger name="org.apache" level="FATAL"/>
@@ -32,7 +23,7 @@
         <Root level="DEBUG">
             <appender-ref ref="console"/>
             <appender-ref ref="file"/>
-<!--            <appender-ref ref="email"/>-->
+            <appender-ref ref="sentry"/>
         </Root>
     </Loggers>
 </Configuration>
