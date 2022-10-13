@@ -367,7 +367,7 @@ public class FlickrConnector extends ServiceConnector {
         } else if (!photo.getSizes().isEmpty()) {
             Collection<Size> sizes = photo.getSizes();
             for (Size size : sizes) {
-                if (size.getWidth() > resultItem.getWidth()) {
+                if (resultItem.getWidth() == null || size.getWidth() > resultItem.getWidth()) {
                     resultItem.setWidth(size.getWidth());
                     resultItem.setHeight(size.getHeight());
                 }
