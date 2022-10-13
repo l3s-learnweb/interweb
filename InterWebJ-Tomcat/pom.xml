@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>interwebj-tomcat</artifactId>
-    <version>3.08.00</version>
+    <version>3.08.01</version>
     <packaging>war</packaging>
 
     <name>InterWebJ-Tomcat</name>
