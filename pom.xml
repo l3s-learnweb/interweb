@@ -15,9 +15,9 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <maven.dependency.log4j.version>2.19.0</maven.dependency.log4j.version>
-        <maven.dependency.jersey2.version>3.1.0-M8</maven.dependency.jersey2.version>
-        <maven.dependency.junit.version>5.9.1</maven.dependency.junit.version>
+        <maven.dependency.log4j.version>2.20.0</maven.dependency.log4j.version>
+        <maven.dependency.jersey2.version>3.1.1</maven.dependency.jersey2.version>
+        <maven.dependency.junit.version>5.9.2</maven.dependency.junit.version>
     </properties>
 
     <modules>
@@ -44,7 +44,7 @@
             <dependency>
                 <groupId>org.mariadb.jdbc</groupId>
                 <artifactId>mariadb-java-client</artifactId>
-                <version>3.0.8</version>
+                <version>3.1.2</version>
             </dependency>
 
             <dependency>
@@ -55,7 +55,7 @@
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
-                <version>2.9.1</version>
+                <version>2.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -66,7 +66,7 @@
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
-                <version>4.0.1</version>
+                <version>4.0.2</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
@@ -196,7 +196,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -220,13 +220,13 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.12.0</version>
+                <version>2.14.2</version>
             </plugin>
             <!-- Provides commands to check dependency tree -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.5.0</version>
             </plugin>
             <!-- Specifies target Java version for builds -->
             <plugin>
@@ -243,7 +243,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version>
+                <version>3.0.0-M9</version>
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
@@ -252,7 +252,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.2.1</version>
                 <configuration>
                     <configLocation>.mvn/checkstyle-config.xml</configLocation>
                     <consoleOutput>false</consoleOutput>
@@ -263,7 +263,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>10.3.4</version>
+                        <version>10.7.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -271,7 +271,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.7.2.0</version>
+                <version>4.7.3.0</version>
                 <configuration>
                     <excludeFilterFile>.mvn/spotbugs-exclude.xml</excludeFilterFile>
                 </configuration>
@@ -279,7 +279,7 @@
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.7.2</version>
+                        <version>4.7.3</version>
                     </dependency>
                 </dependencies>
             </plugin>
