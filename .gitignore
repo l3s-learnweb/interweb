@@ -3,8 +3,9 @@
 *.iml
 
 # Local files
-config_local.xml
-interweb_local.properties
+local.env
+*_local.*
+logs/*
 
-# Java
+# Java build
 target

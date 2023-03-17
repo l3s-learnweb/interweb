@@ -70,7 +70,7 @@
     <Match>
         <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
     </Match>
-    <Match class="de.l3s.interwebj.tomcat.bean.RegisterServicesBean">
+    <Match class="de.l3s.interweb.tomcat.bean.RegisterServicesBean">
         <Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
     </Match>
 </FindBugsFilter>

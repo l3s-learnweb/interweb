@@ -5,23 +5,27 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.l3s.interweb</groupId>
-    <artifactId>interwebj-parent</artifactId>
-    <version>3.1.0</version>
+    <artifactId>interweb-parent</artifactId>
+    <version>3.2.0</version>
     <packaging>pom</packaging>
 
-    <name>InterWebJ</name>
+    <name>InterWeb</name>
 
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <maven.dependency.mariadb.version>3.1.2</maven.dependency.mariadb.version>
         <maven.dependency.log4j.version>2.20.0</maven.dependency.log4j.version>
         <maven.dependency.jersey2.version>3.1.1</maven.dependency.jersey2.version>
         <maven.dependency.junit.version>5.9.2</maven.dependency.junit.version>
+        <maven.dependency.auto-service.version>1.0.1</maven.dependency.auto-service.version>
     </properties>
 
     <modules>
-        <module>InterWebJ-Core</module>
+        <module>interweb-core</module>
+        <module>interweb-tomcat</module>
+        <module>interweb-client</module>
         <module>connectors/BingConnector</module>
         <module>connectors/FlickrConnector</module>
         <module>connectors/GiphyConnector</module>
@@ -29,24 +33,23 @@
         <module>connectors/SlideShareConnector</module>
         <module>connectors/VimeoConnector</module>
         <module>connectors/YouTubeConnector</module>
-        <module>InterWebJ-Tomcat</module>
-        <!--<module>InterWebJ-Client</module>-->
     </modules>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>de.l3s.interweb</groupId>
-                <artifactId>interwebj-core</artifactId>
-                <version>3.1.0</version>
-            </dependency>
-
+            <!-- Database Clients -->
             <dependency>
                 <groupId>org.mariadb.jdbc</groupId>
                 <artifactId>mariadb-java-client</artifactId>
-                <version>3.1.2</version>
+                <version>${maven.dependency.mariadb.version}</version>
             </dependency>
 
+            <!-- Google Utilities -->
+            <dependency>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service-annotations</artifactId>
+                <version>${maven.dependency.auto-service.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -57,12 +60,15 @@
                 <artifactId>gson</artifactId>
                 <version>2.10.1</version>
             </dependency>
+
+            <!-- Apache Utilities -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.12.0</version>
             </dependency>
 
+            <!-- XML/JSON implementations -->
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
@@ -84,6 +90,7 @@
                 <version>3.0.0</version>
             </dependency>
 
+            <!-- Glassfish Jersey 3 (API) -->
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet</artifactId>
@@ -130,6 +137,7 @@
                 <version>${maven.dependency.jersey2.version}</version>
             </dependency>
 
+            <!-- Log4J Logging -->
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
@@ -151,6 +159,7 @@
                 <version>${maven.dependency.log4j.version}</version>
             </dependency>
 
+            <!-- JUnit 5 (tests) -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
@@ -167,7 +176,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
+            <artifactId>log4j-api</artifactId>
         </dependency>
 
         <dependency>
@@ -178,20 +187,7 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>src</sourceDirectory>
-        <testSourceDirectory>test</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>resources</directory>
-            </resource>
-        </resources>
         <plugins>
-            <!-- Provides commands to check for duplicate classes across dependencies -->
-            <plugin>
-                <groupId>org.basepom.maven</groupId>
-                <artifactId>duplicate-finder-maven-plugin</artifactId>
-                <version>1.5.1</version>
-            </plugin>
             <!-- A maven component that enforces minimum Java and Maven versions -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -216,37 +212,57 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Provides commands to check available updated for dependencies -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.14.2</version>
-            </plugin>
             <!-- Provides commands to check dependency tree -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.5.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+            </plugin>
             <!-- Specifies target Java version for builds -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <release>${maven.compiler.release}</release>
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.auto.service</groupId>
+                            <artifactId>auto-service</artifactId>
+                            <version>${maven.dependency.auto-service.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <!-- Runs tests before build -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M9</version>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
+                <version>3.0.0</version>
+            </plugin>
+            <!-- Provides commands to check available updated for dependencies -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.15.0</version>
+            </plugin>
+            <!-- Provides commands to check for duplicate classes across dependencies -->
+            <plugin>
+                <groupId>org.basepom.maven</groupId>
+                <artifactId>duplicate-finder-maven-plugin</artifactId>
+                <version>1.5.1</version>
             </plugin>
             <!-- Runs linter on Java sources to check code style -->
             <plugin>
@@ -263,7 +279,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>10.7.0</version>
+                        <version>10.9.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -271,7 +287,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.7.3.0</version>
+                <version>4.7.3.2</version>
                 <configuration>
                     <excludeFilterFile>.mvn/spotbugs-exclude.xml</excludeFilterFile>
                 </configuration>
@@ -285,21 +301,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <!-- Used by default, aimed for local development -->
-        <profile>
-            <id>local</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <!-- Used on GitLab when creating package to deploy -->
-        <profile>
-            <id>prod</id>
-            <properties>
-                <jakarta.faces.project_stage>Production</jakarta.faces.project_stage>
-            </properties>
-        </profile>
-    </profiles>
 </project>

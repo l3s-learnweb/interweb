@@ -28,7 +28,7 @@ build:
     - if: '$CI_COMMIT_BRANCH == "master"'
   cache:
     paths:
-      - InterWebJ-Tomcat/target/InterWebJ-Tomcat.war
+      - interweb-tomcat/target/interweb-tomcat.war
 
 # A commit to `master` brunch with message `chore: version release` will be deployed to v3 (later ROOT) instance
 deploy:
@@ -36,7 +36,7 @@ deploy:
   tags:
     - java
   before_script:
-    - cd InterWebJ-Tomcat
+    - cd interweb-tomcat
   script:
     - mvn $MAVEN_CLI_OPTS tomcat7:deploy-only -Dpath=interweb
   environment:
@@ -46,5 +46,5 @@ deploy:
     - if: '$CI_COMMIT_BRANCH == "master" && $CI_COMMIT_TITLE == "chore: version release"'
   cache:
     paths:
-      - InterWebJ-Tomcat/target/InterWebJ-Tomcat.war
+      - interweb-tomcat/target/interweb-tomcat.war
     policy: pull
