@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>interweb-tomcat</artifactId>
-    <version>3.08.02</version>
+    <version>3.09.00</version>
     <packaging>war</packaging>
 
     <name>InterWeb-Tomcat</name>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-flickr</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
@@ -74,6 +74,10 @@
             <version>3.1.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-jakarta-web</artifactId>
@@ -147,6 +151,10 @@
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-binding</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.ext.cdi</groupId>
+            <artifactId>jersey-cdi1x</artifactId>
         </dependency>
     </dependencies>
 

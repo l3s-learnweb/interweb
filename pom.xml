@@ -17,7 +17,7 @@
 
         <maven.dependency.mariadb.version>3.1.2</maven.dependency.mariadb.version>
         <maven.dependency.log4j.version>2.20.0</maven.dependency.log4j.version>
-        <maven.dependency.jersey2.version>3.1.1</maven.dependency.jersey2.version>
+        <maven.dependency.jersey.version>3.1.1</maven.dependency.jersey.version>
         <maven.dependency.junit.version>5.9.2</maven.dependency.junit.version>
         <maven.dependency.auto-service.version>1.0.1</maven.dependency.auto-service.version>
     </properties>
@@ -27,8 +27,10 @@
         <module>interweb-tomcat</module>
         <module>interweb-client</module>
         <module>connectors/BingConnector</module>
+        <module>connectors/EduRecConnector</module>
         <module>connectors/FlickrConnector</module>
         <module>connectors/GiphyConnector</module>
+        <module>connectors/GoogleConnector</module>
         <module>connectors/IpernityConnector</module>
         <module>connectors/SlideShareConnector</module>
         <module>connectors/VimeoConnector</module>
@@ -94,47 +96,52 @@
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet</artifactId>
-                <version>${maven.dependency.jersey2.version}</version>
+                <version>${maven.dependency.jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-server</artifactId>
-                <version>${maven.dependency.jersey2.version}</version>
+                <version>${maven.dependency.jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>${maven.dependency.jersey2.version}</version>
+                <version>${maven.dependency.jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
-                <version>${maven.dependency.jersey2.version}</version>
+                <version>${maven.dependency.jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.security</groupId>
                 <artifactId>oauth1-client</artifactId>
-                <version>${maven.dependency.jersey2.version}</version>
+                <version>${maven.dependency.jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.security</groupId>
                 <artifactId>oauth1-server</artifactId>
-                <version>${maven.dependency.jersey2.version}</version>
+                <version>${maven.dependency.jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-jaxb</artifactId>
-                <version>${maven.dependency.jersey2.version}</version>
+                <version>${maven.dependency.jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-multipart</artifactId>
-                <version>${maven.dependency.jersey2.version}</version>
+                <version>${maven.dependency.jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-binding</artifactId>
-                <version>${maven.dependency.jersey2.version}</version>
+                <version>${maven.dependency.jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.ext.cdi</groupId>
+                <artifactId>jersey-cdi1x</artifactId>
+                <version>${maven.dependency.jersey.version}</version>
             </dependency>
 
             <!-- Log4J Logging -->
@@ -179,6 +186,11 @@
             <artifactId>log4j-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
