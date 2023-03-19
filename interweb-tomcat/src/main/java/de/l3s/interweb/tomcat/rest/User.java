@@ -2,16 +2,8 @@ package de.l3s.interweb.tomcat.rest;
 
 import java.util.List;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -21,16 +13,11 @@ import org.glassfish.jersey.oauth1.signature.OAuth1Parameters;
 
 import de.l3s.interweb.core.InterWebException;
 import de.l3s.interweb.core.Parameters;
-import de.l3s.interweb.core.connector.ServiceConnector;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
+import de.l3s.interweb.core.search.SearchProvider;
+import de.l3s.interweb.tomcat.app.Engine;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 import de.l3s.interweb.tomcat.db.Database;
-import de.l3s.interweb.tomcat.jaxb.services.AuthorizationLinkEntity;
-import de.l3s.interweb.tomcat.jaxb.services.AuthorizationLinkResponse;
-import de.l3s.interweb.tomcat.jaxb.services.ServiceEntity;
-import de.l3s.interweb.tomcat.jaxb.services.ServiceResponse;
-import de.l3s.interweb.tomcat.jaxb.services.ServicesResponse;
+import de.l3s.interweb.tomcat.jaxb.services.*;
 
 @Path("/users/{user}")
 public class User extends Endpoint {
@@ -40,14 +27,17 @@ public class User extends Endpoint {
     protected String username;
     private InterWebPrincipal targetPrincipal;
 
+    @Inject
+    private Engine engine;
+    @Inject
+    private Database database;
+
     @POST
     @Path("/services/{service}/auth")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public AuthorizationLinkResponse authenticateOnService(@PathParam("service") String connectorName, @QueryParam("callback") String callback,
                                                            @FormParam("username") String userName, @FormParam("password") String password) {
-        Engine engine = Environment.getInstance().getEngine();
-
-        ServiceConnector connector = engine.getConnector(connectorName);
+        SearchProvider connector = engine.getConnector(connectorName);
         if (connector == null) {
             throw new WebApplicationException("Service unknown", Response.Status.BAD_REQUEST);
         }
@@ -108,7 +98,7 @@ public class User extends Endpoint {
     @Path("/services/{service}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public ServiceResponse getService(@PathParam("service") String serviceName) {
-        ServiceEntity serviceEntity = Services.createServiceEntity(serviceName, getBaseUri().toASCIIString(), getTargetPrincipal());
+        ServiceEntity serviceEntity = Services.createServiceEntity(engine, database, serviceName, getBaseUri().toASCIIString(), getTargetPrincipal());
         ServiceResponse serviceResponse = new ServiceResponse();
         serviceResponse.setServiceEntity(serviceEntity);
         return serviceResponse;
@@ -118,7 +108,7 @@ public class User extends Endpoint {
     @Path("/services")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public ServicesResponse getServices() {
-        List<ServiceEntity> serviceEntities = Services.createServiceEntities(getBaseUri().toASCIIString(), getTargetPrincipal());
+        List<ServiceEntity> serviceEntities = Services.createServiceEntities(engine, database, getBaseUri().toASCIIString(), getTargetPrincipal());
         ServicesResponse servicesResponse = new ServicesResponse();
         servicesResponse.setServiceEntities(serviceEntities);
         return servicesResponse;
@@ -136,8 +126,6 @@ public class User extends Endpoint {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response registerUser(@FormParam("mediator_token") String mediatorToken) {
-        Database database = Environment.getInstance().getDatabase();
-
         InterWebPrincipal mediator = database.readPrincipalByKey(mediatorToken);
         if (mediator == null) {
             throw new WebApplicationException("No account for this token", Response.Status.BAD_REQUEST);
@@ -156,8 +144,6 @@ public class User extends Endpoint {
     @Path("/mediator")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response removeMediator() {
-        Database database = Environment.getInstance().getDatabase();
-
         InterWebPrincipal principal = getPrincipal();
         if (principal == null || !principal.equals(getTargetPrincipal())) {
             throw new WebApplicationException("API call not authorized for user", Response.Status.FORBIDDEN);
@@ -173,9 +159,8 @@ public class User extends Endpoint {
     public ServiceResponse revokeAuthorizationOnService(@PathParam("service") String serviceName) {
         log.info("revoking user authentication");
         InterWebPrincipal principal = getTargetPrincipal();
-        Engine engine = Environment.getInstance().getEngine();
 
-        ServiceConnector connector = engine.getConnector(serviceName);
+        SearchProvider connector = engine.getConnector(serviceName);
         if (connector == null) {
             throw new WebApplicationException("Service unknown", Response.Status.BAD_REQUEST);
         }
@@ -188,7 +173,7 @@ public class User extends Endpoint {
             throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
         }
 
-        ServiceEntity serviceEntity = Services.createServiceEntity(serviceName, getBaseUri().toASCIIString(), principal);
+        ServiceEntity serviceEntity = Services.createServiceEntity(engine, database, serviceName, getBaseUri().toASCIIString(), principal);
         serviceEntity.setMessage("Authorization successfully revoked");
         ServiceResponse serviceResponse = new ServiceResponse();
         serviceResponse.setServiceEntity(serviceEntity);
@@ -200,7 +185,6 @@ public class User extends Endpoint {
             if (username == null || username.equals("default")) {
                 targetPrincipal = getPrincipal();
             } else {
-                Database database = Environment.getInstance().getDatabase();
                 targetPrincipal = database.readPrincipalByName(username);
             }
             if (targetPrincipal == null) {

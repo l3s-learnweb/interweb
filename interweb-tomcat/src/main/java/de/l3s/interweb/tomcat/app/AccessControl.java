@@ -1,4 +1,4 @@
-package de.l3s.interweb.tomcat.core;
+package de.l3s.interweb.tomcat.app;
 
 import java.util.LinkedList;
 import java.util.List;

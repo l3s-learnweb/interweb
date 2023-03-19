@@ -1,4 +1,4 @@
-package de.l3s.interweb.core.query;
+package de.l3s.interweb.core.search;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -17,11 +17,11 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
+import de.l3s.interweb.core.query.Query;
 
 @XmlRootElement(name = "rsp")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SearchResults implements Serializable {
+public class SearchResponse implements Serializable {
     @Serial
     private static final long serialVersionUID = -2762679444319967129L;
 
@@ -39,7 +39,7 @@ public class SearchResults implements Serializable {
     @JsonbProperty("results")
     @XmlElementWrapper(name = "results")
     @XmlElement(name = "result")
-    private List<ResultItem> results;
+    private List<SearchItem> results;
 
     @JsonbProperty("created_time")
     @XmlElement(name = "created_time")
@@ -48,19 +48,19 @@ public class SearchResults implements Serializable {
     @XmlElement(name = "elapsed_time")
     private long elapsedTime;
 
-    public SearchResults() {
+    public SearchResponse() {
     }
 
-    public SearchResults(Query query) {
+    public SearchResponse(Query query) {
         this.query = query;
         this.results = new LinkedList<>();
         this.resultsPerService = new HashMap<>();
     }
 
-    public void addConnectorResults(ConnectorSearchResults queryResult) {
-        results.addAll(queryResult.getResultItems());
-        totalResults += queryResult.getTotalResultCount();
-        resultsPerService.put(queryResult.getConnectorName(), queryResult.getTotalResultCount());
+    public void addConnectorResults(de.l3s.interweb.core.search.SearchResults queryResult) {
+        results.addAll(queryResult.getItems());
+        totalResults += queryResult.getTotalResults();
+        resultsPerService.put(queryResult.getSource(), queryResult.getTotalResults());
     }
 
     public Query getQuery() {
@@ -87,11 +87,11 @@ public class SearchResults implements Serializable {
         this.resultsPerService = resultsPerService;
     }
 
-    public List<ResultItem> getResults() {
+    public List<SearchItem> getResults() {
         return results;
     }
 
-    public void setResults(final List<ResultItem> results) {
+    public void setResults(final List<SearchItem> results) {
         this.results = results;
     }
 

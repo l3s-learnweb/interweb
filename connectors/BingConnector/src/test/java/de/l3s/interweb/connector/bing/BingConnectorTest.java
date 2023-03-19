@@ -13,12 +13,12 @@ import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
 import de.l3s.interweb.core.query.QueryFactory;
-import de.l3s.interweb.core.query.ResultItem;
+import de.l3s.interweb.core.search.SearchItem;
 
 @Disabled
 class BingConnectorTest {
@@ -27,7 +27,7 @@ class BingConnectorTest {
     private static final String TEST_KEY = "accesskey";
     private static final String TEST_SECRET = "***REMOVED***";
 
-    private static ServiceConnector connector;
+    private static SearchProvider connector;
 
     @BeforeAll
     public static void initialize() {
@@ -43,14 +43,14 @@ class BingConnectorTest {
         query.setDateFrom("2009-01-01 00:00:00");
         query.setDateTill("2010-06-01 00:00:00");
 
-        ConnectorSearchResults queryResult = connector.get(query, null);
+        SearchResults queryResult = connector.get(query, null);
 
-        for (ResultItem res : queryResult.getResultItems()) {
+        for (SearchItem res : queryResult.getItems()) {
             log.info(res.toString());
         }
 
-        assertEquals(30, queryResult.getResultItems().size());
-        assertTrue(queryResult.getTotalResultCount() > 100);
+        assertEquals(30, queryResult.getItems().size());
+        assertTrue(queryResult.getTotalResults() > 100);
     }
 
     @Test
@@ -60,14 +60,14 @@ class BingConnectorTest {
         query.setPerPage(30);
         query.setPage(2);
 
-        ConnectorSearchResults queryResult = connector.get(query, null);
+        SearchResults queryResult = connector.get(query, null);
 
-        for (ResultItem res : queryResult.getResultItems()) {
+        for (SearchItem res : queryResult.getItems()) {
             log.info(res);
         }
 
-        assertEquals(30, queryResult.getResultItems().size());
-        assertTrue(queryResult.getTotalResultCount() > 100);
+        assertEquals(30, queryResult.getItems().size());
+        assertTrue(queryResult.getTotalResults() > 100);
     }
 
     @Test
@@ -77,14 +77,14 @@ class BingConnectorTest {
         query.setPerPage(30);
         query.setPage(2);
 
-        ConnectorSearchResults queryResult = connector.get(query, null);
+        SearchResults queryResult = connector.get(query, null);
 
-        for (ResultItem res : queryResult.getResultItems()) {
+        for (SearchItem res : queryResult.getItems()) {
             log.info(res.toString());
         }
 
-        assertEquals(30, queryResult.getResultItems().size());
-        assertTrue(queryResult.getTotalResultCount() > 100);
+        assertEquals(30, queryResult.getItems().size());
+        assertTrue(queryResult.getTotalResults() > 100);
     }
 
     @Test

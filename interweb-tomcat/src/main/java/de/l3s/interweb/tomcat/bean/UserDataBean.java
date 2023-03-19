@@ -7,10 +7,9 @@ import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
-import de.l3s.interweb.tomcat.webutil.FacesUtils;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 import de.l3s.interweb.tomcat.db.Database;
+import de.l3s.interweb.tomcat.webutil.FacesUtils;
 
 @Named
 @RequestScoped
@@ -23,6 +22,8 @@ public class UserDataBean {
 
     @Inject
     private SessionBean sessionBean;
+    @Inject
+    private Database database;
 
     public String getEmail() {
         return email;
@@ -57,8 +58,6 @@ public class UserDataBean {
     }
 
     public void register() {
-        Environment environment = Environment.getInstance();
-        Database database = environment.getDatabase();
         if (validate(database)) {
             InterWebPrincipal principal = InterWebPrincipal.createDefault(username, email);
             database.savePrincipal(principal, password);

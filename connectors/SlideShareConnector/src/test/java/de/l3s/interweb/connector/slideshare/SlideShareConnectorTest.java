@@ -13,12 +13,12 @@ import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
 import de.l3s.interweb.core.query.QueryFactory;
-import de.l3s.interweb.core.query.ResultItem;
+import de.l3s.interweb.core.search.SearchItem;
 import de.l3s.interweb.core.query.SearchRanking;
 import de.l3s.interweb.core.query.SearchScope;
 
@@ -29,7 +29,7 @@ class SlideShareConnectorTest {
     private static final String TEST_KEY = "***REMOVED***";
     private static final String TEST_SECRET = "***REMOVED***";
 
-    private static ServiceConnector connector;
+    private static SearchProvider connector;
 
     @BeforeAll
     public static void initialize() {
@@ -51,14 +51,14 @@ class SlideShareConnectorTest {
         // query.setDateTill("2009-06-01 00:00:00");
         query.setRanking(SearchRanking.relevance);
 
-        ConnectorSearchResults queryResult = connector.get(query, null);
+        SearchResults queryResult = connector.get(query, null);
 
-        for (ResultItem res : queryResult.getResultItems()) {
+        for (SearchItem res : queryResult.getItems()) {
             log.info(res);
         }
 
-        assertEquals(18, queryResult.getResultItems().size());
-        assertTrue(queryResult.getTotalResultCount() > 100);
+        assertEquals(18, queryResult.getItems().size());
+        assertTrue(queryResult.getTotalResults() > 100);
 
         String embedded = connector.getEmbedded(null, "https://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
         System.out.println(embedded);

@@ -23,8 +23,6 @@ public class RestApplication extends ResourceConfig {
         register(RequestUriFilter.class);
         register(MultiPartFeature.class);
         register(JsonBindingFeature.class);
-        // register(OAuth1ServerFeature.class);
-        // register(InterwebOAuth1Provider.class);
         register(OAuth1SignatureFeature.class);
         register(ServletExceptionMapper.class);
         register(OAuthFilter.class);

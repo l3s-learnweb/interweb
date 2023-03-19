@@ -1,6 +1,6 @@
 package de.l3s.interweb.tomcat.rest;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.core.query.SearchResults;
+import de.l3s.interweb.core.search.SearchResponse;
 import de.l3s.interweb.tomcat.TestUtils;
 import de.l3s.interweb.tomcat.jaxb.auth.OAuthAccessTokenResponse;
 import de.l3s.interweb.tomcat.jaxb.auth.OAuthRequestTokenResponse;
@@ -78,7 +78,7 @@ class OAuthTest {
         resource = resource.queryParam("media_types", "image,video,text");
         System.out.println("querying InterWeb URL: " + resource.toString());
         Response response = resource.request().get();
-        SearchResults searchResponse = response.readEntity(SearchResults.class);
+        SearchResponse searchResponse = response.readEntity(SearchResponse.class);
         System.out.println(searchResponse);
     }
 }

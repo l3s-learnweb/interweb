@@ -17,30 +17,28 @@ import org.apache.logging.log4j.Logger;
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
 import de.l3s.interweb.core.Parameters;
-import de.l3s.interweb.core.connector.ServiceConnector;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.webutil.FacesUtils;
+import de.l3s.interweb.core.search.SearchProvider;
+import de.l3s.interweb.tomcat.app.Engine;
 import de.l3s.interweb.tomcat.db.Database;
+import de.l3s.interweb.tomcat.webutil.FacesUtils;
 
 @Named
 @RequestScoped
 public class ServicesBean {
     private static final Logger log = LogManager.getLogger(ServicesBean.class);
 
-    private final Engine engine;
-    private final Database database;
     private final List<ConnectorWrapper> connectorWrappers = new ArrayList<>();
     private final List<ConnectorWrapper> awaitingConnectorWrappers = new ArrayList<>();
     private String error;
 
     @Inject
     private SessionBean sessionBean;
+    @Inject
+    private Engine engine;
+    @Inject
+    private Database database;
 
     public ServicesBean() {
-        engine = Environment.getInstance().getEngine();
-        database = Environment.getInstance().getDatabase();
-
         Parameters parameters = new Parameters();
         parameters.addMultivaluedParams(FacesUtils.getRequest().getParameterMap());
         if (parameters.hasParameter(Parameters.ERROR)) {
@@ -50,7 +48,7 @@ public class ServicesBean {
 
     @PostConstruct
     public void postConstruct() {
-        for (ServiceConnector connector : engine.getConnectors()) {
+        for (SearchProvider connector : engine.getSearchProviders()) {
             if (connector.isRegistered() && connector.isUserRegistrationRequired()) {
                 ConnectorWrapper connectorWrapper = new ConnectorWrapper();
                 connectorWrapper.setConnector(connector);
@@ -65,7 +63,7 @@ public class ServicesBean {
     public void authenticate(Object obj) throws InterWebException {
         String baseApiUrl = FacesUtils.getRequestBaseURL();
         ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
-        ServiceConnector connector = connectorWrapper.getConnector();
+        SearchProvider connector = connectorWrapper.getConnector();
         connectorWrapper.setKey(connector.getAuthCredentials().getKey());
         connectorWrapper.setSecret(connector.getAuthCredentials().getSecret());
         Parameters parameters = new Parameters();
@@ -110,7 +108,7 @@ public class ServicesBean {
     public boolean isUserAuthenticated(Object obj) {
         if (sessionBean.getPrincipal() != null) {
             ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
-            ServiceConnector connector = connectorWrapper.getConnector();
+            SearchProvider connector = connectorWrapper.getConnector();
             return engine.isUserAuthenticated(connector, sessionBean.getPrincipal());
         }
         return false;
@@ -118,13 +116,13 @@ public class ServicesBean {
 
     public boolean isUserRegistrationRequired(Object obj) {
         ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
-        ServiceConnector connector = connectorWrapper.getConnector();
+        SearchProvider connector = connectorWrapper.getConnector();
         return connector.isUserRegistrationDataRequired() && !isUserAuthenticated(obj);
     }
 
     public void revoke(Object obj) throws InterWebException {
         ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
-        ServiceConnector connector = connectorWrapper.getConnector();
+        SearchProvider connector = connectorWrapper.getConnector();
         log.info("revoking user authentication");
         engine.setUserAuthCredentials(connector.getName(), sessionBean.getPrincipal(), null, null);
         connector.revokeAuthentication();
@@ -132,7 +130,7 @@ public class ServicesBean {
 
     public void save(Object obj) {
         ConnectorWrapper connectorWrapper = (ConnectorWrapper) obj;
-        ServiceConnector connector = connectorWrapper.getConnector();
+        SearchProvider connector = connectorWrapper.getConnector();
         String key = StringUtils.isEmpty(connectorWrapper.getKey()) ? null : connectorWrapper.getKey();
         String secret = StringUtils.isEmpty(connectorWrapper.getSecret()) ? null : connectorWrapper.getSecret();
         AuthCredentials authCredentials = new AuthCredentials(key, secret);

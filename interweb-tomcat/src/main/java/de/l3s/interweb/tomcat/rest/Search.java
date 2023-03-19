@@ -3,13 +3,9 @@ package de.l3s.interweb.tomcat.rest;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -20,18 +16,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.tomcat.core.QueryResultCollector;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
-import de.l3s.interweb.core.query.ContentType;
-import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.QueryFactory;
-import de.l3s.interweb.core.query.SearchExtra;
-import de.l3s.interweb.core.query.SearchRanking;
-import de.l3s.interweb.core.query.SearchResults;
-import de.l3s.interweb.core.query.SearchScope;
-import de.l3s.interweb.core.util.CoreUtils;
+import de.l3s.interweb.core.query.*;
+import de.l3s.interweb.core.search.SearchResponse;
+import de.l3s.interweb.core.util.DateUtils;
+import de.l3s.interweb.tomcat.app.Engine;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
+import de.l3s.interweb.tomcat.app.QueryResultCollector;
 
 @Path("/search")
 public class Search extends Endpoint {
@@ -42,13 +32,16 @@ public class Search extends Endpoint {
     @Context
     private UriInfo uriInfo;
 
+    @Inject
+    private Engine engine;
+
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public SearchResults getQueryResult(@QueryParam("q") String queryString,
-        @QueryParam("services") String services, @QueryParam("media_types") String mediaTypes, @QueryParam("search_in") String searchIn,
-        @QueryParam("date_from") String dateFrom, @QueryParam("date_till") String dateTill, @QueryParam("ranking") String ranking,
-        @QueryParam("page") String page, @QueryParam("per_page") String perPage, @QueryParam("language") String language,
-        @QueryParam("extras") String extras, @QueryParam("timeout") String timeout) {
+    public SearchResponse getQueryResult(@QueryParam("q") String queryString,
+                                         @QueryParam("services") String services, @QueryParam("media_types") String mediaTypes, @QueryParam("search_in") String searchIn,
+                                         @QueryParam("date_from") String dateFrom, @QueryParam("date_till") String dateTill, @QueryParam("ranking") String ranking,
+                                         @QueryParam("page") String page, @QueryParam("per_page") String perPage, @QueryParam("language") String language,
+                                         @QueryParam("extras") String extras, @QueryParam("timeout") String timeout) {
 
         checkQueryString(queryString);
 
@@ -73,16 +66,15 @@ public class Search extends Endpoint {
         }
 
         try {
-            Engine engine = Environment.getInstance().getEngine();
             InterWebPrincipal principal = getPrincipal();
             log.info("principal: [{}]", principal);
 
             QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
-            SearchResults searchResults = collector.retrieve();
+            SearchResponse searchResponse = collector.retrieve();
 
-            engine.getGeneralCache().put(searchResults.getQuery().getId(), searchResults);
-            log.info("{} results found in {} ms", searchResults.getResults().size(), searchResults.getElapsedTime());
-            return searchResults;
+            engine.getGeneralCache().put(searchResponse.getQuery().getId(), searchResponse);
+            log.info("{} results found in {} ms", searchResponse.getResults().size(), searchResponse.getElapsedTime());
+            return searchResponse;
         } catch (InterWebException e) {
             log.catching(e);
             throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
@@ -92,21 +84,19 @@ public class Search extends Endpoint {
     @GET
     @Path("/{id}.xml")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public SearchResults getStandingQueryResult(@PathParam(value = "id") String id) {
-        Engine engine = Environment.getInstance().getEngine();
-
-        SearchResults searchResults = (SearchResults) engine.getGeneralCache().getIfPresent(id);
+    public SearchResponse getStandingQueryResult(@PathParam(value = "id") String id) {
+        SearchResponse searchResponse = (SearchResponse) engine.getGeneralCache().getIfPresent(id);
         InterWebPrincipal principal = getPrincipal();
-        if (searchResults == null || principal == null) {
+        if (searchResponse == null || principal == null) {
             throw new WebApplicationException("Standing query does not exist", Response.Status.BAD_REQUEST);
         }
 
-        return searchResults;
+        return searchResponse;
     }
 
     private static boolean checkDate(String date) {
         try {
-            CoreUtils.parseDate(date);
+            DateUtils.parse(date);
             return true;
         } catch (DateTimeParseException e) {
             log.catching(e);
@@ -132,13 +122,13 @@ public class Search extends Endpoint {
         }
     }
 
-    private static void checkMediaTypes(Query query, String mediaTypes) {
+    private void checkMediaTypes(Query query, String mediaTypes) {
         if (StringUtils.isBlank(mediaTypes)) {
             throw new WebApplicationException("Media type missing. You have to specify 'type' query param.", Response.Status.BAD_REQUEST);
         }
 
         String[] types = mediaTypes.split(",");
-        List<ContentType> contentTypes = Environment.getInstance().getEngine().getContentTypes();
+        List<ContentType> contentTypes = engine.getContentTypes();
         for (String type : types) {
             ContentType contentType = ContentType.find(type);
             if (contentType == null || !contentTypes.contains(contentType)) {
@@ -217,8 +207,8 @@ public class Search extends Endpoint {
         }
     }
 
-    private static void checkServices(Query query, String servicesStr) {
-        List<String> connectorNames = Environment.getInstance().getEngine().getConnectorNames();
+    private void checkServices(Query query, String servicesStr) {
+        List<String> connectorNames = engine.getSearchServiceNames();
 
         if (StringUtils.isBlank(servicesStr)) {
             query.setServices(connectorNames);

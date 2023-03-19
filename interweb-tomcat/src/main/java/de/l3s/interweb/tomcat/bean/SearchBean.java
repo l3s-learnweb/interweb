@@ -2,12 +2,9 @@ package de.l3s.interweb.tomcat.bean;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.model.SelectItem;
 import jakarta.faces.view.ViewScoped;
@@ -20,18 +17,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
-import de.l3s.interweb.tomcat.core.QueryResultCollector;
-import de.l3s.interweb.tomcat.webutil.FacesUtils;
-import de.l3s.interweb.core.connector.ServiceConnector;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
 import de.l3s.interweb.core.query.QueryFactory;
-import de.l3s.interweb.core.query.ResultItem;
-import de.l3s.interweb.core.query.SearchResults;
 import de.l3s.interweb.core.query.SearchScope;
+import de.l3s.interweb.core.search.SearchItem;
+import de.l3s.interweb.core.search.SearchProvider;
+import de.l3s.interweb.core.search.SearchResponse;
+import de.l3s.interweb.tomcat.app.Engine;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
+import de.l3s.interweb.tomcat.app.QueryResultCollector;
+import de.l3s.interweb.tomcat.webutil.FacesUtils;
 
 @Named
 @ViewScoped
@@ -44,7 +40,7 @@ public class SearchBean implements Serializable {
     private String query;
     private int page = 1;
     private String language = "en";
-    private SearchResults searchResults;
+    private SearchResponse searchResponse;
     private Set<ContentType> selectedContentTypes;
     private Set<String> selectedConnectorNames;
     @NotNull
@@ -54,27 +50,24 @@ public class SearchBean implements Serializable {
     @Inject
     private SessionBean sessionBean;
 
-    public SearchBean() {
-        init();
-    }
+    @Inject
+    private Engine engine;
 
+    @PostConstruct
     public void init() {
-        Engine engine = Environment.getInstance().getEngine();
-        selectedConnectorNames = new HashSet<>(engine.getConnectorNames());
+        selectedConnectorNames = new HashSet<>(engine.getSearchServiceNames());
         selectedContentTypes = new HashSet<>(engine.getContentTypes());
         resultCount = 10;
     }
 
     public String getConnectorBaseUrl(String connectorName) {
-        Engine engine = Environment.getInstance().getEngine();
-        ServiceConnector connector = engine.getConnector(connectorName);
+        SearchProvider connector = engine.getConnector(connectorName);
         return connector.getBaseUrl();
     }
 
     public List<SelectItem> getConnectorNames() {
         List<SelectItem> connectorSelectItems = new ArrayList<>();
-        Engine engine = Environment.getInstance().getEngine();
-        for (ServiceConnector connector : engine.getConnectors()) {
+        for (SearchProvider connector : engine.getSearchProviders()) {
             if (connector.isRegistered()) {
                 SelectItem selectItem = new SelectItem(connector.getName());
                 connectorSelectItems.add(selectItem);
@@ -88,10 +81,9 @@ public class SearchBean implements Serializable {
             init();
         }
 
-        Engine engine = Environment.getInstance().getEngine();
         Set<ContentType> contentTypes = new TreeSet<>();
         for (String connectorName : selectedConnectorNames) {
-            ServiceConnector connector = engine.getConnector(connectorName);
+            SearchProvider connector = engine.getConnector(connectorName);
             contentTypes.addAll(connector.getContentTypes());
         }
         List<SelectItem> contentTypeSelectItems = new ArrayList<>();
@@ -109,8 +101,8 @@ public class SearchBean implements Serializable {
         this.query = query;
     }
 
-    public SearchResults getSearchResults() {
-        return searchResults;
+    public SearchResponse getSearchResponse() {
+        return searchResponse;
     }
 
     public int getResultCount() {
@@ -121,8 +113,8 @@ public class SearchBean implements Serializable {
         this.resultCount = resultCount;
     }
 
-    public int getResultIndex(ResultItem resultItem) {
-        return searchResults.getResults().indexOf(resultItem);
+    public int getResultIndex(SearchItem resultItem) {
+        return searchResponse.getResults().indexOf(resultItem);
     }
 
     public Set<String> getSelectedConnectorNames() {
@@ -142,7 +134,7 @@ public class SearchBean implements Serializable {
     }
 
     public String getTags(Object obj) {
-        ResultItem resultItem = (ResultItem) obj;
+        SearchItem resultItem = (SearchItem) obj;
         return StringUtils.join(resultItem.getTags(), ", ");
     }
 
@@ -163,7 +155,7 @@ public class SearchBean implements Serializable {
     }
 
     public boolean hasResults() {
-        return searchResults != null;
+        return searchResponse != null;
     }
 
     public void save() {
@@ -180,12 +172,11 @@ public class SearchBean implements Serializable {
         query.setLanguage(language);
         query.setTimeout(timeout);
 
-        SearchResults searchResults = new SearchResults(query);
-        Engine engine = Environment.getInstance().getEngine();
+        SearchResponse searchResponse = new SearchResponse(query);
         InterWebPrincipal principal = sessionBean.getPrincipal();
         try {
             QueryResultCollector collector = engine.getQueryResultCollector(query, principal);
-            searchResults = collector.retrieve();
+            searchResponse = collector.retrieve();
         } catch (InterWebException e) {
             log.catching(e);
             FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, e);
@@ -194,7 +185,7 @@ public class SearchBean implements Serializable {
         ExpirableMap<String, Object> expirableMap = engine.getExpirableMap();
         expirableMap.put(queryResult.getQuery().getId(), queryResult);
         */
-        this.searchResults = searchResults;
+        this.searchResponse = searchResponse;
     }
 
     public int getPage() {

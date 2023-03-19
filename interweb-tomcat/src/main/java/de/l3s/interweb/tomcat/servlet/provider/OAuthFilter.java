@@ -1,5 +1,6 @@
 package de.l3s.interweb.tomcat.servlet.provider;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -16,10 +17,9 @@ import org.glassfish.jersey.oauth1.signature.OAuth1Signature;
 import org.glassfish.jersey.oauth1.signature.OAuth1SignatureException;
 import org.glassfish.jersey.server.oauth1.internal.OAuthServerRequest;
 
-import de.l3s.interweb.tomcat.core.Consumer;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
+import de.l3s.interweb.tomcat.app.Consumer;
+import de.l3s.interweb.tomcat.app.Engine;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 import de.l3s.interweb.tomcat.db.Database;
 
 @Provider
@@ -31,6 +31,11 @@ public class OAuthFilter implements ContainerRequestFilter {
 
     @Context
     OAuth1Signature oAuth1Signature;
+
+    @Inject
+    private Engine engine;
+    @Inject
+    private Database database;
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
@@ -49,7 +54,6 @@ public class OAuthFilter implements ContainerRequestFilter {
             throw new WebApplicationException("No consumer key given", Response.Status.UNAUTHORIZED);
         }
 
-        final Database database = Environment.getInstance().getDatabase();
         final Consumer consumer = database.readConsumerByKey(consumerKey);
         if (consumer == null) {
             throw new WebApplicationException("Invalid signature", Response.Status.UNAUTHORIZED);
@@ -61,7 +65,6 @@ public class OAuthFilter implements ContainerRequestFilter {
 
         if (token != null) {
             String tokenSecret = null;
-            Engine engine = Environment.getInstance().getEngine();
             InterWebPrincipal principal = (InterWebPrincipal) engine.getGeneralCache().getIfPresent("principal:" + token);
 
             if (principal != null && principal.getOauthCredentials() != null) {

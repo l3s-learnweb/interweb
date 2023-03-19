@@ -68,13 +68,13 @@
         </h:form>
 
         <ui:fragment rendered="#{searchBean.hasResults()}">
-            <h:outputText value="No results found" rendered="${searchBean.searchResults.size()==0}"/>
-            <h:outputText value="${searchBean.searchResults.results.size()} result(s) found (${searchBean.searchResults.elapsedTime/1000} s), total results available ${searchBean.searchResults.totalResults}."
-                          rendered="${searchBean.searchResults.size()>0}"/>
+            <h:outputText value="No results found" rendered="${searchBean.searchResponse.size()==0}"/>
+            <h:outputText value="${searchBean.searchResponse.results.size()} result(s) found (${searchBean.searchResponse.elapsedTime/1000} s), total results available ${searchBean.searchResponse.totalResults}."
+                          rendered="${searchBean.searchResponse.size()>0}"/>
         </ui:fragment>
 
         <h:form rendered="#{searchBean.hasResults()}">
-            <h:dataTable value="#{searchBean.searchResults.results}" var="resultItem" id="result_table" styleClass="iw-datatable w-100">
+            <h:dataTable value="#{searchBean.searchResponse.results}" var="resultItem" id="result_table" styleClass="iw-datatable w-100">
                 <h:column>
                     <span style="text-align: left;">#{searchBean.getResultIndex(resultItem)+1}</span>
                 </h:column>

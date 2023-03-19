@@ -1,4 +1,4 @@
-package de.l3s.interweb.core.query;
+package de.l3s.interweb.core.search;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,11 +15,13 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import de.l3s.interweb.core.util.CoreUtils;
+import de.l3s.interweb.core.query.ContentType;
+import de.l3s.interweb.core.query.Thumbnail;
+import de.l3s.interweb.core.util.StringUtils;
 
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ResultItem implements Serializable {
+public class SearchItem implements Serializable {
     @Serial
     private static final long serialVersionUID = 8890673440048432524L;
 
@@ -31,7 +33,6 @@ public class ResultItem implements Serializable {
     public static final int THUMBNAIL_LARGE_MAX_HEIGHT = 920;
 
     // base
-    @JsonbProperty("service")
     @XmlElement(name = "service")
     private String service;
     @JsonbProperty("rank_at_service")
@@ -60,7 +61,6 @@ public class ResultItem implements Serializable {
     private Integer width;
     @XmlElement(name = "height")
     private Integer height;
-    @JsonbProperty("tags")
     @XmlElementWrapper(name = "tags")
     @XmlElement(name = "tag")
     private Set<String> tags = new HashSet<>();
@@ -109,14 +109,14 @@ public class ResultItem implements Serializable {
     @XmlElement(name = "thumbnail_original")
     private Thumbnail thumbnailOriginal;
 
-    public ResultItem() {
+    public SearchItem() {
     }
 
-    public ResultItem(final String service) {
+    public SearchItem(final String service) {
         this.service = service;
     }
 
-    public ResultItem(final String service, final int rank) {
+    public SearchItem(final String service, final int rank) {
         this.service = service;
         this.rank = rank;
     }
@@ -158,7 +158,7 @@ public class ResultItem implements Serializable {
     }
 
     public void setTitle(final String title) {
-        this.title = CoreUtils.shortnString(title, MAX_TITLE_LENGTH);
+        this.title = StringUtils.shorten(title, MAX_TITLE_LENGTH);
     }
 
     public String getDescription() {
@@ -166,7 +166,7 @@ public class ResultItem implements Serializable {
     }
 
     public void setDescription(final String description) {
-        this.description = CoreUtils.shortnString(description, MAX_DESCRIPTION_LENGTH);
+        this.description = StringUtils.shorten(description, MAX_DESCRIPTION_LENGTH);
     }
 
     public String getUrl() {

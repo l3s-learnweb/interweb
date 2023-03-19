@@ -1,16 +1,13 @@
-package de.l3s.interweb.tomcat.core;
+package de.l3s.interweb.tomcat.app;
 
 import static de.l3s.interweb.core.util.Assertions.notNull;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,32 +18,32 @@ import com.google.common.cache.CacheBuilder;
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
 import de.l3s.interweb.core.Parameters;
-import de.l3s.interweb.core.connector.ServiceConnector;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.ResultItem;
-import de.l3s.interweb.core.query.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
+import de.l3s.interweb.core.search.SearchResponse;
+import de.l3s.interweb.core.suggest.SuggestionProvider;
 import de.l3s.interweb.tomcat.db.Database;
 
-public class Engine {
-    private static final Logger log = LogManager.getLogger(Engine.class);
+@ApplicationScoped
+public class EngineImpl implements Engine {
+    private static final Logger log = LogManager.getLogger(EngineImpl.class);
 
     private final Database database;
-
     private Set<ContentType> contentTypes;
-    private Map<String, ServiceConnector> connectors;
-    private Map<String, Cache<ServiceConnector, Parameters>> pendingAuthorizationConnectors;
+    private Map<String, SearchProvider> searchProviders;
+    private Map<String, SuggestionProvider> suggestProviders;
+    private Map<String, Cache<SearchProvider, Parameters>> pendingAuthorizationConnectors;
 
     private Cache<String, Object> generalCache;
-    private Cache<Query, SearchResults> searchCache;
+    private Cache<Query, SearchResponse> searchCache;
 
-    public Engine(Database database) {
+    @Inject
+    public EngineImpl(Database database) {
         this.database = database;
-        init();
-    }
 
-    private void init() {
-        connectors = new TreeMap<>();
+        searchProviders = new TreeMap<>();
+        suggestProviders = new TreeMap<>();
         contentTypes = new TreeSet<>();
         pendingAuthorizationConnectors = new HashMap<>();
 
@@ -57,6 +54,9 @@ public class Engine {
         searchCache = CacheBuilder.newBuilder()
             .maximumSize(10000)
             .build();
+
+        log.info("Starting InterWeb up...");
+        loadConnectors();
     }
 
     public List<ContentType> getContentTypes() {
@@ -67,17 +67,17 @@ public class Engine {
         return generalCache;
     }
 
-    public Cache<Query, SearchResults> getSearchCache() {
+    public Cache<Query, SearchResponse> getSearchCache() {
         return searchCache;
     }
 
-    public void addPendingAuthorizationConnector(InterWebPrincipal principal, ServiceConnector connector, Parameters params) {
+    public void addPendingAuthorizationConnector(InterWebPrincipal principal, SearchProvider connector, Parameters params) {
         notNull(principal, "principal");
         notNull(connector, "connector");
         notNull(params, "params");
         log.info("Adding pending authorization connector [{}] for user [{}]", connector.getName(), principal.getName());
         log.info("params: [{}]", params);
-        Cache<ServiceConnector, Parameters> expirableCache = createExpirableCache(60);
+        Cache<SearchProvider, Parameters> expirableCache = createExpirableCache(60);
 
         if (pendingAuthorizationConnectors.containsKey(principal.getName())) {
             expirableCache = pendingAuthorizationConnectors.get(principal.getName());
@@ -87,29 +87,37 @@ public class Engine {
         expirableCache.put(connector, params);
     }
 
-    public ServiceConnector getConnector(String connectorName) {
-        ServiceConnector storedServiceConnector = connectors.get(connectorName.toLowerCase());
-        return (storedServiceConnector == null) ? null : storedServiceConnector.clone();
+    public SearchProvider getConnector(String connectorName) {
+        SearchProvider storedSearchProvider = searchProviders.get(connectorName.toLowerCase());
+        return (storedSearchProvider == null) ? null : storedSearchProvider.clone();
     }
 
-    public AuthCredentials getConnectorAuthCredentials(ServiceConnector connector) {
+    public AuthCredentials getConnectorAuthCredentials(SearchProvider connector) {
         return database.readConnectorAuthCredentials(connector.getName());
     }
 
-    public List<String> getConnectorNames() {
-        List<String> connectorList = new ArrayList<>();
-        for (ServiceConnector connector : connectors.values()) {
-            connectorList.add(connector.getName().toLowerCase());
+    public List<String> getSearchServiceNames() {
+        List<String> serviceNames = new ArrayList<>();
+        for (SearchProvider connector : searchProviders.values()) {
+            serviceNames.add(connector.getName().toLowerCase());
         }
-        return connectorList;
+        return serviceNames;
     }
 
-    public List<ServiceConnector> getConnectors() {
-        List<ServiceConnector> connectorList = new ArrayList<>();
+    public List<String> getSuggestServiceNames() {
+        List<String> serviceNames = new ArrayList<>();
+        for (SuggestionProvider provider : suggestProviders.values()) {
+            serviceNames.add(provider.getService().name().toLowerCase());
+        }
+        return serviceNames;
+    }
 
-        Set<String> connectorNames = connectors.keySet();
+    public List<SearchProvider> getSearchProviders() {
+        List<SearchProvider> connectorList = new ArrayList<>();
+
+        Set<String> connectorNames = searchProviders.keySet();
         for (String connectorName : connectorNames) {
-            ServiceConnector connector = getConnector(connectorName);
+            SearchProvider connector = getConnector(connectorName);
             connectorList.add(connector);
         }
         return connectorList;
@@ -118,9 +126,9 @@ public class Engine {
     public QueryResultCollector getQueryResultCollector(Query query, InterWebPrincipal principal) throws InterWebException {
         log.info(query);
 
-        QueryResultCollector collector = new QueryResultCollector(query);
+        QueryResultCollector collector = new QueryResultCollector(this, query);
         for (String connectorName : query.getServices()) {
-            ServiceConnector connector = getConnector(connectorName);
+            SearchProvider connector = getConnector(connectorName);
             if (connector.isRegistered()) {
                 AuthCredentials authCredentials = getUserAuthCredentials(connector, principal);
                 collector.addQueryResultRetriever(connector, authCredentials);
@@ -129,30 +137,28 @@ public class Engine {
         return collector;
     }
 
-    public AuthCredentials getUserAuthCredentials(ServiceConnector connector, Principal principal) {
+    public AuthCredentials getUserAuthCredentials(SearchProvider connector, Principal principal) {
         notNull(connector, "connector");
         return (principal == null) ? null : database.readUserAuthCredentials(connector.getName(), principal.getName());
     }
 
-    public boolean isUserAuthenticated(ServiceConnector connector, Principal principal) {
+    public boolean isUserAuthenticated(SearchProvider connector, Principal principal) {
         return getUserAuthCredentials(connector, principal) != null;
     }
 
     public void loadConnectors() {
-        init();
         ConnectorLoader connectorLoader = new ConnectorLoader();
-        List<ServiceConnector> connectors = connectorLoader.load();
+        List<SearchProvider> connectors = connectorLoader.loadSearchProviders();
 
-        for (ServiceConnector connector : connectors) {
+        for (SearchProvider connector : connectors) {
             addConnector(connector);
             if (!database.hasConnector(connector.getName())) {
                 database.saveConnector(connector.getName(), null);
             }
         }
-
     }
 
-    public void processAuthenticationCallback(InterWebPrincipal principal, ServiceConnector connector, Parameters params) throws InterWebException {
+    public void processAuthenticationCallback(InterWebPrincipal principal, SearchProvider connector, Parameters params) throws InterWebException {
         notNull(principal, "principal");
         notNull(connector, "connector");
         log.info("Trying to find pending authorization connector [{}] for user [{}]", connector.getName(), principal.getName());
@@ -168,7 +174,7 @@ public class Engine {
 
     public void setConsumerAuthCredentials(String connectorName, AuthCredentials connectorAuthCredentials) {
         database.saveConnector(connectorName, connectorAuthCredentials);
-        ServiceConnector connector = connectors.get(connectorName.toLowerCase());
+        SearchProvider connector = searchProviders.get(connectorName.toLowerCase());
         connector.setAuthCredentials(connectorAuthCredentials);
     }
 
@@ -176,42 +182,25 @@ public class Engine {
         database.saveUserAuthCredentials(connectorName, principal.getName(), userId, consumerAuthCredentials);
     }
 
-    public ResultItem upload(byte[] data, Principal principal, List<String> connectorNames, ContentType contentType, Parameters params) throws InterWebException {
-        log.info("start uploading ...");
-        for (String connectorName : connectorNames) {
-            log.info("connectorName: [{}]", connectorName);
-            ServiceConnector connector = getConnector(connectorName);
-            if (connector != null && connector.supportContentType(contentType) && connector.isRegistered() && isUserAuthenticated(connector, principal)) {
-                log.info("uploading to connector: {}", connectorName);
-                AuthCredentials userAuthCredentials = getUserAuthCredentials(connector, principal);
-                ResultItem result = connector.put(data, contentType, params, userAuthCredentials);
-                log.info("done");
-                return result;
-            }
-        }
-        log.info("... uploading done");
-        return null;
-    }
-
-    private void addConnector(ServiceConnector connector) {
+    private void addConnector(SearchProvider connector) {
         AuthCredentials authCredentials = getConnectorAuthCredentials(connector);
         connector.setAuthCredentials(authCredentials);
         contentTypes.addAll(connector.getContentTypes());
-        connectors.put(connector.getName().toLowerCase(), connector);
+        searchProviders.put(connector.getName().toLowerCase(), connector);
     }
 
-    private Cache<ServiceConnector, Parameters> createExpirableCache(int minutes) {
+    private Cache<SearchProvider, Parameters> createExpirableCache(int minutes) {
         return CacheBuilder.newBuilder().expireAfterWrite(minutes, TimeUnit.MINUTES).build();
     }
 
-    private Parameters getPendingAuthorizationParameters(InterWebPrincipal principal, ServiceConnector connector) throws InterWebException {
+    private Parameters getPendingAuthorizationParameters(InterWebPrincipal principal, SearchProvider connector) throws InterWebException {
         notNull(principal, "principal");
         notNull(connector, "connector");
         if (!pendingAuthorizationConnectors.containsKey(principal.getName()) || pendingAuthorizationConnectors.get(principal.getName()) == null) {
             pendingAuthorizationConnectors.remove(principal.getName());
             throw new InterWebException("There are no connectors with pending authorization info for user [" + principal.getName() + "]");
         }
-        Cache<ServiceConnector, Parameters> expirableCache = pendingAuthorizationConnectors.get(principal.getName());
+        Cache<SearchProvider, Parameters> expirableCache = pendingAuthorizationConnectors.get(principal.getName());
         if (expirableCache.getIfPresent(connector) == null) {
             throw new InterWebException("There are no parameters with pending authorization info for user [" + principal.getName()
                 + "] and connector [" + connector.getName() + "]");

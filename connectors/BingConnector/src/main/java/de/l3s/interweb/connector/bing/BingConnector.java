@@ -10,7 +10,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,13 +27,14 @@ import de.l3s.bingService.models.query.ResponseFilterParam;
 import de.l3s.bingService.services.BingApiService;
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.ResultItem;
+import de.l3s.interweb.core.search.SearchItem;
 import de.l3s.interweb.core.query.Thumbnail;
-import de.l3s.interweb.core.util.CoreUtils;
+import de.l3s.interweb.core.util.DateUtils;
+import de.l3s.interweb.core.util.StringUtils;
 
 /**
  * Bing is a web search engine owned and operated by Microsoft.
@@ -42,8 +42,8 @@ import de.l3s.interweb.core.util.CoreUtils;
  *
  * @see <a href="https://docs.microsoft.com/en-us/rest/api/cognitiveservices-bingsearch/bing-web-api-v7-reference">Bing Search API</a>
  */
-@AutoService(ServiceConnector.class)
-public class BingConnector extends ServiceConnector {
+@AutoService(SearchProvider.class)
+public class BingConnector extends SearchProvider {
     private static final Logger log = LogManager.getLogger(BingConnector.class);
 
     public BingConnector() {
@@ -56,12 +56,12 @@ public class BingConnector extends ServiceConnector {
     }
 
     @Override
-    public ServiceConnector clone() {
+    public SearchProvider clone() {
         return new BingConnector(getAuthCredentials());
     }
 
     @Override
-    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
 
         if (authCredentials == null) {
@@ -101,25 +101,25 @@ public class BingConnector extends ServiceConnector {
             BingResponse response = bingApiService.getResponseFromBingApi(bingQuery);
 
             // Results go here
-            ConnectorSearchResults results = new ConnectorSearchResults(query, getName());
+            SearchResults results = new SearchResults(query, getName());
 
             if (response != null && response.getWebPages() != null && response.getWebPages().getValues() != null) {
                 WebPagesHolder webResults = response.getWebPages();
 
                 if (webResults.getTotalEstimatedMatches() != null) {
-                    results.addTotalResultCount(webResults.getTotalEstimatedMatches());
+                    results.addTotalResults(webResults.getTotalEstimatedMatches());
                 } else {
-                    results.addTotalResultCount(webResults.getValues().size());
+                    results.addTotalResults(webResults.getValues().size());
                 }
 
                 int index = 1;
                 for (WebPage page : webResults.getValues()) {
-                    ResultItem resultItem = new ResultItem(getName(), index++);
+                    SearchItem resultItem = new SearchItem(getName(), index++);
                     resultItem.setType(ContentType.text);
                     resultItem.setTitle(page.getName());
                     resultItem.setDescription(page.getSnippet());
                     resultItem.setUrl(page.getUrl());
-                    resultItem.setDate(CoreUtils.formatDate(parseDate(page.getDateLastCrawled())));
+                    resultItem.setDate(DateUtils.format(parseDate(page.getDateLastCrawled())));
 
                     results.addResultItem(resultItem);
                 }
@@ -129,18 +129,18 @@ public class BingConnector extends ServiceConnector {
                 ImageHolder imagesResults = response.getImages();
 
                 if (imagesResults.getTotalEstimatedMatches() != null) {
-                    results.addTotalResultCount(imagesResults.getTotalEstimatedMatches());
+                    results.addTotalResults(imagesResults.getTotalEstimatedMatches());
                 } else {
-                    results.addTotalResultCount(imagesResults.getValues().size());
+                    results.addTotalResults(imagesResults.getValues().size());
                 }
 
                 int index = 1;
                 for (Image image : imagesResults.getValues()) {
-                    ResultItem resultItem = new ResultItem(getName(), index++);
+                    SearchItem resultItem = new SearchItem(getName(), index++);
                     resultItem.setType(ContentType.image);
                     resultItem.setTitle(image.getName());
                     resultItem.setUrl(image.getContentUrl());
-                    resultItem.setDate(CoreUtils.formatDate(parseDate(image.getDatePublished())));
+                    resultItem.setDate(DateUtils.format(parseDate(image.getDatePublished())));
                     resultItem.setWidth(image.getWidth());
                     resultItem.setHeight(image.getHeight());
 
@@ -164,19 +164,19 @@ public class BingConnector extends ServiceConnector {
                 VideoHolder videosResults = response.getVideos();
 
                 if (videosResults.getTotalEstimatedMatches() != null) {
-                    results.addTotalResultCount(videosResults.getTotalEstimatedMatches());
+                    results.addTotalResults(videosResults.getTotalEstimatedMatches());
                 } else {
-                    results.addTotalResultCount(videosResults.getValues().size());
+                    results.addTotalResults(videosResults.getValues().size());
                 }
 
                 int index = 1;
                 for (Video video : videosResults.getValues()) {
-                    ResultItem resultItem = new ResultItem(getName(), index++);
+                    SearchItem resultItem = new SearchItem(getName(), index++);
                     resultItem.setType(ContentType.video);
                     resultItem.setTitle(video.getName());
                     resultItem.setDescription(video.getDescription());
                     resultItem.setUrl(video.getContentUrl());
-                    resultItem.setDate(CoreUtils.formatDate(parseDate(video.getDatePublished())));
+                    resultItem.setDate(DateUtils.format(parseDate(video.getDatePublished())));
                     resultItem.setWidth(video.getWidth());
                     resultItem.setHeight(video.getHeight());
 
@@ -193,7 +193,7 @@ public class BingConnector extends ServiceConnector {
 
                     if (video.getEmbedHtml() != null) {
                         String embeddedCode = StringUtils.replaceEachRepeatedly(video.getEmbedHtml(), new String[] {"'", "&#34;", "&#39;", "&quot;", "&apos;"}, new String[]{"\"", "\"", "\"", "\"", "\""});
-                        resultItem.setEmbeddedUrl(CoreUtils.getEmbeddedUrl(embeddedCode));
+                        resultItem.setEmbeddedUrl(StringUtils.parseSourceUrl(embeddedCode));
                     }
 
                     results.addResultItem(resultItem);
@@ -229,7 +229,7 @@ public class BingConnector extends ServiceConnector {
 
         if (query.getDateFrom() != null) {
             try {
-                dateFrom = CoreUtils.parseDate(query.getDateFrom());
+                dateFrom = DateUtils.parse(query.getDateFrom());
             } catch (Exception e) {
                 log.error("Error parsing from date", e);
             }
@@ -237,7 +237,7 @@ public class BingConnector extends ServiceConnector {
 
         if (query.getDateTill() != null) {
             try {
-                dateTill = CoreUtils.parseDate(query.getDateTill());
+                dateTill = DateUtils.parse(query.getDateTill());
             } catch (Exception e) {
                 log.error("Error parsing to date", e);
             }
@@ -252,7 +252,7 @@ public class BingConnector extends ServiceConnector {
         return null;
     }
 
-    private static String createMarket(String language) {
+    protected static String createMarket(String language) {
         if (language.equalsIgnoreCase("ar")) {
             return "ar-XA";
         } else if (language.equalsIgnoreCase("bg")) {

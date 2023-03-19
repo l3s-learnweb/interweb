@@ -24,11 +24,11 @@ import de.l3s.interweb.connector.ipernity.jaxb.IpernityResponse;
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
 import de.l3s.interweb.core.Parameters;
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.ResultItem;
+import de.l3s.interweb.core.search.SearchItem;
 import de.l3s.interweb.core.query.SearchRanking;
 import de.l3s.interweb.core.query.SearchScope;
 import de.l3s.interweb.core.query.Thumbnail;
@@ -39,8 +39,8 @@ import de.l3s.interweb.core.query.Thumbnail;
  *
  * @see <a href="http://www.ipernity.com/help/api/method/doc.search">Ipernity Search API</a>
  */
-@AutoService(ServiceConnector.class)
-public class IpernityConnector extends ServiceConnector {
+@AutoService(SearchProvider.class)
+public class IpernityConnector extends SearchProvider {
     private static final Logger log = LogManager.getLogger(IpernityConnector.class);
 
     private static final String REQUEST_TOKEN_PATH = "http://www.ipernity.com/apps/oauth/request";
@@ -58,7 +58,7 @@ public class IpernityConnector extends ServiceConnector {
     }
 
     @Override
-    public ServiceConnector clone() {
+    public SearchProvider clone() {
         return new IpernityConnector(getAuthCredentials());
     }
 
@@ -67,13 +67,13 @@ public class IpernityConnector extends ServiceConnector {
      * http://www.ipernity.com/help/api/method/doc.search
      */
     @Override
-    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
         }
 
-        ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
+        SearchResults queryResult = new SearchResults(query, getName());
         if (!query.getContentTypes().contains(ContentType.image)) {
             return queryResult;
         }
@@ -118,12 +118,12 @@ public class IpernityConnector extends ServiceConnector {
         IpernityResponse sr = resource.request().get(IpernityResponse.class);
 
         long totalResultCount = sr.getDocs().getTotal();
-        queryResult.setTotalResultCount(totalResultCount);
+        queryResult.setTotalResults(totalResultCount);
         int count = (sr.getDocs().getPage() - 1) * sr.getDocs().getPerPage();
 
         List<Doc> docs = sr.getDocs().getDoc();
         for (Doc doc : docs) {
-            ResultItem resultItem = new ResultItem(getName(), count++);
+            SearchItem resultItem = new SearchItem(getName(), count++);
             resultItem.setType(ContentType.image);
             resultItem.setId(Integer.toString(doc.getDocId()));
             resultItem.setTitle(doc.getTitle());

@@ -1,17 +1,17 @@
 package de.l3s.interweb.tomcat.bean;
 
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchProvider;
 
 public class ConnectorWrapper {
-    private ServiceConnector connector;
+    private SearchProvider connector;
     private String key;
     private String secret;
 
-    public ServiceConnector getConnector() {
+    public SearchProvider getConnector() {
         return connector;
     }
 
-    public void setConnector(ServiceConnector connector) {
+    public void setConnector(SearchProvider connector) {
         this.connector = connector;
     }
 

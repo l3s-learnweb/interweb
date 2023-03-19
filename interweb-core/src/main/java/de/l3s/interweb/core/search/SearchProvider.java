@@ -1,4 +1,4 @@
-package de.l3s.interweb.core.connector;
+package de.l3s.interweb.core.search;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,9 +13,8 @@ import de.l3s.interweb.core.InterWebException;
 import de.l3s.interweb.core.Parameters;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.ResultItem;
 
-public abstract class ServiceConnector implements Cloneable {
+public abstract class SearchProvider implements Cloneable {
 
     private final String name;
     private final String baseUrl;
@@ -23,11 +22,11 @@ public abstract class ServiceConnector implements Cloneable {
 
     private AuthCredentials consumerAuthCredentials;
 
-    public ServiceConnector(String name, String baseUrl, ContentType... contentTypes) {
+    public SearchProvider(String name, String baseUrl, ContentType... contentTypes) {
         this(name, baseUrl, Arrays.asList(contentTypes));
     }
 
-    public ServiceConnector(String name, String baseUrl, List<ContentType> contentTypes) {
+    public SearchProvider(String name, String baseUrl, List<ContentType> contentTypes) {
         this.name = name;
         this.baseUrl = baseUrl;
         this.contentTypes = contentTypes;
@@ -72,7 +71,7 @@ public abstract class ServiceConnector implements Cloneable {
         return parameters;
     }
 
-    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         throw new NotImplementedException();
     }
 
@@ -81,10 +80,6 @@ public abstract class ServiceConnector implements Cloneable {
     }
 
     public String getUserId(AuthCredentials userAuthCredentials) throws InterWebException {
-        throw new NotImplementedException();
-    }
-
-    public ResultItem put(byte[] data, ContentType contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException {
         throw new NotImplementedException();
     }
 
@@ -143,7 +138,7 @@ public abstract class ServiceConnector implements Cloneable {
     }
 
     @Override
-    public abstract ServiceConnector clone();
+    public abstract SearchProvider clone();
 
     @Override
     public int hashCode() {
@@ -161,7 +156,7 @@ public abstract class ServiceConnector implements Cloneable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        ServiceConnector other = (ServiceConnector) obj;
+        SearchProvider other = (SearchProvider) obj;
         if (name == null) {
             return other.name == null;
         } else {

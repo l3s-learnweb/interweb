@@ -57,15 +57,16 @@ import com.google.common.cache.CacheBuilder;
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
 import de.l3s.interweb.core.Parameters;
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.ResultItem;
+import de.l3s.interweb.core.search.SearchItem;
 import de.l3s.interweb.core.query.SearchExtra;
 import de.l3s.interweb.core.query.SearchRanking;
 import de.l3s.interweb.core.query.Thumbnail;
-import de.l3s.interweb.core.util.CoreUtils;
+import de.l3s.interweb.core.util.DateUtils;
+import de.l3s.interweb.core.util.StringUtils;
 
 /**
  * YouTube is an American online video-sharing platform headquartered in San Bruno, California.
@@ -73,8 +74,8 @@ import de.l3s.interweb.core.util.CoreUtils;
  *
  * @see <a href="https://developers.google.com/youtube/v3/docs/search/list">YouTube Search API</a>
  */
-@AutoService(ServiceConnector.class)
-public class YouTubeConnector extends ServiceConnector {
+@AutoService(SearchProvider.class)
+public class YouTubeConnector extends SearchProvider {
     private static final Logger log = LogManager.getLogger(YouTubeConnector.class);
 
     private static final String API_KEY = "***REMOVED***";
@@ -121,7 +122,7 @@ public class YouTubeConnector extends ServiceConnector {
     }
 
     @Override
-    public ServiceConnector clone() {
+    public SearchProvider clone() {
         return new YouTubeConnector(getAuthCredentials());
     }
 
@@ -151,13 +152,13 @@ public class YouTubeConnector extends ServiceConnector {
     }
 
     @Override
-    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
         }
 
-        ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
+        SearchResults queryResult = new SearchResults(query, getName());
 
         if (!query.getContentTypes().contains(ContentType.video)) {
             return queryResult;
@@ -190,7 +191,7 @@ public class YouTubeConnector extends ServiceConnector {
             SearchListResponse searchResponse = search.execute();
 
             // Limit of YouTube data API, see more: http://stackoverflow.com/questions/23255957
-            queryResult.setTotalResultCount(Math.min(searchResponse.getPageInfo().getTotalResults(), 500));
+            queryResult.setTotalResults(Math.min(searchResponse.getPageInfo().getTotalResults(), 500));
 
             if (searchResponse.getNextPageToken() != null) {
                 log.debug("Next page {} its token {}", query.getPage() + 1, searchResponse.getNextPageToken());
@@ -236,7 +237,7 @@ public class YouTubeConnector extends ServiceConnector {
 
             int rank = query.getPerPage() * (query.getPage() - 1);
             for (SearchResult video : searchResultList) {
-                ResultItem resultItem = createResultItem(video, videosDetails.get(video.getId().getVideoId()), rank++);
+                SearchItem resultItem = createResultItem(video, videosDetails.get(video.getId().getVideoId()), rank++);
                 if (resultItem != null) {
                     queryResult.addResultItem(resultItem);
                 }
@@ -272,7 +273,7 @@ public class YouTubeConnector extends ServiceConnector {
 
         if (query.getDateFrom() != null) {
             try {
-                DateTime dateFrom = new DateTime(CoreUtils.parseDate(query.getDateFrom()).toInstant().toEpochMilli());
+                DateTime dateFrom = new DateTime(DateUtils.parse(query.getDateFrom()).toInstant().toEpochMilli());
                 search.setPublishedAfter(dateFrom.toStringRfc3339());
             } catch (DateTimeParseException e) {
                 log.error("Failed to parse date {}", query.getDateFrom(), e);
@@ -281,7 +282,7 @@ public class YouTubeConnector extends ServiceConnector {
 
         if (query.getDateTill() != null) {
             try {
-                DateTime dateTill = new DateTime(CoreUtils.parseDate(query.getDateTill()).toInstant().toEpochMilli());
+                DateTime dateTill = new DateTime(DateUtils.parse(query.getDateTill()).toInstant().toEpochMilli());
                 search.setPublishedBefore(dateTill.toStringRfc3339());
             } catch (DateTimeParseException e) {
                 log.error("Failed to parse date {}", query.getDateTill(), e);
@@ -312,8 +313,8 @@ public class YouTubeConnector extends ServiceConnector {
         }
     }
 
-    private ResultItem createResultItem(SearchResult searchResult, Video videoResult, int rank) throws InterWebException {
-        ResultItem resultItem = new ResultItem(getName(), rank);
+    private SearchItem createResultItem(SearchResult searchResult, Video videoResult, int rank) throws InterWebException {
+        SearchItem resultItem = new SearchItem(getName(), rank);
         resultItem.setType(ContentType.video);
 
         if (searchResult != null) {
@@ -339,7 +340,7 @@ public class YouTubeConnector extends ServiceConnector {
                     resultItem.setAuthorUrl("https://www.youtube.com/channel/" + vSnippet.getChannelId());
                 }
                 if (vSnippet.getPublishedAt() != null) {
-                    resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
+                    resultItem.setDate(DateUtils.format(vSnippet.getPublishedAt().getValue()));
                 }
 
                 ThumbnailDetails thumbnails = vSnippet.getThumbnails();
@@ -382,7 +383,7 @@ public class YouTubeConnector extends ServiceConnector {
                     resultItem.setAuthor("https://www.youtube.com/channel/" + vSnippet.getChannelId());
                 }
                 if (vSnippet.getPublishedAt() != null) {
-                    resultItem.setDate(CoreUtils.formatDate(vSnippet.getPublishedAt().getValue()));
+                    resultItem.setDate(DateUtils.format(vSnippet.getPublishedAt().getValue()));
                 }
 
                 ThumbnailDetails thumbnails = vSnippet.getThumbnails();
@@ -473,84 +474,6 @@ public class YouTubeConnector extends ServiceConnector {
     @Override
     public boolean isUserRegistrationRequired() {
         return true;
-    }
-
-    @Override
-    public ResultItem put(byte[] data, ContentType contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException {
-        notNull(data, "data");
-        notNull(contentType, "contentType");
-        notNull(params, "params");
-
-        if (!isRegistered()) {
-            throw new InterWebException("Service is not yet registered");
-        }
-
-        if (authCredentials == null) {
-            throw new InterWebException("Upload is forbidden for non-authorized users");
-        }
-
-        ResultItem resultItem;
-
-        try {
-            YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials)).setApplicationName("Interweb").build();
-
-            Video videoObjectDefiningMetadata = new Video();
-
-            // Set the video to be publicly visible. This is the default setting. Other supporting settings are "unlisted" and "private."
-            VideoStatus status = new VideoStatus();
-            int privacy = Integer.parseInt(params.get(Parameters.PRIVACY, "0"));
-            status.setPrivacyStatus(privacy > 0 ? "private" : "public");
-            videoObjectDefiningMetadata.setStatus(status);
-
-            VideoSnippet snippet = new VideoSnippet();
-
-            String title = params.get(Parameters.TITLE, "No Title");
-            snippet.setTitle(title);
-            String description = params.get(Parameters.DESCRIPTION, "No Description");
-            snippet.setDescription(description);
-            String tags = params.get(Parameters.TAGS, "");
-            snippet.setTags(CoreUtils.convertToUniqueList(tags));
-
-            // Add the completed snippet object to the video resource.
-            videoObjectDefiningMetadata.setSnippet(snippet);
-
-            InputStream is = new ByteArrayInputStream(data);
-            InputStreamContent mediaContent = new InputStreamContent("video/*", is);
-
-            // Insert the video. The command sends three arguments. The first specifies which information the API request is setting and which
-            // information the API response should return. The second argument  is the video resource that contains metadata about the new video.
-            // The third argument is the actual video content.
-            YouTube.Videos.Insert videoInsert = youtube.videos().insert(Arrays.asList("snippet", "statistics", "status"), videoObjectDefiningMetadata, mediaContent);
-
-            // Set the upload type and add an event listener.
-            MediaHttpUploader uploader = videoInsert.getMediaHttpUploader();
-
-            // Indicate whether direct media upload is enabled. A value of "True" indicates that direct media upload is enabled and that
-            // the entire media content will be uploaded in a single request. A value of "False," which is the default, indicates that the
-            // request will use the resumable media upload protocol, which supports the ability to resume an upload operation after a
-            // network interruption or other transmission failure, saving time and bandwidth in the event of network failures.
-            uploader.setDirectUploadEnabled(false);
-
-            MediaHttpUploaderProgressListener progressListener = uploader1 -> {
-                switch (uploader1.getUploadState()) {
-                    case INITIATION_STARTED -> log.info("Initiation Started");
-                    case INITIATION_COMPLETE -> log.info("Initiation Completed");
-                    case MEDIA_IN_PROGRESS -> log.info("Upload in progress");
-                    case MEDIA_COMPLETE -> log.info("Upload Completed!");
-                    case NOT_STARTED -> log.info("Upload Not Started!");
-                    default -> log.error("Unknown upload state");
-                }
-            };
-            uploader.setProgressListener(progressListener);
-
-            Video returnedVideo = videoInsert.execute();
-            resultItem = createResultItem(null, returnedVideo, 0);
-
-        } catch (Throwable e) {
-            throw new InterWebException(e);
-        }
-
-        return resultItem;
     }
 
     @Override

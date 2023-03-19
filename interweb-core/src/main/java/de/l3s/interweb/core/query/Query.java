@@ -43,7 +43,6 @@ public class Query implements Serializable {
     @XmlElement(name = "language")
     private String language = "en";
 
-    @JsonbProperty("services")
     @XmlElementWrapper(name = "services")
     @XmlElement(name = "service")
     private Set<String> services;
@@ -51,7 +50,6 @@ public class Query implements Serializable {
     @XmlElementWrapper(name = "media_types")
     @XmlElement(name = "type")
     private Set<ContentType> contentTypes;
-    @JsonbProperty("extras")
     @XmlElementWrapper(name = "extras")
     @XmlElement(name = "extra")
     private Set<SearchExtra> extras;

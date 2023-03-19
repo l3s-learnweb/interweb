@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.core.connector.ServiceConnector;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
+import de.l3s.interweb.core.search.SearchProvider;
+import de.l3s.interweb.tomcat.app.Engine;
 
 @Named
 @ViewScoped
@@ -25,11 +25,13 @@ public class RegisterServicesBean implements Serializable {
 
     private transient List<ConnectorWrapper> connectorWrappers;
 
+    @Inject
+    private Engine engine;
+
     public List<ConnectorWrapper> getConnectorWrappers() {
         if (connectorWrappers == null) {
             connectorWrappers = new ArrayList<>();
-            Engine engine = Environment.getInstance().getEngine();
-            for (ServiceConnector connector : engine.getConnectors()) {
+            for (SearchProvider connector : engine.getSearchProviders()) {
                 if (connector.isConnectorRegistrationDataRequired()) {
                     ConnectorWrapper connectorWrapper = new ConnectorWrapper();
                     connectorWrapper.setConnector(connector);
@@ -50,9 +52,8 @@ public class RegisterServicesBean implements Serializable {
 
     public void register(ConnectorWrapper connectorWrapper) {
         try {
-            Engine engine = Environment.getInstance().getEngine();
             AuthCredentials authCredentials = new AuthCredentials(connectorWrapper.getKey(), connectorWrapper.getSecret());
-            ServiceConnector connector = connectorWrapper.getConnector();
+            SearchProvider connector = connectorWrapper.getConnector();
             log.info("registering connector: [{}] with credentials: {}", connector.getName(), authCredentials);
             connector.setAuthCredentials(authCredentials);
             engine.setConsumerAuthCredentials(connector.getName(), authCredentials);
@@ -63,9 +64,8 @@ public class RegisterServicesBean implements Serializable {
 
     public void unregister(ConnectorWrapper connectorWrapper) {
         try {
-            ServiceConnector connector = connectorWrapper.getConnector();
+            SearchProvider connector = connectorWrapper.getConnector();
             log.info("unregistering connector: [{}]", connector.getName());
-            Engine engine = Environment.getInstance().getEngine();
             connector.setAuthCredentials(null);
             engine.setConsumerAuthCredentials(connector.getName(), null);
         } catch (Exception e) {

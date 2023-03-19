@@ -2,14 +2,8 @@ package de.l3s.interweb.tomcat.rest;
 
 import java.net.URI;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
@@ -20,16 +14,20 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.cache.Cache;
 
 import de.l3s.interweb.core.AuthCredentials;
+import de.l3s.interweb.tomcat.app.Engine;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
+import de.l3s.interweb.tomcat.db.Database;
 import de.l3s.interweb.tomcat.jaxb.auth.OAuthAccessTokenResponse;
 import de.l3s.interweb.tomcat.jaxb.auth.OAuthRequestTokenResponse;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
-import de.l3s.interweb.tomcat.db.Database;
 
 @Path("/oauth")
 public class OAuth extends Endpoint {
     private static final Logger log = LogManager.getLogger(OAuth.class);
+
+    @Inject
+    private Engine engine;
+    @Inject
+    private Database database;
 
     @GET
     @Path("/OAuthAuthorizeToken")
@@ -52,7 +50,6 @@ public class OAuth extends Endpoint {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OAuthAccessTokenResponse getAccessToken() {
         String token = getOAuthParameters().getToken();
-        Engine engine = Environment.getInstance().getEngine();
 
         Cache<String, Object> cache = engine.getGeneralCache();
         InterWebPrincipal principal = (InterWebPrincipal) cache.getIfPresent("principal:" + token);
@@ -60,7 +57,6 @@ public class OAuth extends Endpoint {
         cache.invalidate("consumer_token:" + token);
         cache.invalidate("principal:" + token);
 
-        Database database = Environment.getInstance().getDatabase();
         AuthCredentials accessToken = AuthCredentials.random();
         principal.setOauthCredentials(accessToken);
         database.updatePrincipal(principal);
@@ -72,7 +68,6 @@ public class OAuth extends Endpoint {
     @Path("/OAuthGetRequestToken")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OAuthRequestTokenResponse getRequestToken() {
-        Engine engine = Environment.getInstance().getEngine();
         AuthCredentials authCredentials = AuthCredentials.random();
         String consumerKey = getOAuthParameters().getConsumerKey();
 
@@ -88,7 +83,6 @@ public class OAuth extends Endpoint {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OAuthAccessTokenResponse registerUser(@FormParam("username") String userName, @FormParam("password") String password,
         @FormParam("mediator_username") String mediatorUserName, @FormParam("mediator_password") String mediatorPassword) {
-        Database database = Environment.getInstance().getDatabase();
 
         InterWebPrincipal mediator = null;
         if (mediatorUserName != null) {

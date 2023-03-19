@@ -3,11 +3,7 @@ package de.l3s.interweb.tomcat.servlet.filter;
 import java.io.IOException;
 
 import jakarta.inject.Inject;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,14 +11,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.l3s.interweb.tomcat.core.AccessControl;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
 import de.l3s.interweb.tomcat.bean.SessionBean;
+import de.l3s.interweb.tomcat.app.AccessControl;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 
 @WebFilter("/view/*")
 public class SecurityFilter implements Filter {
     private static final Logger log = LogManager.getLogger(SecurityFilter.class);
+    public static final AccessControl accessControl = new AccessControl();
     public static final String LOGIN_PAGE = "/view/login.xhtml";
 
     @Inject
@@ -35,7 +31,6 @@ public class SecurityFilter implements Filter {
                 String requestUrl = getRequestUrl(httpRequest);
                 // log.debug("Requested URL: [" + requestUrl + "]");
 
-                AccessControl accessControl = Environment.getInstance().getAccessControl();
                 InterWebPrincipal principal = sessionBean.getPrincipal();
                 boolean authorized = accessControl.isAuthorized(principal, requestUrl, null);
                 if (!authorized) {

@@ -26,8 +26,6 @@ import com.flickr4java.flickr.photos.PhotosInterface;
 import com.flickr4java.flickr.photos.SearchParameters;
 import com.flickr4java.flickr.photos.Size;
 import com.flickr4java.flickr.tags.Tag;
-import com.flickr4java.flickr.uploader.UploadMetaData;
-import com.flickr4java.flickr.uploader.Uploader;
 import com.github.scribejava.core.model.OAuth1RequestToken;
 import com.github.scribejava.core.model.OAuth1Token;
 import com.google.auto.service.AutoService;
@@ -35,15 +33,15 @@ import com.google.auto.service.AutoService;
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
 import de.l3s.interweb.core.Parameters;
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.ResultItem;
+import de.l3s.interweb.core.search.SearchItem;
 import de.l3s.interweb.core.query.SearchRanking;
 import de.l3s.interweb.core.query.SearchScope;
 import de.l3s.interweb.core.query.Thumbnail;
-import de.l3s.interweb.core.util.CoreUtils;
+import de.l3s.interweb.core.util.DateUtils;
 
 /**
  * Flickr is an American image hosting and video hosting service, as well as an online community.
@@ -51,8 +49,8 @@ import de.l3s.interweb.core.util.CoreUtils;
  *
  * @see <a href="https://www.flickr.com/services/api/flickr.photos.search.html">Flickr Search API</a>
  */
-@AutoService(ServiceConnector.class)
-public class FlickrConnector extends ServiceConnector {
+@AutoService(SearchProvider.class)
+public class FlickrConnector extends SearchProvider {
     private static final Logger log = LogManager.getLogger(FlickrConnector.class);
 
     private static final String MEDIA_ALL = "all";
@@ -93,7 +91,7 @@ public class FlickrConnector extends ServiceConnector {
     }
 
     @Override
-    public ServiceConnector clone() {
+    public SearchProvider clone() {
         return new FlickrConnector(getAuthCredentials());
     }
 
@@ -124,7 +122,7 @@ public class FlickrConnector extends ServiceConnector {
     }
 
     @Override
-    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
@@ -205,48 +203,6 @@ public class FlickrConnector extends ServiceConnector {
         return true;
     }
 
-    @Override
-    public ResultItem put(byte[] data, ContentType contentType, Parameters params, AuthCredentials authCredentials) throws InterWebException {
-        notNull(data, "data");
-        notNull(contentType, "contentType");
-        notNull(params, "params");
-
-        if (!isRegistered()) {
-            throw new InterWebException("Service is not yet registered");
-        }
-        if (authCredentials == null) {
-            throw new InterWebException("Upload is forbidden for non-authorized users");
-        }
-
-        if (contentType == ContentType.image) {
-            try {
-                RequestContext requestContext = RequestContext.getRequestContext();
-                Auth auth = new Auth();
-                requestContext.setAuth(auth);
-                auth.setToken(authCredentials.getKey());
-                auth.setPermission(Permission.WRITE);
-                Flickr flickr = createFlickrInstance();
-                Uploader uploader = flickr.getUploader();
-                UploadMetaData metaData = new UploadMetaData();
-                metaData.setTitle(params.get(Parameters.TITLE, "No Title"));
-                metaData.setDescription(params.get(Parameters.DESCRIPTION, "No Description"));
-                String tags = params.get(Parameters.TAGS, "");
-                metaData.setTags(CoreUtils.convertToUniqueList(tags));
-                int privacy = Integer.parseInt(params.get(Parameters.PRIVACY, "0"));
-                metaData.setPublicFlag(privacy == 0);
-                String id = uploader.upload(data, metaData);
-                Photo photo = flickr.getPhotosInterface().getPhoto(id);
-                log.info(photo.getSmallUrl());
-                log.info("data successfully uploaded");
-
-                return createResultItem(photo, 0);
-            } catch (FlickrException e) {
-                throw new InterWebException(e);
-            }
-        }
-        return null;
-    }
-
     private ContentType createContentType(String media) {
         if ("photo".equals(media)) {
             return ContentType.image;
@@ -272,8 +228,8 @@ public class FlickrConnector extends ServiceConnector {
         return new Flickr(consumerAuthCredentials.getKey(), consumerAuthCredentials.getSecret(), new REST());
     }
 
-    private ConnectorSearchResults getMedia(Query query, AuthCredentials authCredentials) throws InterWebException {
-        ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
+    private SearchResults getMedia(Query query, AuthCredentials authCredentials) throws InterWebException {
+        SearchResults queryResult = new SearchResults(query, getName());
         if (supportContentTypes(query.getContentTypes())) {
             try {
                 RequestContext requestContext = RequestContext.getRequestContext();
@@ -294,7 +250,7 @@ public class FlickrConnector extends ServiceConnector {
 
                 if (query.getDateFrom() != null) {
                     try {
-                        params.setMinUploadDate(Date.from(CoreUtils.parseDate(query.getDateFrom()).toInstant()));
+                        params.setMinUploadDate(Date.from(DateUtils.parse(query.getDateFrom()).toInstant()));
                     } catch (DateTimeParseException e) {
                         log.error("Failed to parse date {}", query.getDateFrom(), e);
                     }
@@ -302,7 +258,7 @@ public class FlickrConnector extends ServiceConnector {
 
                 if (query.getDateTill() != null) {
                     try {
-                        params.setMaxUploadDate(Date.from(CoreUtils.parseDate(query.getDateTill()).toInstant()));
+                        params.setMaxUploadDate(Date.from(DateUtils.parse(query.getDateTill()).toInstant()));
                     } catch (DateTimeParseException e) {
                         log.error("Failed to parse date {}", query.getDateTill(), e);
                     }
@@ -332,11 +288,11 @@ public class FlickrConnector extends ServiceConnector {
                 }
                 int rank = query.getPerPage() * (query.getPage() - 1);
                 int totalResultCount = photoList.getTotal();
-                queryResult.setTotalResultCount(totalResultCount);
+                queryResult.setTotalResults(totalResultCount);
 
                 for (Object o : photoList) {
                     if (o instanceof Photo photo) {
-                        ResultItem resultItem = createResultItem(photo, rank);
+                        SearchItem resultItem = createResultItem(photo, rank);
                         queryResult.addResultItem(resultItem);
                         rank++;
                     }
@@ -352,8 +308,8 @@ public class FlickrConnector extends ServiceConnector {
         return queryResult;
     }
 
-    private ResultItem createResultItem(Photo photo, int rank) {
-        ResultItem resultItem = new ResultItem(getName(), rank);
+    private SearchItem createResultItem(Photo photo, int rank) {
+        SearchItem resultItem = new SearchItem(getName(), rank);
         resultItem.setId(photo.getId());
         resultItem.setType(createContentType(photo.getMedia()));
         resultItem.setTitle(photo.getTitle());
@@ -382,7 +338,7 @@ public class FlickrConnector extends ServiceConnector {
         }
 
         if (photo.getDatePosted() != null) {
-            resultItem.setDate(CoreUtils.formatDate(photo.getDatePosted().getTime()));
+            resultItem.setDate(DateUtils.format(photo.getDatePosted().getTime()));
         }
         if (photo.getTags() != null) {
             for (Tag tag : photo.getTags()) {

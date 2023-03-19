@@ -5,6 +5,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -19,12 +20,11 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.cache.Cache;
 
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.tomcat.core.Consumer;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
-import de.l3s.interweb.tomcat.webutil.FacesUtils;
+import de.l3s.interweb.tomcat.app.Consumer;
+import de.l3s.interweb.tomcat.app.Engine;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 import de.l3s.interweb.tomcat.db.Database;
+import de.l3s.interweb.tomcat.webutil.FacesUtils;
 
 @Named
 @RequestScoped
@@ -38,22 +38,27 @@ public class ConsumersBean implements Serializable {
     private String description;
     private AuthCredentials accessToken;
     private String oauthToken;
-    private final String callback;
+    private String callback;
 
     @Inject
     private SessionBean sessionBean;
 
-    public ConsumersBean() {
+    @Inject
+    private Engine engine;
+
+    @Inject
+    private Database database;
+
+    @PostConstruct
+    public void init() {
         HttpServletRequest request = FacesUtils.getRequest();
         oauthToken = request.getParameter("oauth_token");
         callback = request.getParameter("oauth_callback");
 
-        Engine engine = Environment.getInstance().getEngine();
         accessToken = (AuthCredentials) engine.getGeneralCache().getIfPresent("access_token:" + oauthToken);
     }
 
     public void addConsumer() throws IOException {
-        Database database = Environment.getInstance().getDatabase();
         InterWebPrincipal principal = sessionBean.getPrincipal();
         AuthCredentials authCredentials = AuthCredentials.random();
 
@@ -67,7 +72,6 @@ public class ConsumersBean implements Serializable {
     public void authorizeConsumer() throws IOException {
         HttpServletRequest request = FacesUtils.getRequest();
         String requestToken = request.getParameter("oauth_token");
-        Engine engine = Environment.getInstance().getEngine();
         Cache<String, Object> cache = engine.getGeneralCache();
 
         AuthCredentials authCredentials = (AuthCredentials) cache.getIfPresent("request_token:" + requestToken);
@@ -81,7 +85,6 @@ public class ConsumersBean implements Serializable {
 
         InterWebPrincipal principal = sessionBean.getPrincipal();
         principal.setOauthCredentials(accessToken);
-        Database database = Environment.getInstance().getDatabase();
         database.updatePrincipal(principal);
         cache.put("principal:" + accessToken.getKey(), principal);
         oauthToken = accessToken.getKey();
@@ -110,9 +113,7 @@ public class ConsumersBean implements Serializable {
     }
 
     public Consumer getAuthorizationConsumer() {
-        Engine engine = Environment.getInstance().getEngine();
         String consumerKey = (String) engine.getGeneralCache().getIfPresent("consumer_token:" + oauthToken);
-        Database database = Environment.getInstance().getDatabase();
         return database.readConsumerByKey(consumerKey);
     }
 
@@ -141,8 +142,6 @@ public class ConsumersBean implements Serializable {
     }
 
     public List<Consumer> getRegisteredConsumers() {
-        Environment environment = Environment.getInstance();
-        Database database = environment.getDatabase();
         InterWebPrincipal principal = sessionBean.getPrincipal();
         return database.readConsumers(principal.getName());
     }
@@ -167,8 +166,6 @@ public class ConsumersBean implements Serializable {
     public void revoke(Object consumer) {
         String consumerName = ((Consumer) consumer).name();
         log.info("revoking consumer [{}]", consumerName);
-        Environment environment = Environment.getInstance();
-        Database database = environment.getDatabase();
         InterWebPrincipal principal = sessionBean.getPrincipal();
         database.deleteConsumer(principal.getName(), consumerName);
     }

@@ -6,15 +6,15 @@ import java.io.Serializable;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
-import de.l3s.interweb.tomcat.webutil.FacesUtils;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 import de.l3s.interweb.tomcat.db.Database;
+import de.l3s.interweb.tomcat.webutil.FacesUtils;
 
 @Named
 @SessionScoped
@@ -25,6 +25,9 @@ public class SessionBean implements Serializable {
 
     private InterWebPrincipal principal;
     private String savedRequestUrl;
+
+    @Inject
+    private Database database;
 
     public InterWebPrincipal getPrincipal() {
         return principal;
@@ -47,8 +50,6 @@ public class SessionBean implements Serializable {
     }
 
     public String login(String username, String password) throws IOException {
-        Environment environment = Environment.getInstance();
-        Database database = environment.getDatabase();
         InterWebPrincipal principal = database.authenticate(username, password);
         if (principal == null) {
             FacesUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Incorrect login. Please check username and/or password.");

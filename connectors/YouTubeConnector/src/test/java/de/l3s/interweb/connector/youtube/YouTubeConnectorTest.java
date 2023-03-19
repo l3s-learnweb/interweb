@@ -13,12 +13,12 @@ import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
 import de.l3s.interweb.core.query.QueryFactory;
-import de.l3s.interweb.core.query.ResultItem;
+import de.l3s.interweb.core.search.SearchItem;
 import de.l3s.interweb.core.query.SearchExtra;
 import de.l3s.interweb.core.query.SearchRanking;
 
@@ -29,7 +29,7 @@ class YouTubeConnectorTest {
     private static final String TEST_KEY = "***REMOVED***";
     private static final String TEST_SECRET = "***REMOVED***";
 
-    private static ServiceConnector connector;
+    private static SearchProvider connector;
 
     @BeforeAll
     public static void initialize() {
@@ -51,12 +51,12 @@ class YouTubeConnectorTest {
 
         for (int i = 1; i < 4; ++i) {
             query.setPage(i);
-            ConnectorSearchResults page = connector.get(query, null);
+            SearchResults page = connector.get(query, null);
 
-            assertEquals(10, page.getResultItems().size());
-            assertTrue(page.getTotalResultCount() > 100);
+            assertEquals(10, page.getItems().size());
+            assertTrue(page.getTotalResults() > 100);
 
-            for (ResultItem result : page.getResultItems()) {
+            for (SearchItem result : page.getItems()) {
                 log.info("{}: {} {}", result.getRank(), result.getTitle(), result.getUrl());
             }
         }

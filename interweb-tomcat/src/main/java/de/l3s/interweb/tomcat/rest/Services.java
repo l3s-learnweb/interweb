@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -13,40 +14,42 @@ import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchProvider;
+import de.l3s.interweb.tomcat.app.Engine;
+import de.l3s.interweb.tomcat.db.Database;
 import de.l3s.interweb.tomcat.jaxb.services.AuthorizationEntity;
 import de.l3s.interweb.tomcat.jaxb.services.AuthorizationLinkEntity;
 import de.l3s.interweb.tomcat.jaxb.services.ServiceEntity;
 import de.l3s.interweb.tomcat.jaxb.services.ServicesResponse;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.db.Database;
 
 @Path("/services")
 public class Services extends Endpoint {
 
-    public static List<ServiceEntity> createServiceEntities(String baseUri, Principal principal) {
+    @Inject
+    private Engine engine;
+
+    @Inject
+    private Database database;
+
+    public static List<ServiceEntity> createServiceEntities(Engine engine, Database database, String baseUri, Principal principal) {
         List<ServiceEntity> serviceEntities = new ArrayList<>();
-        Engine engine = Environment.getInstance().getEngine();
-        List<ServiceConnector> connectors = engine.getConnectors();
-        for (ServiceConnector connector : connectors) {
+        List<SearchProvider> connectors = engine.getSearchProviders();
+        for (SearchProvider connector : connectors) {
             if (connector.isRegistered()) {
-                ServiceEntity serviceEntity = createServiceEntity(baseUri, principal, connector);
+                ServiceEntity serviceEntity = createServiceEntity(engine, database, baseUri, principal, connector);
                 serviceEntities.add(serviceEntity);
             }
         }
         return serviceEntities;
     }
 
-    public static ServiceEntity createServiceEntity(String baseUri, Principal principal, ServiceConnector connector) {
-        Engine engine = Environment.getInstance().getEngine();
+    public static ServiceEntity createServiceEntity(Engine engine, Database database, String baseUri, Principal principal, SearchProvider connector) {
         boolean authenticated = engine.isUserAuthenticated(connector, principal);
         AuthorizationEntity authorizationEntity = createAuthorizationEntity(baseUri, connector, authenticated);
         ServiceEntity serviceEntity = new ServiceEntity(authorizationEntity, authenticated);
         serviceEntity.setId(connector.getName());
         serviceEntity.setTitle(connector.getName());
         serviceEntity.setMediaTypes(StringUtils.join(connector.getContentTypes(), ','));
-        Database database = Environment.getInstance().getDatabase();
         if (principal != null) {
             String userId = database.readConnectorUserId(connector.getName(), principal.getName());
             serviceEntity.setServiceUserId(userId);
@@ -54,16 +57,15 @@ public class Services extends Endpoint {
         return serviceEntity;
     }
 
-    public static ServiceEntity createServiceEntity(String serviceName, String baseUri, Principal principal) {
-        Engine engine = Environment.getInstance().getEngine();
-        ServiceConnector connector = engine.getConnector(serviceName);
+    public static ServiceEntity createServiceEntity(Engine engine, Database database, String serviceName, String baseUri, Principal principal) {
+        SearchProvider connector = engine.getConnector(serviceName);
         if (connector == null) {
             throw new WebApplicationException("Service unknown", Response.Status.BAD_REQUEST);
         }
-        return createServiceEntity(baseUri, principal, connector);
+        return createServiceEntity(engine, database, baseUri, principal, connector);
     }
 
-    private static AuthorizationEntity createAuthorizationEntity(String baseUri, ServiceConnector connector, boolean isAuthenticated) {
+    private static AuthorizationEntity createAuthorizationEntity(String baseUri, SearchProvider connector, boolean isAuthenticated) {
         AuthorizationEntity authorizationEntity = new AuthorizationEntity();
         if (connector.isUserRegistrationDataRequired()) {
             authorizationEntity.setType("login");
@@ -76,7 +78,7 @@ public class Services extends Endpoint {
         return authorizationEntity;
     }
 
-    private static AuthorizationLinkEntity createAuthorizationLinkEntity(String baseUri, ServiceConnector connector, boolean isAuthenticated) {
+    private static AuthorizationLinkEntity createAuthorizationLinkEntity(String baseUri, SearchProvider connector, boolean isAuthenticated) {
         String link = baseUri + "users/default/services/" + connector.getName() + "/auth";
         String method = isAuthenticated ? "DELETE" : "POST";
         return new AuthorizationLinkEntity(method, link);
@@ -85,7 +87,7 @@ public class Services extends Endpoint {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public ServicesResponse getServices() {
-        List<ServiceEntity> serviceEntities = createServiceEntities(getBaseUri().toASCIIString(), getPrincipal());
+        List<ServiceEntity> serviceEntities = createServiceEntities(engine, database, getBaseUri().toASCIIString(), getPrincipal());
         ServicesResponse servicesResponse = new ServicesResponse();
         servicesResponse.setServiceEntities(serviceEntities);
         return servicesResponse;

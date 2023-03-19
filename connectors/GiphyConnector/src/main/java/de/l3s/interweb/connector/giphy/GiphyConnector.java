@@ -14,11 +14,11 @@ import com.trievosoftware.giphy4j.entity.search.SearchFeed;
 
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.ResultItem;
+import de.l3s.interweb.core.search.SearchItem;
 import de.l3s.interweb.core.query.Thumbnail;
 
 /**
@@ -28,8 +28,8 @@ import de.l3s.interweb.core.query.Thumbnail;
  *
  * @see <a href="https://developers.giphy.com/docs/api/endpoint#search">Giphy Search API</a>
  */
-@AutoService(ServiceConnector.class)
-public class GiphyConnector extends ServiceConnector {
+@AutoService(SearchProvider.class)
+public class GiphyConnector extends SearchProvider {
     private static final Logger log = LogManager.getLogger(GiphyConnector.class);
 
     public GiphyConnector() {
@@ -42,12 +42,12 @@ public class GiphyConnector extends ServiceConnector {
     }
 
     @Override
-    public ServiceConnector clone() {
+    public SearchProvider clone() {
         return new GiphyConnector(getAuthCredentials());
     }
 
     @Override
-    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
 
         if (authCredentials == null) {
@@ -59,14 +59,14 @@ public class GiphyConnector extends ServiceConnector {
 
             SearchFeed feed = giphy.search(query.getQuery(), query.getPerPage(), (query.getPage() - 1) * query.getPerPage(), query.getLanguage());
 
-            ConnectorSearchResults results = new ConnectorSearchResults(query, getName());
+            SearchResults results = new SearchResults(query, getName());
 
             if (feed.getDataList() != null && !feed.getDataList().isEmpty()) {
-                results.setTotalResultCount(feed.getPagination().getTotalCount());
+                results.setTotalResults(feed.getPagination().getTotalCount());
 
                 int index = 1;
                 for (GiphyData image : feed.getDataList()) {
-                    ResultItem resultItem = new ResultItem(getName(), index++);
+                    SearchItem resultItem = new SearchItem(getName(), index++);
                     resultItem.setType(ContentType.image);
                     resultItem.setId(image.getId());
                     resultItem.setTitle(image.getTitle());

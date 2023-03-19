@@ -2,25 +2,21 @@ package de.l3s.interweb.tomcat.db;
 
 import static de.l3s.interweb.core.util.Assertions.notNull;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.sql.*;
+import java.util.*;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.tomcat.core.Consumer;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
+import de.l3s.interweb.tomcat.app.ConfigProvider;
+import de.l3s.interweb.tomcat.app.Consumer;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 
+@ApplicationScoped
 public class JdbcDatabase implements Database {
     private static final Logger log = LogManager.getLogger(JdbcDatabase.class);
 
@@ -75,8 +71,21 @@ public class JdbcDatabase implements Database {
 
     private ResultSet rs = null;
 
-    public JdbcDatabase(Properties properties) {
-        init(properties);
+    @Inject
+    public JdbcDatabase(ConfigProvider configProvider) {
+        connectionUserName = configProvider.getProperty("database.connection.username");
+        connectionPassword = configProvider.getProperty("database.connection.password");
+        connectionURL = configProvider.getProperty("database.connection.url");
+
+        try {
+            openConnection();
+        } catch (SQLException e) {
+            log.catching(e);
+        }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("Shutdown intercepted. Cleaning up Database resources");
+            close();
+        }));
     }
 
     @Override
@@ -643,21 +652,6 @@ public class JdbcDatabase implements Database {
             close();
         }
         return roles;
-    }
-
-    private void init(Properties properties) {
-        connectionUserName = properties.getProperty("database.connection.username");
-        connectionPassword = properties.getProperty("database.connection.password");
-        connectionURL = properties.getProperty("database.connection.url");
-        try {
-            openConnection();
-        } catch (SQLException e) {
-            log.catching(e);
-        }
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            log.info("Shutdown intercepted. Cleaning up Database resources");
-            close();
-        }));
     }
 
     private void initPreparedStatements() throws SQLException {

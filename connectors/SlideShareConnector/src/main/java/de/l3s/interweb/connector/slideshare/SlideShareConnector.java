@@ -34,15 +34,16 @@ import de.l3s.interweb.connector.slideshare.jaxb.TagsResponse;
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
 import de.l3s.interweb.core.Parameters;
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.ResultItem;
+import de.l3s.interweb.core.search.SearchItem;
 import de.l3s.interweb.core.query.SearchRanking;
 import de.l3s.interweb.core.query.SearchScope;
 import de.l3s.interweb.core.query.Thumbnail;
-import de.l3s.interweb.core.util.CoreUtils;
+import de.l3s.interweb.core.util.DateUtils;
+import de.l3s.interweb.core.util.StringUtils;
 
 /**
  * LinkedIn SlideShare is an American hosting service for professional content including presentations, infographics, documents, and videos.
@@ -50,8 +51,8 @@ import de.l3s.interweb.core.util.CoreUtils;
  *
  * @see <a href="https://www.slideshare.net/developers/documentation#search_slideshows">SlideShare Search API</a>
  */
-@AutoService(ServiceConnector.class)
-public class SlideShareConnector extends ServiceConnector {
+@AutoService(SearchProvider.class)
+public class SlideShareConnector extends SearchProvider {
     private static final Logger log = LogManager.getLogger(SlideShareConnector.class);
 
     public SlideShareConnector() {
@@ -71,7 +72,7 @@ public class SlideShareConnector extends ServiceConnector {
     }
 
     @Override
-    public ServiceConnector clone() {
+    public SearchProvider clone() {
         return new SlideShareConnector(getAuthCredentials());
     }
 
@@ -84,9 +85,9 @@ public class SlideShareConnector extends ServiceConnector {
     }
 
     @Override
-    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         notNull(query, "query");
-        ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
+        SearchResults queryResult = new SearchResults(query, getName());
 
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("https://www.slideshare.net/api/2/search_slideshows")
@@ -113,7 +114,7 @@ public class SlideShareConnector extends ServiceConnector {
             // macht oft probleme. womöglich liefert slideshare einen fehler im html format oder jersey spinnt
             SlideShareResponse sr = response.readEntity(SlideShareResponse.class);
 
-            queryResult.setTotalResultCount(sr.getMeta().getTotalResults());
+            queryResult.setTotalResults(sr.getMeta().getTotalResults());
             int count = sr.getMeta().getResultOffset() - 1;
             List<SearchResultEntity> searchResults = sr.getSearchResults();
             if (searchResults == null) {
@@ -121,13 +122,13 @@ public class SlideShareConnector extends ServiceConnector {
             }
 
             for (SearchResultEntity sre : searchResults) {
-                ResultItem resultItem = new ResultItem(getName(), count++);
+                SearchItem resultItem = new SearchItem(getName(), count++);
                 resultItem.setType(createType(sre.getSlideshowType()));
                 resultItem.setId(Integer.toString(sre.getId()));
                 resultItem.setTitle(sre.getTitle());
                 resultItem.setDescription(sre.getDescription());
                 resultItem.setUrl(sre.getUrl());
-                resultItem.setDate(CoreUtils.formatDate(parseDate(sre.getUpdated())));
+                resultItem.setDate(DateUtils.format(parseDate(sre.getUpdated())));
                 resultItem.setAuthor(sre.getUserName());
                 resultItem.setAuthorUrl("https://www.slideshare.net/" + sre.getUserName());
 
@@ -140,7 +141,7 @@ public class SlideShareConnector extends ServiceConnector {
                 resultItem.setThumbnailSmall(new Thumbnail(sre.getThumbnailURL(), width, height));
                 resultItem.setWidth(width);
                 resultItem.setHeight(height);
-                resultItem.setEmbeddedUrl(CoreUtils.getEmbeddedUrl(sre.getEmbed()));
+                resultItem.setEmbeddedUrl(StringUtils.parseSourceUrl(sre.getEmbed()));
 
                 queryResult.addResultItem(resultItem);
             }

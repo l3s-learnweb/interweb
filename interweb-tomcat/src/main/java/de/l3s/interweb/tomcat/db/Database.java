@@ -3,8 +3,8 @@ package de.l3s.interweb.tomcat.db;
 import java.util.List;
 
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.tomcat.core.Consumer;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
+import de.l3s.interweb.tomcat.app.Consumer;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 
 public interface Database {
 

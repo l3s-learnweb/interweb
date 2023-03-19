@@ -2,7 +2,7 @@ package de.l3s.interweb.tomcat.rest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 

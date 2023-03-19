@@ -28,14 +28,11 @@ package com.trievosoftware.giphy4j.dao;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.logging.log4j.core.util.IOUtils;
 
 import com.trievosoftware.giphy4j.http.Request;
 import com.trievosoftware.giphy4j.http.Response;
@@ -91,7 +88,7 @@ public class HttpRequestSender implements RequestSender {
 
         String body;
         try (InputStream inputStream = connection.getInputStream()) {
-            body = IOUtils.toString(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new IOException(e);
         }

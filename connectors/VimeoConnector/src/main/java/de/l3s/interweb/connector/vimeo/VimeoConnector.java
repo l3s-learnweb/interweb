@@ -26,14 +26,14 @@ import de.l3s.interweb.connector.vimeo.entity.Tag;
 import de.l3s.interweb.connector.vimeo.entity.VimeoResponse;
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.connector.ConnectorSearchResults;
-import de.l3s.interweb.core.connector.ServiceConnector;
+import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.search.SearchProvider;
 import de.l3s.interweb.core.query.ContentType;
 import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.ResultItem;
+import de.l3s.interweb.core.search.SearchItem;
 import de.l3s.interweb.core.query.SearchRanking;
 import de.l3s.interweb.core.query.Thumbnail;
-import de.l3s.interweb.core.util.CoreUtils;
+import de.l3s.interweb.core.util.DateUtils;
 
 /**
  * Vimeo is a video hosting, sharing, and services platform headquartered in New York City.
@@ -41,8 +41,8 @@ import de.l3s.interweb.core.util.CoreUtils;
  *
  * @see <a href="https://developer.vimeo.com/api/reference/videos#search_videos">Vimeo Search API</a>
  */
-@AutoService(ServiceConnector.class)
-public class VimeoConnector extends ServiceConnector {
+@AutoService(SearchProvider.class)
+public class VimeoConnector extends SearchProvider {
     private static final Logger log = LogManager.getLogger(VimeoConnector.class);
 
     public VimeoConnector() {
@@ -55,12 +55,12 @@ public class VimeoConnector extends ServiceConnector {
     }
 
     @Override
-    public ServiceConnector clone() {
+    public SearchProvider clone() {
         return new VimeoConnector(getAuthCredentials());
     }
 
     @Override
-    public ConnectorSearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
         if (!isRegistered()) {
             throw new InterWebException("Service is not yet registered");
         }
@@ -69,7 +69,7 @@ public class VimeoConnector extends ServiceConnector {
             authCredentials = getAuthCredentials();
         }
 
-        ConnectorSearchResults queryResult = new ConnectorSearchResults(query, getName());
+        SearchResults queryResult = new SearchResults(query, getName());
 
         if (!query.getContentTypes().contains(ContentType.video)) {
             return queryResult;
@@ -102,18 +102,18 @@ public class VimeoConnector extends ServiceConnector {
             }
 
             int count = (query.getPage() - 1) * query.getPerPage();
-            queryResult.setTotalResultCount(vimeoResponse.getTotal());
+            queryResult.setTotalResults(vimeoResponse.getTotal());
 
             for (Datum video : vimeoResponse.getData()) {
                 try {
-                    ResultItem resultItem = new ResultItem(getName(), count++);
+                    SearchItem resultItem = new SearchItem(getName(), count++);
                     resultItem.setType(ContentType.video);
                     resultItem.setId(video.getLink().substring(1 + video.getLink().lastIndexOf('/')));
                     resultItem.setTitle(video.getName());
                     resultItem.setDescription(video.getDescription());
                     resultItem.setUrl(video.getLink());
                     resultItem.setDuration(video.getDuration().longValue());
-                    resultItem.setDate(CoreUtils.formatDate(parseDate(video.getCreatedTime())));
+                    resultItem.setDate(DateUtils.format(parseDate(video.getCreatedTime())));
                     resultItem.setWidth(video.getWidth());
                     resultItem.setHeight(video.getHeight());
 
@@ -138,7 +138,7 @@ public class VimeoConnector extends ServiceConnector {
 
                     Pictures pictures = video.getPictures();
                     if (pictures == null) {
-                        queryResult.addTotalResultCount(-1);
+                        queryResult.addTotalResults(-1);
                         continue; // makes no sense, we can't show them
                     }
 

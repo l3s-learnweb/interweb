@@ -69,10 +69,6 @@
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
-    <listener>
-        <listener-class>de.l3s.interweb.tomcat.servlet.listener.ServletContextLifecycleListener</listener-class>
-    </listener>
-
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>Public resource</web-resource-name>

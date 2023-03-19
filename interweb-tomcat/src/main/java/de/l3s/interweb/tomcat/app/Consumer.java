@@ -1,4 +1,4 @@
-package de.l3s.interweb.tomcat.core;
+package de.l3s.interweb.tomcat.app;
 
 import static de.l3s.interweb.core.util.Assertions.notNull;
 

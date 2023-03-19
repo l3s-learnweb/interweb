@@ -8,10 +8,6 @@
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout pattern="${INTERWEB_LOG_PATTERN}"/>
         </Console>
-        <RollingFile name="file" append="false" fileName="${env:INTERWEB_LOG_PATH}" filePattern="${env:INTERWEB_LOG_PATH}.%i">
-            <PatternLayout pattern="${INTERWEB_LOG_PATTERN}"/>
-            <SizeBasedTriggeringPolicy size="250 MB"/>
-        </RollingFile>
         <Sentry name="sentry" dsn="https://7371ead6828b496b86901f1bce43d551@sentry.kbs.uni-hannover.de/3"
                 minimumBreadcrumbLevel="DEBUG" minimumEventLevel="ERROR"/>
     </Appenders>

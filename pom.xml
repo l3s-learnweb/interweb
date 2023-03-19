@@ -30,7 +30,6 @@
         <module>connectors/EduRecConnector</module>
         <module>connectors/FlickrConnector</module>
         <module>connectors/GiphyConnector</module>
-        <module>connectors/GoogleConnector</module>
         <module>connectors/IpernityConnector</module>
         <module>connectors/SlideShareConnector</module>
         <module>connectors/VimeoConnector</module>

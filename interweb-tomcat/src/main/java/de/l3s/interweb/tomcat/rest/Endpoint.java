@@ -2,6 +2,7 @@ package de.l3s.interweb.tomcat.rest;
 
 import java.net.URI;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
@@ -17,13 +18,14 @@ import org.glassfish.jersey.oauth1.signature.OAuth1Parameters;
 import org.glassfish.jersey.server.oauth1.internal.OAuthServerRequest;
 
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 import de.l3s.interweb.tomcat.db.Database;
 
 public class Endpoint {
     @Context
     private UriInfo info;
+    @Inject
+    private Database database;
 
     @Context
     private ContainerRequestContext requestContext;
@@ -60,7 +62,6 @@ public class Endpoint {
         if (token == null) {
             return null;
         }
-        Database database = Environment.getInstance().getDatabase();
         return database.readPrincipalByKey(token);
     }
 }

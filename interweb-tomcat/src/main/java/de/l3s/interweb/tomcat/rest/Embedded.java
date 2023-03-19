@@ -2,13 +2,9 @@ package de.l3s.interweb.tomcat.rest;
 
 import java.util.List;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -19,10 +15,9 @@ import org.apache.logging.log4j.Logger;
 
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.connector.ServiceConnector;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
+import de.l3s.interweb.core.search.SearchProvider;
+import de.l3s.interweb.tomcat.app.Engine;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 import de.l3s.interweb.tomcat.jaxb.EmbeddedResponse;
 
 @Path("/embedded")
@@ -31,6 +26,9 @@ public class Embedded extends Endpoint {
 
     @Context
     HttpServletRequest request;
+
+    @Inject
+    private Engine engine;
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -42,10 +40,9 @@ public class Embedded extends Endpoint {
 
         InterWebPrincipal principal = getPrincipal();
         AuthCredentials authCredentials = (principal == null) ? null : principal.getOauthCredentials();
-        Engine engine = Environment.getInstance().getEngine();
-        List<ServiceConnector> connectors = engine.getConnectors();
+        List<SearchProvider> connectors = engine.getSearchProviders();
         String embedded = null;
-        for (ServiceConnector connector : connectors) {
+        for (SearchProvider connector : connectors) {
             if (connector.isRegistered()) {
                 try {
                     log.info("querying connector: {}", connector.getName());

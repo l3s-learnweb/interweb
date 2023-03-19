@@ -6,6 +6,7 @@ import java.io.Serial;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,12 +24,11 @@ import org.apache.logging.log4j.Logger;
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.InterWebException;
 import de.l3s.interweb.core.Parameters;
-import de.l3s.interweb.core.connector.ServiceConnector;
-import de.l3s.interweb.tomcat.jaxb.services.ServiceResponse;
-import de.l3s.interweb.tomcat.core.Engine;
-import de.l3s.interweb.tomcat.core.Environment;
-import de.l3s.interweb.tomcat.core.InterWebPrincipal;
+import de.l3s.interweb.core.search.SearchProvider;
+import de.l3s.interweb.tomcat.app.Engine;
+import de.l3s.interweb.tomcat.app.InterWebPrincipal;
 import de.l3s.interweb.tomcat.db.Database;
+import de.l3s.interweb.tomcat.jaxb.services.ServiceResponse;
 import de.l3s.interweb.tomcat.rest.Endpoint;
 
 @WebServlet(name = "CallbackServlet", description = "Authorization callback", urlPatterns = {"/callback"})
@@ -36,6 +36,11 @@ public class CallbackServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(CallbackServlet.class);
     @Serial
     private static final long serialVersionUID = 6534209215912582685L;
+
+    @Inject
+    private Engine engine;
+    @Inject
+    private Database database;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -49,7 +54,6 @@ public class CallbackServlet extends HttpServlet {
             if (parameter.equals(Parameters.IWJ_USER_ID)) {
                 String userName = parameters.get(parameter);
 
-                Database database = Environment.getInstance().getDatabase();
                 InterWebPrincipal principal = database.readPrincipalByName(userName);
                 if (principal == null) {
                     throw new InterWebException("User [" + userName + "] not found");
@@ -68,14 +72,13 @@ public class CallbackServlet extends HttpServlet {
         parameters.addMultivaluedParams(request.getParameterMap());
         refineParameters(parameters);
         InterWebPrincipal principal = null;
-        ServiceConnector connector = null;
+        SearchProvider connector = null;
         String clientType = null;
         try {
             connector = getConnector(parameters);
             clientType = getClientType(parameters);
             principal = getPrincipal(parameters);
 
-            Engine engine = Environment.getInstance().getEngine();
             engine.processAuthenticationCallback(principal, connector, parameters);
         } catch (InterWebException e) {
             log.catching(e);
@@ -125,13 +128,13 @@ public class CallbackServlet extends HttpServlet {
         return clientType;
     }
 
-    private ServiceConnector getConnector(Parameters parameters) throws InterWebException {
+    private SearchProvider getConnector(Parameters parameters) throws InterWebException {
         String connectorName = fetchParam(parameters, Parameters.IWJ_CONNECTOR_ID);
         if (connectorName == null) {
             throw new InterWebException("Unable to fetch connector name from the callback URL");
         }
-        Engine engine = Environment.getInstance().getEngine();
-        ServiceConnector connector = engine.getConnector(connectorName);
+
+        SearchProvider connector = engine.getConnector(connectorName);
         if (connector == null) {
             throw new InterWebException("Connector [" + connectorName + "] not found");
         }
@@ -139,7 +142,7 @@ public class CallbackServlet extends HttpServlet {
     }
 
     private void processRestRequest(HttpServletRequest request, HttpServletResponse response, InterWebPrincipal principal,
-        ServiceConnector connector, Parameters parameters) throws IOException {
+                                    SearchProvider connector, Parameters parameters) throws IOException {
         String callback = parameters.get(Parameters.CALLBACK);
         log.info("callback: [{}]", callback);
 
@@ -153,7 +156,6 @@ public class CallbackServlet extends HttpServlet {
         }
 
         String consumerKey = parameters.get(Parameters.CONSUMER_KEY);
-        Database database = Environment.getInstance().getDatabase();
         AuthCredentials consumerAuthCredentials = database.readConsumerByKey(consumerKey).authCredentials();
 
         AuthCredentials userAuthCredentials = principal.getOauthCredentials();
@@ -176,8 +178,7 @@ public class CallbackServlet extends HttpServlet {
     }
 
     private void refineParameters(Parameters parameters) {
-        Engine engine = Environment.getInstance().getEngine();
-        for (ServiceConnector connector : engine.getConnectors()) {
+        for (SearchProvider connector : engine.getSearchProviders()) {
             Parameters refinedParameters = connector.getRefinedCallbackParameters(parameters);
             parameters.add(refinedParameters, true);
         }
