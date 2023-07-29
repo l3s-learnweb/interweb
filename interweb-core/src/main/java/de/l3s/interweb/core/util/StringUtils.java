@@ -1,27 +1,54 @@
 package de.l3s.interweb.core.util;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class StringUtils extends org.apache.commons.lang3.StringUtils {
+public final class StringUtils {
     private static final Pattern SRC_PATTERN = Pattern.compile("src=\"([^\"]+)\"");
 
     /**
      * Splits CSV string to list removing duplicates.
      */
-    public static List<String> convertToUniqueList(String s) {
-        Set<String> list = new HashSet<>();
+    public static List<String> toList(String s) {
+        return Arrays.asList(s.split("[,\\s]"));
+    }
+
+    public static Set<String> toIdSet(String s) {
+        Set<String> set = new HashSet<>();
         String[] tokens = s.split("[,\\s]");
         for (String token : tokens) {
-            if (token.length() > 0) {
-                list.add(token);
+            if (!token.isBlank()) {
+                set.add(token.trim().toLowerCase());
             }
         }
-        return new ArrayList<>(list);
+        return set;
+    }
+
+    public static Set<String> toIdSet(String[] tokens) {
+        Set<String> set = new HashSet<>();
+        for (String token : tokens) {
+            if (!token.isBlank()) {
+                set.add(token.trim().toLowerCase());
+            }
+        }
+        return set;
+    }
+
+    public static <T extends Enum<T>> Set<T> toEnumSet(String s, Class<T> typeClass) {
+        Set<T> set = new HashSet<>();
+        String[] tokens = s.split("[,\\s]");
+        for (String token : tokens) {
+            if (!token.isBlank()) {
+                try {
+                    set.add(Enum.valueOf(typeClass, token.trim().toLowerCase()));
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+        }
+        return set;
     }
 
     /**
@@ -43,8 +70,44 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return str;
     }
 
+    public static boolean isEmpty(String s) {
+        return s == null || s.isEmpty();
+    }
+
+    public static boolean isNotEmpty(String s) {
+        return s != null && !s.isEmpty();
+    }
+
+    public static String percentEncode(String str) {
+        if (str == null || str.isEmpty()) {
+            return "";
+        }
+
+        return URLEncoder.encode(str, StandardCharsets.UTF_8)
+                .replace("+", "%20")
+                .replace("*", "%2A")
+                .replace("%7E", "~");
+    }
+
     public static String parseSourceUrl(String embeddedCode) {
+        // embeddedCode = embeddedCode.replaceAll("'", "\"");
+        // embeddedCode = embeddedCode.replaceAll("&#34;", "\"");
+        embeddedCode = embeddedCode.replaceAll("&#39;", "\"");
+        embeddedCode = embeddedCode.replaceAll("&quot;", "\"");
+        // embeddedCode = embeddedCode.replaceAll("&apos;", "\"");
         Matcher matcher = SRC_PATTERN.matcher(embeddedCode);
         return matcher.find() ? matcher.group(1) : null;
+    }
+
+    public static String randomAlphanumeric(int length) {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        Random random = new Random();
+
+        return random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(length)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
 }

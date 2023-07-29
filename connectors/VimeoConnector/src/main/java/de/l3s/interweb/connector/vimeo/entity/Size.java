@@ -1,16 +1,16 @@
 package de.l3s.interweb.connector.vimeo.entity;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Size {
 
-    @SerializedName("width")
+    @JsonProperty("width")
     private Integer width;
-    @SerializedName("height")
+    @JsonProperty("height")
     private Integer height;
-    @SerializedName("link")
+    @JsonProperty("link")
     private String link;
-    @SerializedName("link_with_play_button")
+    @JsonProperty("link_with_play_button")
     private String linkWithPlayButton;
 
     public Integer getWidth() {

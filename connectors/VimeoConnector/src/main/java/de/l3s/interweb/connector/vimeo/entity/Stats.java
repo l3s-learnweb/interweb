@@ -1,10 +1,10 @@
 package de.l3s.interweb.connector.vimeo.entity;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Stats {
 
-    @SerializedName("plays")
+    @JsonProperty("plays")
     private Long plays;
 
     public Long getPlays() {

@@ -1,18 +1,18 @@
 package de.l3s.interweb.connector.vimeo.entity;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Tag {
 
-    @SerializedName("uri")
+    @JsonProperty("uri")
     private String uri;
-    @SerializedName("name")
+    @JsonProperty("name")
     private String name;
-    @SerializedName("tag")
+    @JsonProperty("tag")
     private String tag;
-    @SerializedName("canonical")
+    @JsonProperty("canonical")
     private String canonical;
-    @SerializedName("resource_key")
+    @JsonProperty("resource_key")
     private String resourceKey;
 
     public String getUri() {

@@ -1,10 +1,10 @@
 package de.l3s.interweb.connector.vimeo.entity;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Embed {
 
-    @SerializedName("html")
+    @JsonProperty("html")
     private String html;
 
     public String getHtml() {

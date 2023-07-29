@@ -1,10 +1,10 @@
 package de.l3s.interweb.connector.vimeo.entity;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Metadata {
 
-    @SerializedName("connections")
+    @JsonProperty("connections")
     private Connections connections;
 
     public Connections getConnections() {

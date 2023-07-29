@@ -5,22 +5,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.json.bind.annotation.JsonbProperty;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementWrapper;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
-import de.l3s.interweb.core.query.ContentType;
-import de.l3s.interweb.core.query.Thumbnail;
 import de.l3s.interweb.core.util.StringUtils;
 
-@XmlRootElement(name = "result")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class SearchItem implements Serializable {
     @Serial
     private static final long serialVersionUID = 8890673440048432524L;
@@ -33,80 +21,51 @@ public class SearchItem implements Serializable {
     public static final int THUMBNAIL_LARGE_MAX_HEIGHT = 920;
 
     // base
-    @XmlElement(name = "service")
     private String service;
-    @JsonbProperty("rank_at_service")
-    @XmlElement(name = "rank_at_service")
     private int rank;
-    @JsonbProperty("id_at_service")
-    @XmlElement(name = "id_at_service")
     private String id;
 
     // general
-    @XmlElement(name = "type")
     private ContentType type;
-    @XmlElement(name = "title")
     private String title;
-    @XmlElement(name = "description")
     private String description;
-    @XmlElement(name = "url")
     private String url;
-    @XmlElement(name = "date")
     private String date;
-    @XmlElement(name = "snippet")
     private String snippet;
-    @XmlElement(name = "duration")
     private Long duration;
-    @XmlElement(name = "width")
     private Integer width;
-    @XmlElement(name = "height")
     private Integer height;
-    @XmlElementWrapper(name = "tags")
-    @XmlElement(name = "tag")
     private Set<String> tags = new HashSet<>();
 
-    // author
-    @XmlElement(name = "author")
     private String author;
-    @JsonbProperty("author_url")
-    @XmlElement(name = "author_url")
     private String authorUrl;
 
-    // statistic
-    @JsonbProperty("number_of_views")
-    @XmlElement(name = "number_of_views")
+    @JsonProperty("views_count")
     private Long viewsCount;
-    @JsonbProperty("number_of_comments")
-    @XmlElement(name = "number_of_comments")
+    @JsonProperty("comments_count")
     private Long commentsCount;
 
-    // media
-    @JsonbProperty("embedded_url")
-    @XmlElement(name = "embedded_url")
+    @JsonProperty("embedded_url")
     private String embeddedUrl;
     /**
      * Usually an image with HEIGHT between 100 and 180 px.
      */
-    @JsonbProperty("thumbnail_small")
-    @XmlElement(name = "thumbnail_small")
+    @JsonProperty("thumbnail_small")
     private Thumbnail thumbnailSmall;
     /**
      * Usually an image with HEIGHT between 200 and 440 px.
      */
-    @JsonbProperty("thumbnail_medium")
-    @XmlElement(name = "thumbnail_medium")
+    @JsonProperty("thumbnail_medium")
     private Thumbnail thumbnailMedium;
     /**
      * Usually an image with HEIGHT between 600 and 920 px.
      */
-    @JsonbProperty("thumbnail_large")
-    @XmlElement(name = "thumbnail_large")
+    @JsonProperty("thumbnail_large")
     private Thumbnail thumbnailLarge;
     /**
      * Image in max available quality, if bigger than large.
      */
-    @JsonbProperty("thumbnail_original")
-    @XmlElement(name = "thumbnail_original")
+    @JsonProperty("thumbnail_original")
     private Thumbnail thumbnailOriginal;
 
     public SearchItem() {
@@ -118,6 +77,10 @@ public class SearchItem implements Serializable {
 
     public SearchItem(final String service, final int rank) {
         this.service = service;
+        this.rank = rank;
+    }
+
+    public SearchItem(final int rank) {
         this.rank = rank;
     }
 
@@ -315,33 +278,5 @@ public class SearchItem implements Serializable {
                 thumbnailOriginal = thumbnail;
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("service", service)
-            .append("rank", rank)
-            .append("id", id)
-            .append("title", title)
-            .append("type", type)
-            .append("description", description)
-            .append("url", url)
-            .append("date", date)
-            .append("snippet", snippet)
-            .append("duration", duration)
-            .append("width", width)
-            .append("height", height)
-            .append("tags", tags)
-            .append("author", author)
-            .append("authorUrl", authorUrl)
-            .append("viewsCount", viewsCount)
-            .append("commentsCount", commentsCount)
-            .append("embeddedUrl", embeddedUrl)
-            .append("thumbnailSmall", thumbnailSmall)
-            .append("thumbnailMedium", thumbnailMedium)
-            .append("thumbnailLarge", thumbnailLarge)
-            .append("thumbnailOriginal", thumbnailOriginal)
-            .toString();
     }
 }

@@ -2,24 +2,24 @@ package de.l3s.interweb.connector.vimeo.entity;
 
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class VimeoResponse {
 
-    @SerializedName("total")
+    @JsonProperty("total")
     private Long total = 0L;
-    @SerializedName("page")
+    @JsonProperty("page")
     private Integer page;
-    @SerializedName("per_page")
+    @JsonProperty("per_page")
     private Integer perPage;
-    @SerializedName("data")
+    @JsonProperty("data")
     private List<Datum> data = null;
 
-    @SerializedName("error")
+    @JsonProperty("error")
     private String error;
-    @SerializedName("developer_message")
+    @JsonProperty("developer_message")
     private String developerMessage;
-    @SerializedName("error_code")
+    @JsonProperty("error_code")
     private Integer errorCode;
 
     public Long getTotal() {

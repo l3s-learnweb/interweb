@@ -6,31 +6,38 @@
 
     <groupId>de.l3s.interweb</groupId>
     <artifactId>interweb-parent</artifactId>
-    <version>3.2.0</version>
+    <version>4.0.0</version>
     <packaging>pom</packaging>
 
-    <name>InterWeb</name>
+    <name>Interweb</name>
 
     <properties>
+        <skipITs>true</skipITs>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <maven.dependency.mariadb.version>3.1.2</maven.dependency.mariadb.version>
-        <maven.dependency.log4j.version>2.20.0</maven.dependency.log4j.version>
-        <maven.dependency.jersey.version>3.1.1</maven.dependency.jersey.version>
-        <maven.dependency.junit.version>5.9.2</maven.dependency.junit.version>
-        <maven.dependency.auto-service.version>1.0.1</maven.dependency.auto-service.version>
+        <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <quarkus.platform.version>3.2.4.Final</quarkus.platform.version>
+
+        <surefire-plugin.version>3.1.2</surefire-plugin.version>
+        <compiler-plugin.version>3.11.0</compiler-plugin.version>
+        <source-plugin.version>3.3.0</source-plugin.version>
+        <resources-plugin.version>3.3.1</resources-plugin.version>
     </properties>
 
     <modules>
         <module>interweb-core</module>
-        <module>interweb-tomcat</module>
+        <module>interweb-server</module>
         <module>interweb-client</module>
         <module>connectors/BingConnector</module>
         <module>connectors/EduRecConnector</module>
         <module>connectors/FlickrConnector</module>
         <module>connectors/GiphyConnector</module>
+        <module>connectors/GoogleConnector</module>
         <module>connectors/IpernityConnector</module>
+        <module>connectors/OpenAiConnector</module>
         <module>connectors/SlideShareConnector</module>
         <module>connectors/VimeoConnector</module>
         <module>connectors/YouTubeConnector</module>
@@ -38,164 +45,21 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Database Clients -->
             <dependency>
-                <groupId>org.mariadb.jdbc</groupId>
-                <artifactId>mariadb-java-client</artifactId>
-                <version>${maven.dependency.mariadb.version}</version>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>${quarkus.platform.artifact-id}</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
-            <!-- Google Utilities -->
             <dependency>
-                <groupId>com.google.auto.service</groupId>
-                <artifactId>auto-service-annotations</artifactId>
-                <version>${maven.dependency.auto-service.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>31.1-jre</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.10.1</version>
-            </dependency>
-
-            <!-- Apache Utilities -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.12.0</version>
-            </dependency>
-
-            <!-- XML/JSON implementations -->
-            <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-runtime</artifactId>
-                <version>4.0.2</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.ws.rs</groupId>
-                <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>3.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
+                <groupId>de.l3s.interweb</groupId>
+                <artifactId>interweb-core</artifactId>
                 <version>4.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.json.bind</groupId>
-                <artifactId>jakarta.json.bind-api</artifactId>
-                <version>3.0.0</version>
-            </dependency>
-
-            <!-- Glassfish Jersey 3 (API) -->
-            <dependency>
-                <groupId>org.glassfish.jersey.containers</groupId>
-                <artifactId>jersey-container-servlet</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-server</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-client</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.inject</groupId>
-                <artifactId>jersey-hk2</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.security</groupId>
-                <artifactId>oauth1-client</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.security</groupId>
-                <artifactId>oauth1-server</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-jaxb</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-multipart</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-json-binding</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.ext.cdi</groupId>
-                <artifactId>jersey-cdi1x</artifactId>
-                <version>${maven.dependency.jersey.version}</version>
-            </dependency>
-
-            <!-- Log4J Logging -->
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${maven.dependency.log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>${maven.dependency.log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-jakarta-web</artifactId>
-                <version>${maven.dependency.log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
-                <version>${maven.dependency.log4j.version}</version>
-            </dependency>
-
-            <!-- JUnit 5 (tests) -->
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter</artifactId>
-                <version>${maven.dependency.junit.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${maven.dependency.junit.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -203,7 +67,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -213,7 +77,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.6,)</version>
+                                    <version>[3.8,)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>[17,)</version>
@@ -227,59 +91,67 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.5.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>3.6.0</version>
             </plugin>
             <!-- Specifies target Java version for builds -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>${compiler-plugin.version}</version>
                 <configuration>
-                    <release>${maven.compiler.release}</release>
                     <compilerArgs>
-                        <arg>-Xlint:all</arg>
+                        <arg>-parameters</arg>
                     </compilerArgs>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>com.google.auto.service</groupId>
-                            <artifactId>auto-service</artifactId>
-                            <version>${maven.dependency.auto-service.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <!-- Creates a jar archive of the source files of the current project -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${source-plugin.version}</version>
+            </plugin>
+            <!-- Handles the copying of project resources to the output directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${resources-plugin.version}</version>
             </plugin>
             <!-- Runs tests before build -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+            </plugin>
+            <!-- Generates Jandex index -->
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <version>3.1.2</version>
             </plugin>
             <!-- Provides commands to check available updated for dependencies -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.15.0</version>
+                <version>2.16.0</version>
             </plugin>
             <!-- Provides commands to check for duplicate classes across dependencies -->
             <plugin>
                 <groupId>org.basepom.maven</groupId>
                 <artifactId>duplicate-finder-maven-plugin</artifactId>
-                <version>1.5.1</version>
+                <version>2.0.1</version>
             </plugin>
             <!-- Runs linter on Java sources to check code style -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.0</version>
                 <configuration>
                     <configLocation>.mvn/checkstyle-config.xml</configLocation>
                     <consoleOutput>false</consoleOutput>
@@ -290,7 +162,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>10.9.1</version>
+                        <version>10.12.2</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -298,7 +170,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.7.3.2</version>
+                <version>4.7.3.5</version>
                 <configuration>
                     <excludeFilterFile>.mvn/spotbugs-exclude.xml</excludeFilterFile>
                 </configuration>

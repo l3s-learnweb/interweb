@@ -1,34 +1,34 @@
 package de.l3s.interweb.connector.vimeo.entity;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class User {
 
-    @SerializedName("uri")
+    @JsonProperty("uri")
     private String uri;
-    @SerializedName("name")
+    @JsonProperty("name")
     private String name;
-    @SerializedName("link")
+    @JsonProperty("link")
     private String link;
-    @SerializedName("location")
+    @JsonProperty("location")
     private String location;
-    @SerializedName("gender")
+    @JsonProperty("gender")
     private String gender;
-    @SerializedName("bio")
+    @JsonProperty("bio")
     private String bio;
-    @SerializedName("short_bio")
+    @JsonProperty("short_bio")
     private String shortBio;
-    @SerializedName("created_time")
+    @JsonProperty("created_time")
     private String createdTime;
-    @SerializedName("pictures")
+    @JsonProperty("pictures")
     private Pictures pictures;
-    @SerializedName("available_for_hire")
+    @JsonProperty("available_for_hire")
     private Boolean availableForHire;
-    @SerializedName("can_work_remotely")
+    @JsonProperty("can_work_remotely")
     private Boolean canWorkRemotely;
-    @SerializedName("resource_key")
+    @JsonProperty("resource_key")
     private String resourceKey;
-    @SerializedName("account")
+    @JsonProperty("account")
     private String account;
 
     public String getUri() {

@@ -1,72 +1,36 @@
 package de.l3s.interweb.connector.youtube;
 
-import static de.l3s.interweb.core.util.Assertions.notNull;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.Duration;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import jakarta.enterprise.context.Dependent;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
-import com.google.api.client.googleapis.media.MediaHttpUploader;
-import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
+import org.jboss.logging.Logger;
+
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.ChannelListResponse;
-import com.google.api.services.youtube.model.SearchListResponse;
-import com.google.api.services.youtube.model.SearchResult;
-import com.google.api.services.youtube.model.SearchResultSnippet;
-import com.google.api.services.youtube.model.ThumbnailDetails;
-import com.google.api.services.youtube.model.Video;
-import com.google.api.services.youtube.model.VideoContentDetails;
-import com.google.api.services.youtube.model.VideoFileDetails;
-import com.google.api.services.youtube.model.VideoListResponse;
-import com.google.api.services.youtube.model.VideoSnippet;
-import com.google.api.services.youtube.model.VideoStatistics;
-import com.google.api.services.youtube.model.VideoStatus;
-import com.google.auto.service.AutoService;
+import com.google.api.services.youtube.model.*;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.Parameters;
-import de.l3s.interweb.core.search.SearchResults;
-import de.l3s.interweb.core.search.SearchProvider;
-import de.l3s.interweb.core.query.ContentType;
-import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.search.SearchItem;
-import de.l3s.interweb.core.query.SearchExtra;
-import de.l3s.interweb.core.query.SearchRanking;
-import de.l3s.interweb.core.query.Thumbnail;
+import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.search.*;
+import de.l3s.interweb.core.search.Thumbnail;
+import de.l3s.interweb.core.util.Assertions;
 import de.l3s.interweb.core.util.DateUtils;
-import de.l3s.interweb.core.util.StringUtils;
 
 /**
  * YouTube is an American online video-sharing platform headquartered in San Bruno, California.
@@ -74,102 +38,46 @@ import de.l3s.interweb.core.util.StringUtils;
  *
  * @see <a href="https://developers.google.com/youtube/v3/docs/search/list">YouTube Search API</a>
  */
-@AutoService(SearchProvider.class)
-public class YouTubeConnector extends SearchProvider {
-    private static final Logger log = LogManager.getLogger(YouTubeConnector.class);
+@Dependent
+public class YouTubeConnector implements SearchConnector {
+    private static final Logger log = Logger.getLogger(YouTubeConnector.class);
 
-    private static final String API_KEY = "***REMOVED***";
-    private static final List<String> SCOPES = Arrays.asList("profile", "https://www.googleapis.com/auth/youtube", "https://www.googleapis.com/auth/youtube.upload");
     public static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     public static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static GoogleAuthorizationCodeFlow flow = null;
 
     /**
      * Because there is no easy way to get next page (like settings offset), we need to store a token to the next page for each query.
      */
     private static final Cache<Integer, HashMap<Integer, String>> tokensCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 
-    public YouTubeConnector() {
-        super("YouTube", "https://www.youtube.com/", ContentType.video);
-    }
-
-    public YouTubeConnector(AuthCredentials consumerAuthCredentials) {
-        this();
-        setAuthCredentials(consumerAuthCredentials);
+    @Override
+    public String getName() {
+        return "YouTube";
     }
 
     @Override
-    public Parameters authenticate(String callbackUrl, Parameters parameters) throws InterWebException {
-        if (!isRegistered()) {
-            throw new InterWebException("Service is not yet registered");
-        }
-
-        Parameters params = new Parameters();
-        params.add(Parameters.CALLBACK + "Auth", callbackUrl);
-
-        try {
-            String userName = "astappiev";
-            String url = getFlow().newAuthorizationUrl().setRedirectUri(callbackUrl).setState(userName).build();
-
-            params.add(Parameters.AUTHORIZATION_URL, url);
-
-            log.info("requesting url: {}", url);
-        } catch (Exception e) {
-            throw new InterWebException(e);
-        }
-
-        return params;
+    public String getBaseUrl() {
+        return "https://www.youtube.com/";
     }
 
     @Override
-    public SearchProvider clone() {
-        return new YouTubeConnector(getAuthCredentials());
+    public ContentType[] getSearchTypes() {
+        return new ContentType[]{ContentType.video};
     }
 
     @Override
-    public AuthCredentials completeAuthentication(Parameters params) throws InterWebException {
-        notNull(params, "params");
-        if (!isRegistered()) {
-            throw new InterWebException("Service is not yet registered");
-        }
+    public SearchConnectorResults search(SearchQuery query, AuthCredentials credentials) throws ConnectorException {
+        Assertions.notNull(query, "query");
 
-        String authorizationCode = params.get("code");
-        log.info("authorization_code: {}", authorizationCode);
-
-        AuthCredentials authCredentials;
-        Credential cred;
-
-        try {
-            GoogleTokenResponse response = getFlow().newTokenRequest(authorizationCode).setRedirectUri(params.get(Parameters.CALLBACK + "Auth")).execute();
-            cred = flow.createAndStoreCredential(response, null);
-
-            authCredentials = new AuthCredentials(cred.getAccessToken(), cred.getRefreshToken());
-        } catch (IOException e) {
-            throw new InterWebException(e);
-        }
-
-        return authCredentials;
-    }
-
-    @Override
-    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
-        notNull(query, "query");
-        if (!isRegistered()) {
-            throw new InterWebException("Service is not yet registered");
-        }
-
-        SearchResults queryResult = new SearchResults(query, getName());
-
-        if (!query.getContentTypes().contains(ContentType.video)) {
-            return queryResult;
-        }
+        SearchConnectorResults queryResult = new SearchConnectorResults();
 
         try {
             // This object is used to make YouTube Data API requests. The last argument is required, but since we don't need anything
             // initialized when the HttpRequest is initialized, we override the interface and provide a no-op function.
-            YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, request -> {}).setApplicationName("Interweb").build();
+            YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, request -> {
+            }).setApplicationName("Interweb").build();
 
-            YouTube.Search.List search = createSearch(query, youtube);
+            YouTube.Search.List search = createSearch(query, youtube, credentials);
 
             /*
              * The pageToken parameter identifies a specific page in the result set that should be returned.
@@ -180,7 +88,7 @@ public class YouTubeConnector extends SearchProvider {
                 if (tokensMap.containsKey(query.getPage())) {
                     search.setPageToken(tokensMap.get(query.getPage()));
                 } else if (tokensMap.containsKey(-1)) {
-                    log.warn("No more results for page {}", query.getPage());
+                    log.warnv("No more results for page {0}", query.getPage());
                     return queryResult;
                 } else {
                     log.warn("YouTube does not support search by specific page numbers without requesting previous page.");
@@ -194,7 +102,7 @@ public class YouTubeConnector extends SearchProvider {
             queryResult.setTotalResults(Math.min(searchResponse.getPageInfo().getTotalResults(), 500));
 
             if (searchResponse.getNextPageToken() != null) {
-                log.debug("Next page {} its token {}", query.getPage() + 1, searchResponse.getNextPageToken());
+                log.debugv("Next page {0} its token {1}", query.getPage() + 1, searchResponse.getNextPageToken());
                 getTokensMap(query).put(query.getPage() + 1, searchResponse.getNextPageToken());
             } else {
                 log.debug("No more results");
@@ -228,7 +136,7 @@ public class YouTubeConnector extends SearchProvider {
                 }
 
                 // Call the YouTube Data API's youtube.videos.list method to retrieve additional information for the specified videos
-                VideoListResponse videosResponse = youtube.videos().list(list).setId(videoIds).setKey(API_KEY).execute();
+                VideoListResponse videosResponse = youtube.videos().list(list).setId(videoIds).setKey(credentials.getKey()).execute();
 
                 for (Video video : videosResponse.getItems()) {
                     videosDetails.put(video.getId(), video);
@@ -243,24 +151,24 @@ public class YouTubeConnector extends SearchProvider {
                 }
             }
         } catch (Throwable e) {
-            throw new InterWebException(e);
+            throw new ConnectorException(e);
         }
 
         return queryResult;
     }
 
-    private static YouTube.Search.List createSearch(Query query, final YouTube youtube) throws IOException {
+    private static YouTube.Search.List createSearch(SearchQuery query, final YouTube youtube, AuthCredentials credentials) throws IOException {
         // Define the API request for retrieving search results.
         YouTube.Search.List search = youtube.search().list(Arrays.asList("id", "snippet"));
 
         // Set your developer key from the {{ Google Cloud Console }} for non-authenticated requests.
-        search.setKey(API_KEY);
+        search.setKey(credentials.getKey());
         search.setRelevanceLanguage(query.getLanguage());
 
         if (query.getQuery().startsWith("user::")) {
             String[] splitQuery = query.getQuery().split(" ", 2);
             ChannelListResponse channelListResponse = youtube.channels().list(Collections.singletonList("id"))
-                .setKey(API_KEY).setForUsername(splitQuery[0].substring(6)).execute();
+                    .setKey(credentials.getKey()).setForUsername(splitQuery[0].substring(6)).execute();
 
             search.setChannelId(channelListResponse.getItems().get(0).getId());
 
@@ -272,21 +180,13 @@ public class YouTubeConnector extends SearchProvider {
         }
 
         if (query.getDateFrom() != null) {
-            try {
-                DateTime dateFrom = new DateTime(DateUtils.parse(query.getDateFrom()).toInstant().toEpochMilli());
-                search.setPublishedAfter(dateFrom.toStringRfc3339());
-            } catch (DateTimeParseException e) {
-                log.error("Failed to parse date {}", query.getDateFrom(), e);
-            }
+            DateTime dateFrom = new DateTime(query.getDateFrom().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
+            search.setPublishedAfter(dateFrom.toStringRfc3339());
         }
 
         if (query.getDateTill() != null) {
-            try {
-                DateTime dateTill = new DateTime(DateUtils.parse(query.getDateTill()).toInstant().toEpochMilli());
-                search.setPublishedBefore(dateTill.toStringRfc3339());
-            } catch (DateTimeParseException e) {
-                log.error("Failed to parse date {}", query.getDateTill(), e);
-            }
+            DateTime dateTill = new DateTime(query.getDateTill().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
+            search.setPublishedBefore(dateTill.toStringRfc3339());
         }
 
         search.setType(Collections.singletonList("video")); // Restrict the search results to only include videos.
@@ -305,7 +205,7 @@ public class YouTubeConnector extends SearchProvider {
         };
     }
 
-    private HashMap<Integer, String> getTokensMap(Query query) {
+    private HashMap<Integer, String> getTokensMap(SearchQuery query) {
         try {
             return tokensCache.get(query.hashCodeWithoutPage(), HashMap::new);
         } catch (ExecutionException ignored) {
@@ -313,8 +213,8 @@ public class YouTubeConnector extends SearchProvider {
         }
     }
 
-    private SearchItem createResultItem(SearchResult searchResult, Video videoResult, int rank) throws InterWebException {
-        SearchItem resultItem = new SearchItem(getName(), rank);
+    private SearchItem createResultItem(SearchResult searchResult, Video videoResult, int rank) throws ConnectorException {
+        SearchItem resultItem = new SearchItem(rank);
         resultItem.setType(ContentType.video);
 
         if (searchResult != null) {
@@ -444,94 +344,7 @@ public class YouTubeConnector extends SearchProvider {
         return resultItem;
     }
 
-    @Override
-    public String getEmbedded(AuthCredentials authCredentials, String url, int maxWidth, int maxHeight) throws InterWebException {
-        Pattern pattern = Pattern.compile(".*(?:youtu.be/|v/|u/\\w/|embed/|watch\\?v=)([^#&?]*).*");
-        Matcher matcher = pattern.matcher(url);
-
-        if (matcher.matches()) {
-            String id = matcher.group(1);
-            return "<iframe width=\"" + maxWidth + "\" height=\"" + maxHeight + "\" src=\"https://www.youtube.com/embed/" + id +
-                "\" frameborder=\"0\" allowfullscreen></iframe>";
-        }
-
-        throw new InterWebException("URL: [" + url + "] doesn't belong to connector [" + getName() + "]");
-    }
-
-    @Override
-    public String getUserId(AuthCredentials authCredentials) throws InterWebException {
-        try {
-            YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getYoutubeCredential(authCredentials)).setApplicationName("Interweb").build();
-
-            ChannelListResponse channelListResponse = youtube.channels().list(Arrays.asList("id", "contentDetails")).setMine(true).execute();
-
-            return channelListResponse.getItems().get(0).getId();
-        } catch (IOException e) {
-            throw new InterWebException(e);
-        }
-    }
-
-    @Override
-    public boolean isUserRegistrationRequired() {
-        return true;
-    }
-
-    @Override
-    public Set<String> getTags(String username, int maxCount) throws IllegalArgumentException, IOException {
-        if (maxCount < 1) {
-            return null;
-        }
-
-        YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, request -> {
-        }).setApplicationName("Interweb").build();
-
-        ChannelListResponse channelListResponse = youtube.channels().list(Collections.singletonList("id"))
-            .setKey(API_KEY).setForUsername(username).execute();
-
-        ChannelListResponse detailedItem = youtube.channels().list(Arrays.asList("id", "brandingSettings"))
-            .setKey(API_KEY).setId(Collections.singletonList(channelListResponse.getItems().get(0).getId())).execute();
-
-        String keywords = detailedItem.getItems().get(0).getBrandingSettings().getChannel().getKeywords();
-
-        String[] tagsArray = keywords.replaceAll("[\"'-+.^:,]", "").split(" ");
-        return new HashSet<>(Arrays.asList(tagsArray));
-    }
-
-    /**
-     * Build an authorization flow and store it as a static class attribute.
-     *
-     * @return GoogleAuthorizationCodeFlow instance.
-     */
-    public GoogleAuthorizationCodeFlow getFlow() {
-        if (flow == null) {
-            AuthCredentials clientCredentials = getAuthCredentials();
-            flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientCredentials.getKey(), clientCredentials.getSecret(), SCOPES)
-                .setAccessType("offline").setApprovalPrompt("force").build();
-        }
-        return flow;
-    }
-
-    /**
-     * Convert AuthCredentials to Google Credential.
-     */
-    private Credential getYoutubeCredential(AuthCredentials authCredentials) {
-        AuthCredentials clientCredentials = getAuthCredentials();
-        Credential credential = new GoogleCredential.Builder().setTransport(HTTP_TRANSPORT).setJsonFactory(JSON_FACTORY)
-            .setClientSecrets(clientCredentials.getKey(), clientCredentials.getSecret()).build();
-
-        credential.setAccessToken(authCredentials.getKey());
-        credential.setRefreshToken(authCredentials.getSecret());
-
-        return credential;
-    }
-
-    @Override
-    public String generateCallbackUrl(String baseApiUrl, Parameters parameters) {
-        parameters.remove(Parameters.IWJ_USER_ID);
-        return baseApiUrl + "callback?" + parameters.toQueryString();
-    }
-
-    protected static ZonedDateTime parseDate(String dateString) throws InterWebException {
+    protected static ZonedDateTime parseDate(String dateString) throws ConnectorException {
         if (dateString == null) {
             return null;
         }
@@ -539,7 +352,7 @@ public class YouTubeConnector extends SearchProvider {
         try {
             return ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_ZONED_DATE_TIME);
         } catch (DateTimeParseException e) {
-            throw new InterWebException("dateString: [" + dateString + "] " + e.getMessage());
+            throw new ConnectorException("dateString: [" + dateString + "] " + e.getMessage());
         }
     }
 

@@ -2,24 +2,18 @@ package de.l3s.interweb.connector.giphy;
 
 import static de.l3s.interweb.core.util.Assertions.notNull;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import jakarta.enterprise.context.Dependent;
 
-import com.google.auto.service.AutoService;
-import com.trievosoftware.giphy4j.Giphy;
-import com.trievosoftware.giphy4j.entity.giphy.GiphyContainer;
-import com.trievosoftware.giphy4j.entity.giphy.GiphyData;
-import com.trievosoftware.giphy4j.entity.giphy.GiphyImage;
-import com.trievosoftware.giphy4j.entity.search.SearchFeed;
+import org.jboss.logging.Logger;
 
+import de.l3s.interweb.connector.giphy.client.Giphy;
+import de.l3s.interweb.connector.giphy.client.entity.giphy.GiphyContainer;
+import de.l3s.interweb.connector.giphy.client.entity.giphy.GiphyData;
+import de.l3s.interweb.connector.giphy.client.entity.giphy.GiphyImage;
+import de.l3s.interweb.connector.giphy.client.entity.search.SearchFeed;
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.search.SearchResults;
-import de.l3s.interweb.core.search.SearchProvider;
-import de.l3s.interweb.core.query.ContentType;
-import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.search.SearchItem;
-import de.l3s.interweb.core.query.Thumbnail;
+import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.search.*;
 
 /**
  * Giphy, styled as GIPHY, is an American online database and search engine that allows users to search for
@@ -28,45 +22,42 @@ import de.l3s.interweb.core.query.Thumbnail;
  *
  * @see <a href="https://developers.giphy.com/docs/api/endpoint#search">Giphy Search API</a>
  */
-@AutoService(SearchProvider.class)
-public class GiphyConnector extends SearchProvider {
-    private static final Logger log = LogManager.getLogger(GiphyConnector.class);
+@Dependent
+public class GiphyConnector implements SearchConnector {
+    private static final Logger log = Logger.getLogger(GiphyConnector.class);
 
-    public GiphyConnector() {
-        super("Giphy", "https://giphy.com/", ContentType.image);
-    }
-
-    public GiphyConnector(AuthCredentials consumerAuthCredentials) {
-        this();
-        setAuthCredentials(consumerAuthCredentials);
+    @Override
+    public String getName() {
+        return "Giphy";
     }
 
     @Override
-    public SearchProvider clone() {
-        return new GiphyConnector(getAuthCredentials());
+    public String getBaseUrl() {
+        return "https://giphy.com/";
     }
 
     @Override
-    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
+    public ContentType[] getSearchTypes() {
+        return new ContentType[]{ContentType.image};
+    }
+
+    @Override
+    public SearchConnectorResults search(SearchQuery query, AuthCredentials credentials) throws ConnectorException {
         notNull(query, "query");
 
-        if (authCredentials == null) {
-            authCredentials = getAuthCredentials();
-        }
-
         try {
-            Giphy giphy = new Giphy(authCredentials.getSecret());
+            Giphy giphy = new Giphy(credentials.getKey());
 
             SearchFeed feed = giphy.search(query.getQuery(), query.getPerPage(), (query.getPage() - 1) * query.getPerPage(), query.getLanguage());
 
-            SearchResults results = new SearchResults(query, getName());
+            SearchConnectorResults results = new SearchConnectorResults();
 
             if (feed.getDataList() != null && !feed.getDataList().isEmpty()) {
                 results.setTotalResults(feed.getPagination().getTotalCount());
 
                 int index = 1;
                 for (GiphyData image : feed.getDataList()) {
-                    SearchItem resultItem = new SearchItem(getName(), index++);
+                    SearchItem resultItem = new SearchItem(index++);
                     resultItem.setType(ContentType.image);
                     resultItem.setId(image.getId());
                     resultItem.setTitle(image.getTitle());
@@ -113,7 +104,7 @@ public class GiphyConnector extends SearchProvider {
 
             return results;
         } catch (Exception e) {
-            throw new InterWebException(e);
+            throw new ConnectorException(e);
         }
     }
 
@@ -121,7 +112,7 @@ public class GiphyConnector extends SearchProvider {
         try {
             return new Thumbnail(image.getUrl(), Integer.parseInt(image.getWidth()), Integer.parseInt(image.getHeight()));
         } catch (Exception e) {
-            log.error("Failed to parse numbers in {}", image, e);
+            log.errorv("Failed to parse numbers in {0}", image, e);
             return null;
         }
     }

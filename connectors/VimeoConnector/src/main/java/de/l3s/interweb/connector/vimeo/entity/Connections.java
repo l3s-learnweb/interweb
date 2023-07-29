@@ -1,24 +1,24 @@
 package de.l3s.interweb.connector.vimeo.entity;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Connections {
 
-    @SerializedName("comments")
+    @JsonProperty("comments")
     private Comments comments;
-    @SerializedName("credits")
+    @JsonProperty("credits")
     private Credits credits;
-    @SerializedName("likes")
+    @JsonProperty("likes")
     private Likes likes;
-    @SerializedName("texttracks")
+    @JsonProperty("texttracks")
     private Texttracks texttracks;
-    @SerializedName("related")
+    @JsonProperty("related")
     private Related related;
-    @SerializedName("albums")
+    @JsonProperty("albums")
     private Albums albums;
-    @SerializedName("available_albums")
+    @JsonProperty("available_albums")
     private AvailableAlbums availableAlbums;
-    @SerializedName("available_channels")
+    @JsonProperty("available_channels")
     private AvailableChannels availableChannels;
 
     public Comments getComments() {

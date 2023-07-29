@@ -13,26 +13,17 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import jakarta.enterprise.context.Dependent;
 
-import com.google.auto.service.AutoService;
-import com.google.gson.Gson;
+import org.jboss.logging.Logger;
 
-import de.l3s.interweb.connector.vimeo.entity.Datum;
-import de.l3s.interweb.connector.vimeo.entity.Pictures;
-import de.l3s.interweb.connector.vimeo.entity.Size;
-import de.l3s.interweb.connector.vimeo.entity.Tag;
-import de.l3s.interweb.connector.vimeo.entity.VimeoResponse;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.l3s.interweb.connector.vimeo.entity.*;
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.search.SearchResults;
-import de.l3s.interweb.core.search.SearchProvider;
-import de.l3s.interweb.core.query.ContentType;
-import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.search.SearchItem;
-import de.l3s.interweb.core.query.SearchRanking;
-import de.l3s.interweb.core.query.Thumbnail;
+import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.search.*;
 import de.l3s.interweb.core.util.DateUtils;
 
 /**
@@ -41,60 +32,47 @@ import de.l3s.interweb.core.util.DateUtils;
  *
  * @see <a href="https://developer.vimeo.com/api/reference/videos#search_videos">Vimeo Search API</a>
  */
-@AutoService(SearchProvider.class)
-public class VimeoConnector extends SearchProvider {
-    private static final Logger log = LogManager.getLogger(VimeoConnector.class);
+@Dependent
+public class VimeoConnector implements SearchConnector {
+    private static final Logger log = Logger.getLogger(VimeoConnector.class);
 
-    public VimeoConnector() {
-        super("Vimeo", "https://vimeo.com/", ContentType.video);
-    }
-
-    public VimeoConnector(AuthCredentials consumerAuthCredentials) {
-        this();
-        setAuthCredentials(consumerAuthCredentials);
+    @Override
+    public String getName() {
+        return "Vimeo";
     }
 
     @Override
-    public SearchProvider clone() {
-        return new VimeoConnector(getAuthCredentials());
+    public String getBaseUrl() {
+        return "https://vimeo.com/";
     }
 
     @Override
-    public SearchResults get(Query query, AuthCredentials authCredentials) throws InterWebException {
-        if (!isRegistered()) {
-            throw new InterWebException("Service is not yet registered");
-        }
+    public ContentType[] getSearchTypes() {
+        return new ContentType[]{ContentType.video};
+    }
 
-        if (authCredentials == null) {
-            authCredentials = getAuthCredentials();
-        }
-
-        SearchResults queryResult = new SearchResults(query, getName());
-
-        if (!query.getContentTypes().contains(ContentType.video)) {
-            return queryResult;
-        }
-
-        if (query.getQuery().startsWith("user::")) {
-            return queryResult;
-        }
+    @Override
+    public SearchConnectorResults search(SearchQuery query, AuthCredentials credentials) throws ConnectorException {
+        SearchConnectorResults queryResult = new SearchConnectorResults();
 
         try {
             final String requestUrl = "https://api.vimeo.com/videos?page=" + query.getPage()
-                + "&per_page=" + query.getPerPage()
-                + "&sort=" + createSortOrder(query.getRanking())
-                + "&query=" + URLEncoder.encode(query.getQuery(), StandardCharsets.UTF_8);
+                    + "&per_page=" + query.getPerPage()
+                    + "&sort=" + createSortOrder(query.getRanking())
+                    + "&query=" + URLEncoder.encode(query.getQuery(), StandardCharsets.UTF_8);
             final String response = httpRequest(requestUrl, Map.ofEntries(
-                Map.entry("Accept", "application/vnd.vimeo.*+json; version=3.2"),
-                Map.entry("Authorization", "bearer " + authCredentials.getSecret())
+                    Map.entry("Accept", "application/vnd.vimeo.*+json; version=3.2"),
+                    Map.entry("Authorization", "bearer " + credentials.getKey())
             ));
 
-            final VimeoResponse vimeoResponse = new Gson().fromJson(response, VimeoResponse.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            final VimeoResponse vimeoResponse = objectMapper.readValue(response, VimeoResponse.class);
 
             if (vimeoResponse.getError() != null
-                && vimeoResponse.getErrorCode() != 2286 // 2286 - no results for this page (when not first page requested)
-                && vimeoResponse.getErrorCode() != 2969) { // 2969 - requested a page of results that does not exist
-                throw new InterWebException(vimeoResponse.getErrorCode() + ": " + vimeoResponse.getDeveloperMessage());
+                    && vimeoResponse.getErrorCode() != 2286 // 2286 - no results for this page (when not first page requested)
+                    && vimeoResponse.getErrorCode() != 2969) { // 2969 - requested a page of results that does not exist
+                throw new ConnectorException(vimeoResponse.getErrorCode() + ": " + vimeoResponse.getDeveloperMessage());
             }
 
             if (vimeoResponse.getTotal() == 0) {
@@ -106,7 +84,7 @@ public class VimeoConnector extends SearchProvider {
 
             for (Datum video : vimeoResponse.getData()) {
                 try {
-                    SearchItem resultItem = new SearchItem(getName(), count++);
+                    SearchItem resultItem = new SearchItem(count++);
                     resultItem.setType(ContentType.video);
                     resultItem.setId(video.getLink().substring(1 + video.getLink().lastIndexOf('/')));
                     resultItem.setTitle(video.getName());
@@ -153,7 +131,7 @@ public class VimeoConnector extends SearchProvider {
                 }
             }
         } catch (Throwable e) {
-            log.error("Failed to retrieve results for query {}", query, e);
+            log.errorv("Failed to retrieve results for query {0}", query, e);
         }
         return queryResult;
     }
@@ -166,12 +144,7 @@ public class VimeoConnector extends SearchProvider {
         };
     }
 
-    @Override
-    public boolean isUserRegistrationRequired() {
-        return true;
-    }
-
-    protected static ZonedDateTime parseDate(String dateString) throws InterWebException {
+    protected static ZonedDateTime parseDate(String dateString) throws ConnectorException {
         if (dateString == null) {
             return null;
         }
@@ -179,7 +152,7 @@ public class VimeoConnector extends SearchProvider {
         try {
             return ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         } catch (DateTimeParseException e) {
-            throw new InterWebException("dateString: [" + dateString + "]. " + e.getMessage());
+            throw new ConnectorException("dateString: [" + dateString + "]. " + e.getMessage());
         }
     }
 

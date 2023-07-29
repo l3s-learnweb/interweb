@@ -1,18 +1,18 @@
 package de.l3s.interweb.connector.vimeo.entity;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Privacy {
 
-    @SerializedName("view")
+    @JsonProperty("view")
     private String view;
-    @SerializedName("embed")
+    @JsonProperty("embed")
     private String embed;
-    @SerializedName("download")
+    @JsonProperty("download")
     private Boolean download;
-    @SerializedName("add")
+    @JsonProperty("add")
     private Boolean add;
-    @SerializedName("comments")
+    @JsonProperty("comments")
     private String comments;
 
     public String getView() {

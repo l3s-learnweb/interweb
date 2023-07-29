@@ -194,7 +194,9 @@
         <module name="AvoidNestedBlocks"/>
         <module name="EmptyBlock"/>
         <module name="LeftCurly"/>
-        <module name="NeedBraces"/>
+        <module name="NeedBraces">
+            <property name="allowSingleLineStatement" value="true"/>
+        </module>
         <module name="RightCurly"/>
 
         <!-- Checks for common coding problems               -->
@@ -239,7 +241,7 @@
             <property name="caseIndent" value="4"/>
             <property name="throwsIndent" value="4"/>
             <property name="lineWrappingIndentation" value="4"/>
-            <property name="arrayInitIndent" value="4"/>
+            <property name="arrayInitIndent" value="8"/>
         </module>
         <module name="CommentsIndentation">
             <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>
@@ -249,7 +251,7 @@
         <module name="NonEmptyAtclauseDescription"/>
         <module name="AtclauseOrder"/>
         <module name="ImportOrder">
-            <property name="groups" value="java,javax,jakarta,org,com"/>
+            <property name="groups" value="java,jakarta,/^(org|io)\./,com"/>
             <property name="ordered" value="true"/>
             <property name="separated" value="true"/>
             <property name="option" value="top"/>

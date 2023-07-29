@@ -2,9 +2,7 @@ package de.l3s.interweb.core.util;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 
 public final class DateUtils {
@@ -20,13 +18,5 @@ public final class DateUtils {
 
     public static String format(DateTimeFormatter formatter, TemporalAccessor dateTime) {
         return (dateTime == null) ? null : formatter.format(dateTime);
-    }
-
-    public static ZonedDateTime parse(String dateString) throws DateTimeParseException {
-        return parse(DEFAULT_DATE_TIME_FORMAT, dateString);
-    }
-
-    public static ZonedDateTime parse(DateTimeFormatter formatter, String dateString) throws DateTimeParseException {
-        return ZonedDateTime.parse(dateString, formatter);
     }
 }

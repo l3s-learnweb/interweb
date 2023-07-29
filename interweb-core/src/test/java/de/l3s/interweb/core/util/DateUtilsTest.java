@@ -15,9 +15,4 @@ class DateUtilsTest {
         assertEquals("2020-10-02 16:14:14", DateUtils.format(ZonedDateTime.of(2020, 10, 2, 16, 14, 14, 0, ZoneId.systemDefault())));
         assertNull(DateUtils.format(null));
     }
-
-    @Test
-    void parse() {
-        assertEquals(1601648054000L, DateUtils.parse("2020-10-02 16:14:14").toInstant().toEpochMilli());
-    }
 }

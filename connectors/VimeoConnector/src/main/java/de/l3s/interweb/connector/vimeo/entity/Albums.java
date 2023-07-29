@@ -2,15 +2,15 @@ package de.l3s.interweb.connector.vimeo.entity;
 
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Albums {
 
-    @SerializedName("uri")
+    @JsonProperty("uri")
     private String uri;
-    @SerializedName("options")
+    @JsonProperty("options")
     private List<String> options = null;
-    @SerializedName("total")
+    @JsonProperty("total")
     private Integer total;
 
     public String getUri() {

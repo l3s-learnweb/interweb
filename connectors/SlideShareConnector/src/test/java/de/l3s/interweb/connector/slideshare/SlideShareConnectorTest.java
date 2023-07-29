@@ -1,45 +1,38 @@
 package de.l3s.interweb.connector.slideshare;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.BeforeAll;
+import io.quarkus.test.junit.QuarkusTest;
+import org.jboss.logging.Logger;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.search.SearchResults;
-import de.l3s.interweb.core.search.SearchProvider;
-import de.l3s.interweb.core.query.ContentType;
-import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.QueryFactory;
-import de.l3s.interweb.core.search.SearchItem;
-import de.l3s.interweb.core.query.SearchRanking;
-import de.l3s.interweb.core.query.SearchScope;
+import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.search.*;
 
 @Disabled
+@QuarkusTest
 class SlideShareConnectorTest {
-    private static final Logger log = LogManager.getLogger(SlideShareConnectorTest.class);
+    private static final Logger log = Logger.getLogger(SlideShareConnectorTest.class);
+    private static final SlideShareConnector connector = new SlideShareConnector();
 
-    private static final String TEST_KEY = "***REMOVED***";
-    private static final String TEST_SECRET = "***REMOVED***";
+    @ConfigProperty(name = "connectors.slideshare.key")
+    String apikey;
 
-    private static SearchProvider connector;
-
-    @BeforeAll
-    public static void initialize() {
-        AuthCredentials consumerAuthCredentials = new AuthCredentials(TEST_KEY, TEST_SECRET);
-        connector = new SlideShareConnector(consumerAuthCredentials);
-    }
+    @ConfigProperty(name = "connectors.slideshare.secret")
+    String secret;
 
     @Test
-    void get() throws InterWebException {
-        Query query = QueryFactory.createQuery("hello world");
+    void search() throws ConnectorException {
+        SearchQuery query = new SearchQuery();
+        query.setQuery("hello world");
         query.addContentType(ContentType.video);
         query.addContentType(ContentType.image);
         query.addContentType(ContentType.text);
@@ -51,7 +44,7 @@ class SlideShareConnectorTest {
         // query.setDateTill("2009-06-01 00:00:00");
         query.setRanking(SearchRanking.relevance);
 
-        SearchResults queryResult = connector.get(query, null);
+        SearchConnectorResults queryResult = connector.search(query, new AuthCredentials(apikey, secret));
 
         for (SearchItem res : queryResult.getItems()) {
             log.info(res);
@@ -59,19 +52,10 @@ class SlideShareConnectorTest {
 
         assertEquals(18, queryResult.getItems().size());
         assertTrue(queryResult.getTotalResults() > 100);
-
-        String embedded = connector.getEmbedded(null, "https://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
-        System.out.println(embedded);
     }
 
     @Test
-    void getEmbedded() throws InterWebException {
-        String embedded = connector.getEmbedded(null, "https://www.slideshare.net/pacific2000/flowers-presentation-715934", 240, 240);
-        System.out.println(embedded);
-    }
-
-    @Test
-    void parseDate() throws InterWebException {
+    void parseDate() throws ConnectorException {
         ZonedDateTime localDateTime = SlideShareConnector.parseDate("2015-09-23 16:15:57 UTC");
         assertEquals(ZonedDateTime.of(2015, 9, 23, 16, 15, 57, 0, ZoneId.of("Etc/UTC")), localDateTime);
     }

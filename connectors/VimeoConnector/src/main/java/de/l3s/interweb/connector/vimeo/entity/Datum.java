@@ -2,61 +2,61 @@ package de.l3s.interweb.connector.vimeo.entity;
 
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Datum {
 
-    @SerializedName("uri")
+    @JsonProperty("uri")
     private String uri;
-    @SerializedName("name")
+    @JsonProperty("name")
     private String name;
-    @SerializedName("description")
+    @JsonProperty("description")
     private String description;
-    @SerializedName("type")
+    @JsonProperty("type")
     private String type;
-    @SerializedName("link")
+    @JsonProperty("link")
     private String link;
-    @SerializedName("duration")
+    @JsonProperty("duration")
     private Integer duration;
-    @SerializedName("width")
+    @JsonProperty("width")
     private Integer width;
-    @SerializedName("language")
+    @JsonProperty("language")
     private Object language;
-    @SerializedName("height")
+    @JsonProperty("height")
     private Integer height;
-    @SerializedName("embed")
+    @JsonProperty("embed")
     private Embed embed;
-    @SerializedName("created_time")
+    @JsonProperty("created_time")
     private String createdTime;
-    @SerializedName("modified_time")
+    @JsonProperty("modified_time")
     private String modifiedTime;
-    @SerializedName("release_time")
+    @JsonProperty("release_time")
     private String releaseTime;
-    @SerializedName("content_rating")
+    @JsonProperty("content_rating")
     private List<String> contentRating = null;
-    @SerializedName("license")
+    @JsonProperty("license")
     private Object license;
-    @SerializedName("privacy")
+    @JsonProperty("privacy")
     private Privacy privacy;
-    @SerializedName("pictures")
+    @JsonProperty("pictures")
     private Pictures pictures;
-    @SerializedName("tags")
+    @JsonProperty("tags")
     private List<Tag> tags = null;
-    @SerializedName("stats")
+    @JsonProperty("stats")
     private Stats stats;
-    @SerializedName("metadata")
+    @JsonProperty("metadata")
     private Metadata metadata;
-    @SerializedName("user")
+    @JsonProperty("user")
     private User user;
-    @SerializedName("app")
+    @JsonProperty("app")
     private Object app;
-    @SerializedName("status")
+    @JsonProperty("status")
     private String status;
-    @SerializedName("resource_key")
+    @JsonProperty("resource_key")
     private String resourceKey;
-    @SerializedName("review_link")
+    @JsonProperty("review_link")
     private String reviewLink;
-    @SerializedName("embed_presets")
+    @JsonProperty("embed_presets")
     private Object embedPresets;
 
     public String getUri() {

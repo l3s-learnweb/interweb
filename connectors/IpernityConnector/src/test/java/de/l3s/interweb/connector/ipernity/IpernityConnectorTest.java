@@ -1,48 +1,39 @@
 package de.l3s.interweb.connector.ipernity;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.BeforeAll;
+import io.quarkus.test.junit.QuarkusTest;
+import org.jboss.logging.Logger;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.AuthCredentials;
-import de.l3s.interweb.core.InterWebException;
-import de.l3s.interweb.core.search.SearchResults;
-import de.l3s.interweb.core.search.SearchProvider;
-import de.l3s.interweb.core.query.ContentType;
-import de.l3s.interweb.core.query.Query;
-import de.l3s.interweb.core.query.QueryFactory;
-import de.l3s.interweb.core.search.SearchItem;
-import de.l3s.interweb.core.query.SearchRanking;
+import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.search.*;
 
 @Disabled
+@QuarkusTest
 class IpernityConnectorTest {
-    private static final Logger log = LogManager.getLogger(IpernityConnectorTest.class);
+    private static final Logger log = Logger.getLogger(IpernityConnectorTest.class);
+    private static final IpernityConnector connector = new IpernityConnector();
 
-    private static final String TEST_KEY = "***REMOVED***";
-    private static final String TEST_SECRET = "***REMOVED***";
-
-    private static SearchProvider connector;
-
-    @BeforeAll
-    public static void initialize() {
-        AuthCredentials consumerAuthCredentials = new AuthCredentials(TEST_KEY, TEST_SECRET);
-        connector = new IpernityConnector(consumerAuthCredentials);
-    }
+    @ConfigProperty(name = "connectors.ipernity.key")
+    String apikey;
 
     @Test
-    void get() throws InterWebException {
-        Query query = QueryFactory.createQuery("hello world");
+    void search() throws ConnectorException {
+        SearchQuery query = new SearchQuery();
+        query.setQuery("tree");
         query.addContentType(ContentType.image);
         query.setPerPage(20);
         // query.setDateFrom("2009-01-01 00:00:00");
         // query.setDateTill("2009-06-01 00:00:00");
         query.setRanking(SearchRanking.relevance);
 
-        SearchResults queryResult = connector.get(query, null);
+        SearchConnectorResults queryResult = connector.search(query, new AuthCredentials(apikey));
 
         for (SearchItem res : queryResult.getItems()) {
             log.info(res);

@@ -2,19 +2,19 @@ package de.l3s.interweb.connector.vimeo.entity;
 
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Pictures {
 
-    @SerializedName("uri")
+    @JsonProperty("uri")
     private String uri;
-    @SerializedName("active")
+    @JsonProperty("active")
     private Boolean active;
-    @SerializedName("type")
+    @JsonProperty("type")
     private String type;
-    @SerializedName("sizes")
+    @JsonProperty("sizes")
     private List<Size> sizes = null;
-    @SerializedName("resource_key")
+    @JsonProperty("resource_key")
     private String resourceKey;
 
     public String getUri() {
