@@ -5,7 +5,7 @@ import de.l3s.interweb.core.Connector;
 import de.l3s.interweb.core.ConnectorException;
 
 public interface CompletionConnector extends Connector {
-    String getModel();
+    String[] getModels();
 
     CompletionResults complete(CompletionQuery query, AuthCredentials credentials) throws ConnectorException;
 }

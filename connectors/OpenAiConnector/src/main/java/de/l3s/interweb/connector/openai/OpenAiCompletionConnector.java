@@ -42,8 +42,8 @@ public class OpenAiCompletionConnector implements CompletionConnector {
     }
 
     @Override
-    public String getModel() {
-        return "gpt-35-turbo";
+    public String[] getModels() {
+        return new String[]{"gpt-35-turbo", "gpt-35-turbo-16k", "gpt-4"};
     }
 
     @Override
@@ -58,10 +58,10 @@ public class OpenAiCompletionConnector implements CompletionConnector {
         return response;
     }
 
-    private HttpRequest createRequest(final CompletionQuery data, AuthCredentials credentials) throws ConnectorException {
+    private HttpRequest createRequest(final CompletionQuery query, AuthCredentials credentials) throws ConnectorException {
         try {
-            URI requestUri = URI.create("https://" + credentials.getKey() + "/chat/completions?api-version=" + version);
-            String requestBody = mapper.writeValueAsString(new CompletionBody(data));
+            URI requestUri = URI.create("https://" + credentials.getKey() + "/openai/deployments/" + query.getModel() + "/chat/completions?api-version=" + version);
+            String requestBody = mapper.writeValueAsString(new CompletionBody(query));
 
             return HttpRequest.newBuilder()
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))

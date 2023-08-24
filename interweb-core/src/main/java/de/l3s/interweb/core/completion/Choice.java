@@ -1,5 +1,8 @@
 package de.l3s.interweb.core.completion;
 
+import java.time.Instant;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.ConnectorResults;
@@ -32,5 +35,17 @@ public class Choice extends ConnectorResults {
 
     public void setMessage(Message message) {
         this.message = message;
+    }
+
+    @Override
+    @JsonIgnore
+    public long getElapsedTime() {
+        return super.getElapsedTime();
+    }
+
+    @Override
+    @JsonIgnore
+    public Instant getCreated() {
+        return super.getCreated();
     }
 }

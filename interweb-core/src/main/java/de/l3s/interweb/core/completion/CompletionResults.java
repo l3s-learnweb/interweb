@@ -4,9 +4,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import de.l3s.interweb.core.Results;
 
 public class CompletionResults extends Results<Choice> {
+    @JsonProperty("id")
     private UUID chatId;
     private String model;
     private Usage usage;
@@ -34,6 +38,12 @@ public class CompletionResults extends Results<Choice> {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    @Override
+    @JsonIgnore
+    public List<Choice> getResults() {
+        return super.getResults();
     }
 
     public List<Choice> getChoices() {

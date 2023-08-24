@@ -29,7 +29,11 @@ public class ChatService {
     @Inject
     public ChatService(@All List<CompletionConnector> connectors, SecretsService secretsService) {
         services = new HashMap<>();
-        connectors.forEach(connector -> services.put(connector.getModel(), connector));
+        connectors.forEach(connector -> {
+            for (String model : connector.getModels()) {
+                services.put(model, connector);
+            }
+        });
         log.info("Loaded " + services.size() + " completion connectors");
         this.secretsService = secretsService;
     }
