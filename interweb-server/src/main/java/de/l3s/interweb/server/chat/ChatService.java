@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 
 import io.quarkus.arc.All;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
 import org.jboss.logging.Logger;
 
 import de.l3s.interweb.core.ConnectorException;
@@ -50,6 +51,7 @@ public class ChatService {
         long start = System.currentTimeMillis();
         return secretsService.getAuthCredentials(connector.getId(), principal)
                 .onItem().ifNull().failWith(new ConnectorException("No credentials found"))
+                .emitOn(Infrastructure.getDefaultWorkerPool())
                 .map(credentials -> connector.complete(query, credentials))
                 .onItem().invoke(conRes -> conRes.setElapsedTime(System.currentTimeMillis() - start));
     }
