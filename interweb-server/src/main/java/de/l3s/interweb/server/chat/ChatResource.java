@@ -14,6 +14,7 @@ import jakarta.ws.rs.core.Context;
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
+import io.quarkus.vertx.VertxContextSupport;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -49,15 +50,12 @@ public class ChatResource {
     @POST
     @Authenticated
     @Path("/completions")
-    public Uni<CompletionResults> completions(@Valid CompletionQuery query) {
-        return getOrCreateChat(query).flatMap(chat -> {
-            long start = System.currentTimeMillis();
-            return chatService.completions(query, (Principal) securityIdentity.getPrincipal()).call(results -> {
-                results.setElapsedTime(System.currentTimeMillis() - start);
-                results.setChatId(chat.id);
-                return persistMessages(chat, query.getMessages(), results.getChoices());
-            });
-        });
+    public CompletionResults completions(@Valid CompletionQuery query) throws Throwable {
+        Chat chat = VertxContextSupport.subscribeAndAwait(() -> getOrCreateChat(query));
+        CompletionResults results = chatService.completions(query, (Principal) securityIdentity.getPrincipal());
+        results.setChatId(chat.id);
+        VertxContextSupport.subscribeAndAwait(() -> persistMessages(chat, query.getMessages(), results.getChoices()));
+        return results;
     }
 
     private Uni<Chat> getOrCreateChat(CompletionQuery query) {
