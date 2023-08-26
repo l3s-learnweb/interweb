@@ -17,11 +17,13 @@ public class CompletionQuery {
      * Defaults to "gpt-35-turbo".
      */
     @NotEmpty
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String model = "gpt-35-turbo";
 
     /**
      * ID of the chat to continue.
      */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UUID chatId;
 
     /**

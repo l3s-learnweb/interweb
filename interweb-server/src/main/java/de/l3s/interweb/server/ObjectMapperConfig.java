@@ -14,5 +14,7 @@ public class ObjectMapperConfig implements ObjectMapperCustomizer {
         config.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         config.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         config.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        // config.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
+        // config.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 }

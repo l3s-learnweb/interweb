@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.l3s.interweb.core.Results;
 
 public class CompletionResults extends Results<Choice> {
-    @JsonProperty("id")
+    @JsonProperty(value = "id", access = JsonProperty.Access.READ_ONLY)
     private UUID chatId;
     private String model;
     private Usage usage;
@@ -48,6 +48,11 @@ public class CompletionResults extends Results<Choice> {
 
     public List<Choice> getChoices() {
         return getResults();
+    }
+
+    @JsonProperty
+    public void setChoices(List<Choice> choices) {
+        super.add(choices);
     }
 
     public Usage getUsage() {

@@ -9,9 +9,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import io.quarkus.arc.All;
+import io.smallrye.mutiny.Uni;
 import org.jboss.logging.Logger;
 
-import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.completion.CompletionConnector;
 import de.l3s.interweb.core.completion.CompletionQuery;
@@ -42,16 +42,13 @@ public class ChatService {
         return this.services.values();
     }
 
-    public CompletionResults completions(CompletionQuery query, Principal principal) {
+    public Uni<CompletionResults> completions(CompletionQuery query, Principal principal) {
         return completions(query, principal, services.get(query.getModel()));
     }
 
-    private CompletionResults completions(CompletionQuery query, Principal principal, CompletionConnector connector) {
-        long start = System.currentTimeMillis();
-        AuthCredentials credentials = secretsService.getAuthCredentials(connector.getId(), principal)
-                .onItem().ifNull().failWith(new ConnectorException("No credentials found")).await().indefinitely();
-        CompletionResults conRes = connector.complete(query, credentials);
-        conRes.setElapsedTime(System.currentTimeMillis() - start);
-        return conRes;
+    private Uni<CompletionResults> completions(CompletionQuery query, Principal principal, CompletionConnector connector) {
+        return secretsService.getAuthCredentials(connector.getId(), principal)
+                .onItem().ifNull().failWith(new ConnectorException("No credentials found"))
+                .flatMap(credentials -> connector.complete(query, credentials));
     }
 }
