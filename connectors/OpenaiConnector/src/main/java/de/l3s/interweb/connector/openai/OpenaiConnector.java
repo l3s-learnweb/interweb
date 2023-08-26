@@ -13,7 +13,7 @@ import de.l3s.interweb.core.completion.CompletionQuery;
 import de.l3s.interweb.core.completion.CompletionResults;
 
 @Dependent
-public class OpenaiCompletionConnector implements CompletionConnector {
+public class OpenaiConnector implements CompletionConnector {
 
     private static final String version = "2023-05-15";
 

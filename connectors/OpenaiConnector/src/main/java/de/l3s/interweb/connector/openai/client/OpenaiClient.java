@@ -17,8 +17,8 @@ import de.l3s.interweb.core.completion.CompletionResults;
 import de.l3s.interweb.core.util.StringUtils;
 
 @Path("/openai/deployments")
-@RegisterRestClient(configKey = "openai-api")
-@ClientHeaderParam(name = "api-key", value = "${quarkus.rest-client.openai-api.apikey}")
+@RegisterRestClient(configKey = "openai")
+@ClientHeaderParam(name = "api-key", value = "${quarkus.rest-client.openai.apikey}")
 public interface OpenaiClient {
 
     @POST

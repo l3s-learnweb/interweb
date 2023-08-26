@@ -2,6 +2,7 @@ package de.l3s.interweb.connector.bing.client;
 
 public final class BingUtils {
     public static String getMarket(String language) {
+        if (language == null) return null;
         return switch (language.toLowerCase()) {
             case "ar" -> "ar-XA";
             case "bg" -> "bg-BG";

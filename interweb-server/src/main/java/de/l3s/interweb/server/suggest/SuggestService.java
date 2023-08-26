@@ -9,7 +9,6 @@ import jakarta.validation.ValidationException;
 import io.quarkus.arc.All;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.infrastructure.Infrastructure;
 import org.jboss.logging.Logger;
 
 import de.l3s.interweb.core.ConnectorException;
@@ -54,21 +53,17 @@ public class SuggestService {
     }
 
     public Uni<SuggestResults> suggest(SuggestQuery query) {
-        return Multi.createFrom()
-                .iterable(getConnectors(query.getServices()))
-                .emitOn(Infrastructure.getDefaultWorkerPool())
+        return Multi.createFrom().iterable(getConnectors(query.getServices()))
                 .onItem().transformToUniAndMerge(connector -> suggest(query, connector))
                 .collect().asList().map(SuggestResults::new);
     }
 
     private Uni<SuggestConnectorResults> suggest(SuggestQuery query, SuggestConnector connector) {
         long start = System.currentTimeMillis();
-        return Uni.createFrom().item(() -> connector.suggest(query))
-                .onFailure(ConnectorException.class).recoverWithItem(failure -> {
-                    SuggestConnectorResults results = new SuggestConnectorResults();
-                    results.setError((ConnectorException) failure);
-                    return results;
-                })
-                .onItem().invoke(conRes -> connector.fillResult(conRes, System.currentTimeMillis() - start));
+        return connector.suggest(query).onFailure(ConnectorException.class).recoverWithItem(failure -> {
+            SuggestConnectorResults results = new SuggestConnectorResults();
+            results.setError((ConnectorException) failure);
+            return results;
+        }).onItem().invoke(conRes -> connector.fillResult(conRes, System.currentTimeMillis() - start));
     }
 }

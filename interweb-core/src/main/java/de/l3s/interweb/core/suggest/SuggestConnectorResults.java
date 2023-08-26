@@ -1,5 +1,6 @@
 package de.l3s.interweb.core.suggest;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,8 +13,8 @@ public class SuggestConnectorResults extends ConnectorResults {
         return items;
     }
 
-    public void addItem(String result) {
-        items.add(result);
+    public void addItems(String... items) {
+        Collections.addAll(this.items, items);
     }
 
     public int size() {
