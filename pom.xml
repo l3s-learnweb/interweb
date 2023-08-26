@@ -19,12 +19,19 @@
 
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.2.4.Final</quarkus.platform.version>
+        <quarkus.platform.version>3.3.0</quarkus.platform.version>
 
         <surefire-plugin.version>3.1.2</surefire-plugin.version>
+        <enforcer-plugin.version>3.4.0</enforcer-plugin.version>
+        <dependency-plugin.version>3.6.0</dependency-plugin.version>
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <source-plugin.version>3.3.0</source-plugin.version>
         <resources-plugin.version>3.3.1</resources-plugin.version>
+        <shade-plugin.version>3.5.0</shade-plugin.version>
+        <jandex-plugin.version>3.1.2</jandex-plugin.version>
+        <versions-plugin.version>2.16.0</versions-plugin.version>
+        <checkstyle-plugin.version>3.3.0</checkstyle-plugin.version>
+        <spotbugs-plugin.version>4.7.3.5</spotbugs-plugin.version>
     </properties>
 
     <modules>
@@ -37,7 +44,7 @@
         <module>connectors/GiphyConnector</module>
         <module>connectors/GoogleConnector</module>
         <module>connectors/IpernityConnector</module>
-        <module>connectors/OpenAiConnector</module>
+        <module>connectors/OpenaiConnector</module>
         <module>connectors/SlideShareConnector</module>
         <module>connectors/VimeoConnector</module>
         <module>connectors/YouTubeConnector</module>
@@ -65,9 +72,8 @@
         <plugins>
             <!-- A maven component that enforces minimum Java and Maven versions -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${enforcer-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -89,9 +95,8 @@
             </plugin>
             <!-- Provides commands to check dependency tree -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${dependency-plugin.version}</version>
             </plugin>
             <!-- Specifies target Java version for builds -->
             <plugin>
@@ -105,13 +110,11 @@
             </plugin>
             <!-- Creates a jar archive of the source files of the current project -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>${source-plugin.version}</version>
             </plugin>
             <!-- Handles the copying of project resources to the output directory -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>${resources-plugin.version}</version>
             </plugin>
@@ -129,29 +132,26 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${surefire-plugin.version}</version>
             </plugin>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>${shade-plugin.version}</version>
+            </plugin>
             <!-- Generates Jandex index -->
             <plugin>
                 <groupId>io.smallrye</groupId>
                 <artifactId>jandex-maven-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>${jandex-plugin.version}</version>
             </plugin>
             <!-- Provides commands to check available updated for dependencies -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.16.0</version>
-            </plugin>
-            <!-- Provides commands to check for duplicate classes across dependencies -->
-            <plugin>
-                <groupId>org.basepom.maven</groupId>
-                <artifactId>duplicate-finder-maven-plugin</artifactId>
-                <version>2.0.1</version>
+                <version>${versions-plugin.version}</version>
             </plugin>
             <!-- Runs linter on Java sources to check code style -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${checkstyle-plugin.version}</version>
                 <configuration>
                     <configLocation>.mvn/checkstyle-config.xml</configLocation>
                     <consoleOutput>false</consoleOutput>
@@ -170,7 +170,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.7.3.5</version>
+                <version>${spotbugs-plugin.version}</version>
                 <configuration>
                     <excludeFilterFile>.mvn/spotbugs-exclude.xml</excludeFilterFile>
                 </configuration>
