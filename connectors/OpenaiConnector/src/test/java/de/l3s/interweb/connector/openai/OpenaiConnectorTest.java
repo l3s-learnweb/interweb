@@ -26,7 +26,7 @@ class OpenaiConnectorTest {
     @Test
     void complete() throws ConnectorException {
         CompletionQuery query = new CompletionQuery();
-        query.addMessage("You are Learnweb Assistant, a helpful chat bot.", Message.Role.system);
+        query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
         query.addMessage("What is your name?.", Message.Role.user);
 
         CompletionResults results = connector.complete(query, null).await().indefinitely();

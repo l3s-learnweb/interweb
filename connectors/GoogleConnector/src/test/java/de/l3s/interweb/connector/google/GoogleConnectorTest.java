@@ -30,9 +30,9 @@ class GoogleConnectorTest {
         SuggestConnectorResults results = connector.suggest(query).await().indefinitely();
 
         assertEquals(10, results.size());
-        System.out.println("Results for '" + query.getQuery() + "':");
+        log.infov("Results for '{0}':", query.getQuery());
         for (String result : results.getItems()) {
-            System.out.println(result);
+            log.infov("  {0}", result);
         }
     }
 }

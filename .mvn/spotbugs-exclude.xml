@@ -10,10 +10,6 @@
             <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
         </Or>
     </Match>
-    <!-- Singleton pattern used by Learnweb class and others are considered as anti-pattern nowadays -->
-    <Match>
-        <Bug pattern="LI_LAZY_INIT_STATIC"/>
-    </Match>
     <!-- We ignore return value of many executeQuery() calls -->
     <Match>
         <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
@@ -36,11 +32,6 @@
             <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
             <Bug pattern="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE"/>
         </Or>
-    </Match>
-    <!-- We need to create Learnweb if internal methods calls to Learnweb.getInstance() -->
-    <Match>
-        <Local name="learnweb"/>
-        <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
     </Match>
     <!-- TODO: clone method does not call super.clone() -->
     <Match>

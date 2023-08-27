@@ -39,7 +39,6 @@
         <module>interweb-server</module>
         <module>interweb-client</module>
         <module>connectors/BingConnector</module>
-        <module>connectors/EduRecConnector</module>
         <module>connectors/FlickrConnector</module>
         <module>connectors/GiphyConnector</module>
         <module>connectors/GoogleConnector</module>
@@ -153,8 +152,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${checkstyle-plugin.version}</version>
                 <configuration>
-                    <configLocation>.mvn/checkstyle-config.xml</configLocation>
-                    <consoleOutput>false</consoleOutput>
+                    <configLocation>google_checks.xml</configLocation>
                     <logViolationsToConsole>true</logViolationsToConsole>
                     <failOnViolation>true</failOnViolation>
                 </configuration>
