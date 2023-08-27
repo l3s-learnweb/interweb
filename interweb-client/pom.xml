@@ -16,7 +16,6 @@
     <packaging>jar</packaging>
 
     <name>Interweb Client</name>
-    <url>https://learnweb.l3s.uni-hannover.de/interweb/</url>
 
     <dependencies>
         <dependency>
@@ -62,6 +61,25 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <minimizeJar>true</minimizeJar>
+                    <artifactSet>
+                        <includes>
+                            <include>de.l3s.interweb:interweb-core</include>
+                        </includes>
+                    </artifactSet>
+                </configuration>
             </plugin>
         </plugins>
     </build>

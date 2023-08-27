@@ -40,7 +40,13 @@ public class SearchService {
 
     private Collection<SearchConnector> getConnectors(Set<String> services) {
         if (services != null && !services.isEmpty()) {
-            return services.stream().map(this.services::get).toList();
+            return services.stream().map(val -> {
+                SearchConnector connector = this.services.get(val.toLowerCase(Locale.ROOT));
+                if (connector == null) {
+                    throw new ConnectorException("Unknown service: " + val);
+                }
+                return connector;
+            }).toList();
         }
 
         return this.services.values();

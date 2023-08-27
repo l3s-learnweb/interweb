@@ -3,10 +3,13 @@ package de.l3s.interweb.core.search;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import de.l3s.interweb.core.ConnectorResults;
 
 public class SearchConnectorResults extends ConnectorResults {
 
+    @JsonProperty("total_results")
     private long totalResults = 0;
     private final List<SearchItem> items;
 

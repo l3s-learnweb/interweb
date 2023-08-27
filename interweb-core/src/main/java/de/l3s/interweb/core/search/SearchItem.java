@@ -38,6 +38,7 @@ public class SearchItem implements Serializable {
     private Set<String> tags = new HashSet<>();
 
     private String author;
+    @JsonProperty("author_url")
     private String authorUrl;
 
     @JsonProperty("views_count")

@@ -12,16 +12,22 @@ import java.util.TreeMap;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import de.l3s.interweb.core.completion.CompletionQuery;
+import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.search.SearchQuery;
 import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.core.suggest.SuggestQuery;
+import de.l3s.interweb.core.suggest.SuggestResults;
 import de.l3s.interweb.core.util.StringUtils;
 
 public class Interweb implements Serializable {
     @Serial
     private static final long serialVersionUID = 7231324400348062196L;
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper mapper;
     private final String serverUrl;
     private final String apikey;
 
@@ -29,48 +35,56 @@ public class Interweb implements Serializable {
         this.serverUrl = serverUrl;
         this.apikey = apikey;
 
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+    }
+
+    public SearchResults search(SearchQuery query) throws InterwebException {
+        return sendRequest("/search", query, SearchResults.class);
+    }
+
+    public SuggestResults suggest(SuggestQuery query) throws InterwebException {
+        return sendRequest("/suggest", query, SuggestResults.class);
+    }
+
+    public CompletionResults chatCompletions(CompletionQuery query) throws InterwebException {
+        return sendRequest("/chat/completions", query, CompletionResults.class);
     }
 
     private URI createRequestUri(final String apiPath, final TreeMap<String, String> params) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(serverUrl);
-        if (sb.charAt(sb.length() - 1) != '/') {
-            sb.append('/');
+        if (sb.charAt(sb.length() - 1) == '/') {
+            sb.setLength(sb.length() - 1);
         }
         sb.append(apiPath);
 
-        boolean isFirst = true;
-        for (final Map.Entry<String, String> entry : params.entrySet()) {
-            sb.append(isFirst ? '?' : '&').append(entry.getKey()).append('=').append(StringUtils.percentEncode(entry.getValue()));
-            isFirst = false;
+        if (params != null && !params.isEmpty()) {
+            boolean isFirst = true;
+            for (final Map.Entry<String, String> entry : params.entrySet()) {
+                sb.append(isFirst ? '?' : '&').append(entry.getKey()).append('=').append(StringUtils.percentEncode(entry.getValue()));
+                isFirst = false;
+            }
         }
 
         return URI.create(sb.toString());
     }
 
-    private HttpRequest createRequest(final String apiPath, final TreeMap<String, String> params) {
-        final URI apiUri = createRequestUri(apiPath, params);
-
-        return HttpRequest.newBuilder().GET()
-                .uri(apiUri)
-                .header("Accept", "application/json")
-                .header("Api-Key", apikey)
-                .build();
-    }
-
-    public SearchResults search(TreeMap<String, String> params) throws InterwebException {
-        String query = params.get("q");
-        if (null == query || query.isEmpty()) {
-            throw new IllegalArgumentException("empty query");
-        }
-
-        HttpRequest request = createRequest("search", params);
-
+    public <T> T sendRequest(final String apiPath, final Object query, Class<T> valueType) throws InterwebException {
         try {
+            final URI uri = createRequestUri(apiPath, null);
+            String body = mapper.writeValueAsString(query);
+
+            HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(body))
+                    .uri(uri)
+                    .header("Accept", "application/json")
+                    .header("Content-Type", "application/json")
+                    .header("Api-Key", apikey)
+                    .build();
+
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String responseBody = response.body();
@@ -79,9 +93,9 @@ public class Interweb implements Serializable {
                 throw new InterwebException("Interweb request failed, response: " + responseBody);
             }
 
-            return objectMapper.readValue(responseBody, SearchResults.class);
+            return mapper.readValue(responseBody, valueType);
         } catch (IOException | InterruptedException e) {
-            throw new InterwebException("An error occurred during Interweb request " + request, e);
+            throw new InterwebException("An error occurred during Interweb request " + query, e);
         }
     }
 }
