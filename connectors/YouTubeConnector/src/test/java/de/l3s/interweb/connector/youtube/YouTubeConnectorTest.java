@@ -23,7 +23,7 @@ class YouTubeConnectorTest {
     private static final Logger log = Logger.getLogger(YouTubeConnectorTest.class);
     private static final YouTubeConnector connector = new YouTubeConnector();
 
-    @ConfigProperty(name = "connectors.youtube.key")
+    @ConfigProperty(name = "connector.youtube.key")
     String apikey;
 
     @Test

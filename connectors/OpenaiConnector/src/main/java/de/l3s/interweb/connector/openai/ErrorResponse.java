@@ -1,4 +1,4 @@
-package de.l3s.interweb.connector.openai.client;
+package de.l3s.interweb.connector.openai;
 
 public class ErrorResponse {
     public Error error;

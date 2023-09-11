@@ -23,10 +23,10 @@ class SlideShareConnectorTest {
     private static final Logger log = Logger.getLogger(SlideShareConnectorTest.class);
     private static final SlideShareConnector connector = new SlideShareConnector();
 
-    @ConfigProperty(name = "connectors.slideshare.key")
+    @ConfigProperty(name = "connector.slideshare.key")
     String apikey;
 
-    @ConfigProperty(name = "connectors.slideshare.secret")
+    @ConfigProperty(name = "connector.slideshare.secret")
     String secret;
 
     @Test

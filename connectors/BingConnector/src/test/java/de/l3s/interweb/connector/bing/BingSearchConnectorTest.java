@@ -27,7 +27,7 @@ class BingSearchConnectorTest {
     private static final Logger log = Logger.getLogger(BingSearchConnectorTest.class);
     private static final BingSearchConnector connector = new BingSearchConnector();
 
-    @ConfigProperty(name = "connectors.bing.key")
+    @ConfigProperty(name = "connector.bing.key")
     String apikey;
 
     @Test

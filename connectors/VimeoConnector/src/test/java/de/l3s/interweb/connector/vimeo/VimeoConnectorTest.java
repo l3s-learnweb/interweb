@@ -24,7 +24,7 @@ class VimeoConnectorTest {
     private static final Logger log = Logger.getLogger(VimeoConnectorTest.class);
     private static final VimeoConnector connector = new VimeoConnector();
 
-    @ConfigProperty(name = "connectors.vimeo.key")
+    @ConfigProperty(name = "connector.vimeo.key")
     String apikey;
 
     @Test

@@ -18,7 +18,7 @@ import de.l3s.interweb.core.AuthCredentials;
 @ApplicationScoped
 public class SecretsService {
     private static final Logger log = Logger.getLogger(SecretsService.class);
-    private static final String CREDENTIALS_PREFIX = "connectors.";
+    private static final String CREDENTIALS_PREFIX = "connector.";
     private static final String CREDENTIALS_SUFFIX_KEY = ".key";
     private static final String CREDENTIALS_SUFFIX_SECRET = ".secret";
 

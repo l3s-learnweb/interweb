@@ -20,10 +20,10 @@ class FlickrConnectorTest {
     private static final Logger log = Logger.getLogger(FlickrConnectorTest.class);
     private static final FlickrConnector connector = new FlickrConnector();
 
-    @ConfigProperty(name = "connectors.flickr.key")
+    @ConfigProperty(name = "connector.flickr.key")
     String apikey;
 
-    @ConfigProperty(name = "connectors.flickr.secret")
+    @ConfigProperty(name = "connector.flickr.secret")
     String sharedSecret;
 
     @Test

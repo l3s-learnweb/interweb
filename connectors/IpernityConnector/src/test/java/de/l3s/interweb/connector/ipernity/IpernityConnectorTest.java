@@ -20,7 +20,7 @@ class IpernityConnectorTest {
     private static final Logger log = Logger.getLogger(IpernityConnectorTest.class);
     private static final IpernityConnector connector = new IpernityConnector();
 
-    @ConfigProperty(name = "connectors.ipernity.key")
+    @ConfigProperty(name = "connector.ipernity.key")
     String apikey;
 
     @Test

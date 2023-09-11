@@ -23,7 +23,7 @@ class GiphyConnectorTest {
     private static final Logger log = Logger.getLogger(GiphyConnectorTest.class);
     private static final GiphyConnector connector = new GiphyConnector();
 
-    @ConfigProperty(name = "connectors.giphy.key")
+    @ConfigProperty(name = "connector.giphy.key")
     String apikey;
 
     @Test

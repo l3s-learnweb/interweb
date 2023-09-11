@@ -7,7 +7,6 @@ import jakarta.enterprise.context.Dependent;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import de.l3s.interweb.connector.openai.client.OpenaiClient;
 import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.completion.*;

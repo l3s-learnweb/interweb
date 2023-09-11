@@ -1,9 +1,6 @@
-package de.l3s.interweb.connector.openai.client;
+package de.l3s.interweb.connector.openai;
 
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
@@ -17,8 +14,10 @@ import de.l3s.interweb.core.completion.CompletionResults;
 import de.l3s.interweb.core.util.StringUtils;
 
 @Path("/openai/deployments")
-@RegisterRestClient(configKey = "openai", baseUri = "${quarkus.rest-client.openai.url}")
-@ClientHeaderParam(name = "api-key", value = "${quarkus.rest-client.openai.apikey}")
+@Consumes("application/json")
+@Produces("application/json")
+@RegisterRestClient(configKey = "openai")
+@ClientHeaderParam(name = "api-key", value = "${connector.openai.apikey}")
 public interface OpenaiClient {
 
     @POST
