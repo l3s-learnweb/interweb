@@ -49,6 +49,10 @@ public class ChatService {
     private Uni<CompletionResults> completions(CompletionQuery query, Principal principal, CompletionConnector connector) {
         return secretsService.getAuthCredentials(connector.getId(), principal)
                 .onItem().ifNull().failWith(new ConnectorException("No credentials found"))
-                .flatMap(credentials -> connector.complete(query, credentials));
+                .flatMap(credentials -> connector.complete(query, credentials)).map(results -> {
+                    results.setModel(query.getModel());
+                    results.updateCosts(connector.getPrice(query.getModel()));
+                    return results;
+                });
     }
 }

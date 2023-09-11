@@ -17,10 +17,7 @@ import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import de.l3s.interweb.core.completion.Choice;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.Message;
+import de.l3s.interweb.core.completion.*;
 import de.l3s.interweb.server.principal.Consumer;
 import de.l3s.interweb.server.principal.Principal;
 
@@ -55,7 +52,7 @@ public class ChatResource {
             return chatService.completions(query, (Principal) securityIdentity.getPrincipal()).call(results -> {
                 results.setElapsedTime(System.currentTimeMillis() - start);
                 results.setChatId(chat.id);
-                return persistMessages(chat, query.getMessages(), results.getChoices());
+                return persistMessages(chat, query.getMessages(), results);
             });
         });
     }
@@ -71,7 +68,7 @@ public class ChatResource {
         return Panache.withTransaction(chat::persist);
     }
 
-    private Uni<Void> persistMessages(final Chat chat, final List<Message> history, final List<Choice> choices) {
+    private Uni<Void> persistMessages(final Chat chat, final List<Message> history, final CompletionResults results) {
         for (Message message : history) {
             if (message.getId() == null) {
                 ChatMessage cm = new ChatMessage(message);
@@ -81,7 +78,12 @@ public class ChatResource {
             }
         }
 
-        chat.addMessage(new ChatMessage(choices.get(0).getMessage()));
+        if (results.getCost() != null) {
+            chat.addCosts(results.getUsage().getTotalTokens(), results.getCost().getResponse());
+            results.getCost().setChat(chat.estimated_cost);
+        }
+
+        chat.addMessage(new ChatMessage(results.getChoices().get(0).getMessage()));
         return Panache.withTransaction(() -> ChatMessage.persist(chat.getMessages()));
     }
 }

@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Size;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.smallrye.mutiny.Uni;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -36,6 +37,14 @@ public class Chat extends PanacheEntityBase {
     @Size(max = 32)
     public String model;
 
+    @NotNull
+    @ColumnDefault("0")
+    public Integer used_tokens = 0;
+
+    @NotNull
+    @ColumnDefault("0")
+    public Double estimated_cost = 0d;
+
     @CreationTimestamp
     public Instant created;
 
@@ -53,6 +62,11 @@ public class Chat extends PanacheEntityBase {
 
     public List<ChatMessage> getMessages() {
         return messages;
+    }
+
+    public void addCosts(int tokens, double cost) {
+        this.used_tokens += tokens;
+        this.estimated_cost += cost;
     }
 
     public static Uni<Chat> findById(UUID id) {

@@ -14,6 +14,7 @@ public class CompletionResults extends Results<Choice> {
     private UUID chatId;
     private String model;
     private Usage usage;
+    private UsageCost cost;
     private Instant created;
 
     public UUID getChatId() {
@@ -63,4 +64,15 @@ public class CompletionResults extends Results<Choice> {
         this.usage = usage;
     }
 
+    public UsageCost getCost() {
+        return cost;
+    }
+
+    public void updateCosts(UsagePrice price) {
+        double promptCost = (usage.getPromptTokens() / 1000d) * price.getPrompt();
+        double completionCost = (usage.getCompletionTokens() / 1000d) * price.getCompletion();
+
+        cost = new UsageCost();
+        cost.setResponse(promptCost + completionCost);
+    }
 }

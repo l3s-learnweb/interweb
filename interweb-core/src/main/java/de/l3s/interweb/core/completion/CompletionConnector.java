@@ -9,5 +9,7 @@ import de.l3s.interweb.core.ConnectorException;
 public interface CompletionConnector extends Connector {
     String[] getModels();
 
+    UsagePrice getPrice(String model);
+
     Uni<CompletionResults> complete(CompletionQuery query, AuthCredentials credentials) throws ConnectorException;
 }
