@@ -157,9 +157,9 @@ public class SearchQuery extends Query {
         this.perPage = perPage;
     }
 
-    public Integer getOffset() {
-        if (page == null || page == 0 || perPage == null || perPage == 0) {
-            return null;
+    public int getOffset() {
+        if (page == null || perPage == null) {
+            return 0;
         }
 
         return (page - 1) * perPage;

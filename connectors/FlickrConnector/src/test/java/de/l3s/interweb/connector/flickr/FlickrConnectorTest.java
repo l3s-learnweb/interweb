@@ -3,14 +3,13 @@ package de.l3s.interweb.connector.flickr;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import jakarta.inject.Inject;
+
 import io.quarkus.test.junit.QuarkusTest;
 import org.jboss.logging.Logger;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.search.*;
 
@@ -18,13 +17,9 @@ import de.l3s.interweb.core.search.*;
 @QuarkusTest
 class FlickrConnectorTest {
     private static final Logger log = Logger.getLogger(FlickrConnectorTest.class);
-    private static final FlickrConnector connector = new FlickrConnector();
 
-    @ConfigProperty(name = "connector.flickr.key")
-    String apikey;
-
-    @ConfigProperty(name = "connector.flickr.secret")
-    String sharedSecret;
+    @Inject
+    FlickrConnector connector;
 
     @Test
     void search() throws ConnectorException {
@@ -37,7 +32,7 @@ class FlickrConnectorTest {
         // query.setDateTill("2009-06-01 00:00:00");
         query.setRanking(SearchRanking.relevance);
 
-        SearchConnectorResults queryResult = connector.search(query, new AuthCredentials(apikey, sharedSecret));
+        SearchConnectorResults queryResult = connector.search(query);
 
         for (SearchItem res : queryResult.getItems()) {
             log.info(res);

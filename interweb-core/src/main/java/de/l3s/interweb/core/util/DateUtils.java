@@ -19,4 +19,8 @@ public final class DateUtils {
     public static String format(DateTimeFormatter formatter, TemporalAccessor dateTime) {
         return (dateTime == null) ? null : formatter.format(dateTime);
     }
+
+    public static Integer toEpochSecond(TemporalAccessor accessor) {
+        return accessor == null ? null : Math.toIntExact(Instant.from(accessor).getEpochSecond());
+    }
 }

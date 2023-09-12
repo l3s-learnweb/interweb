@@ -2,8 +2,10 @@ package de.l3s.interweb.core.search;
 
 public enum SearchRanking {
     date,
-    relevance,
-    interestingness;
+    dateReverse,
+    interestingness,
+    interestingnessReverse,
+    relevance;
 
     public static SearchRanking find(String name) {
         try {
