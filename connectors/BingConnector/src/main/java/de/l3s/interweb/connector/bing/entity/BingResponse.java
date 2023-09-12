@@ -1,8 +1,8 @@
-package de.l3s.interweb.connector.bing.client.entity;
+package de.l3s.interweb.connector.bing.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import de.l3s.interweb.connector.bing.client.adapters.BingResponseAdapter;
+import de.l3s.interweb.connector.bing.adapters.BingResponseAdapter;
 
 @JsonDeserialize(using = BingResponseAdapter.class)
 public class BingResponse {

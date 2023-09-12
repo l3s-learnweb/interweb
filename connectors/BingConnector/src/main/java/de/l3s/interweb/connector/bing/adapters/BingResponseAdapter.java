@@ -1,4 +1,4 @@
-package de.l3s.interweb.connector.bing.client.adapters;
+package de.l3s.interweb.connector.bing.adapters;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
-import de.l3s.interweb.connector.bing.client.entity.*;
-import de.l3s.interweb.connector.bing.client.entity.Error;
+import de.l3s.interweb.connector.bing.entity.*;
+import de.l3s.interweb.connector.bing.entity.Error;
 
 public class BingResponseAdapter extends StdDeserializer<BingResponse> {
 

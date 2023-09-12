@@ -33,11 +33,12 @@ public class SearchQuery extends Query {
 
     @Min(1)
     @Max(100)
-    private int page = 1;
+    private Integer page;
     @Min(1)
     @Max(500)
     @JsonProperty("per_page")
-    private int perPage = 10;
+    private Integer perPage;
+
     @NotNull
     @JsonProperty("search_scope")
     private SearchScope searchScope = SearchScope.text;
@@ -130,20 +131,46 @@ public class SearchQuery extends Query {
         extras.add(part);
     }
 
+    // TODO: replace return type to Integer
     public int getPage() {
+        if (page == null) return 1;
         return page;
     }
 
+    // TODO: replace return type to Integer
     public void setPage(final int page) {
         this.page = Math.max(page, 1);
     }
 
+    // TODO: replace return type to Integer
     public int getPerPage() {
+        if (perPage == null) return 10;
         return perPage;
     }
 
+    public int getPerPage(int fallback) {
+        return perPage == null || perPage == 0 ? fallback : perPage;
+    }
+
+    // TODO: replace return type to Integer
     public void setPerPage(final int perPage) {
         this.perPage = perPage;
+    }
+
+    public Integer getOffset() {
+        if (page == null || page == 0 || perPage == null || perPage == 0) {
+            return null;
+        }
+
+        return (page - 1) * perPage;
+    }
+
+    public Integer getOffset(int fallbackPerPage) {
+        if (page == null || page == 0) {
+            return null;
+        }
+
+        return (page - 1) * getPerPage(fallbackPerPage);
     }
 
     public SearchRanking getRanking() {

@@ -14,5 +14,11 @@ public interface SearchConnector extends Connector {
         return false;
     }
 
-    SearchConnectorResults search(SearchQuery query, AuthCredentials credentials) throws ConnectorException;
+    default SearchConnectorResults search(SearchQuery query) throws ConnectorException {
+        return search(query, null);
+    }
+
+    default SearchConnectorResults search(SearchQuery query, AuthCredentials credentials) throws ConnectorException {
+        return search(query);
+    }
 }

@@ -1,4 +1,4 @@
-package de.l3s.interweb.connector.bing.client.entity;
+package de.l3s.interweb.connector.bing.entity;
 
 public class Image extends BaseMedia {
 

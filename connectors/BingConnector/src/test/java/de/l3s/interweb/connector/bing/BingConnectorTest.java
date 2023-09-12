@@ -1,6 +1,9 @@
 package de.l3s.interweb.connector.bing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDate;
 
 import jakarta.inject.Inject;
 
@@ -10,6 +13,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.search.ContentType;
+import de.l3s.interweb.core.search.SearchConnectorResults;
+import de.l3s.interweb.core.search.SearchItem;
+import de.l3s.interweb.core.search.SearchQuery;
 import de.l3s.interweb.core.suggest.SuggestConnectorResults;
 import de.l3s.interweb.core.suggest.SuggestQuery;
 
@@ -29,10 +36,65 @@ class BingConnectorTest {
 
         SuggestConnectorResults results = connector.suggest(query).await().indefinitely();
 
-        assertEquals(10, results.size());
+        assertTrue(results.size() > 10);
         System.out.println("Results for '" + query.getQuery() + "':");
         for (String result : results.getItems()) {
             System.out.println(result);
         }
+    }
+
+    @Test
+    void search() throws ConnectorException {
+        SearchQuery query = new SearchQuery();
+        query.setQuery("hello world");
+        query.setPerPage(20);
+        query.addContentType(ContentType.text);
+        query.setDateFrom(LocalDate.of(2009, 1, 1));
+        query.setDateTill(LocalDate.of(2010, 6, 1));
+
+        SearchConnectorResults queryResult = connector.search(query);
+
+        for (SearchItem res : queryResult.getItems()) {
+            log.info(res.toString());
+        }
+
+        assertEquals(20, queryResult.getItems().size());
+        assertTrue(queryResult.getTotalResults() > 100);
+    }
+
+    @Test
+    void getImages() throws ConnectorException {
+        SearchQuery query = new SearchQuery();
+        query.setQuery("hannover");
+        query.addContentType(ContentType.image);
+        query.setPerPage(30);
+        query.setPage(2);
+
+        SearchConnectorResults queryResult = connector.search(query);
+
+        for (SearchItem res : queryResult.getItems()) {
+            assertEquals(ContentType.image, res.getType());
+            log.info(res);
+        }
+
+        assertEquals(30, queryResult.getItems().size());
+        assertTrue(queryResult.getTotalResults() > 100);
+    }
+
+    @Test
+    void getVideos() throws ConnectorException {
+        SearchQuery query = new SearchQuery();
+        query.setQuery("hannover");
+        query.addContentType(ContentType.video);
+
+        SearchConnectorResults queryResult = connector.search(query);
+
+        for (SearchItem res : queryResult.getItems()) {
+            assertEquals(ContentType.video, res.getType());
+            log.info(res.toString());
+        }
+
+        assertEquals(30, queryResult.getItems().size());
+        assertTrue(queryResult.getTotalResults() > 100);
     }
 }
