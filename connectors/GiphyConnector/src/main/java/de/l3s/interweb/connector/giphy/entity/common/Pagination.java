@@ -1,4 +1,4 @@
-package de.l3s.interweb.connector.giphy.client.entity.common;
+package de.l3s.interweb.connector.giphy.entity.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,4 +1,4 @@
-package de.l3s.interweb.connector.giphy.client.entity.giphy;
+package de.l3s.interweb.connector.giphy.entity.giphy;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -13,10 +13,10 @@ public class GiphyImage {
     private String url;
 
     @JsonProperty("width")
-    private String width;
+    private Integer width;
 
     @JsonProperty("height")
-    private String height;
+    private Integer height;
 
     @JsonProperty("size")
     private String size;
@@ -56,7 +56,7 @@ public class GiphyImage {
      *
      * @return the width of the image
      */
-    public String getWidth() {
+    public Integer getWidth() {
         return width;
     }
 
@@ -65,7 +65,7 @@ public class GiphyImage {
      *
      * @param width the width
      */
-    public void setWidth(String width) {
+    public void setWidth(Integer width) {
         this.width = width;
     }
 
@@ -74,7 +74,7 @@ public class GiphyImage {
      *
      * @return the height of the image
      */
-    public String getHeight() {
+    public Integer getHeight() {
         return height;
     }
 
@@ -83,7 +83,7 @@ public class GiphyImage {
      *
      * @param height the height
      */
-    public void setHeight(String height) {
+    public void setHeight(Integer height) {
         this.height = height;
     }
 

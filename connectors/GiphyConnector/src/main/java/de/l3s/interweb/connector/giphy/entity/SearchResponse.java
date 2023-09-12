@@ -1,19 +1,19 @@
-package de.l3s.interweb.connector.giphy.client.entity.search;
+package de.l3s.interweb.connector.giphy.entity;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interweb.connector.giphy.client.entity.common.Meta;
-import de.l3s.interweb.connector.giphy.client.entity.common.Pagination;
-import de.l3s.interweb.connector.giphy.client.entity.giphy.GiphyData;
+import de.l3s.interweb.connector.giphy.entity.common.Meta;
+import de.l3s.interweb.connector.giphy.entity.common.Pagination;
+import de.l3s.interweb.connector.giphy.entity.giphy.GiphyData;
 
 /**
  * This class represents a search feed response.
  *
  * @author Mark Tripoli
  */
-public class SearchFeed {
+public class SearchResponse {
 
     @JsonProperty("data")
     private List<GiphyData> dataList;
