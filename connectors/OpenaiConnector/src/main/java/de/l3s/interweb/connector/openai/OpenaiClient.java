@@ -11,7 +11,6 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.completion.CompletionQuery;
 import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.util.StringUtils;
 
 @Path("/openai/deployments")
 @Consumes("application/json")
@@ -26,11 +25,6 @@ public interface OpenaiClient {
 
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {
-        ErrorResponse.Error err = response.readEntity(ErrorResponse.class).error;
-
-        if (StringUtils.isNotEmpty(err.message)) {
-            return new ConnectorException(err.message);
-        }
-        return new ConnectorException("The remote service responded with " + err.status + ": " + err.code);
+        return new ConnectorException("Remote service responded with HTTP " + response.getStatus(), response.readEntity(String.class));
     }
 }

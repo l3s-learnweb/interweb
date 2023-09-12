@@ -1,7 +1,6 @@
 package de.l3s.interweb.connector.bing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
@@ -29,7 +28,7 @@ class BingConnectorTest {
     BingConnector connector;
 
     @Test
-    void suggest() throws ConnectorException {
+    void testSuggest() {
         SuggestQuery query = new SuggestQuery();
         query.setQuery("nikola tesla");
         query.setLanguage("en");
@@ -44,7 +43,7 @@ class BingConnectorTest {
     }
 
     @Test
-    void search() throws ConnectorException {
+    void search() {
         SearchQuery query = new SearchQuery();
         query.setQuery("hello world");
         query.setPerPage(20);
@@ -63,7 +62,7 @@ class BingConnectorTest {
     }
 
     @Test
-    void getImages() throws ConnectorException {
+    void searchImages() {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
         query.addContentType(ContentType.image);
@@ -82,7 +81,7 @@ class BingConnectorTest {
     }
 
     @Test
-    void getVideos() throws ConnectorException {
+    void searchVideos() {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
         query.addContentType(ContentType.video);
@@ -96,5 +95,13 @@ class BingConnectorTest {
 
         assertEquals(30, queryResult.getItems().size());
         assertTrue(queryResult.getTotalResults() > 100);
+    }
+
+    @Test
+    void bingSearchError() {
+        SearchQuery query = new SearchQuery();
+        query.setLanguage("error");
+
+        assertThrowsExactly(ConnectorException.class, () -> connector.search(query));
     }
 }

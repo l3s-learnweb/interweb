@@ -120,9 +120,16 @@ public class BingConnector implements SearchConnector, SuggestConnector {
     }
 
     private SearchConnectorResults convertResponseToResults(BingResponse response) throws ConnectorException {
-        SearchConnectorResults results = new SearchConnectorResults();
+        if (response == null) {
+            throw new ConnectorException("No response");
+        }
 
-        if (response != null && response.getWebPages() != null && response.getWebPages().getValues() != null) {
+        if (response.getError() != null) {
+            throw new ConnectorException(response.getError().getMessage());
+        }
+
+        SearchConnectorResults results = new SearchConnectorResults();
+        if (response.getWebPages() != null && response.getWebPages().getValues() != null) {
             WebPagesHolder webResults = response.getWebPages();
 
             if (webResults.getTotalEstimatedMatches() != null) {
@@ -144,7 +151,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
             }
         }
 
-        if (response != null && response.getImages() != null && response.getImages().getValues() != null) {
+        if (response.getImages() != null && response.getImages().getValues() != null) {
             ImageHolder imagesResults = response.getImages();
 
             if (imagesResults.getTotalEstimatedMatches() != null) {
@@ -179,7 +186,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
             }
         }
 
-        if (response != null && response.getVideos() != null && response.getVideos().getValues() != null) {
+        if (response.getVideos() != null && response.getVideos().getValues() != null) {
             VideoHolder videosResults = response.getVideos();
 
             if (videosResults.getTotalEstimatedMatches() != null) {

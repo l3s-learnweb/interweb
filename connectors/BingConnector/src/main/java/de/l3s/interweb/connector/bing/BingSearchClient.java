@@ -2,13 +2,16 @@ package de.l3s.interweb.connector.bing;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 
+import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import io.quarkus.rest.client.reactive.ClientQueryParam;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import de.l3s.interweb.connector.bing.entity.BingResponse;
+import de.l3s.interweb.core.ConnectorException;
 
 @Path("/v7.0")
 @Consumes("application/json")
@@ -114,4 +117,9 @@ public interface BingSearchClient {
             @QueryParam("mkt") String market,
             @QueryParam("freshness") String freshness
     );
+
+    @ClientExceptionMapper
+    static RuntimeException toException(Response response) {
+        return new ConnectorException("Remote service responded with HTTP " + response.getStatus(), response.readEntity(String.class));
+    }
 }
