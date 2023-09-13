@@ -69,6 +69,7 @@ public class IpernityConnector implements SearchConnector {
                 resultItem.setType(ContentType.image);
                 resultItem.setId(doc.docId());
                 resultItem.setTitle(doc.title());
+                resultItem.setDate(DateUtils.parse(doc.dates().created()));
                 resultItem.setUrl("http://ipernity.com/doc/" + doc.owner().userId() + "/" + doc.docId());
                 resultItem.setCommentsCount(doc.count().comments());
                 resultItem.setViewsCount(doc.count().visits());
@@ -105,8 +106,7 @@ public class IpernityConnector implements SearchConnector {
     private static String convertRanking(SearchRanking ranking) {
         return switch (ranking) {
             case date -> "created-desc";
-            case dateReverse -> "created-asc";
-            case interestingness, interestingnessReverse -> "popular";
+            case interestingness -> "popular";
             default -> "relevance";
         };
     }

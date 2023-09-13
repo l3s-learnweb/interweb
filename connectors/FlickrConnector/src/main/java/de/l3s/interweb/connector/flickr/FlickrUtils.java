@@ -23,9 +23,7 @@ public final class FlickrUtils {
     static String getRanking(SearchRanking ranking) {
         return switch (ranking) {
             case date -> "date-posted-desc";
-            case dateReverse -> "date-posted-asc";
             case interestingness -> "interestingness-desc";
-            case interestingnessReverse -> "interestingness-asc";
             default -> "relevance";
         };
     }

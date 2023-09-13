@@ -64,7 +64,7 @@ public class SlideShareConnector implements SearchConnector {
                     null,
 
                     timestamp,
-                    SlideShareUtils.getHash(slideShareSecret + timestamp).toLowerCase()
+                    SlideShareUtils.hash(slideShareSecret + timestamp).toLowerCase()
             ).await().indefinitely();
 
             XmlMapper objectMapper = new XmlMapper();
@@ -87,7 +87,7 @@ public class SlideShareConnector implements SearchConnector {
                 resultItem.setTitle(sre.getTitle());
                 resultItem.setDescription(sre.getDescription());
                 resultItem.setUrl(sre.getUrl());
-                resultItem.setDate(DateUtils.format(SlideShareUtils.parseDate(sre.getUpdated())));
+                resultItem.setDate(DateUtils.parse(sre.getUpdated()));
                 resultItem.setAuthor(sre.getUserName());
                 resultItem.setAuthorUrl("https://www.slideshare.net/" + sre.getUserName());
 

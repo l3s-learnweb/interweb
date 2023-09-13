@@ -4,13 +4,8 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Set;
 
-import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.search.ContentType;
 import de.l3s.interweb.core.search.SearchRanking;
 import de.l3s.interweb.core.search.Thumbnail;
@@ -68,19 +63,7 @@ public final class SlideShareUtils {
         };
     }
 
-    static ZonedDateTime parseDate(String dateString) throws ConnectorException {
-        if (dateString == null) {
-            return null;
-        }
-
-        try {
-            return ZonedDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z").withZone(ZoneId.systemDefault()));
-        } catch (DateTimeParseException e) {
-            throw new ConnectorException("dateString: [" + dateString + "] " + e.getMessage());
-        }
-    }
-
-    static String getHash(String input) {
+    static String hash(String input) {
         try {
             MessageDigest msdDigest = MessageDigest.getInstance("SHA-1");
             msdDigest.update(input.getBytes(StandardCharsets.UTF_8), 0, input.length());

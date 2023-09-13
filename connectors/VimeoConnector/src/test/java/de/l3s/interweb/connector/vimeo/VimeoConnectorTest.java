@@ -3,9 +3,6 @@ package de.l3s.interweb.connector.vimeo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
 import jakarta.inject.Inject;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -42,11 +39,5 @@ class VimeoConnectorTest {
 
         assertEquals(20, queryResult.getItems().size());
         assertTrue(queryResult.getTotalResults() > 100);
-    }
-
-    @Test
-    void parseDate() throws ConnectorException {
-        ZonedDateTime localDateTime = VimeoConnector.parseDate("2020-04-21T09:44:08+00:00");
-        assertEquals(ZonedDateTime.of(2020, 4, 21, 9, 44, 8, 0, ZoneId.of("+0")), localDateTime);
     }
 }

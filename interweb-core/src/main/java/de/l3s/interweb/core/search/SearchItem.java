@@ -2,6 +2,7 @@ package de.l3s.interweb.core.search;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public class SearchItem implements Serializable {
     private String title;
     private String description;
     private String url;
-    private String date;
+    private Instant date;
     private String snippet;
     private Long duration;
     private Integer width;
@@ -141,11 +142,11 @@ public class SearchItem implements Serializable {
         this.url = url;
     }
 
-    public String getDate() {
+    public Instant getDate() {
         return date;
     }
 
-    public void setDate(final String date) {
+    public void setDate(final Instant date) {
         this.date = date;
     }
 

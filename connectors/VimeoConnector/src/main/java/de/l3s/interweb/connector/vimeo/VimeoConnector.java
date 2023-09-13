@@ -1,8 +1,5 @@
 package de.l3s.interweb.connector.vimeo;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import jakarta.enterprise.context.Dependent;
@@ -44,8 +41,7 @@ public class VimeoConnector implements SearchConnector {
                 query.getQuery(),
                 query.getPage(),
                 query.getPerPage(),
-                createSortOrder(query.getRanking()),
-                createSortDirection(query.getRanking())
+                createSortOrder(query.getRanking())
         ).await().indefinitely();
 
         if (vimeoResponse.getError() != null
@@ -71,7 +67,7 @@ public class VimeoConnector implements SearchConnector {
                 resultItem.setDescription(video.getDescription());
                 resultItem.setUrl(video.getLink());
                 resultItem.setDuration(video.getDuration().longValue());
-                resultItem.setDate(DateUtils.format(parseDate(video.getCreatedTime())));
+                resultItem.setDate(DateUtils.parse(video.getCreatedTime()));
                 resultItem.setWidth(video.getWidth());
                 resultItem.setHeight(video.getHeight());
 
@@ -116,33 +112,9 @@ public class VimeoConnector implements SearchConnector {
 
     private static String createSortOrder(SearchRanking ranking) {
         return switch (ranking) {
-            case date, dateReverse -> "date";
-            case interestingness, interestingnessReverse -> "plays";
+            case date -> "date";
+            case interestingness -> "plays";
             default -> "relevant";
         };
-    }
-
-    private static String createSortDirection(SearchRanking ranking) {
-        return switch (ranking) {
-            case dateReverse, interestingnessReverse -> "asc";
-            default -> "desc";
-        };
-    }
-
-    protected static ZonedDateTime parseDate(String dateString) throws ConnectorException {
-        if (dateString == null) {
-            return null;
-        }
-
-        try {
-            return ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        } catch (DateTimeParseException e) {
-            throw new ConnectorException("dateString: [" + dateString + "]. " + e.getMessage());
-        }
-    }
-
-    private static String createEmbeddedCode(String id) {
-        String iframeUrl = "https://player.vimeo.com/video/" + id + "?dnt=1";
-        return "<iframe src=\"" + iframeUrl + "\" allowfullscreen referrerpolicy=\"origin\">Your browser has blocked this iframe</iframe>";
     }
 }

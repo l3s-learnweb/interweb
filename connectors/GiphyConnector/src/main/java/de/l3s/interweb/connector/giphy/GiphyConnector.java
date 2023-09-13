@@ -11,6 +11,7 @@ import de.l3s.interweb.connector.giphy.entity.giphy.GiphyImage;
 import de.l3s.interweb.connector.giphy.entity.SearchResponse;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.search.*;
+import de.l3s.interweb.core.util.DateUtils;
 
 /**
  * Giphy, styled as GIPHY, is an American online database and search engine that allows users to search for
@@ -61,7 +62,7 @@ public class GiphyConnector implements SearchConnector {
                 resultItem.setType(ContentType.image);
                 resultItem.setId(image.getId());
                 resultItem.setTitle(image.getTitle());
-                resultItem.setDate(image.getImportDatetime());
+                resultItem.setDate(DateUtils.parse(image.getImportDatetime()));
                 resultItem.setUrl(image.getUrl());
                 if (image.getUser() != null) {
                     resultItem.setAuthor(image.getUser().getDisplayName());

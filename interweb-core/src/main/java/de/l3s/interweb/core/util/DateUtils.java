@@ -1,26 +1,31 @@
 package de.l3s.interweb.core.util;
 
 import java.time.Instant;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 
+import de.l3s.interweb.core.ConnectorException;
+
 public final class DateUtils {
-    private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
+    private static final DateTimeFormatter PARSE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd[ ]['T']HH:mm:ss[.SSSSSSS][XXX][ z]").withZone(ZoneOffset.UTC);
 
-    public static String format(long millis) {
-        return format(Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()));
+    public static Instant parse(String str) {
+        if (str == null) return null;
+
+        try {
+            return Instant.from(PARSE_FORMAT.parse(str));
+        } catch (DateTimeParseException e) {
+            throw new ConnectorException("Unable to parse date: " + str, e);
+        }
     }
 
-    public static String format(TemporalAccessor dateTime) {
-        return format(DEFAULT_DATE_TIME_FORMAT, dateTime);
+    public static Integer toEpochSecond(TemporalAccessor temporal) {
+        return temporal == null ? null : Math.toIntExact(Instant.from(temporal).getEpochSecond());
     }
 
-    public static String format(DateTimeFormatter formatter, TemporalAccessor dateTime) {
-        return (dateTime == null) ? null : formatter.format(dateTime);
-    }
-
-    public static Integer toEpochSecond(TemporalAccessor accessor) {
-        return accessor == null ? null : Math.toIntExact(Instant.from(accessor).getEpochSecond());
+    public static String toRfc3339(TemporalAccessor temporal) {
+        return temporal == null ? null : DateTimeFormatter.ISO_INSTANT.format(temporal);
     }
 }

@@ -1,26 +1,9 @@
 package de.l3s.interweb.connector.bing;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
-import de.l3s.interweb.core.ConnectorException;
 
 public final class BingUtils {
-
-    static ZonedDateTime parseDate(String dateString) throws ConnectorException {
-        if (dateString == null) {
-            return null;
-        }
-
-        try {
-            return ZonedDateTime.parse(dateString.split("\\.")[0], DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()));
-        } catch (DateTimeParseException e) {
-            throw new ConnectorException("dateString: [" + dateString + "] " + e.getMessage());
-        }
-    }
 
     /**
      * Filter search results by the following case-insensitive age values: day, week, month.

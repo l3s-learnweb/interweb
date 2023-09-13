@@ -35,9 +35,6 @@ public interface VimeoSearchClient {
      *             likes - Sort the results by number of likes.
      *             plays - Sort the results by number of plays.
      *             relevant - Sort the results by relevance.
-     * @param direction The sort direction of the results:
-     *                  asc - Sort the results in ascending order.
-     *                  desc - Sort the results in descending order.
      */
     @GET
     @Path("/videos")
@@ -45,8 +42,7 @@ public interface VimeoSearchClient {
             @NotNull @QueryParam("query") String query,
             @QueryParam("page") Integer page,
             @QueryParam("per_page") Integer perPage,
-            @QueryParam("sort") String sort,
-            @QueryParam("direction") String direction
+            @QueryParam("sort") String sort
     );
 
     @ClientExceptionMapper

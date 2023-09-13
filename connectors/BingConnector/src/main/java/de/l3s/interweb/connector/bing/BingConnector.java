@@ -145,7 +145,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
                 resultItem.setTitle(page.getName());
                 resultItem.setDescription(page.getSnippet());
                 resultItem.setUrl(page.getUrl());
-                resultItem.setDate(DateUtils.format(BingUtils.parseDate(page.getDateLastCrawled())));
+                resultItem.setDate(DateUtils.parse(page.getDateLastCrawled()));
 
                 results.addResultItem(resultItem);
             }
@@ -166,7 +166,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
                 resultItem.setType(ContentType.image);
                 resultItem.setTitle(image.getName());
                 resultItem.setUrl(image.getContentUrl());
-                resultItem.setDate(DateUtils.format(BingUtils.parseDate(image.getDatePublished())));
+                resultItem.setDate(DateUtils.parse(image.getDatePublished()));
                 resultItem.setWidth(image.getWidth());
                 resultItem.setHeight(image.getHeight());
 
@@ -202,7 +202,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
                 resultItem.setTitle(video.getName());
                 resultItem.setDescription(video.getDescription());
                 resultItem.setUrl(video.getContentUrl());
-                resultItem.setDate(DateUtils.format(BingUtils.parseDate(video.getDatePublished())));
+                resultItem.setDate(DateUtils.parse(video.getDatePublished()));
                 resultItem.setWidth(video.getWidth());
                 resultItem.setHeight(video.getHeight());
 

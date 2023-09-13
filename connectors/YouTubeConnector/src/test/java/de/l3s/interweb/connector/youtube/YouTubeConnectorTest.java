@@ -3,17 +3,13 @@ package de.l3s.interweb.connector.youtube;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import jakarta.inject.Inject;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.jboss.logging.Logger;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.search.*;
 
@@ -21,10 +17,9 @@ import de.l3s.interweb.core.search.*;
 @QuarkusTest
 class YouTubeConnectorTest {
     private static final Logger log = Logger.getLogger(YouTubeConnectorTest.class);
-    private static final YouTubeConnector connector = new YouTubeConnector();
 
-    @ConfigProperty(name = "connector.youtube.key")
-    String apikey;
+    @Inject
+    YouTubeConnector connector;
 
     @Test
     void search() throws ConnectorException {
@@ -41,7 +36,7 @@ class YouTubeConnectorTest {
 
         for (int i = 1; i < 4; ++i) {
             query.setPage(i);
-            SearchConnectorResults page = connector.search(query, new AuthCredentials(apikey));
+            SearchConnectorResults page = connector.search(query);
 
             assertEquals(10, page.getItems().size());
             assertTrue(page.getTotalResults() > 100);
@@ -50,11 +45,5 @@ class YouTubeConnectorTest {
                 log.infov("{0}: {1} {2}", result.getRank(), result.getTitle(), result.getUrl());
             }
         }
-    }
-
-    @Test
-    void parseDate() throws ConnectorException {
-        ZonedDateTime localDateTime = YouTubeConnector.parseDate("2020-10-04T20:23:33Z");
-        assertEquals(ZonedDateTime.of(2020, 10, 4, 20, 23, 33, 0, ZoneId.of("+0")), localDateTime);
     }
 }

@@ -1,5 +1,7 @@
 package de.l3s.interweb.connector.flickr;
 
+import java.time.Instant;
+
 import jakarta.enterprise.context.Dependent;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -85,13 +87,15 @@ public class FlickrConnector implements SearchConnector {
         }
 
         if (photo.getDateUpload() != null) {
-            resultItem.setDate(DateUtils.format(photo.getDateUpload()));
+            resultItem.setDate(Instant.ofEpochSecond(photo.getDateUpload()));
         }
+
         if (photo.getTags() != null) {
             for (String tag : photo.getTags().split(" ")) {
                 resultItem.getTags().add(tag);
             }
         }
+
         resultItem.setViewsCount(photo.getViews());
 
         if (photo.getMediaOriginalUrl() != null) {
