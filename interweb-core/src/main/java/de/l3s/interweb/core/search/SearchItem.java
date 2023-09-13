@@ -22,9 +22,8 @@ public class SearchItem implements Serializable {
     public static final int THUMBNAIL_LARGE_MAX_HEIGHT = 920;
 
     // base
-    private String service;
-    private int rank;
     private String id;
+    private int rank;
 
     // general
     private ContentType type;
@@ -32,12 +31,14 @@ public class SearchItem implements Serializable {
     private String description;
     private String url;
     private Instant date;
-    private String snippet;
+
+    // media
     private Long duration;
     private Integer width;
     private Integer height;
     private Set<String> tags = new HashSet<>();
 
+    // author
     private String author;
     @JsonProperty("author_url")
     private String authorUrl;
@@ -73,25 +74,8 @@ public class SearchItem implements Serializable {
     public SearchItem() {
     }
 
-    public SearchItem(final String service) {
-        this.service = service;
-    }
-
-    public SearchItem(final String service, final int rank) {
-        this.service = service;
-        this.rank = rank;
-    }
-
     public SearchItem(final int rank) {
         this.rank = rank;
-    }
-
-    public String getService() {
-        return service;
-    }
-
-    public void setService(final String service) {
-        this.service = service;
     }
 
     public int getRank() {
@@ -148,14 +132,6 @@ public class SearchItem implements Serializable {
 
     public void setDate(final Instant date) {
         this.date = date;
-    }
-
-    public String getSnippet() {
-        return snippet;
-    }
-
-    public void setSnippet(final String snippet) {
-        this.snippet = snippet;
     }
 
     public Long getDuration() {

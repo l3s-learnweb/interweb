@@ -25,17 +25,17 @@ class SlideShareConnectorTest {
     void search() throws ConnectorException {
         SearchQuery query = new SearchQuery();
         query.setQuery("hello world");
-        query.addContentType(ContentType.video);
-        query.addContentType(ContentType.image);
-        query.addContentType(ContentType.text);
-        query.addContentType(ContentType.presentation);
-        query.addContentType(ContentType.audio);
+        query.addContentType(ContentType.videos);
+        query.addContentType(ContentType.images);
+        query.addContentType(ContentType.webpages);
+        query.addContentType(ContentType.presentations);
+        query.addContentType(ContentType.audios);
         query.setPerPage(5);
         // query.setDateFrom("2009-01-01 00:00:00");
-        // query.setDateTill("2009-06-01 00:00:00");
-        query.setRanking(SearchRanking.relevance);
+        // query.setDateTo("2009-06-01 00:00:00");
+        query.setSort(SearchSort.relevance);
 
-        SearchConnectorResults queryResult = connector.search(query);
+        SearchConnectorResults queryResult = connector.search(query).await().indefinitely();
 
         for (SearchItem res : queryResult.getItems()) {
             log.info(res);

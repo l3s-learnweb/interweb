@@ -34,9 +34,9 @@ class InterwebTest {
     @Test
     void searchTest() throws InterwebException {
         SearchQuery query = new SearchQuery();
-        query.setQuery("spacex");
+        query.setQuery("hannover");
         query.setLanguage("en");
-        query.setContentTypes(Set.of(ContentType.video));
+        query.setContentTypes(Set.of(ContentType.videos));
         query.setServices(Set.of("Vimeo", "YouTube"));
         query.setPerPage(32);
         query.setPage(1);
@@ -58,8 +58,8 @@ class InterwebTest {
     @Test
     void suggestTest() throws InterwebException {
         SuggestQuery query = new SuggestQuery();
-        query.setQuery("spacex");
-        query.setLanguage("uk");
+        query.setQuery("hannover");
+        query.setLanguage("de");
 
         SuggestResults response = interweb.suggest(query);
         assertEquals(response.getResults().size(), 2);

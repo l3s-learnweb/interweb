@@ -1,7 +1,7 @@
 package de.l3s.interweb.core.search;
 
 public enum SearchExtra {
-    statistics,
+    stats,
     duration,
     tags;
 

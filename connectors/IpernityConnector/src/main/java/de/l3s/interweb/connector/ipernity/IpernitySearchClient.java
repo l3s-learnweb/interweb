@@ -39,14 +39,14 @@ public interface IpernitySearchClient {
     @ClientQueryParam(name = "share", value = "4")
     @ClientQueryParam(name = "thumbsize", value = "1024") // 75x, 100, 240, 250x, 500, 560, 640, 800, 1024, 1600 or 2048
     @ClientQueryParam(name = "extra", value = "count,dates") // owner, dates, count, license, medias, geo, original
-    Uni<String> searchTextPlain( // because the response is text/plain, we can not read it as JSON
-           @NotNull @QueryParam("text") String query,
-           @QueryParam("media") String media,
-           @QueryParam("page") Integer page,
-           @QueryParam("per_page") Integer perPage,
-           @QueryParam("sort") String sort,
-           @QueryParam("created_min") Integer createdMin,
-           @QueryParam("posted_max") Integer createdMax
+    Uni<String> search( // because the response is text/plain, we can not read it as JSON
+            @NotNull @QueryParam("text") String query,
+            @QueryParam("media") String media,
+            @QueryParam("page") Integer page,
+            @QueryParam("per_page") Integer perPage,
+            @QueryParam("sort") String sort,
+            @QueryParam("created_min") Integer createdMin,
+            @QueryParam("posted_max") Integer createdMax
     );
 
     @ClientExceptionMapper

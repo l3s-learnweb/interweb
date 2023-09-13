@@ -17,9 +17,10 @@ import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import de.l3s.interweb.core.completion.*;
+import de.l3s.interweb.core.completion.CompletionQuery;
+import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.completion.Message;
 import de.l3s.interweb.server.principal.Consumer;
-import de.l3s.interweb.server.principal.Principal;
 
 @Path("/chat")
 public class ChatResource {
@@ -49,7 +50,7 @@ public class ChatResource {
     public Uni<CompletionResults> completions(@Valid CompletionQuery query) {
         return getOrCreateChat(query).flatMap(chat -> {
             long start = System.currentTimeMillis();
-            return chatService.completions(query, (Principal) securityIdentity.getPrincipal()).call(results -> {
+            return chatService.completions(query).call(results -> {
                 results.setElapsedTime(System.currentTimeMillis() - start);
                 results.setChatId(chat.id);
                 return persistMessages(chat, query.getMessages(), results);

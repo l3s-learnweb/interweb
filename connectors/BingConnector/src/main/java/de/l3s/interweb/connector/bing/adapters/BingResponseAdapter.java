@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
-import de.l3s.interweb.connector.bing.entity.*;
 import de.l3s.interweb.connector.bing.entity.Error;
+import de.l3s.interweb.connector.bing.entity.*;
 
 public class BingResponseAdapter extends StdDeserializer<BingResponse> {
 

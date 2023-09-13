@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
 import de.l3s.interweb.core.search.ContentType;
-import de.l3s.interweb.core.search.SearchRanking;
+import de.l3s.interweb.core.search.SearchSort;
 import de.l3s.interweb.core.search.Thumbnail;
 
 public final class SlideShareUtils {
@@ -16,7 +16,7 @@ public final class SlideShareUtils {
             return null;
         }
 
-        int width =0, height = 0;
+        int width = 0, height = 0;
         int widthStart = url.indexOf("width=");
         if (widthStart != -1) {
             width = Integer.parseInt(url.substring(widthStart + 6, url.indexOf("&", widthStart)));
@@ -31,11 +31,11 @@ public final class SlideShareUtils {
 
     static String convertContentType(Set<ContentType> contentTypes) {
         if (contentTypes.size() == 1) {
-            if (contentTypes.contains(ContentType.presentation)) {
+            if (contentTypes.contains(ContentType.presentations)) {
                 return "presentations";
-            } else if (contentTypes.contains(ContentType.text)) {
+            } else if (contentTypes.contains(ContentType.webpages)) {
                 return "documents";
-            } else if (contentTypes.contains(ContentType.video)) {
+            } else if (contentTypes.contains(ContentType.videos)) {
                 return "videos";
             }
         }
@@ -43,20 +43,20 @@ public final class SlideShareUtils {
         return "all";
     }
 
-    static String convertRanking(SearchRanking ranking) {
-        return switch (ranking) {
+    static String convertSort(SearchSort sort) {
+        return switch (sort) {
             case date -> "latest";
-            case interestingness -> "mostviewed";
+            case popularity -> "mostviewed";
             default -> "relevance";
         };
     }
 
     static ContentType createType(int slideshowType) {
         return switch (slideshowType) {
-            case 0 -> ContentType.presentation;
-            case 1 -> ContentType.text;
-            case 2 -> ContentType.image;
-            case 3 -> ContentType.video;
+            case 0 -> ContentType.presentations;
+            case 1 -> ContentType.webpages;
+            case 2 -> ContentType.images;
+            case 3 -> ContentType.videos;
             default -> {
                 yield null;
             }
@@ -67,7 +67,7 @@ public final class SlideShareUtils {
         try {
             MessageDigest msdDigest = MessageDigest.getInstance("SHA-1");
             msdDigest.update(input.getBytes(StandardCharsets.UTF_8), 0, input.length());
-            return new BigInteger(1, msdDigest.digest()).toString(16);
+            return new BigInteger(1, msdDigest.digest()).toString(16).toLowerCase();
         } catch (NoSuchAlgorithmException e) {
             return null;
         }

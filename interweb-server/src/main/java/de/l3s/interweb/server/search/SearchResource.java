@@ -22,7 +22,6 @@ import org.jboss.resteasy.reactive.RestQuery;
 
 import de.l3s.interweb.core.search.*;
 import de.l3s.interweb.core.util.StringUtils;
-import de.l3s.interweb.server.principal.Principal;
 
 @Path("/search")
 public class SearchResource {
@@ -35,35 +34,37 @@ public class SearchResource {
 
     @GET
     @Authenticated
-    public Uni<SearchResults> search(@Parameter(description = "The search query", example = "hello world") @NotEmpty @RestQuery("q") String q,
-                                     @Parameter(description = "A content type to search for") @NotEmpty @RestQuery("content_types") ContentType[] contentTypes,
+    public Uni<SearchResults> search(@Parameter(description = "The search query", example = "hello world") @NotEmpty @RestQuery("query") String query,
+                                     @Parameter(description = "A content types to search for") @NotEmpty @RestQuery("content_types") ContentType[] contentTypes,
                                      @Parameter(description = "A services to search in") @RestQuery("services") String[] services,
                                      @Parameter(description = "A two letter language code", example = "en, de, es, uk") @RestQuery("lang") String lang,
                                      @RestQuery("extras") SearchExtra[] extras,
                                      @RestQuery("date_from") LocalDate dateFrom,
-                                     @RestQuery("date_till") LocalDate dateTill,
-                                     @RestQuery("ranking") SearchRanking ranking,
+                                     @RestQuery("date_to") LocalDate dateTo,
+                                     @RestQuery("sort") SearchSort sort,
                                      @RestQuery("page") @Max(100) Integer page,
-                                     @RestQuery("per_page") @Max(500) Integer perPage) {
-        SearchQuery query = new SearchQuery();
-        query.setQuery(q.trim());
-        query.setContentTypes(Set.of(contentTypes));
-        query.setServices(StringUtils.toIdSet(services));
-        query.setDateFrom(dateFrom);
-        query.setDateTill(dateTill);
-        query.setLanguage(lang);
-        if (extras != null && extras.length > 0) query.setExtras(Set.of(extras));
-        if (ranking != null) query.setRanking(ranking);
-        if (page != null) query.setPage(page);
-        if (perPage != null) query.setPerPage(perPage);
-        return search(query);
+                                     @RestQuery("per_page") @Max(500) Integer perPage,
+                                     @Parameter(description = "An external request timeout in ms", example = "1000") @RestQuery("timeout") @Max(500) Integer timeout) {
+        SearchQuery searchQuery = new SearchQuery();
+        searchQuery.setQuery(query.trim());
+        searchQuery.setContentTypes(Set.of(contentTypes));
+        searchQuery.setServices(StringUtils.toIdSet(services));
+        searchQuery.setExtras(extras);
+        searchQuery.setDateFrom(dateFrom);
+        searchQuery.setDateTo(dateTo);
+        searchQuery.setLanguage(lang);
+        searchQuery.setSort(sort);
+        searchQuery.setPage(page);
+        searchQuery.setPerPage(perPage);
+        searchQuery.setTimeout(timeout);
+        return search(searchQuery);
     }
 
     @POST
     @Authenticated
     public Uni<SearchResults> search(@Valid SearchQuery query) {
         long start = System.currentTimeMillis();
-        return searchService.search(query, (Principal) securityIdentity.getPrincipal()).map(results -> {
+        return searchService.search(query).map(results -> {
             results.setElapsedTime(System.currentTimeMillis() - start);
             return results;
         });

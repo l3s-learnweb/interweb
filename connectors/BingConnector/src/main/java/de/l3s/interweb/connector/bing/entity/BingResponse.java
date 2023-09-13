@@ -12,7 +12,6 @@ public class BingResponse {
     private WebPagesHolder webPages;
 
     private Error error;
-    private String jsonResponse;
 
     public WebPagesHolder getWebPages() {
         return webPages;
@@ -44,13 +43,5 @@ public class BingResponse {
 
     public void setError(final Error error) {
         this.error = error;
-    }
-
-    public String getJsonResponse() {
-        return jsonResponse;
-    }
-
-    public void setJsonResponse(String jsonResponse) {
-        this.jsonResponse = jsonResponse;
     }
 }

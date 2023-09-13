@@ -4,13 +4,10 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Thumbnail implements Serializable {
     @Serial
     private static final long serialVersionUID = -792701713759619246L;
 
-    @JsonProperty("value")
     private String url;
     private int width;
     private int height;

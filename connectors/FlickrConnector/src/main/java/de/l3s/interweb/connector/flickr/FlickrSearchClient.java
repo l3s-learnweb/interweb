@@ -1,7 +1,10 @@
 package de.l3s.interweb.connector.flickr;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -32,8 +35,8 @@ public interface FlickrSearchClient {
      * @param query A free text search. Photos who's title, description or tags contain the text will be returned.
      *              You can exclude results that match a term by prepending it with a - character.
      * @param media Filter results by media type. Possible values are `all` (default), `photos` or `videos`.
-     * @param dateFrom Photos with an upload date greater than or equal to this value will be returned. The date can be in the form of a unix timestamp.
-     * @param dateTill Photos with an upload date less than or equal to this value will be returned. The date can be in the form of a unix timestamp.
+     * @param minUploadDate Photos with an upload date greater than or equal to this value will be returned. The date can be in the form of a unix timestamp.
+     * @param maxUploadDate Photos with an upload date less than or equal to this value will be returned. The date can be in the form of a unix timestamp.
      * @param sort The order in which to sort returned photos. Defaults to date-posted-desc. The possible values are:
      *             date-posted-asc, date-posted-desc, date-taken-asc, date-taken-desc, interestingness-desc, interestingness-asc, and relevance.
      * @param page The page of results to return. If this argument is omitted, it defaults to 1.
@@ -47,8 +50,8 @@ public interface FlickrSearchClient {
     Uni<FlickrResponse> search(
             @NotNull @QueryParam("text") String query,
             @QueryParam("media") String media,
-            @QueryParam("min_upload_date") Integer dateFrom,
-            @QueryParam("max_upload_date") Integer dateTill,
+            @QueryParam("min_upload_date") Integer minUploadDate,
+            @QueryParam("max_upload_date") Integer maxUploadDate,
             @QueryParam("sort") String sort,
             @QueryParam("page") Integer page,
             @QueryParam("per_page") Integer perPage

@@ -1,7 +1,10 @@
 package de.l3s.interweb.connector.bing;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -120,6 +123,10 @@ public interface BingSearchClient {
 
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {
+        if (response.getStatus() == 429) {
+            return new ConnectorException("Rate exceeded");
+        }
+
         return new ConnectorException("Remote service responded with HTTP " + response.getStatus(), response.readEntity(String.class));
     }
 }

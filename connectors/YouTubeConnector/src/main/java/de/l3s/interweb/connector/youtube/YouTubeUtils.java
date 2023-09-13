@@ -6,24 +6,21 @@ import java.time.temporal.ChronoUnit;
 import de.l3s.interweb.connector.youtube.entity.*;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.search.SearchItem;
-import de.l3s.interweb.core.search.SearchRanking;
+import de.l3s.interweb.core.search.SearchSort;
 import de.l3s.interweb.core.util.DateUtils;
 
 public final class YouTubeUtils {
-    static String convertRanking(SearchRanking ranking) {
-        return switch (ranking) {
+    static String convertSort(SearchSort sort) {
+        return switch (sort) {
             case date -> "date";
-            case interestingness -> "viewCount";
+            case popularity -> "viewCount";
             default -> "relevance";
         };
     }
 
     static void updateSearchItem(SearchItem searchItem, ListItem item) throws ConnectorException {
         // Confirm that the result represents a video. Otherwise, the item will not contain a video ID.
-        if (!item.kind().equals("youtube#video")) {
-            return;
-        }
-
+        if (item == null) return;
         searchItem.setId(item.id());
 
         Snippet vSnippet = item.snippet();

@@ -98,10 +98,11 @@ public interface YouTubeSearchClient {
      * @param username The forUsername parameter specifies a YouTube username, thereby requesting the channel associated with that username.
      */
     @GET
-    @Path("/channels")
+    @Path("/search")
+    @ClientQueryParam(name = "type", value = "channel")
     @ClientQueryParam(name = "part", value = "id")
     Uni<ListResponse> channels(
-            @QueryParam("forUsername") String username
+            @QueryParam("q") String username
     );
 
     @ClientExceptionMapper

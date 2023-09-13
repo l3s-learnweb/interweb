@@ -4,10 +4,13 @@ import java.util.List;
 
 import jakarta.enterprise.context.Dependent;
 
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -20,13 +23,13 @@ import de.l3s.interweb.core.util.StringUtils;
 
 /**
  * LinkedIn SlideShare is an American hosting service for professional content including presentations, infographics, documents, and videos.
- * TODO missing search implementations: extras, date.
  *
  * @see <a href="https://www.slideshare.net/developers/documentation#search_slideshows">SlideShare Search API</a>
  */
 @Dependent
 public class SlideShareConnector implements SearchConnector {
     private static final Logger log = Logger.getLogger(SlideShareConnector.class);
+    private static final int fallbackPerPage = 50;
 
     @ConfigProperty(name = "connector.slideshare.secret")
     String slideShareSecret;
@@ -46,62 +49,66 @@ public class SlideShareConnector implements SearchConnector {
 
     @Override
     public ContentType[] getSearchTypes() {
-        return new ContentType[]{ContentType.text, ContentType.presentation, ContentType.video};
+        return new ContentType[]{ContentType.webpages, ContentType.presentations, ContentType.videos};
     }
 
     @Override
-    public SearchConnectorResults search(SearchQuery query) throws ConnectorException {
-        try {
-            long timestamp = System.currentTimeMillis() / 1000;
+    public Uni<SearchConnectorResults> search(SearchQuery query) throws ConnectorException {
+        long timestamp = System.currentTimeMillis() / 1000;
 
-            String responseBody = searchClient.search(
-                    query.getQuery(),
-                    query.getPage(),
-                    query.getPerPage(),
-                    SlideShareUtils.convertRanking(query.getRanking()),
-                    query.getLanguage(),
-                    SlideShareUtils.convertContentType(query.getContentTypes()),
-                    null,
+        return searchClient.search(
+                query.getQuery(),
+                query.getPage(),
+                query.getPerPage(fallbackPerPage),
+                SlideShareUtils.convertSort(query.getSort()),
+                query.getLanguage(),
+                SlideShareUtils.convertContentType(query.getContentTypes()),
+                null,
 
-                    timestamp,
-                    SlideShareUtils.hash(slideShareSecret + timestamp).toLowerCase()
-            ).await().indefinitely();
-
-            XmlMapper objectMapper = new XmlMapper();
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-            Slideshows sr = objectMapper.readValue(responseBody, Slideshows.class);
-
+                timestamp,
+                SlideShareUtils.hash(slideShareSecret + timestamp)
+        ).map(Unchecked.function(body -> {
+            try {
+                XmlMapper objectMapper = new XmlMapper();
+                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+                return objectMapper.readValue(body, Slideshows.class);
+            } catch (JsonProcessingException e) {
+                throw new ConnectorException("Failed to parse response", e);
+            }
+        })).map(slideshows -> {
             SearchConnectorResults queryResult = new SearchConnectorResults();
-            queryResult.setTotalResults(sr.getMeta().getTotalResults());
-            int count = sr.getMeta().getResultOffset() - 1;
-            List<Slideshow> searchResults = sr.getSearchResults();
+            queryResult.setTotalResults(slideshows.getMeta().getTotalResults());
+            List<Slideshow> searchResults = slideshows.getSearchResults();
             if (searchResults == null) {
                 return queryResult;
             }
 
+            int rank = slideshows.getMeta().getResultOffset();
             for (Slideshow sre : searchResults) {
-                SearchItem resultItem = new SearchItem(count++);
-                resultItem.setType(SlideShareUtils.createType(sre.getSlideshowType()));
-                resultItem.setId(Integer.toString(sre.getId()));
-                resultItem.setTitle(sre.getTitle());
-                resultItem.setDescription(sre.getDescription());
-                resultItem.setUrl(sre.getUrl());
-                resultItem.setDate(DateUtils.parse(sre.getUpdated()));
-                resultItem.setAuthor(sre.getUserName());
-                resultItem.setAuthorUrl("https://www.slideshare.net/" + sre.getUserName());
-
-                resultItem.setThumbnailLarge(SlideShareUtils.parseThumbnail(sre.getThumbnailXXLargeURL()));
-                resultItem.setThumbnailMedium(SlideShareUtils.parseThumbnail(sre.getThumbnailXLargeURL()));
-                resultItem.setThumbnailSmall(SlideShareUtils.parseThumbnail(sre.getThumbnailSmallURL()));
-
-                resultItem.setEmbeddedUrl(StringUtils.parseSourceUrl(sre.getEmbed()));
-
-                queryResult.addResultItem(resultItem);
+                queryResult.addResultItem(createSearchItem(sre, ++rank));
             }
             return queryResult;
-        } catch (Exception e) {
-            throw new ConnectorException("Failed to retrieve results", e);
-        }
+        });
+    }
+
+    private static SearchItem createSearchItem(Slideshow sre, int rank) {
+        SearchItem resultItem = new SearchItem(rank);
+        resultItem.setType(SlideShareUtils.createType(sre.getSlideshowType()));
+        resultItem.setId(Integer.toString(sre.getId()));
+        resultItem.setTitle(sre.getTitle());
+        resultItem.setDescription(sre.getDescription());
+        resultItem.setUrl(sre.getUrl());
+        resultItem.setDate(DateUtils.parse(sre.getUpdated()));
+        resultItem.setAuthor(sre.getUserName());
+        resultItem.setAuthorUrl("https://www.slideshare.net/" + sre.getUserName());
+
+        resultItem.setThumbnailLarge(SlideShareUtils.parseThumbnail(sre.getThumbnailXXLargeURL()));
+        resultItem.setThumbnailMedium(SlideShareUtils.parseThumbnail(sre.getThumbnailXLargeURL()));
+        resultItem.setThumbnailSmall(SlideShareUtils.parseThumbnail(sre.getThumbnailSmallURL()));
+
+        resultItem.setEmbeddedUrl(StringUtils.parseSourceUrl(sre.getEmbed()));
+
+        return resultItem;
     }
 }

@@ -19,9 +19,4 @@ public class ConnectorException extends RuntimeException {
     public ConnectorException(String message, String remoteReason) {
         super(message, new RemoteException(remoteReason));
     }
-
-    @Deprecated
-    public ConnectorException(Throwable cause) {
-        super(cause);
-    }
 }

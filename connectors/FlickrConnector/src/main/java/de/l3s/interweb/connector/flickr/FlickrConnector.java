@@ -4,10 +4,10 @@ import java.time.Instant;
 
 import jakarta.enterprise.context.Dependent;
 
+import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
-import de.l3s.interweb.connector.flickr.entity.FlickrResponse;
 import de.l3s.interweb.connector.flickr.entity.PhotoItem;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.search.*;
@@ -16,7 +16,7 @@ import de.l3s.interweb.core.util.DateUtils;
 @Dependent
 public class FlickrConnector implements SearchConnector {
     private static final Logger log = Logger.getLogger(FlickrConnector.class);
-
+    private static final int fallbackPerPage = 500;
 
     @RestClient
     FlickrSearchClient searchClient;
@@ -33,36 +33,36 @@ public class FlickrConnector implements SearchConnector {
 
     @Override
     public ContentType[] getSearchTypes() {
-        return new ContentType[]{ContentType.image, ContentType.video};
+        return new ContentType[]{ContentType.images, ContentType.videos};
     }
 
     @Override
-    public SearchConnectorResults search(SearchQuery query) throws ConnectorException {
-        FlickrResponse response = searchClient.search(
+    public Uni<SearchConnectorResults> search(SearchQuery query) throws ConnectorException {
+        return searchClient.search(
                 query.getQuery(),
                 FlickrUtils.getMediaType(query),
                 DateUtils.toEpochSecond(query.getDateFrom()),
-                DateUtils.toEpochSecond(query.getDateTill()),
-                FlickrUtils.getRanking(query.getRanking()),
+                DateUtils.toEpochSecond(query.getDateTo()),
+                FlickrUtils.convertSort(query.getSort()),
                 query.getPage(),
-                query.getPerPage(100)
-        ).await().indefinitely();
+                query.getPerPage(fallbackPerPage)
+        ).map(response -> {
+            SearchConnectorResults queryResult = new SearchConnectorResults();
+            queryResult.setTotalResults(response.getPhotos().getTotal());
 
-        SearchConnectorResults queryResult = new SearchConnectorResults();
-        queryResult.setTotalResults(response.getPhotos().getTotal());
-
-        int rank = query.getOffset();
-        for (PhotoItem photo : response.getPhotos().getPhoto()) {
-            SearchItem resultItem = createResultItem(photo, ++rank);
-            queryResult.addResultItem(resultItem);
-        }
-        return queryResult;
+            int rank = query.getOffset();
+            for (PhotoItem photo : response.getPhotos().getPhoto()) {
+                SearchItem resultItem = createResultItem(photo, ++rank);
+                queryResult.addResultItem(resultItem);
+            }
+            return queryResult;
+        });
     }
 
     private SearchItem createResultItem(PhotoItem photo, int rank) {
         SearchItem resultItem = new SearchItem(rank);
         resultItem.setId(photo.getId());
-        resultItem.setType("photo".equals(photo.getMedia()) ? ContentType.image : ContentType.video);
+        resultItem.setType("photo".equals(photo.getMedia()) ? ContentType.images : ContentType.videos);
         resultItem.setTitle(photo.getTitle());
         resultItem.setDescription(photo.getDescription().getContent());
         resultItem.setUrl("https://flickr.com/photos/" + photo.getPathAlias() + "/" + photo.getId());

@@ -2,7 +2,7 @@ package de.l3s.interweb.connector.flickr.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class FlickrResponse{
+public class FlickrResponse {
 
     @JsonProperty("stat")
     private String stat;
@@ -10,19 +10,19 @@ public class FlickrResponse{
     @JsonProperty("photos")
     private Photos photos;
 
-    public void setStat(String stat){
+    public void setStat(String stat) {
         this.stat = stat;
     }
 
-    public String getStat(){
+    public String getStat() {
         return stat;
     }
 
-    public void setPhotos(Photos photos){
+    public void setPhotos(Photos photos) {
         this.photos = photos;
     }
 
-    public Photos getPhotos(){
+    public Photos getPhotos() {
         return photos;
     }
 }

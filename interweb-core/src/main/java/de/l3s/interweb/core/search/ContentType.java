@@ -1,11 +1,12 @@
 package de.l3s.interweb.core.search;
 
 public enum ContentType {
-    text,
-    video,
-    image,
-    audio,
-    presentation;
+    webpages,
+    videos,
+    images,
+    audios,
+    news,
+    presentations;
 
     public static ContentType find(String name) {
         try {

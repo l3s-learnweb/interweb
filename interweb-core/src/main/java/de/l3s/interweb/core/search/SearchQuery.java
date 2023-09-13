@@ -1,7 +1,5 @@
 package de.l3s.interweb.core.search;
 
-import static de.l3s.interweb.core.util.Assertions.notNull;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
@@ -9,6 +7,7 @@ import java.util.Set;
 
 import jakarta.validation.constraints.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.Query;
@@ -17,17 +16,17 @@ public class SearchQuery extends Query {
     private String id;
 
     @NotEmpty
-    @JsonProperty("q")
     private String query;
     @JsonProperty("date_from")
     private LocalDate dateFrom;
-    @JsonProperty("date_till")
-    private LocalDate dateTill;
+    @JsonProperty("date_to")
+    private LocalDate dateTo;
     @Size(min = 2, max = 2)
+    @JsonProperty("lang")
     private String language = "en";
 
     @NotEmpty
-    @JsonProperty("media_types")
+    @JsonProperty("content_types")
     private Set<ContentType> contentTypes = new HashSet<>();
     private Set<SearchExtra> extras = new HashSet<>();
 
@@ -40,21 +39,10 @@ public class SearchQuery extends Query {
     private Integer perPage;
 
     @NotNull
-    private SearchRanking ranking = SearchRanking.relevance;
-
-    public SearchQuery() {
-    }
-
-    public SearchQuery(String id, String query, Set<ContentType> contentTypes) {
-        notNull(id, "id");
-        notNull(query, "query");
-        notNull(contentTypes, "contentTypes");
-
-        this.id = id;
-        this.query = query;
-        this.contentTypes = contentTypes;
-        this.extras = new HashSet<>();
-    }
+    private SearchSort sort = SearchSort.relevance;
+    @Min(100)
+    @Max(600000)
+    private Integer timeout;
 
     public String getId() {
         return id;
@@ -80,12 +68,12 @@ public class SearchQuery extends Query {
         this.dateFrom = dateFrom;
     }
 
-    public LocalDate getDateTill() {
-        return dateTill;
+    public LocalDate getDateTo() {
+        return dateTo;
     }
 
-    public void setDateTill(final LocalDate dateTill) {
-        this.dateTill = dateTill;
+    public void setDateTo(final LocalDate dateTo) {
+        this.dateTo = dateTo;
     }
 
     public String getLanguage() {
@@ -116,33 +104,33 @@ public class SearchQuery extends Query {
         this.extras = extras;
     }
 
-    public void addSearchExtra(SearchExtra part) {
+    @JsonIgnore
+    public void setExtras(final SearchExtra ...extras) {
+        if (extras == null || extras.length == 0) this.extras = new HashSet<>();
+        else this.extras = Set.of(extras);
+    }
+
+    public void addExtra(SearchExtra part) {
         extras.add(part);
     }
 
-    // TODO: replace return type to Integer
     public int getPage() {
         if (page == null) return 1;
         return page;
     }
 
-    // TODO: replace return type to Integer
-    public void setPage(final int page) {
-        this.page = Math.max(page, 1);
+    public void setPage(final Integer page) {
+        this.page = page;
     }
 
-    // TODO: replace return type to Integer
-    public int getPerPage() {
-        if (perPage == null) return 10;
-        return perPage;
-    }
-
+    /**
+     * @return a valid perPage value, but no more than fallback value or fallback value if perPage is null
+     */
     public int getPerPage(int fallback) {
-        return perPage == null || perPage == 0 ? fallback : perPage;
+        return perPage == null ? fallback : Math.min(perPage, fallback);
     }
 
-    // TODO: replace return type to Integer
-    public void setPerPage(final int perPage) {
+    public void setPerPage(final Integer perPage) {
         this.perPage = perPage;
     }
 
@@ -154,20 +142,28 @@ public class SearchQuery extends Query {
         return (page - 1) * perPage;
     }
 
-    public Integer getOffset(int fallbackPerPage) {
-        if (page == null || page == 0) {
-            return null;
+    public int getOffset(int fallbackPerPage) {
+        if (page == null || page <= 1) {
+            return 0;
         }
 
         return (page - 1) * getPerPage(fallbackPerPage);
     }
 
-    public SearchRanking getRanking() {
-        return ranking;
+    public SearchSort getSort() {
+        return sort;
     }
 
-    public void setRanking(final SearchRanking ranking) {
-        this.ranking = ranking;
+    public void setSort(final SearchSort sort) {
+        this.sort = Objects.requireNonNullElse(sort, SearchSort.relevance);
+    }
+
+    public Integer getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(Integer timeout) {
+        this.timeout = timeout;
     }
 
     @Override
@@ -179,24 +175,24 @@ public class SearchQuery extends Query {
             return false;
         }
         final SearchQuery query1 = (SearchQuery) o;
-        return page == query1.page
-            && perPage == query1.perPage
-            && ranking == query1.ranking
-            && Objects.equals(query, query1.query)
-            && Objects.equals(dateFrom, query1.dateFrom)
-            && Objects.equals(dateTill, query1.dateTill)
-            && Objects.equals(language, query1.language)
-            && Objects.equals(contentTypes, query1.contentTypes)
-            && Objects.equals(extras, query1.extras);
+        return Objects.equals(page, query1.page)
+                && Objects.equals(perPage, query1.perPage)
+                && Objects.equals(sort, query1.sort)
+                && Objects.equals(query, query1.query)
+                && Objects.equals(dateFrom, query1.dateFrom)
+                && Objects.equals(dateTo, query1.dateTo)
+                && Objects.equals(language, query1.language)
+                && Objects.equals(contentTypes, query1.contentTypes)
+                && Objects.equals(extras, query1.extras);
     }
 
 
     @Override
     public int hashCode() {
-        return Objects.hash(query, dateFrom, dateTill, language, getServices(), contentTypes, extras, page, perPage, ranking);
+        return Objects.hash(query, dateFrom, dateTo, language, getServices(), contentTypes, extras, page, perPage, sort);
     }
 
     public int hashCodeWithoutPage() {
-        return Objects.hash(query, dateFrom, dateTill, language, getServices(), contentTypes, extras, perPage, ranking);
+        return Objects.hash(query, dateFrom, dateTo, language, getServices(), contentTypes, extras, perPage, sort);
     }
 }

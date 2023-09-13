@@ -24,26 +24,55 @@ class YouTubeConnectorTest {
     @Test
     void search() throws ConnectorException {
         SearchQuery query = new SearchQuery();
-        query.setQuery("spacex");
-        query.addContentType(ContentType.video);
+        query.setQuery("hannover");
+        query.addContentType(ContentType.videos);
         query.setPerPage(10);
         // query.setDateFrom("2009-01-01 00:00:00");
-        // query.setDateTill("2009-06-01 00:00:00");
-        query.setRanking(SearchRanking.relevance);
-        // query.addSearchExtra(SearchExtra.statistics);
-        query.addSearchExtra(SearchExtra.duration);
-        query.addSearchExtra(SearchExtra.tags);
+        // query.setDateTo("2009-06-01 00:00:00");
+        query.setSort(SearchSort.relevance);
+        // query.addExtra(SearchExtra.statistics);
+        query.addExtra(SearchExtra.duration);
+        query.addExtra(SearchExtra.tags);
+
+        SearchConnectorResults page = connector.search(query).await().indefinitely();
+        assertEquals(10, page.getItems().size());
+        assertTrue(page.getTotalResults() > 100);
+
+        for (SearchItem result : page.getItems()) {
+            assertTrue(result.getDuration() > 0);
+            log.infov("{0}: {1} {2}", result.getRank(), result.getTitle(), result.getUrl());
+        }
+    }
+
+    @Test
+    void searchChannel() throws ConnectorException {
+        SearchQuery query = new SearchQuery();
+        query.setQuery("user::ukrainernet kharkiv");
+        query.addContentType(ContentType.videos);
+        query.setPerPage(10);
+
+        SearchConnectorResults page = connector.search(query).await().indefinitely();
+        assertEquals(10, page.getItems().size());
+
+        for (SearchItem result : page.getItems()) {
+            assertEquals("Ukraїner", result.getAuthor());
+            log.infov("{0}: {1} {2}", result.getRank(), result.getTitle(), result.getUrl());
+        }
+    }
+
+    @Test
+    void searchPaging() throws ConnectorException {
+        SearchQuery query = new SearchQuery();
+        query.setQuery("hannover");
+        query.setPerPage(10);
+        query.addContentType(ContentType.videos);
 
         for (int i = 1; i < 4; ++i) {
             query.setPage(i);
-            SearchConnectorResults page = connector.search(query);
+            SearchConnectorResults page = connector.search(query).await().indefinitely();
 
             assertEquals(10, page.getItems().size());
             assertTrue(page.getTotalResults() > 100);
-
-            for (SearchItem result : page.getItems()) {
-                log.infov("{0}: {1} {2}", result.getRank(), result.getTitle(), result.getUrl());
-            }
         }
     }
 }

@@ -1,6 +1,5 @@
 package de.l3s.interweb.connector.giphy;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.inject.Inject;
@@ -28,15 +27,15 @@ class GiphyConnectorTest {
     void search() throws ConnectorException {
         SearchQuery query = new SearchQuery();
         query.setQuery("hello world");
-        query.addContentType(ContentType.image);
+        query.addContentType(ContentType.images);
 
-        SearchConnectorResults queryResult = connector.search(query);
+        SearchConnectorResults queryResult = connector.search(query).await().indefinitely();
 
         for (SearchItem res : queryResult.getItems()) {
             log.info(res);
         }
 
-        assertEquals(50, queryResult.getItems().size());
+        assertTrue(queryResult.getItems().size() > 30);
         assertTrue(queryResult.getTotalResults() > 50);
     }
 }

@@ -28,16 +28,9 @@ import de.l3s.interweb.core.util.StringUtils;
 @Dependent
 public class BingConnector implements SearchConnector, SuggestConnector {
     private static final Logger log = Logger.getLogger(BingConnector.class);
-
-    @Override
-    public String getName() {
-        return "Bing";
-    }
-
-    @Override
-    public String getBaseUrl() {
-        return "https://bing.com/";
-    }
+    private static final int fallbackPerPageWeb = 50;
+    private static final int fallbackPerPageImages = 150;
+    private static final int fallbackPerPageVideos = 105;
 
     @Inject
     ObjectMapper mapper;
@@ -49,59 +42,70 @@ public class BingConnector implements SearchConnector, SuggestConnector {
     BingSuggestClient suggestClient;
 
     @Override
-    public ContentType[] getSearchTypes() {
-        return new ContentType[]{ContentType.text, ContentType.image, ContentType.video};
+    public String getName() {
+        return "Bing";
     }
 
     @Override
-    public SearchConnectorResults search(final SearchQuery query) throws ConnectorException {
-        BingResponse response = null;
+    public String getBaseUrl() {
+        return "https://bing.com/";
+    }
+
+    @Override
+    public ContentType[] getSearchTypes() {
+        return new ContentType[]{ContentType.webpages, ContentType.images, ContentType.videos, ContentType.news};
+    }
+
+    @Override
+    public Uni<SearchConnectorResults> search(SearchQuery query) throws ConnectorException {
+        return processQuery(query).map(this::processResponse);
+    }
+
+    private Uni<BingResponse> processQuery(SearchQuery query) {
         if (query.getContentTypes().size() == 1) {
-            if (query.getContentTypes().contains(ContentType.image)) {
-                response = searchClient.searchImages(
+            if (query.getContentTypes().contains(ContentType.images)) {
+                return searchClient.searchImages(
                         query.getQuery(),
-                        query.getPerPage(150),
-                        query.getOffset(150),
+                        query.getPerPage(fallbackPerPageImages),
+                        query.getOffset(fallbackPerPageImages),
                         query.getLanguage(),
                         BingUtils.getMarket(query.getLanguage()),
-                        BingUtils.createFreshness(null, query.getDateTill())
-                ).await().indefinitely();
-            } else if (query.getContentTypes().contains(ContentType.video)) {
-                response = searchClient.searchVideos(
+                        BingUtils.createFreshness(null, query.getDateTo())
+                );
+            } else if (query.getContentTypes().contains(ContentType.videos)) {
+                return searchClient.searchVideos(
                         query.getQuery(),
-                        query.getPerPage(105),
-                        query.getOffset(105),
+                        query.getPerPage(fallbackPerPageVideos),
+                        query.getOffset(fallbackPerPageVideos),
                         query.getLanguage(),
                         BingUtils.getMarket(query.getLanguage()),
-                        BingUtils.createFreshness(null, query.getDateTill())
-                ).await().indefinitely();
+                        BingUtils.createFreshness(null, query.getDateTo())
+                );
             }
         }
 
-        if (response == null) {
-            List<BingSearchClient.ResponseFilter> answerTypes = new ArrayList<>();
-            for (ContentType contentType : query.getContentTypes()) {
-                if (contentType == ContentType.text) {
-                    answerTypes.add(BingSearchClient.ResponseFilter.webpages);
-                } else if (contentType == ContentType.image) {
-                    answerTypes.add(BingSearchClient.ResponseFilter.images);
-                } else if (contentType == ContentType.video) {
-                    answerTypes.add(BingSearchClient.ResponseFilter.videos);
-                }
+        List<BingSearchClient.ResponseFilter> answerTypes = new ArrayList<>();
+        for (ContentType contentType : query.getContentTypes()) {
+            if (contentType == ContentType.webpages) {
+                answerTypes.add(BingSearchClient.ResponseFilter.webpages);
+            } else if (contentType == ContentType.images) {
+                answerTypes.add(BingSearchClient.ResponseFilter.images);
+            } else if (contentType == ContentType.videos) {
+                answerTypes.add(BingSearchClient.ResponseFilter.videos);
+            } else if (contentType == ContentType.news) {
+                answerTypes.add(BingSearchClient.ResponseFilter.news);
             }
-
-            response = searchClient.search(
-                    query.getQuery(),
-                    query.getPerPage(50),
-                    query.getOffset(50),
-                    query.getLanguage(),
-                    BingUtils.getMarket(query.getLanguage()),
-                    BingUtils.createFreshness(query.getDateFrom(), query.getDateTill()),
-                    answerTypes.isEmpty() ? null : answerTypes.stream().map(Enum::name).collect(Collectors.joining(","))
-            ).await().indefinitely();
         }
 
-        return convertResponseToResults(response);
+        return searchClient.search(
+                query.getQuery(),
+                query.getPerPage(fallbackPerPageWeb),
+                query.getOffset(fallbackPerPageWeb),
+                query.getLanguage(),
+                BingUtils.getMarket(query.getLanguage()),
+                BingUtils.createFreshness(query.getDateFrom(), query.getDateTo()),
+                answerTypes.isEmpty() ? null : answerTypes.stream().map(Enum::name).collect(Collectors.joining(","))
+        );
     }
 
     @Override
@@ -119,7 +123,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
         }));
     }
 
-    private SearchConnectorResults convertResponseToResults(BingResponse response) throws ConnectorException {
+    private SearchConnectorResults processResponse(BingResponse response) throws ConnectorException {
         if (response == null) {
             throw new ConnectorException("No response");
         }
@@ -128,9 +132,13 @@ public class BingConnector implements SearchConnector, SuggestConnector {
             throw new ConnectorException(response.getError().getMessage());
         }
 
+        int rank = 0;
         SearchConnectorResults results = new SearchConnectorResults();
         if (response.getWebPages() != null && response.getWebPages().getValues() != null) {
             WebPagesHolder webResults = response.getWebPages();
+            if (webResults.getCurrentOffset() != null) {
+                rank += webResults.getCurrentOffset();
+            }
 
             if (webResults.getTotalEstimatedMatches() != null) {
                 results.addTotalResults(webResults.getTotalEstimatedMatches());
@@ -138,10 +146,9 @@ public class BingConnector implements SearchConnector, SuggestConnector {
                 results.addTotalResults(webResults.getValues().size());
             }
 
-            int index = 1;
             for (WebPage page : webResults.getValues()) {
-                SearchItem resultItem = new SearchItem(index++);
-                resultItem.setType(ContentType.text);
+                SearchItem resultItem = new SearchItem(++rank);
+                resultItem.setType(ContentType.webpages);
                 resultItem.setTitle(page.getName());
                 resultItem.setDescription(page.getSnippet());
                 resultItem.setUrl(page.getUrl());
@@ -153,6 +160,9 @@ public class BingConnector implements SearchConnector, SuggestConnector {
 
         if (response.getImages() != null && response.getImages().getValues() != null) {
             ImageHolder imagesResults = response.getImages();
+            if (imagesResults.getCurrentOffset() != null) {
+                rank += imagesResults.getCurrentOffset();
+            }
 
             if (imagesResults.getTotalEstimatedMatches() != null) {
                 results.addTotalResults(imagesResults.getTotalEstimatedMatches());
@@ -160,10 +170,9 @@ public class BingConnector implements SearchConnector, SuggestConnector {
                 results.addTotalResults(imagesResults.getValues().size());
             }
 
-            int index = 1;
             for (Image image : imagesResults.getValues()) {
-                SearchItem resultItem = new SearchItem(index++);
-                resultItem.setType(ContentType.image);
+                SearchItem resultItem = new SearchItem(++rank);
+                resultItem.setType(ContentType.images);
                 resultItem.setTitle(image.getName());
                 resultItem.setUrl(image.getContentUrl());
                 resultItem.setDate(DateUtils.parse(image.getDatePublished()));
@@ -188,6 +197,9 @@ public class BingConnector implements SearchConnector, SuggestConnector {
 
         if (response.getVideos() != null && response.getVideos().getValues() != null) {
             VideoHolder videosResults = response.getVideos();
+            if (videosResults.getCurrentOffset() != null) {
+                rank += videosResults.getCurrentOffset();
+            }
 
             if (videosResults.getTotalEstimatedMatches() != null) {
                 results.addTotalResults(videosResults.getTotalEstimatedMatches());
@@ -195,10 +207,9 @@ public class BingConnector implements SearchConnector, SuggestConnector {
                 results.addTotalResults(videosResults.getValues().size());
             }
 
-            int index = 1;
             for (Video video : videosResults.getValues()) {
-                SearchItem resultItem = new SearchItem(index++);
-                resultItem.setType(ContentType.video);
+                SearchItem resultItem = new SearchItem(++rank);
+                resultItem.setType(ContentType.videos);
                 resultItem.setTitle(video.getName());
                 resultItem.setDescription(video.getDescription());
                 resultItem.setUrl(video.getContentUrl());

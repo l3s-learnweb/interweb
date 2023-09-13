@@ -25,13 +25,13 @@ class IpernityConnectorTest {
     void search() throws ConnectorException {
         SearchQuery query = new SearchQuery();
         query.setQuery("tree");
-        query.addContentType(ContentType.image);
+        query.addContentType(ContentType.images);
         query.setPerPage(20);
         // query.setDateFrom("2009-01-01 00:00:00");
-        // query.setDateTill("2009-06-01 00:00:00");
-        query.setRanking(SearchRanking.relevance);
+        // query.setDateTo("2009-06-01 00:00:00");
+        query.setSort(SearchSort.relevance);
 
-        SearchConnectorResults queryResult = connector.search(query);
+        SearchConnectorResults queryResult = connector.search(query).await().indefinitely();
 
         for (SearchItem res : queryResult.getItems()) {
             log.info(res);

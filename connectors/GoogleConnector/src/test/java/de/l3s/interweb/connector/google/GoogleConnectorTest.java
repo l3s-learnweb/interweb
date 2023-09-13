@@ -24,7 +24,7 @@ class GoogleConnectorTest {
     @Test
     void suggest() throws ConnectorException {
         SuggestQuery query = new SuggestQuery();
-        query.setQuery("nikola tesla");
+        query.setQuery("hannover");
         query.setLanguage("en");
 
         SuggestConnectorResults results = connector.suggest(query).await().indefinitely();

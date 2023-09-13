@@ -29,7 +29,7 @@ class OpenaiConnectorTest {
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
         query.addMessage("What is your name?.", Message.Role.user);
 
-        CompletionResults results = connector.complete(query, null).await().indefinitely();
+        CompletionResults results = connector.complete(query).await().indefinitely();
 
         assertEquals(1, results.getChoices().size());
         System.out.println("Results for '" + query.getMessages().get(query.getMessages().size() - 1).getContent() + "':");

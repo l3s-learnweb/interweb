@@ -1,13 +1,13 @@
 package de.l3s.interweb.core.search;
 
-public enum SearchRanking {
+public enum SearchSort {
     date,
-    interestingness,
+    popularity,
     relevance;
 
-    public static SearchRanking find(String name) {
+    public static SearchSort find(String name) {
         try {
-            return SearchRanking.valueOf(name.toLowerCase());
+            return SearchSort.valueOf(name.toLowerCase());
         } catch (IllegalArgumentException e) {
             return null;
         }

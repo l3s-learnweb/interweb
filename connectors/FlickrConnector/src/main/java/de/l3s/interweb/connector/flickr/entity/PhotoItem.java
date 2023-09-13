@@ -2,7 +2,7 @@ package de.l3s.interweb.connector.flickr.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PhotoItem{
+public class PhotoItem {
     @JsonProperty("id")
     private String id;
 

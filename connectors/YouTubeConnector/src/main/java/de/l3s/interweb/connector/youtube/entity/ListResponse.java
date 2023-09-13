@@ -1,6 +1,7 @@
 package de.l3s.interweb.connector.youtube.entity;
 
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record ListResponse(

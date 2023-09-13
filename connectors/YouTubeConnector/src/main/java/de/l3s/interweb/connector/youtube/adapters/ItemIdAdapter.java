@@ -21,6 +21,10 @@ public class ItemIdAdapter extends StdDeserializer<String> {
             return node.get("videoId").asText();
         }
 
+        if (node.isObject() && node.has("channelId")) {
+            return node.get("channelId").asText();
+        }
+
         if (node.isTextual()) {
             return node.asText();
         }

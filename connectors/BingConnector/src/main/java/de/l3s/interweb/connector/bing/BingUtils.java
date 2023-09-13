@@ -10,26 +10,26 @@ public final class BingUtils {
      * To get articles discovered by Bing during a specific timeframe, specify a date range in the form, YYYY-MM-DD..YYYY-MM-DD.
      * To limit the results to a single date, set this parameter to a specific date, e.g. freshness=2019-02-04.
      */
-    static String createFreshness(LocalDate dateFrom, LocalDate dateTill) {
-        if (dateTill != null) {
-            if (dateTill.plusDays(2).isAfter(LocalDate.now())) { // add 1 day for safety
+    static String createFreshness(LocalDate from, LocalDate to) {
+        if (to != null) {
+            if (to.plusDays(2).isAfter(LocalDate.now())) { // add 1 day for safety
                 return "day";
-            } else if (dateTill.plusDays(9).isAfter(LocalDate.now())) { // add 2 days for safety
+            } else if (to.plusDays(9).isAfter(LocalDate.now())) { // add 2 days for safety
                 return "week";
-            } else if (dateTill.plusDays(34).isAfter(LocalDate.now())) { // add 3 days for safety
+            } else if (to.plusDays(34).isAfter(LocalDate.now())) { // add 3 days for safety
                 return "month";
             }
         }
 
-        if (dateFrom != null) {
-            String dateFromFormat = DateTimeFormatter.ISO_LOCAL_DATE.format(dateFrom);
+        if (from != null) {
+            String fromFormat = DateTimeFormatter.ISO_LOCAL_DATE.format(from);
 
-            if (dateTill != null && !dateFrom.equals(dateTill)) {
-                String dateTillFormat = DateTimeFormatter.ISO_LOCAL_DATE.format(dateTill);
-                return dateFromFormat + ".." + dateTillFormat;
+            if (to != null && !from.equals(to)) {
+                String toFormat = DateTimeFormatter.ISO_LOCAL_DATE.format(to);
+                return fromFormat + ".." + toFormat;
             }
 
-            return dateFromFormat;
+            return fromFormat;
         }
 
         return null;
