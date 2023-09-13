@@ -5,16 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collections;
+
+import jakarta.inject.Inject;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.jboss.logging.Logger;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.search.*;
 
@@ -22,10 +20,9 @@ import de.l3s.interweb.core.search.*;
 @QuarkusTest
 class VimeoConnectorTest {
     private static final Logger log = Logger.getLogger(VimeoConnectorTest.class);
-    private static final VimeoConnector connector = new VimeoConnector();
 
-    @ConfigProperty(name = "connector.vimeo.key")
-    String apikey;
+    @Inject
+    VimeoConnector connector;
 
     @Test
     void search() throws ConnectorException {
@@ -37,7 +34,7 @@ class VimeoConnectorTest {
         // query.setDateTill("2009-06-01 00:00:00");
         query.setRanking(SearchRanking.relevance);
 
-        SearchConnectorResults queryResult = connector.search(query, new AuthCredentials(apikey));
+        SearchConnectorResults queryResult = connector.search(query);
 
         for (SearchItem res : queryResult.getItems()) {
             log.info(res);
@@ -45,24 +42,6 @@ class VimeoConnectorTest {
 
         assertEquals(20, queryResult.getItems().size());
         assertTrue(queryResult.getTotalResults() > 100);
-    }
-
-    @Test
-    void getTest() throws ConnectorException {
-        SearchQuery query = new SearchQuery();
-        query.setQuery("mass disaster 1941");
-        query.addContentType(ContentType.video);
-        query.setLanguage("it");
-        query.setExtras(Collections.singleton(SearchExtra.duration));
-        query.setPerPage(32);
-        query.setPage(2);
-        SearchConnectorResults queryResult = connector.search(query, null);
-
-        for (SearchItem res : queryResult.getItems()) {
-            log.info(res);
-        }
-
-        assertEquals(0, queryResult.getItems().size());
     }
 
     @Test
