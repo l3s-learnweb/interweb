@@ -49,6 +49,34 @@ public class Slideshow {
     @JsonProperty("Created")
     private String created;
 
+    // only when detailed=1
+    @JsonProperty("UserID")
+    private String userId;
+
+    @JsonProperty("PPTLocation")
+    private String pptLocation;
+
+    @JsonProperty("StrippedTitle")
+    private String strippedTitle;
+
+    @JsonProperty("NumDownloads")
+    private Integer numDownloads;
+
+    @JsonProperty("NumViews")
+    private Integer numViews;
+
+    @JsonProperty("NumComments")
+    private Integer numComments;
+
+    @JsonProperty("NumFavorites")
+    private Integer numFavorites;
+
+    @JsonProperty("NumSlides")
+    private Integer numSlides;
+
+    @JsonProperty("Tags")
+    private Tags tags;
+
     public int getId() {
         return id;
     }

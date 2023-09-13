@@ -40,9 +40,6 @@ public class SearchQuery extends Query {
     private Integer perPage;
 
     @NotNull
-    @JsonProperty("search_scope")
-    private SearchScope searchScope = SearchScope.text;
-    @NotNull
     private SearchRanking ranking = SearchRanking.relevance;
 
     public SearchQuery() {
@@ -109,14 +106,6 @@ public class SearchQuery extends Query {
 
     public void addContentType(ContentType contentType) {
         contentTypes.add(contentType);
-    }
-
-    public SearchScope getSearchScope() {
-        return searchScope;
-    }
-
-    public void setSearchScope(final SearchScope searchScope) {
-        this.searchScope = searchScope;
     }
 
     public Set<SearchExtra> getExtras() {
@@ -192,7 +181,6 @@ public class SearchQuery extends Query {
         final SearchQuery query1 = (SearchQuery) o;
         return page == query1.page
             && perPage == query1.perPage
-            && searchScope == query1.searchScope
             && ranking == query1.ranking
             && Objects.equals(query, query1.query)
             && Objects.equals(dateFrom, query1.dateFrom)
@@ -205,10 +193,10 @@ public class SearchQuery extends Query {
 
     @Override
     public int hashCode() {
-        return Objects.hash(query, dateFrom, dateTill, language, getServices(), contentTypes, searchScope, extras, page, perPage, ranking);
+        return Objects.hash(query, dateFrom, dateTill, language, getServices(), contentTypes, extras, page, perPage, ranking);
     }
 
     public int hashCodeWithoutPage() {
-        return Objects.hash(query, dateFrom, dateTill, language, getServices(), contentTypes, searchScope, extras, perPage, ranking);
+        return Objects.hash(query, dateFrom, dateTill, language, getServices(), contentTypes, extras, perPage, ranking);
     }
 }

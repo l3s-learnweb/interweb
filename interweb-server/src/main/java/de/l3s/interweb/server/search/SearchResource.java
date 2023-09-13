@@ -39,7 +39,6 @@ public class SearchResource {
                                      @Parameter(description = "A content type to search for") @NotEmpty @RestQuery("content_types") ContentType[] contentTypes,
                                      @Parameter(description = "A services to search in") @RestQuery("services") String[] services,
                                      @Parameter(description = "A two letter language code", example = "en, de, es, uk") @RestQuery("lang") String lang,
-                                     @RestQuery("search_in") SearchScope searchIn,
                                      @RestQuery("extras") SearchExtra[] extras,
                                      @RestQuery("date_from") LocalDate dateFrom,
                                      @RestQuery("date_till") LocalDate dateTill,
@@ -54,7 +53,6 @@ public class SearchResource {
         query.setDateTill(dateTill);
         query.setLanguage(lang);
         if (extras != null && extras.length > 0) query.setExtras(Set.of(extras));
-        if (searchIn != null) query.setSearchScope(searchIn);
         if (ranking != null) query.setRanking(ranking);
         if (page != null) query.setPage(page);
         if (perPage != null) query.setPerPage(perPage);
