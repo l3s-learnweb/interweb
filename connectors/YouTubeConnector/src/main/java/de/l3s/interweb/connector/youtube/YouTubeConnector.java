@@ -67,8 +67,6 @@ public class YouTubeConnector implements SearchConnector {
 
     @Override
     public SearchConnectorResults search(SearchQuery query, AuthCredentials credentials) throws ConnectorException {
-        Assertions.notNull(query, "query");
-
         SearchConnectorResults queryResult = new SearchConnectorResults();
 
         try {

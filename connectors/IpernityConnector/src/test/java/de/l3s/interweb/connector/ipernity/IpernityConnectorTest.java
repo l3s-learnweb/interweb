@@ -3,14 +3,13 @@ package de.l3s.interweb.connector.ipernity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import jakarta.inject.Inject;
+
 import io.quarkus.test.junit.QuarkusTest;
 import org.jboss.logging.Logger;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.search.*;
 
@@ -18,10 +17,9 @@ import de.l3s.interweb.core.search.*;
 @QuarkusTest
 class IpernityConnectorTest {
     private static final Logger log = Logger.getLogger(IpernityConnectorTest.class);
-    private static final IpernityConnector connector = new IpernityConnector();
 
-    @ConfigProperty(name = "connector.ipernity.key")
-    String apikey;
+    @Inject
+    IpernityConnector connector;
 
     @Test
     void search() throws ConnectorException {
@@ -33,7 +31,7 @@ class IpernityConnectorTest {
         // query.setDateTill("2009-06-01 00:00:00");
         query.setRanking(SearchRanking.relevance);
 
-        SearchConnectorResults queryResult = connector.search(query, new AuthCredentials(apikey));
+        SearchConnectorResults queryResult = connector.search(query);
 
         for (SearchItem res : queryResult.getItems()) {
             log.info(res);

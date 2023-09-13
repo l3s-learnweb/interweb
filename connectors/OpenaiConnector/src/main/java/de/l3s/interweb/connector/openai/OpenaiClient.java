@@ -1,6 +1,7 @@
 package de.l3s.interweb.connector.openai;
 
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
@@ -13,8 +14,8 @@ import de.l3s.interweb.core.completion.CompletionQuery;
 import de.l3s.interweb.core.completion.CompletionResults;
 
 @Path("/openai/deployments")
-@Consumes("application/json")
-@Produces("application/json")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 @RegisterRestClient(configKey = "openai")
 @ClientHeaderParam(name = "api-key", value = "${connector.openai.apikey}")
 public interface OpenaiClient {

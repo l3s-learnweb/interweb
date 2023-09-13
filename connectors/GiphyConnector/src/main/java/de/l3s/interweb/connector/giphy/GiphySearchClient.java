@@ -2,6 +2,7 @@ package de.l3s.interweb.connector.giphy;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
@@ -13,8 +14,7 @@ import de.l3s.interweb.connector.giphy.entity.SearchResponse;
 import de.l3s.interweb.core.ConnectorException;
 
 @Path("/v1/gifs")
-@Consumes("application/json")
-@Produces("application/json")
+@Produces(MediaType.APPLICATION_JSON)
 @RegisterRestClient(configKey = "giphy")
 @ClientQueryParam(name = "api_key", value = "${connector.giphy.apikey}")
 public interface GiphySearchClient {

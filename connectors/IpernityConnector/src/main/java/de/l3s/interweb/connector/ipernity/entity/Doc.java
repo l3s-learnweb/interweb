@@ -2,36 +2,32 @@ package de.l3s.interweb.connector.ipernity.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Doc {
+public record Doc(
     @JsonProperty("doc_id")
-    public Integer docId;
-    public String media;
-    public String license;
-    public String title;
-    @JsonProperty(required = true)
-    public Owner owner;
-    public String rotation;
-    @JsonProperty(required = true)
-    public Thumb thumb;
-    public Dates dates;
-    public Count count;
-    public String lng;
-    public String lat;
+    String docId,
 
-    public static class Dates {
-        @JsonProperty("posted_at")
-        public String postedAt;
-        public String created;
-        @JsonProperty("last_comment_at")
-        public String lastCommentAt;
-        @JsonProperty("last_update_at")
-        public String lastUpdateAt;
-    }
+    @JsonProperty(value = "owner", required = true)
+    Owner owner,
 
-    public static class Count {
-        public Long visits;
-        public Long faves;
-        public Long comments;
-        public Long notes;
-    }
+    @JsonProperty("license")
+    String license,
+
+    @JsonProperty(value = "thumb", required = true)
+    Thumb thumb,
+
+    @JsonProperty("rotation")
+    String rotation,
+
+    @JsonProperty("count")
+    Count count,
+
+    @JsonProperty("dates")
+    Dates dates,
+
+    @JsonProperty("media")
+    String media,
+
+    @JsonProperty("title")
+    String title
+) {
 }

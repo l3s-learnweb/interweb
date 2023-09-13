@@ -2,11 +2,11 @@ package de.l3s.interweb.connector.ipernity.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record IpernityResponse(
-    @JsonProperty("docs")
-    Docs docs,
+public record Api(
+    @JsonProperty("at")
+    String at,
 
-    @JsonProperty("api")
-    Api api
+    @JsonProperty("status")
+    String status
 ) {
 }

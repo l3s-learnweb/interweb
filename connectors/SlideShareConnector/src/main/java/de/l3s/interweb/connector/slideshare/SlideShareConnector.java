@@ -63,7 +63,6 @@ public class SlideShareConnector implements SearchConnector {
 
     @Override
     public SearchConnectorResults search(SearchQuery query, AuthCredentials credentials) throws ConnectorException {
-        Assertions.notNull(query, "query");
         SearchConnectorResults queryResult = new SearchConnectorResults();
 
         UriBuilder uriBuilder = UriBuilder.fromUri("https://www.slideshare.net/api/2/search_slideshows")

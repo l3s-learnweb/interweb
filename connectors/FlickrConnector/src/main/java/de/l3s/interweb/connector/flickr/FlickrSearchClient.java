@@ -2,6 +2,7 @@ package de.l3s.interweb.connector.flickr;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
@@ -17,8 +18,7 @@ import de.l3s.interweb.core.ConnectorException;
  * https://www.flickr.com/services/api/misc.overview.html
  */
 @Path("/services/rest/")
-@Consumes("application/json")
-@Produces("application/json")
+@Produces(MediaType.APPLICATION_JSON)
 @RegisterRestClient(configKey = "flickr")
 @ClientQueryParam(name = "api_key", value = "${connector.flickr.apikey}")
 @ClientQueryParam(name = "format", value = "json")

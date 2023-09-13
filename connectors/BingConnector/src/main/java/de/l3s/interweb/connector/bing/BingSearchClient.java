@@ -2,6 +2,7 @@ package de.l3s.interweb.connector.bing;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
@@ -14,8 +15,7 @@ import de.l3s.interweb.connector.bing.entity.BingResponse;
 import de.l3s.interweb.core.ConnectorException;
 
 @Path("/v7.0")
-@Consumes("application/json")
-@Produces("application/json")
+@Produces(MediaType.APPLICATION_JSON)
 @RegisterRestClient(configKey = "bing-search")
 @ClientHeaderParam(name = "Ocp-Apim-Subscription-Key", value = "${connector.bing.apikey}")
 @ClientQueryParam(name = "safeSearch", value = "Strict")

@@ -2,12 +2,20 @@ package de.l3s.interweb.connector.ipernity.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Owner {
+public record Owner(
     @JsonProperty("user_id")
-    public String userId;
-    public String username;
-    public String alias;
+    String userId,
+
+    @JsonProperty("username")
+    String username,
+
+    @JsonProperty("alias")
+    String alias,
+
     @JsonProperty("is_pro")
-    public Integer isPro;
-    public String icon;
+    Integer isPro,
+
+    @JsonProperty("icon")
+    String icon
+) {
 }

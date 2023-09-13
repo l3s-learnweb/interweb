@@ -9,7 +9,6 @@ import de.l3s.interweb.connector.giphy.entity.giphy.GiphyContainer;
 import de.l3s.interweb.connector.giphy.entity.giphy.GiphyData;
 import de.l3s.interweb.connector.giphy.entity.giphy.GiphyImage;
 import de.l3s.interweb.connector.giphy.entity.SearchResponse;
-import de.l3s.interweb.core.AuthCredentials;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.search.*;
 
@@ -43,7 +42,7 @@ public class GiphyConnector implements SearchConnector {
     }
 
     @Override
-    public SearchConnectorResults search(SearchQuery query, AuthCredentials credentials) throws ConnectorException {
+    public SearchConnectorResults search(SearchQuery query) throws ConnectorException {
         SearchResponse feed = searchClient.search(
                 query.getQuery(),
                 query.getPerPage(50),
