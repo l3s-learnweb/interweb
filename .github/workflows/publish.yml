@@ -2,7 +2,6 @@ name: publish
 
 on:
   push:
-    branches: [ "main" ]
     tags:
       - '*'
 
@@ -43,7 +42,7 @@ jobs:
     name: deploy image
     runs-on: ubuntu-latest
     steps:
-      - uses: appleboy/ssh-action@v1
+      - uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USERNAME }}
