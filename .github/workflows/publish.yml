@@ -3,6 +3,8 @@ name: publish
 on:
   push:
     branches: [ "main" ]
+    tags:
+      - '*'
 
 env:
   REGISTRY: ghcr.io
@@ -40,18 +42,16 @@ jobs:
     needs: build-and-push-image
     name: deploy image
     runs-on: ubuntu-latest
-
     steps:
-      - name: Install ssh keys
-        run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.DEPLOY_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} > ~/.ssh/known_hosts
-          ssh-keyscan -H ${{ secrets.DEPLOY_JUMP_HOST }} > ~/.ssh/known_hosts
-
-      - name: Connect and pull
-        run: ssh -J ${{ secrets.DEPLOY_JUMP_USERNAME }}@${{ secrets.DEPLOY_JUMP_HOST }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} \
-          "cd ${{ secrets.DEPLOY_PATH }} && docker compose pull && docker compose up -d && exit"
-
-      - name: Cleanup
-        run: rm -rf ~/.ssh
+      - uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          proxy_host: ${{ secrets.DEPLOY_JUMP_HOST }}
+          proxy_username: ${{ secrets.DEPLOY_JUMP_USERNAME }}
+          proxy_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            docker compose pull
+            docker compose up -d
