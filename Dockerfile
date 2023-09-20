@@ -4,6 +4,7 @@ COPY --chown=quarkus:quarkus . /code
 USER quarkus
 
 WORKDIR /code
+RUN chmod "g+rwX" mvnw
 RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:go-offline
 RUN ./mvnw package -DskipTests -Dnative
 
