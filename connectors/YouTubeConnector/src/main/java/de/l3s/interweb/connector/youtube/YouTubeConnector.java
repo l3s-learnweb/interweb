@@ -3,6 +3,7 @@ package de.l3s.interweb.connector.youtube;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
@@ -17,12 +18,16 @@ import org.jboss.logging.Logger;
 import de.l3s.interweb.connector.youtube.entity.ListItem;
 import de.l3s.interweb.connector.youtube.entity.ListResponse;
 import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.describe.DescribeConnector;
+import de.l3s.interweb.core.describe.DescribeQuery;
+import de.l3s.interweb.core.describe.DescribeResults;
 import de.l3s.interweb.core.search.*;
 import de.l3s.interweb.core.util.DateUtils;
 
 @Dependent
-public class YouTubeConnector implements SearchConnector {
+public class YouTubeConnector implements SearchConnector, DescribeConnector {
     private static final Logger log = Logger.getLogger(YouTubeConnector.class);
+    private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:[0-9A-Z-]+\\.)?(?:youtu\\.be/|(?:youtube\\.com|youtube-nocookie\\.com)\\S*[^\\w\\-\\s])([\\w\\-]{11})(?=[^\\w\\-]|$)(?![?=&+%\\w]*(?:['\"][^<>]*>|</a>))[?=&+%\\w]*", Pattern.CASE_INSENSITIVE);
     private static final int fallbackPerPage = 50;
 
     @RestClient
@@ -47,7 +52,30 @@ public class YouTubeConnector implements SearchConnector {
 
     @Override
     public ContentType[] getSearchTypes() {
-        return new ContentType[]{ContentType.videos};
+        return new ContentType[]{ContentType.video};
+    }
+
+    @Override
+    public Pattern getLinkPattern() {
+        return pattern;
+    }
+
+    @Override
+    public Uni<DescribeResults> describe(DescribeQuery query) throws ConnectorException {
+        return searchClient.videos(String.join(",", "snippet", "statistics", "contentDetails"), query.getId()).map(Unchecked.function(response -> {
+            if (response.items().isEmpty()) {
+                throw new ConnectorException("No results");
+            }
+
+            SearchItem item = new SearchItem();
+            item.setType(ContentType.video);
+            for (ListItem video : response.items()) {
+                YouTubeUtils.updateSearchItem(item, video);
+            }
+            item.setUrl("https://www.youtube.com/watch?v=" + item.getId());
+            item.setEmbedUrl("https://www.youtube-nocookie.com/embed/" + item.getId());
+            return new DescribeResults(item);
+        }));
     }
 
     @Override
@@ -160,13 +188,13 @@ public class YouTubeConnector implements SearchConnector {
                 int rank = query.getOffset();
                 for (ListItem video : videoItemList) {
                     SearchItem resultItem = new SearchItem(++rank);
-                    resultItem.setType(ContentType.videos);
+                    resultItem.setType(ContentType.video);
 
                     YouTubeUtils.updateSearchItem(resultItem, video);
                     YouTubeUtils.updateSearchItem(resultItem, details.get(video.id()));
 
                     resultItem.setUrl("https://www.youtube.com/watch?v=" + resultItem.getId());
-                    resultItem.setEmbeddedUrl("https://www.youtube-nocookie.com/embed/" + resultItem.getId());
+                    resultItem.setEmbedUrl("https://www.youtube-nocookie.com/embed/" + resultItem.getId());
                     queryResult.addResultItem(resultItem);
                 }
                 return queryResult;

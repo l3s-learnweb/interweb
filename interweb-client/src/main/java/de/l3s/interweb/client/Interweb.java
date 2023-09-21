@@ -17,6 +17,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import de.l3s.interweb.core.completion.CompletionQuery;
 import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.describe.DescribeQuery;
+import de.l3s.interweb.core.describe.DescribeResults;
 import de.l3s.interweb.core.search.SearchQuery;
 import de.l3s.interweb.core.search.SearchResults;
 import de.l3s.interweb.core.suggest.SuggestQuery;
@@ -47,6 +49,10 @@ public class Interweb implements Serializable {
 
     public SuggestResults suggest(SuggestQuery query) throws InterwebException {
         return sendRequest("/suggest", query, SuggestResults.class);
+    }
+
+    public DescribeResults describe(DescribeQuery query) throws InterwebException {
+        return sendRequest("/describe", query, DescribeResults.class);
     }
 
     public CompletionResults chatCompletions(CompletionQuery query) throws InterwebException {

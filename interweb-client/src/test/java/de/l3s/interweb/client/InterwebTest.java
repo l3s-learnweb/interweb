@@ -15,6 +15,8 @@ import de.l3s.interweb.core.completion.Choice;
 import de.l3s.interweb.core.completion.CompletionQuery;
 import de.l3s.interweb.core.completion.CompletionResults;
 import de.l3s.interweb.core.completion.Message;
+import de.l3s.interweb.core.describe.DescribeQuery;
+import de.l3s.interweb.core.describe.DescribeResults;
 import de.l3s.interweb.core.search.*;
 import de.l3s.interweb.core.suggest.SuggestConnectorResults;
 import de.l3s.interweb.core.suggest.SuggestQuery;
@@ -36,7 +38,7 @@ class InterwebTest {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
         query.setLanguage("en");
-        query.setContentTypes(Set.of(ContentType.videos));
+        query.setContentTypes(Set.of(ContentType.video));
         query.setServices(Set.of("Vimeo", "YouTube"));
         query.setPerPage(32);
         query.setPage(1);
@@ -73,6 +75,20 @@ class InterwebTest {
             }
             System.out.println();
         }
+    }
+
+    @Test
+    void describeTest() throws InterwebException {
+        DescribeQuery query = new DescribeQuery();
+        // query.setLink("https://vimeo.com/524933864");
+        query.setId("524933864");
+        query.setServices(Set.of("vimeo"));
+
+        DescribeResults response = interweb.describe(query);
+
+        assertEquals("524933864", response.getEntity().getId());
+        assertEquals("Vimeo | Video Power", response.getEntity().getTitle());
+        assertEquals("https://vimeo.com/524933864", response.getEntity().getUrl());
     }
 
     @Test

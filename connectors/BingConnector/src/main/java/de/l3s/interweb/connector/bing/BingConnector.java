@@ -53,7 +53,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
 
     @Override
     public ContentType[] getSearchTypes() {
-        return new ContentType[]{ContentType.webpages, ContentType.images, ContentType.videos, ContentType.news};
+        return new ContentType[]{ContentType.webpage, ContentType.image, ContentType.video, ContentType.news};
     }
 
     @Override
@@ -63,7 +63,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
 
     private Uni<BingResponse> processQuery(SearchQuery query) {
         if (query.getContentTypes().size() == 1) {
-            if (query.getContentTypes().contains(ContentType.images)) {
+            if (query.getContentTypes().contains(ContentType.image)) {
                 return searchClient.searchImages(
                         query.getQuery(),
                         query.getPerPage(fallbackPerPageImages),
@@ -72,7 +72,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
                         BingUtils.getMarket(query.getLanguage()),
                         BingUtils.createFreshness(null, query.getDateTo())
                 );
-            } else if (query.getContentTypes().contains(ContentType.videos)) {
+            } else if (query.getContentTypes().contains(ContentType.video)) {
                 return searchClient.searchVideos(
                         query.getQuery(),
                         query.getPerPage(fallbackPerPageVideos),
@@ -86,11 +86,11 @@ public class BingConnector implements SearchConnector, SuggestConnector {
 
         List<BingSearchClient.ResponseFilter> answerTypes = new ArrayList<>();
         for (ContentType contentType : query.getContentTypes()) {
-            if (contentType == ContentType.webpages) {
+            if (contentType == ContentType.webpage) {
                 answerTypes.add(BingSearchClient.ResponseFilter.webpages);
-            } else if (contentType == ContentType.images) {
+            } else if (contentType == ContentType.image) {
                 answerTypes.add(BingSearchClient.ResponseFilter.images);
-            } else if (contentType == ContentType.videos) {
+            } else if (contentType == ContentType.video) {
                 answerTypes.add(BingSearchClient.ResponseFilter.videos);
             } else if (contentType == ContentType.news) {
                 answerTypes.add(BingSearchClient.ResponseFilter.news);
@@ -148,7 +148,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
 
             for (WebPage page : webResults.getValues()) {
                 SearchItem resultItem = new SearchItem(++rank);
-                resultItem.setType(ContentType.webpages);
+                resultItem.setType(ContentType.webpage);
                 resultItem.setTitle(page.getName());
                 resultItem.setDescription(page.getSnippet());
                 resultItem.setUrl(page.getUrl());
@@ -172,7 +172,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
 
             for (Image image : imagesResults.getValues()) {
                 SearchItem resultItem = new SearchItem(++rank);
-                resultItem.setType(ContentType.images);
+                resultItem.setType(ContentType.image);
                 resultItem.setTitle(image.getName());
                 resultItem.setUrl(image.getContentUrl());
                 resultItem.setDate(DateUtils.parse(image.getDatePublished()));
@@ -209,7 +209,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
 
             for (Video video : videosResults.getValues()) {
                 SearchItem resultItem = new SearchItem(++rank);
-                resultItem.setType(ContentType.videos);
+                resultItem.setType(ContentType.video);
                 resultItem.setTitle(video.getName());
                 resultItem.setDescription(video.getDescription());
                 resultItem.setUrl(video.getContentUrl());
@@ -229,7 +229,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
                 }
 
                 if (video.getEmbedHtml() != null) {
-                    resultItem.setEmbeddedUrl(StringUtils.parseSourceUrl(video.getEmbedHtml()));
+                    resultItem.setEmbedUrl(StringUtils.parseSourceUrl(video.getEmbedHtml()));
                 }
 
                 results.addResultItem(resultItem);

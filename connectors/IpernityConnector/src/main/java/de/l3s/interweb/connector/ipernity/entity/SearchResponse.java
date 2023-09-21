@@ -2,7 +2,7 @@ package de.l3s.interweb.connector.ipernity.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record IpernityResponse(
+public record SearchResponse(
     @JsonProperty("docs")
     Docs docs,
 

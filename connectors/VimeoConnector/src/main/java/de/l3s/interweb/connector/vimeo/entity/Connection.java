@@ -4,12 +4,14 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Related {
+public class Connection {
 
     @JsonProperty("uri")
     private String uri;
     @JsonProperty("options")
-    private List<String> options = null;
+    private List<String> options;
+    @JsonProperty("total")
+    private Long total;
 
     public String getUri() {
         return uri;
@@ -25,6 +27,14 @@ public class Related {
 
     public void setOptions(List<String> options) {
         this.options = options;
+    }
+
+    public Long getTotal() {
+        return total;
+    }
+
+    public void setTotal(Long total) {
+        this.total = total;
     }
 
 }

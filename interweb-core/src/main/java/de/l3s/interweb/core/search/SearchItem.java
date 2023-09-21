@@ -23,7 +23,7 @@ public class SearchItem implements Serializable {
 
     // base
     private String id;
-    private int rank;
+    private Integer rank;
 
     // general
     private ContentType type;
@@ -33,6 +33,9 @@ public class SearchItem implements Serializable {
     private Instant date;
 
     // media
+    /**
+     * Duration in seconds.
+     */
     private Long duration;
     private Integer width;
     private Integer height;
@@ -48,8 +51,8 @@ public class SearchItem implements Serializable {
     @JsonProperty("comments_count")
     private Long commentsCount;
 
-    @JsonProperty("embedded_url")
-    private String embeddedUrl;
+    @JsonProperty("embed_url")
+    private String embedUrl;
     /**
      * Usually an image with HEIGHT between 100 and 180 px.
      */
@@ -74,15 +77,15 @@ public class SearchItem implements Serializable {
     public SearchItem() {
     }
 
-    public SearchItem(final int rank) {
+    public SearchItem(final Integer rank) {
         this.rank = rank;
     }
 
-    public int getRank() {
+    public Integer getRank() {
         return rank;
     }
 
-    public void setRank(final int rank) {
+    public void setRank(final Integer rank) {
         this.rank = rank;
     }
 
@@ -166,6 +169,10 @@ public class SearchItem implements Serializable {
         this.tags = tags;
     }
 
+    public void addTag(final String tag) {
+        this.tags.add(tag);
+    }
+
     public String getAuthor() {
         return author;
     }
@@ -198,12 +205,12 @@ public class SearchItem implements Serializable {
         this.commentsCount = commentsCount;
     }
 
-    public String getEmbeddedUrl() {
-        return embeddedUrl;
+    public String getEmbedUrl() {
+        return embedUrl;
     }
 
-    public void setEmbeddedUrl(final String embeddedUrl) {
-        this.embeddedUrl = embeddedUrl;
+    public void setEmbedUrl(final String embedUrl) {
+        this.embedUrl = embedUrl;
     }
 
     public Thumbnail getThumbnailSmall() {

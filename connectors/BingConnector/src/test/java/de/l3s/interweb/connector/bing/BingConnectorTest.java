@@ -47,7 +47,7 @@ class BingConnectorTest {
         SearchQuery query = new SearchQuery();
         query.setQuery("hello world");
         query.setPerPage(20);
-        query.addContentType(ContentType.webpages);
+        query.addContentType(ContentType.webpage);
         query.setDateFrom(LocalDate.of(2009, 1, 1));
         query.setDateTo(LocalDate.of(2010, 6, 1));
 
@@ -67,7 +67,7 @@ class BingConnectorTest {
     void searchImages() {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
-        query.addContentType(ContentType.images);
+        query.addContentType(ContentType.image);
         query.setPerPage(30);
         query.setPage(2);
 
@@ -76,7 +76,7 @@ class BingConnectorTest {
         int rank = 30;
         for (SearchItem res : queryResult.getItems()) {
             assertEquals(++rank, res.getRank());
-            assertEquals(ContentType.images, res.getType());
+            assertEquals(ContentType.image, res.getType());
             log.info(res);
         }
 
@@ -88,7 +88,7 @@ class BingConnectorTest {
     void searchVideos() {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
-        query.addContentType(ContentType.videos);
+        query.addContentType(ContentType.video);
         query.setPerPage(30);
 
         SearchConnectorResults queryResult = connector.search(query).await().indefinitely();
@@ -96,7 +96,7 @@ class BingConnectorTest {
         int rank = 0;
         for (SearchItem res : queryResult.getItems()) {
             assertEquals(++rank, res.getRank());
-            assertEquals(ContentType.videos, res.getType());
+            assertEquals(ContentType.video, res.getType());
             log.info(res.toString());
         }
 

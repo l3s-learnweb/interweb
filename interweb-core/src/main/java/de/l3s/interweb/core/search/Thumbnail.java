@@ -9,13 +9,17 @@ public class Thumbnail implements Serializable {
     private static final long serialVersionUID = -792701713759619246L;
 
     private String url;
-    private int width;
-    private int height;
+    private Integer width;
+    private Integer height;
 
     public Thumbnail() {
     }
 
-    public Thumbnail(String url, int width, int height) {
+    public Thumbnail(String url) {
+        this.url = url;
+    }
+
+    public Thumbnail(String url, Integer width, Integer height) {
         this.url = url;
         this.width = width;
         this.height = height;
@@ -29,19 +33,19 @@ public class Thumbnail implements Serializable {
         this.url = url;
     }
 
-    public int getWidth() {
+    public Integer getWidth() {
         return width;
     }
 
-    public void setWidth(final int width) {
+    public void setWidth(final Integer width) {
         this.width = width;
     }
 
-    public int getHeight() {
+    public Integer getHeight() {
         return height;
     }
 
-    public void setHeight(final int height) {
+    public void setHeight(final Integer height) {
         this.height = height;
     }
 
@@ -54,7 +58,7 @@ public class Thumbnail implements Serializable {
             return false;
         }
         final Thumbnail thumbnail = (Thumbnail) o;
-        return width == thumbnail.width && height == thumbnail.height && Objects.equals(url, thumbnail.url);
+        return Objects.equals(width, thumbnail.width) && Objects.equals(height, thumbnail.height) && Objects.equals(url, thumbnail.url);
     }
 
     @Override

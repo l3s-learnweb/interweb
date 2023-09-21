@@ -11,9 +11,9 @@ public final class FlickrUtils {
 
     static String getMediaType(SearchQuery query) {
         if (query.getContentTypes().size() == 1) {
-            if (query.getContentTypes().contains(ContentType.images)) {
+            if (query.getContentTypes().contains(ContentType.image)) {
                 return MEDIA_PHOTOS;
-            } else if (query.getContentTypes().contains(ContentType.videos)) {
+            } else if (query.getContentTypes().contains(ContentType.video)) {
                 return MEDIA_VIDEOS;
             }
         }

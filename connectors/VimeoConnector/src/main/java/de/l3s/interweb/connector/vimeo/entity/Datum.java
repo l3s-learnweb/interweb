@@ -17,15 +17,15 @@ public class Datum {
     @JsonProperty("link")
     private String link;
     @JsonProperty("duration")
-    private Integer duration;
+    private Long duration;
     @JsonProperty("width")
     private Integer width;
     @JsonProperty("language")
     private Object language;
     @JsonProperty("height")
     private Integer height;
-    @JsonProperty("embed")
-    private Embed embed;
+    @JsonProperty("player_embed_url")
+    private String playerEmbedUrl;
     @JsonProperty("created_time")
     private String createdTime;
     @JsonProperty("modified_time")
@@ -33,23 +33,19 @@ public class Datum {
     @JsonProperty("release_time")
     private String releaseTime;
     @JsonProperty("content_rating")
-    private List<String> contentRating = null;
+    private List<String> contentRating;
     @JsonProperty("license")
     private Object license;
-    @JsonProperty("privacy")
-    private Privacy privacy;
     @JsonProperty("pictures")
     private Pictures pictures;
     @JsonProperty("tags")
-    private List<Tag> tags = null;
+    private List<Tag> tags;
     @JsonProperty("stats")
     private Stats stats;
     @JsonProperty("metadata")
     private Metadata metadata;
     @JsonProperty("user")
     private User user;
-    @JsonProperty("app")
-    private Object app;
     @JsonProperty("status")
     private String status;
     @JsonProperty("resource_key")
@@ -99,11 +95,11 @@ public class Datum {
         this.link = link;
     }
 
-    public Integer getDuration() {
+    public Long getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(Long duration) {
         this.duration = duration;
     }
 
@@ -131,12 +127,12 @@ public class Datum {
         this.height = height;
     }
 
-    public Embed getEmbed() {
-        return embed;
+    public String getPlayerEmbedUrl() {
+        return playerEmbedUrl;
     }
 
-    public void setEmbed(Embed embed) {
-        this.embed = embed;
+    public void setPlayerEmbedUrl(String playerEmbedUrl) {
+        this.playerEmbedUrl = playerEmbedUrl;
     }
 
     public String getCreatedTime() {
@@ -179,14 +175,6 @@ public class Datum {
         this.license = license;
     }
 
-    public Privacy getPrivacy() {
-        return privacy;
-    }
-
-    public void setPrivacy(Privacy privacy) {
-        this.privacy = privacy;
-    }
-
     public Pictures getPictures() {
         return pictures;
     }
@@ -225,14 +213,6 @@ public class Datum {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Object getApp() {
-        return app;
-    }
-
-    public void setApp(Object app) {
-        this.app = app;
     }
 
     public String getStatus() {

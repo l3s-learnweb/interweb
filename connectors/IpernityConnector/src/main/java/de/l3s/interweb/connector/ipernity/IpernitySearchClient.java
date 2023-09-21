@@ -49,6 +49,19 @@ public interface IpernitySearchClient {
             @QueryParam("posted_max") Integer createdMax
     );
 
+    /**
+     * Ipernity Get API
+     * http://www.ipernity.com/help/api/method/doc.get
+     *
+     * @param id the ID of the document to get details about.
+     */
+    @GET
+    @Path("/doc.get/json")
+    @ClientQueryParam(name = "extra", value = "tags") // tags, notes, geo and md5
+    Uni<String> get( // because the response is text/plain, we can not read it as JSON
+            @NotNull @QueryParam("doc_id") String id
+    );
+
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {
         return new ConnectorException("Remote service responded with HTTP " + response.getStatus(), response.readEntity(String.class));

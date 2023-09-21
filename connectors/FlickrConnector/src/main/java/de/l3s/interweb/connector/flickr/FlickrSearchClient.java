@@ -13,7 +13,8 @@ import io.quarkus.rest.client.reactive.ClientQueryParam;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import de.l3s.interweb.connector.flickr.entity.FlickrResponse;
+import de.l3s.interweb.connector.flickr.entity.SearchResponse;
+import de.l3s.interweb.connector.flickr.entity.GetInfoResponse;
 import de.l3s.interweb.core.ConnectorException;
 
 /**
@@ -47,7 +48,7 @@ public interface FlickrSearchClient {
     @ClientQueryParam(name = "safe_search", value = "1")
     @ClientQueryParam(name = "privacy_filter", value = "1")
     @ClientQueryParam(name = "extras", value = "description,tags,owner_name,date_upload,views,media,o_dims,url_s,url_m,url_l,url_o")
-    Uni<FlickrResponse> search(
+    Uni<SearchResponse> search(
             @NotNull @QueryParam("text") String query,
             @QueryParam("media") String media,
             @QueryParam("min_upload_date") Integer minUploadDate,
@@ -55,6 +56,18 @@ public interface FlickrSearchClient {
             @QueryParam("sort") String sort,
             @QueryParam("page") Integer page,
             @QueryParam("per_page") Integer perPage
+    );
+
+    /**
+     * Flickr Photos GetInfo API
+     * https://www.flickr.com/services/api/flickr.photos.getInfo.html
+     *
+     * @param id the id of the photo to get information for.
+     */
+    @GET
+    @ClientQueryParam(name = "method", value = "flickr.photos.getInfo")
+    Uni<GetInfoResponse> getInfo(
+            @NotNull @QueryParam("photo_id") String id
     );
 
     @ClientExceptionMapper

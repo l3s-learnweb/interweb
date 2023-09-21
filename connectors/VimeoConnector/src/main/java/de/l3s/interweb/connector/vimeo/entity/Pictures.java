@@ -13,7 +13,7 @@ public class Pictures {
     @JsonProperty("type")
     private String type;
     @JsonProperty("sizes")
-    private List<Size> sizes = null;
+    private List<Size> sizes;
     @JsonProperty("resource_key")
     private String resourceKey;
 

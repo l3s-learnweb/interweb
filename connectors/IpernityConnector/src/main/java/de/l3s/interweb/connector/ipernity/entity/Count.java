@@ -13,6 +13,15 @@ public record Count(
     Long comments,
 
     @JsonProperty("notes")
-    Long notes
+    Long notes,
+
+    @JsonProperty("groups")
+    Long groups,
+
+    @JsonProperty("tags")
+    Long tags,
+
+    @JsonProperty("albums")
+    Long albums
 ) {
 }

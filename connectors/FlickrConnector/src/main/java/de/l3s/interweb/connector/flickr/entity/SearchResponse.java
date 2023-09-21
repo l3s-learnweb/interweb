@@ -2,7 +2,7 @@ package de.l3s.interweb.connector.flickr.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class FlickrResponse {
+public class SearchResponse {
 
     @JsonProperty("stat")
     private String stat;

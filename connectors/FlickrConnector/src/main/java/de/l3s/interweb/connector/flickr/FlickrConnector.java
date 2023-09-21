@@ -1,21 +1,29 @@
 package de.l3s.interweb.connector.flickr;
 
 import java.time.Instant;
+import java.util.regex.Pattern;
 
 import jakarta.enterprise.context.Dependent;
 
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
+import de.l3s.interweb.connector.flickr.entity.InfoPhoto;
 import de.l3s.interweb.connector.flickr.entity.PhotoItem;
+import de.l3s.interweb.connector.flickr.entity.Tag;
 import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.describe.DescribeConnector;
+import de.l3s.interweb.core.describe.DescribeQuery;
+import de.l3s.interweb.core.describe.DescribeResults;
 import de.l3s.interweb.core.search.*;
 import de.l3s.interweb.core.util.DateUtils;
 
 @Dependent
-public class FlickrConnector implements SearchConnector {
+public class FlickrConnector implements SearchConnector, DescribeConnector {
     private static final Logger log = Logger.getLogger(FlickrConnector.class);
+    private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:www\\.)?(?:flickr\\.com/photos/[^/]+/(\\d+)|(?:flic\\.kr/p/|flickr\\.com/photo\\.gne\\?short=)(\\w+))", Pattern.CASE_INSENSITIVE);
     private static final int fallbackPerPage = 500;
 
     @RestClient
@@ -33,7 +41,23 @@ public class FlickrConnector implements SearchConnector {
 
     @Override
     public ContentType[] getSearchTypes() {
-        return new ContentType[]{ContentType.images, ContentType.videos};
+        return new ContentType[]{ContentType.image, ContentType.video};
+    }
+
+    @Override
+    public Pattern getLinkPattern() {
+        return pattern;
+    }
+
+    @Override
+    public Uni<DescribeResults> describe(DescribeQuery query) throws ConnectorException {
+        return searchClient.getInfo(query.getId()).map(Unchecked.function(response -> {
+            if (response.getPhoto() == null) {
+                throw new ConnectorException("No results");
+            }
+
+            return new DescribeResults(createResultItem(response.getPhoto()));
+        }));
     }
 
     @Override
@@ -59,13 +83,51 @@ public class FlickrConnector implements SearchConnector {
         });
     }
 
+    private SearchItem createResultItem(InfoPhoto photo) {
+        SearchItem resultItem = new SearchItem();
+        resultItem.setId(photo.getId());
+        resultItem.setType("photo".equals(photo.getMedia()) ? ContentType.image : ContentType.video);
+        resultItem.setTitle(photo.getTitle());
+        resultItem.setDescription(photo.getDescription());
+
+        if (photo.getOwner() != null) {
+            resultItem.setAuthor(photo.getOwner().getRealname());
+            resultItem.setUrl("https://flickr.com/photos/" + photo.getOwner().getPathAlias() + "/" + photo.getId());
+            resultItem.setAuthorUrl("https://www.flickr.com/photos/" + photo.getOwner().getPathAlias());
+        }
+
+        if (photo.getDateUploaded() != null) {
+            resultItem.setDate(Instant.ofEpochSecond(photo.getDateUploaded()));
+        }
+
+        if (photo.getTags() != null) {
+            for (Tag tag : photo.getTags().getTag()) {
+                resultItem.getTags().add(tag.getRaw());
+            }
+        }
+
+        if (photo.getComments() != null) {
+            resultItem.setCommentsCount(Long.parseLong(photo.getComments()));
+        }
+        resultItem.setViewsCount(photo.getViews());
+
+        resultItem.setThumbnailSmall(new Thumbnail("https://live.staticflickr.com/" + photo.getServer() + "/" + photo.getId() + "_" + photo.getSecret() + "_m.jpg", 240, null));
+        resultItem.setThumbnailMedium(new Thumbnail("https://live.staticflickr.com/" + photo.getServer() + "/" + photo.getId() + "_" + photo.getSecret() + ".jpg", 500, null));
+        resultItem.setThumbnailLarge(new Thumbnail("https://live.staticflickr.com/" + photo.getServer() + "/" + photo.getId() + "_" + photo.getSecret() + "_b.jpg", 1024, null));
+        // not always available
+        resultItem.setThumbnailOriginal(new Thumbnail("https://live.staticflickr.com/" + photo.getServer() + "/" + photo.getId() + "_" + photo.getSecret() + "_o.jpg"));
+        return resultItem;
+    }
+
     private SearchItem createResultItem(PhotoItem photo, int rank) {
         SearchItem resultItem = new SearchItem(rank);
         resultItem.setId(photo.getId());
-        resultItem.setType("photo".equals(photo.getMedia()) ? ContentType.images : ContentType.videos);
+        resultItem.setType("photo".equals(photo.getMedia()) ? ContentType.image : ContentType.video);
         resultItem.setTitle(photo.getTitle());
-        resultItem.setDescription(photo.getDescription().getContent());
+        resultItem.setDescription(photo.getDescription());
         resultItem.setUrl("https://flickr.com/photos/" + photo.getPathAlias() + "/" + photo.getId());
+        resultItem.setAuthor(photo.getOwnerName());
+        resultItem.setAuthorUrl("https://www.flickr.com/photos/" + photo.getPathAlias());
 
         if (photo.getOriginalWidth() != null) {
             resultItem.setWidth(photo.getOriginalWidth());
@@ -79,11 +141,6 @@ public class FlickrConnector implements SearchConnector {
         } else if (photo.getMediaMediumWidth() != null) {
             resultItem.setWidth(photo.getMediaMediumWidth());
             resultItem.setHeight(photo.getMediaMediumHeight());
-        }
-
-        if (photo.getOwner() != null) {
-            resultItem.setAuthor(photo.getOwnerName());
-            resultItem.setAuthorUrl("https://www.flickr.com/photos/" + photo.getPathAlias());
         }
 
         if (photo.getDateUpload() != null) {

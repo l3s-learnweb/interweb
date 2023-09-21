@@ -49,7 +49,7 @@ public class SlideShareConnector implements SearchConnector {
 
     @Override
     public ContentType[] getSearchTypes() {
-        return new ContentType[]{ContentType.webpages, ContentType.presentations, ContentType.videos};
+        return new ContentType[]{ContentType.webpage, ContentType.presentation, ContentType.video};
     }
 
     @Override
@@ -106,8 +106,7 @@ public class SlideShareConnector implements SearchConnector {
         resultItem.setThumbnailLarge(SlideShareUtils.parseThumbnail(sre.getThumbnailXXLargeURL()));
         resultItem.setThumbnailMedium(SlideShareUtils.parseThumbnail(sre.getThumbnailXLargeURL()));
         resultItem.setThumbnailSmall(SlideShareUtils.parseThumbnail(sre.getThumbnailSmallURL()));
-
-        resultItem.setEmbeddedUrl(StringUtils.parseSourceUrl(sre.getEmbed()));
+        resultItem.setEmbedUrl(StringUtils.parseSourceUrl(sre.getEmbed()));
 
         return resultItem;
     }

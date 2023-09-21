@@ -1,6 +1,9 @@
 package de.l3s.interweb.connector.flickr.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import de.l3s.interweb.connector.flickr.adapters.ContentAdapter;
 
 public class PhotoItem {
     @JsonProperty("id")
@@ -9,14 +12,16 @@ public class PhotoItem {
     @JsonProperty("media")
     private String media;
 
+    @JsonDeserialize(using = ContentAdapter.class)
     @JsonProperty("title")
     private String title;
 
     @JsonProperty("tags")
     private String tags;
 
+    @JsonDeserialize(using = ContentAdapter.class)
     @JsonProperty("description")
-    private Description description;
+    private String description;
 
     @JsonProperty("views")
     private Long views;
@@ -110,11 +115,11 @@ public class PhotoItem {
         this.tags = tags;
     }
 
-    public Description getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(Description description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 

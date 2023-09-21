@@ -12,14 +12,23 @@ public record Doc(
     @JsonProperty("license")
     String license,
 
-    @JsonProperty(value = "thumb", required = true)
+    @JsonProperty("thumb")
     Thumb thumb,
+
+    @JsonProperty("thumbs")
+    Thumbs thumbs,
 
     @JsonProperty("rotation")
     String rotation,
 
+    @JsonProperty("link")
+    String link,
+
     @JsonProperty("count")
     Count count,
+
+    @JsonProperty("description")
+    String description,
 
     @JsonProperty("dates")
     Dates dates,
@@ -28,6 +37,9 @@ public record Doc(
     String media,
 
     @JsonProperty("title")
-    String title
+    String title,
+
+    @JsonProperty("tags")
+    Tags tags
 ) {
 }

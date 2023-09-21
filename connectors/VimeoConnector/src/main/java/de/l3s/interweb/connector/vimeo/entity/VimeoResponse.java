@@ -13,7 +13,7 @@ public class VimeoResponse {
     @JsonProperty("per_page")
     private Integer perPage;
     @JsonProperty("data")
-    private List<Datum> data = null;
+    private List<Datum> data;
 
     @JsonProperty("error")
     private String error;

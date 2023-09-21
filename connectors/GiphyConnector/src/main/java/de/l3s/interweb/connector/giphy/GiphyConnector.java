@@ -39,7 +39,7 @@ public class GiphyConnector implements SearchConnector {
 
     @Override
     public ContentType[] getSearchTypes() {
-        return new ContentType[]{ContentType.images};
+        return new ContentType[]{ContentType.image};
     }
 
     @Override
@@ -67,7 +67,7 @@ public class GiphyConnector implements SearchConnector {
 
     private static SearchItem createSearchItem(GiphyData image, int rank) {
         SearchItem resultItem = new SearchItem(rank);
-        resultItem.setType(ContentType.images);
+        resultItem.setType(ContentType.image);
         resultItem.setId(image.getId());
         resultItem.setTitle(image.getTitle());
         resultItem.setDate(DateUtils.parse(image.getImportDatetime()));

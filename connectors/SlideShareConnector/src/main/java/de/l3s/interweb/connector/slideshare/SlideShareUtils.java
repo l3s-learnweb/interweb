@@ -31,11 +31,11 @@ public final class SlideShareUtils {
 
     static String convertContentType(Set<ContentType> contentTypes) {
         if (contentTypes.size() == 1) {
-            if (contentTypes.contains(ContentType.presentations)) {
+            if (contentTypes.contains(ContentType.presentation)) {
                 return "presentations";
-            } else if (contentTypes.contains(ContentType.webpages)) {
+            } else if (contentTypes.contains(ContentType.webpage)) {
                 return "documents";
-            } else if (contentTypes.contains(ContentType.videos)) {
+            } else if (contentTypes.contains(ContentType.video)) {
                 return "videos";
             }
         }
@@ -53,10 +53,10 @@ public final class SlideShareUtils {
 
     static ContentType createType(int slideshowType) {
         return switch (slideshowType) {
-            case 0 -> ContentType.presentations;
-            case 1 -> ContentType.webpages;
-            case 2 -> ContentType.images;
-            case 3 -> ContentType.videos;
+            case 0 -> ContentType.presentation;
+            case 1 -> ContentType.webpage;
+            case 2 -> ContentType.image;
+            case 3 -> ContentType.video;
             default -> {
                 yield null;
             }
