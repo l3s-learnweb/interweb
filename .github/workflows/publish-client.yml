@@ -29,6 +29,6 @@ jobs:
         cache: 'maven'
 
     - name: Publish to GitHub Packages Apache Maven
-      run: $MVN -pl interweb-client deploy
+      run: $MVN -pl interweb-client -am deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
