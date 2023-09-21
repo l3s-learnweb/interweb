@@ -49,6 +49,14 @@
         <module>connectors/YouTubeConnector</module>
     </modules>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>Learnweb GitHub Packages</name>
+            <url>https://maven.pkg.github.com/l3s-learnweb/learnweb</url>
+        </repository>
+    </distributionManagement>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
