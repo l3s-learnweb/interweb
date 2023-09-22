@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Query implements Serializable {
     @Serial
     private static final long serialVersionUID = -1510912360277464246L;
@@ -15,6 +17,7 @@ public class Query implements Serializable {
         this.services = services;
     }
 
+    @JsonIgnore
     public void setServices(String ...services) {
         this.services = Set.of(services);
     }
