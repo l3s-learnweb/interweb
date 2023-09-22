@@ -51,8 +51,23 @@ public class Interweb implements Serializable {
         return sendRequest("/suggest", query, SuggestResults.class);
     }
 
+    public SuggestResults suggest(String query, String language) throws InterwebException {
+        final SuggestQuery params = new SuggestQuery();
+        params.setQuery(query);
+        params.setLanguage(language);
+
+        return sendRequest("/suggest", params, SuggestResults.class);
+    }
+
     public DescribeResults describe(DescribeQuery query) throws InterwebException {
         return sendRequest("/describe", query, DescribeResults.class);
+    }
+
+    public DescribeResults describe(String link) throws InterwebException {
+        final DescribeQuery params = new DescribeQuery();
+        params.setLink(link);
+
+        return sendRequest("/describe", params, DescribeResults.class);
     }
 
     public CompletionResults chatCompletions(CompletionQuery query) throws InterwebException {
