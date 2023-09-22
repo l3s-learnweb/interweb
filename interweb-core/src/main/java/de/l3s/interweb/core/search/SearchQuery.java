@@ -92,8 +92,10 @@ public class SearchQuery extends Query {
         this.contentTypes = contentTypes;
     }
 
-    public void addContentType(ContentType contentType) {
-        contentTypes.add(contentType);
+    @JsonIgnore
+    public void setContentTypes(ContentType ...contentTypes) {
+        if (contentTypes == null) this.contentTypes = new HashSet<>();
+        else this.contentTypes = Set.of(contentTypes);
     }
 
     public Set<SearchExtra> getExtras() {
@@ -106,12 +108,8 @@ public class SearchQuery extends Query {
 
     @JsonIgnore
     public void setExtras(final SearchExtra ...extras) {
-        if (extras == null || extras.length == 0) this.extras = new HashSet<>();
+        if (extras == null) this.extras = new HashSet<>();
         else this.extras = Set.of(extras);
-    }
-
-    public void addExtra(SearchExtra part) {
-        extras.add(part);
     }
 
     public int getPage() {
@@ -130,6 +128,10 @@ public class SearchQuery extends Query {
         return perPage == null ? fallback : Math.min(perPage, fallback);
     }
 
+    /**
+     * @param perPage a desired number of results per page, the actual number of results per page may be less depending on the service.
+     *                Prefer to use bigger values if you need second page, as it reduces API quotas usage. No value fallbacks to max value per service.
+     */
     public void setPerPage(final Integer perPage) {
         this.perPage = perPage;
     }
@@ -162,6 +164,9 @@ public class SearchQuery extends Query {
         return timeout;
     }
 
+    /**
+     * @param timeout in milliseconds used for the API call, default is 10 seconds
+     */
     public void setTimeout(Integer timeout) {
         this.timeout = timeout;
     }

@@ -28,14 +28,13 @@ class YouTubeConnectorTest {
     void search() throws ConnectorException {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
-        query.addContentType(ContentType.video);
+        query.setContentTypes(ContentType.video);
         query.setPerPage(10);
         // query.setDateFrom("2009-01-01 00:00:00");
         // query.setDateTo("2009-06-01 00:00:00");
         query.setSort(SearchSort.relevance);
         // query.addExtra(SearchExtra.statistics);
-        query.addExtra(SearchExtra.duration);
-        query.addExtra(SearchExtra.tags);
+        query.setExtras(SearchExtra.duration, SearchExtra.tags);
 
         SearchConnectorResults page = connector.search(query).await().indefinitely();
         assertEquals(10, page.getItems().size());
@@ -51,7 +50,7 @@ class YouTubeConnectorTest {
     void searchChannel() throws ConnectorException {
         SearchQuery query = new SearchQuery();
         query.setQuery("user::ukrainernet kharkiv");
-        query.addContentType(ContentType.video);
+        query.setContentTypes(ContentType.video);
         query.setPerPage(10);
 
         SearchConnectorResults page = connector.search(query).await().indefinitely();
@@ -68,7 +67,7 @@ class YouTubeConnectorTest {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
         query.setPerPage(10);
-        query.addContentType(ContentType.video);
+        query.setContentTypes(ContentType.video);
 
         for (int i = 1; i < 4; ++i) {
             query.setPage(i);

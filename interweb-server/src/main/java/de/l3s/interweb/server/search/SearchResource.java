@@ -3,7 +3,6 @@ package de.l3s.interweb.server.search;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -47,7 +46,7 @@ public class SearchResource {
                                      @Parameter(description = "An external request timeout in ms", example = "1000") @RestQuery("timeout") @Max(500) Integer timeout) {
         SearchQuery searchQuery = new SearchQuery();
         searchQuery.setQuery(query.trim());
-        searchQuery.setContentTypes(Set.of(contentTypes));
+        searchQuery.setContentTypes(contentTypes);
         searchQuery.setServices(StringUtils.toIdSet(services));
         searchQuery.setExtras(extras);
         searchQuery.setDateFrom(dateFrom);

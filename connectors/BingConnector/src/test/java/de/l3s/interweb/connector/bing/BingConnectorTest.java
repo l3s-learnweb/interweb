@@ -47,7 +47,7 @@ class BingConnectorTest {
         SearchQuery query = new SearchQuery();
         query.setQuery("hello world");
         query.setPerPage(20);
-        query.addContentType(ContentType.webpage);
+        query.setContentTypes(ContentType.webpage);
         query.setDateFrom(LocalDate.of(2009, 1, 1));
         query.setDateTo(LocalDate.of(2010, 6, 1));
 
@@ -67,7 +67,7 @@ class BingConnectorTest {
     void searchImages() {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
-        query.addContentType(ContentType.image);
+        query.setContentTypes(ContentType.image);
         query.setPerPage(30);
         query.setPage(2);
 
@@ -88,7 +88,7 @@ class BingConnectorTest {
     void searchVideos() {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
-        query.addContentType(ContentType.video);
+        query.setContentTypes(ContentType.video);
         query.setPerPage(30);
 
         SearchConnectorResults queryResult = connector.search(query).await().indefinitely();

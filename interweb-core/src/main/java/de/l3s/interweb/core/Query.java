@@ -15,6 +15,10 @@ public class Query implements Serializable {
         this.services = services;
     }
 
+    public void setServices(String ...services) {
+        this.services = Set.of(services);
+    }
+
     public Set<String> getServices() {
         return services;
     }

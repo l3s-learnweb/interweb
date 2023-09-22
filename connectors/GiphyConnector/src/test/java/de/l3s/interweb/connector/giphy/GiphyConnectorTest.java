@@ -27,7 +27,7 @@ class GiphyConnectorTest {
     void search() throws ConnectorException {
         SearchQuery query = new SearchQuery();
         query.setQuery("hello world");
-        query.addContentType(ContentType.image);
+        query.setContentTypes(ContentType.image);
 
         SearchConnectorResults queryResult = connector.search(query).await().indefinitely();
 

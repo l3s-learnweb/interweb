@@ -28,8 +28,8 @@ class FlickrConnectorTest {
     void search() throws ConnectorException {
         SearchQuery query = new SearchQuery();
         query.setQuery("hello world");
-        query.addContentType(ContentType.image);
-        // query.addContentType(ContentType.video);
+        query.setContentTypes(ContentType.image);
+        // query.setContentTypes(ContentType.video);
         query.setPerPage(50);
         // query.setDateFrom("2009-01-01 00:00:00");
         // query.setDateTo("2009-06-01 00:00:00");

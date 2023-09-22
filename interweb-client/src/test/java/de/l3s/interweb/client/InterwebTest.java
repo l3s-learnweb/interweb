@@ -2,8 +2,6 @@ package de.l3s.interweb.client;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Set;
-
 import jakarta.inject.Inject;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -38,11 +36,11 @@ class InterwebTest {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
         query.setLanguage("en");
-        query.setContentTypes(Set.of(ContentType.video));
-        query.setServices(Set.of("Vimeo", "YouTube"));
+        query.setContentTypes(ContentType.video);
+        query.setServices("Vimeo", "YouTube");
         query.setPerPage(32);
         query.setPage(1);
-        query.setExtras(Set.of(SearchExtra.duration, SearchExtra.tags));
+        query.setExtras(SearchExtra.duration, SearchExtra.tags);
 
         SearchResults response = interweb.search(query);
         assertEquals(response.getResults().size(), 2);
@@ -82,7 +80,7 @@ class InterwebTest {
         DescribeQuery query = new DescribeQuery();
         // query.setLink("https://vimeo.com/524933864");
         query.setId("524933864");
-        query.setServices(Set.of("vimeo"));
+        query.setServices("vimeo");
 
         DescribeResults response = interweb.describe(query);
 
