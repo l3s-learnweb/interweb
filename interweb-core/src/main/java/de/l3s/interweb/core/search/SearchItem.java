@@ -245,6 +245,19 @@ public class SearchItem implements Serializable {
         this.thumbnailOriginal = thumbnailOriginal;
     }
 
+    public Thumbnail getBiggestThumbnail() {
+        if (thumbnailOriginal != null) {
+            return thumbnailOriginal;
+        }
+        if (thumbnailLarge != null) {
+            return thumbnailLarge;
+        }
+        if (thumbnailMedium != null) {
+            return thumbnailMedium;
+        }
+        return thumbnailSmall;
+    }
+
     public void setThumbnail(Thumbnail thumbnail) {
         if (thumbnail.getHeight() < THUMBNAIL_SMALL_MAX_HEIGHT) {
             if (thumbnailSmall == null || thumbnailSmall.getHeight() < thumbnail.getHeight()) {
