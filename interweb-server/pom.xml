@@ -7,7 +7,7 @@
     <parent>
         <groupId>de.l3s.interweb</groupId>
         <artifactId>interweb-parent</artifactId>
-        <version>4.0.0</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -22,47 +22,47 @@
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-bing</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-flickr</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-giphy</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-google</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-ipernity</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-openai</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-slideshare</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-vimeo</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-youtube</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
