@@ -89,6 +89,10 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-reactive-panache</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.loggingsentry</groupId>
+            <artifactId>quarkus-logging-sentry</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.quarkus</groupId>
