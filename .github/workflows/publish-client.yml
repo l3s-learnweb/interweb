@@ -8,14 +8,13 @@ on:
   push:
     branches: [ main ]
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   deploy-client:
-    if: startsWith(github.event.head_commit.message, 'chore(client)') && endsWith(github.event.head_commit.message, 'version release')
+    if: github.event_name == 'workflow_dispatch' || (startsWith(github.event.head_commit.message, 'chore(client)') && endsWith(github.event.head_commit.message, 'version release'))
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     env:
       MVN: mvn --show-version --batch-mode
     steps:
