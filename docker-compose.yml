@@ -1,0 +1,32 @@
+services:
+  apiserver:
+    build: .
+    image: ghcr.io/l3s-learnweb/interweb:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    env_file:
+#      - .env
+      - interweb-server/.env
+#    depends_on:
+#      - mariadb
+    environment:
+      TZ: "Europe/Berlin"
+      QUARKUS_HTTP_PORT: 8080
+
+#  mariadb:
+#    image: mariadb:10.11
+#    restart: always
+#    ports:
+#      - "9306:3306"
+#    volumes:
+#      # On WSL docker machine, it may crash during migration when mounting NTFS file-system, just restart it multiple times :/
+#      # https://jira.mariadb.org/browse/MDEV-29260
+#      - "./data/mysql:/var/lib/mysql"
+#    environment:
+#      TZ: "Europe/Berlin"
+#      MARIADB_AUTO_UPGRADE: "yes"
+#      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+#      MARIADB_DATABASE:
+#      MARIADB_USER:
+#      MARIADB_PASSWORD:
