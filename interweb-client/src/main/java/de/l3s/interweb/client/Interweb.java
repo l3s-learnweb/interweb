@@ -10,6 +10,7 @@ import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -41,6 +42,7 @@ public class Interweb implements Serializable {
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
     }
 
     public SearchResults search(SearchQuery query) throws InterwebException {
