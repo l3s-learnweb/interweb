@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Results<T extends ConnectorResults> {
     /**
      * Time in ms that the request took to complete.
@@ -15,6 +17,7 @@ public class Results<T extends ConnectorResults> {
     /**
      * The list of results from different connectors.
      */
+    @JsonProperty("results")
     private final List<T> results = new LinkedList<>();
 
     public Results() {

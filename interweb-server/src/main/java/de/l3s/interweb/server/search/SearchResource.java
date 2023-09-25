@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -61,7 +62,7 @@ public class SearchResource {
 
     @POST
     @Authenticated
-    public Uni<SearchResults> search(@Valid SearchQuery query) {
+    public Uni<SearchResults> search(@NotNull @Valid SearchQuery query) {
         long start = System.currentTimeMillis();
         return searchService.search(query).map(results -> {
             results.setElapsedTime(System.currentTimeMillis() - start);
