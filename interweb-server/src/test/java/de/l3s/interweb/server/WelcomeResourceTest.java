@@ -3,11 +3,13 @@ package de.l3s.interweb.server;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
+@QuarkusTestResource(DatabaseResource.class)
 public class WelcomeResourceTest {
 
     @Test
