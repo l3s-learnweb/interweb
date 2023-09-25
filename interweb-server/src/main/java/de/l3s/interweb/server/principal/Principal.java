@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -22,19 +23,15 @@ public class Principal extends PanacheEntityBase implements java.security.Princi
     @Schema(readOnly = true)
     public Long id;
 
+    @Email
     @NotEmpty
     @NotNull
-    public String username;
+    public String email;
 
     @NotEmpty
     @NotNull
     @Schema(writeOnly = true)
     public String password;
-
-    @NotEmpty
-    @NotNull
-    @Email
-    public String email;
 
     @NotNull
     @Schema(readOnly = true)
@@ -44,15 +41,36 @@ public class Principal extends PanacheEntityBase implements java.security.Princi
     @OneToMany(mappedBy = "principal", fetch = FetchType.LAZY, orphanRemoval = true)
     public Set<Consumer> tokens;
 
-    public Principal() {
+    protected Principal() {
+    }
+
+    /**
+     * Adds a new user to the database
+     */
+    public static Uni<Principal> add(String email, String password) {
+        Principal user = new Principal();
+        user.email = email;
+        user.password = BcryptUtil.bcryptHash(password);
+        return user.persist();
     }
 
     public static Uni<Principal> findByName(String name) {
-        return find("username", name).firstResult();
+        return find("email", name).firstResult();
+    }
+
+    public static Uni<Principal> findByNameAndPassword(String name, String password) {
+        return findByName(name).onItem().ifNotNull().transform(principal -> {
+            if (BcryptUtil.matches(password, principal.password)) {
+                return principal;
+            }
+
+            return null;
+        });
     }
 
     @Override
+    @JsonIgnore
     public String getName() {
-        return username;
+        return email;
     }
 }
