@@ -3,10 +3,13 @@ package de.l3s.interweb.core.search;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.ConnectorResults;
 
+@RegisterForReflection
 public class SearchConnectorResults extends ConnectorResults {
 
     @JsonProperty("total_results")

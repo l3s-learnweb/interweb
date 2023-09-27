@@ -3,8 +3,11 @@ package de.l3s.interweb.core.suggest;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import de.l3s.interweb.core.Query;
 
+@RegisterForReflection
 public class SuggestQuery extends Query {
     @NotEmpty
     private String query;

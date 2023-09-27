@@ -2,11 +2,14 @@ package de.l3s.interweb.core.completion;
 
 import java.time.Instant;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.ConnectorResults;
 
+@RegisterForReflection
 public class Choice extends ConnectorResults {
     private int index;
     @JsonProperty("finish_reason")

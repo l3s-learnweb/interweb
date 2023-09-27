@@ -1,7 +1,10 @@
 package de.l3s.interweb.core.describe;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import de.l3s.interweb.core.Query;
 
+@RegisterForReflection
 public class DescribeQuery extends Query {
     private String id;
     private String link;

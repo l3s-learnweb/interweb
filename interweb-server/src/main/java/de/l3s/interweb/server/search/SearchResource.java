@@ -7,6 +7,7 @@ import java.util.List;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.GET;
@@ -42,8 +43,8 @@ public class SearchResource {
                                      @RestQuery("date_from") LocalDate dateFrom,
                                      @RestQuery("date_to") LocalDate dateTo,
                                      @RestQuery("sort") SearchSort sort,
-                                     @RestQuery("page") @Max(100) Integer page,
-                                     @RestQuery("per_page") @Max(500) Integer perPage,
+                                     @RestQuery("page") @Min(1) @Max(100) Integer page,
+                                     @RestQuery("per_page") @Min(10) @Max(500) Integer perPage,
                                      @Parameter(description = "An external request timeout in ms", example = "1000") @RestQuery("timeout") @Max(500) Integer timeout) {
         SearchQuery searchQuery = new SearchQuery();
         searchQuery.setQuery(query.trim());

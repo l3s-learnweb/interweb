@@ -4,11 +4,14 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.Results;
 
+@RegisterForReflection
 public class CompletionResults extends Results<Choice> {
     @JsonProperty(value = "id", access = JsonProperty.Access.READ_ONLY)
     private UUID chatId;

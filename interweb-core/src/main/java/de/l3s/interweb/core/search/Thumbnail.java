@@ -4,6 +4,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public class Thumbnail implements Serializable {
     @Serial
     private static final long serialVersionUID = -792701713759619246L;

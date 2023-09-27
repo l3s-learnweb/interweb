@@ -1,8 +1,11 @@
 package de.l3s.interweb.core.describe;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import de.l3s.interweb.core.ConnectorResults;
 import de.l3s.interweb.core.search.SearchItem;
 
+@RegisterForReflection
 public class DescribeResults extends ConnectorResults {
     private final SearchItem entity;
 

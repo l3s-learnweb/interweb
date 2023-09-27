@@ -7,11 +7,16 @@ import java.util.Set;
 
 import jakarta.validation.constraints.*;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.Query;
 
+@RegisterForReflection
+@JsonIgnoreProperties(ignoreUnknown = false)
 public class SearchQuery extends Query {
     private String id;
 

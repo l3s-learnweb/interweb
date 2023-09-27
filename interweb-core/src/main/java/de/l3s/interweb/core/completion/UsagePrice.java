@@ -1,5 +1,8 @@
 package de.l3s.interweb.core.completion;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public class UsagePrice {
     private double prompt;
     private double completion;

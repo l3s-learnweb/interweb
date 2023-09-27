@@ -5,12 +5,15 @@ import java.time.Instant;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ConnectorResults {
+    @JsonProperty("service")
     private String service; // name of the connector
     @JsonProperty("service_url")
     private String serviceUrl;
     @JsonProperty("elapsed_time")
     private long elapsedTime; // time in ms
+    @JsonProperty("created")
     private Instant created = Instant.now();
+    @JsonProperty("error")
     private String error;
 
     public String getService() {

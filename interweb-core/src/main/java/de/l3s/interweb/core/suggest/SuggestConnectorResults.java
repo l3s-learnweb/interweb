@@ -4,8 +4,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import de.l3s.interweb.core.ConnectorResults;
 
+@RegisterForReflection
 public class SuggestConnectorResults extends ConnectorResults {
     private final List<String> items = new LinkedList<>();
 

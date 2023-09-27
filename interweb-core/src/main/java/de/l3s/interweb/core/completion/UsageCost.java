@@ -1,11 +1,10 @@
 package de.l3s.interweb.core.completion;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class UsageCost {
-    @JsonProperty("response")
     private double response;
-    @JsonProperty("chat")
     private double chat;
 
     public double getResponse() {

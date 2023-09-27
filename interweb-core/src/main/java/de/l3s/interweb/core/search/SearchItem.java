@@ -6,10 +6,13 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.util.StringUtils;
 
+@RegisterForReflection
 public class SearchItem implements Serializable {
     @Serial
     private static final long serialVersionUID = 8890673440048432524L;

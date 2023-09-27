@@ -1,7 +1,10 @@
 package de.l3s.interweb.core.completion;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@RegisterForReflection
 public class Usage {
     @JsonProperty("prompt_tokens")
     private int promptTokens;
