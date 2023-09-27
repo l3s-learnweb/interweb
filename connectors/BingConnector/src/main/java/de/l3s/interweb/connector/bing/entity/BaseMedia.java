@@ -1,17 +1,30 @@
 package de.l3s.interweb.connector.bing.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public abstract class BaseMedia {
 
+    @JsonProperty("webSearchUrl")
     String webSearchUrl;
+    @JsonProperty("name")
     String name;
+    @JsonProperty("thumbnailUrl")
     String thumbnailUrl;
+    @JsonProperty("datePublished")
     String datePublished;
+    @JsonProperty("contentUrl")
     String contentUrl;
+    @JsonProperty("hostPageUrl")
     String hostPageUrl;
+    @JsonProperty("encodingFormat")
     String encodingFormat;
+    @JsonProperty("hostPageDisplayUrl")
     String hostPageDisplayUrl;
+    @JsonProperty("width")
     Integer width;
+    @JsonProperty("height")
     Integer height;
+    @JsonProperty("thumbnail")
     Thumbnail thumbnail;
 
     public String getName() {

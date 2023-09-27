@@ -13,6 +13,9 @@ public class Slideshows {
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<Slideshow> searchResults;
 
+    @JsonProperty("Message")
+    private ErrorMessage errorMessage;
+
     public Meta getMeta() {
         return meta;
     }
@@ -29,4 +32,11 @@ public class Slideshows {
         this.searchResults = searchResults;
     }
 
+    public ErrorMessage getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(ErrorMessage errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 }

@@ -8,7 +8,6 @@ import jakarta.enterprise.context.Dependent;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.logging.Logger;
 
 import de.l3s.interweb.connector.vimeo.entity.Datum;
 import de.l3s.interweb.connector.vimeo.entity.Size;
@@ -22,7 +21,6 @@ import de.l3s.interweb.core.util.DateUtils;
 
 @Dependent
 public class VimeoConnector implements SearchConnector, DescribeConnector {
-    private static final Logger log = Logger.getLogger(VimeoConnector.class);
     private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:www\\.)?(?:player\\.)?vimeo\\.com/(?:[a-z]*/)*([0-9]{6,11})[?]?.*", Pattern.CASE_INSENSITIVE);
     private static final int fallbackPerPage = 100;
 

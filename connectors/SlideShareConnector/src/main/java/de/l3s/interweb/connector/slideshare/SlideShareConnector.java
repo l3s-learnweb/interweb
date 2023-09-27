@@ -9,7 +9,6 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -29,7 +28,6 @@ import de.l3s.interweb.core.util.StringUtils;
  */
 @Dependent
 public class SlideShareConnector implements SearchConnector {
-    private static final Logger log = Logger.getLogger(SlideShareConnector.class);
     private static final int fallbackPerPage = 50;
 
     @ConfigProperty(name = "connector.slideshare.secret")
@@ -77,7 +75,11 @@ public class SlideShareConnector implements SearchConnector {
                 XmlMapper objectMapper = new XmlMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-                return objectMapper.readValue(body, Slideshows.class);
+                Slideshows slideshows = objectMapper.readValue(body, Slideshows.class);
+                if (slideshows.getErrorMessage() != null) {
+                    throw new ConnectorException(slideshows.getErrorMessage().getMessage());
+                }
+                return slideshows;
             } catch (JsonProcessingException e) {
                 throw new ConnectorException("Failed to parse response", e);
             }

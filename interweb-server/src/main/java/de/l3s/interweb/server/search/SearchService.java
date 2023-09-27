@@ -61,6 +61,7 @@ public class SearchService {
         long start = System.currentTimeMillis();
         return connector.search(query).ifNoItem().after(timeout).failWith(new ConnectorException("Timeout"))
                 .onFailure(ConnectorException.class).recoverWithItem(failure -> {
+                    log.error("Error in search connector " + connector.getId(), failure);
                     SearchConnectorResults results = new SearchConnectorResults();
                     results.setError((ConnectorException) failure);
                     return results;

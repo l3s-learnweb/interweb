@@ -22,7 +22,6 @@ import de.l3s.interweb.core.util.DateUtils;
 
 @Dependent
 public class FlickrConnector implements SearchConnector, DescribeConnector {
-    private static final Logger log = Logger.getLogger(FlickrConnector.class);
     private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:www\\.)?(?:flickr\\.com/photos/[^/]+/(\\d+)|(?:flic\\.kr/p/|flickr\\.com/photo\\.gne\\?short=)(\\w+))", Pattern.CASE_INSENSITIVE);
     private static final int fallbackPerPage = 500;
 

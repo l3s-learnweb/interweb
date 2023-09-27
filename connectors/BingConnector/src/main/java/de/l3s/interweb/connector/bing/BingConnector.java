@@ -11,7 +11,6 @@ import jakarta.inject.Inject;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,7 +26,6 @@ import de.l3s.interweb.core.util.StringUtils;
 
 @Dependent
 public class BingConnector implements SearchConnector, SuggestConnector {
-    private static final Logger log = Logger.getLogger(BingConnector.class);
     private static final int fallbackPerPageWeb = 50;
     private static final int fallbackPerPageImages = 150;
     private static final int fallbackPerPageVideos = 105;
@@ -179,17 +177,8 @@ public class BingConnector implements SearchConnector, SuggestConnector {
                 resultItem.setWidth(image.getWidth());
                 resultItem.setHeight(image.getHeight());
 
-                try {
-                    resultItem.setThumbnailMedium(new Thumbnail(image.getThumbnailUrl(), image.getThumbnail().getWidth(), image.getThumbnail().getHeight()));
-                } catch (Exception e) {
-                    log.warn(e);
-                }
-
-                try {
-                    resultItem.setThumbnail(new Thumbnail(image.getContentUrl(), image.getWidth(), image.getHeight()));
-                } catch (Exception e) {
-                    log.warn(e);
-                }
+                resultItem.setThumbnailMedium(new Thumbnail(image.getThumbnailUrl(), image.getThumbnail().getWidth(), image.getThumbnail().getHeight()));
+                resultItem.setThumbnail(new Thumbnail(image.getContentUrl(), image.getWidth(), image.getHeight()));
 
                 results.addResultItem(resultItem);
             }
@@ -222,12 +211,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
                     resultItem.setDuration(duration.getSeconds());
                 }
 
-                try {
-                    resultItem.setThumbnailMedium(new Thumbnail(video.getThumbnailUrl(), video.getThumbnail().getWidth(), video.getThumbnail().getHeight()));
-                } catch (Exception e) {
-                    log.warn(e);
-                }
-
+                resultItem.setThumbnailMedium(new Thumbnail(video.getThumbnailUrl(), video.getThumbnail().getWidth(), video.getThumbnail().getHeight()));
                 if (video.getEmbedHtml() != null) {
                     resultItem.setEmbedUrl(StringUtils.parseSourceUrl(video.getEmbedHtml()));
                 }

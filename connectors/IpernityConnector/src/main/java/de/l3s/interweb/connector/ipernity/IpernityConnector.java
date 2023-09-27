@@ -26,7 +26,6 @@ import de.l3s.interweb.core.util.DateUtils;
 
 @Dependent
 public class IpernityConnector implements SearchConnector, DescribeConnector {
-    private static final Logger log = Logger.getLogger(IpernityConnector.class);
     private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:www\\.)?ipernity\\.com/(?:doc/[^/]+/(\\d+))", Pattern.CASE_INSENSITIVE);
     private static final int fallbackPerPage = 100;
 

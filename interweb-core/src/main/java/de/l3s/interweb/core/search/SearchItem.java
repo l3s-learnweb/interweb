@@ -8,6 +8,7 @@ import java.util.Set;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.util.StringUtils;
@@ -248,6 +249,7 @@ public class SearchItem implements Serializable {
         this.thumbnailOriginal = thumbnailOriginal;
     }
 
+    @JsonIgnore
     public Thumbnail getBiggestThumbnail() {
         if (thumbnailOriginal != null) {
             return thumbnailOriginal;

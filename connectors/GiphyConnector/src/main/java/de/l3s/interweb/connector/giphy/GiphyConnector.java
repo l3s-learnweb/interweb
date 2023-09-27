@@ -21,7 +21,6 @@ import de.l3s.interweb.core.util.DateUtils;
  */
 @Dependent
 public class GiphyConnector implements SearchConnector {
-    private static final Logger log = Logger.getLogger(GiphyConnector.class);
     private static final int fallbackPerPage = 150;
 
     @RestClient

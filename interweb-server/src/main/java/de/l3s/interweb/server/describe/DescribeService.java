@@ -70,6 +70,7 @@ public class DescribeService {
     private Uni<DescribeResults> describe(DescribeQuery query, DescribeConnector connector) {
         long start = System.currentTimeMillis();
         return connector.describe(query).onFailure(ConnectorException.class).recoverWithItem(failure -> {
+            log.error("Error in describe connector " + connector.getId(), failure);
             DescribeResults results = new DescribeResults();
             results.setError((ConnectorException) failure);
             return results;

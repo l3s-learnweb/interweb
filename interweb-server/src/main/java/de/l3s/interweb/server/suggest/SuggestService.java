@@ -67,6 +67,7 @@ public class SuggestService {
     private Uni<SuggestConnectorResults> suggest(SuggestQuery query, SuggestConnector connector) {
         long start = System.currentTimeMillis();
         return connector.suggest(query).onFailure(ConnectorException.class).recoverWithItem(failure -> {
+            log.error("Error in suggest connector " + connector.getId(), failure);
             SuggestConnectorResults results = new SuggestConnectorResults();
             results.setError((ConnectorException) failure);
             return results;

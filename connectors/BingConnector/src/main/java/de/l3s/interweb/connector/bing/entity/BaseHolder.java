@@ -1,13 +1,20 @@
 package de.l3s.interweb.connector.bing.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public abstract class BaseHolder {
 
+    @JsonProperty("id")
     String id;
+    @JsonProperty("readLink")
     String readLink;
+    @JsonProperty("webSearchUrl")
     String webSearchUrl;
-    Boolean isFamilyFriendly;
+    @JsonProperty("totalEstimatedMatches")
     Long totalEstimatedMatches;
+    @JsonProperty("currentOffset")
     Integer currentOffset;
+    @JsonProperty("nextOffset")
     Integer nextOffset;
 
     public String getId() {
@@ -34,24 +41,12 @@ public abstract class BaseHolder {
         this.webSearchUrl = webSearchUrl;
     }
 
-    public Boolean isFamilyFriendly() {
-        return isFamilyFriendly;
-    }
-
-    public void setFamilyFriendly(Boolean familyFriendly) {
-        isFamilyFriendly = familyFriendly;
-    }
-
     public Long getTotalEstimatedMatches() {
         return totalEstimatedMatches;
     }
 
     public void setTotalEstimatedMatches(final Long totalEstimatedMatches) {
         this.totalEstimatedMatches = totalEstimatedMatches;
-    }
-
-    public Boolean getFamilyFriendly() {
-        return isFamilyFriendly;
     }
 
     public Integer getCurrentOffset() {

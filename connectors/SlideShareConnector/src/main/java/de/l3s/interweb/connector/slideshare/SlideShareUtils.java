@@ -66,6 +66,7 @@ public final class SlideShareUtils {
     static String hash(String input) {
         try {
             MessageDigest msdDigest = MessageDigest.getInstance("SHA-1");
+            msdDigest.reset();
             msdDigest.update(input.getBytes(StandardCharsets.UTF_8), 0, input.length());
             return new BigInteger(1, msdDigest.digest()).toString(16).toLowerCase();
         } catch (NoSuchAlgorithmException e) {
