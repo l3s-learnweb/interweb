@@ -1,6 +1,7 @@
 package de.l3s.interweb.connector.slideshare;
 
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.enterprise.context.Dependent;
 
@@ -32,7 +33,7 @@ public class SlideShareConnector implements SearchConnector {
     private static final int fallbackPerPage = 50;
 
     @ConfigProperty(name = "connector.slideshare.secret")
-    String slideShareSecret;
+    Optional<String> slideShareSecret;
 
     @RestClient
     SlideShareSearchClient searchClient;
@@ -56,6 +57,10 @@ public class SlideShareConnector implements SearchConnector {
     public Uni<SearchConnectorResults> search(SearchQuery query) throws ConnectorException {
         long timestamp = System.currentTimeMillis() / 1000;
 
+        if (slideShareSecret.isEmpty()) {
+            throw new ConnectorException("SlideShare secret is not configured");
+        }
+
         return searchClient.search(
                 query.getQuery(),
                 query.getPage(),
@@ -66,7 +71,7 @@ public class SlideShareConnector implements SearchConnector {
                 null,
 
                 timestamp,
-                SlideShareUtils.hash(slideShareSecret + timestamp)
+                SlideShareUtils.hash(slideShareSecret.get() + timestamp)
         ).map(Unchecked.function(body -> {
             try {
                 XmlMapper objectMapper = new XmlMapper();
