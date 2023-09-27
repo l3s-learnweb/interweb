@@ -12,10 +12,12 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.l3s.interweb.core.Query;
 
 @RegisterForReflection
+@JsonPropertyOrder({ "id", "query", "services", "content_types", "extras", "date_from", "date_to", "page", "per_page", "lang", "sort", "timeout" })
 @JsonIgnoreProperties(ignoreUnknown = false)
 public class SearchQuery extends Query {
     private String id;
@@ -141,6 +143,7 @@ public class SearchQuery extends Query {
         this.perPage = perPage;
     }
 
+    @JsonIgnore
     public int getOffset() {
         if (page == null || perPage == null) {
             return 0;
@@ -196,13 +199,12 @@ public class SearchQuery extends Query {
                 && Objects.equals(extras, query1.extras);
     }
 
-
     @Override
     public int hashCode() {
-        return Objects.hash(query, dateFrom, dateTo, language, getServices(), contentTypes, extras, page, perPage, sort);
+        return Objects.hash(query, dateFrom, dateTo, language, contentTypes, extras, page, perPage, sort, getServices());
     }
 
     public int hashCodeWithoutPage() {
-        return Objects.hash(query, dateFrom, dateTo, language, getServices(), contentTypes, extras, perPage, sort);
+        return Objects.hash(query, dateFrom, dateTo, language, contentTypes, extras, perPage, sort, getServices());
     }
 }

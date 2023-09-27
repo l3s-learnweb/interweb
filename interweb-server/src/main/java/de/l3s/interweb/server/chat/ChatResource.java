@@ -51,8 +51,8 @@ public class ChatResource {
         return getOrCreateChat(query).flatMap(chat -> {
             long start = System.currentTimeMillis();
             return chatService.completions(query).call(results -> {
-                results.setElapsedTime(System.currentTimeMillis() - start);
                 results.setChatId(chat.id);
+                results.setElapsedTime(System.currentTimeMillis() - start);
                 return persistMessages(chat, query.getMessages(), results);
             });
         });

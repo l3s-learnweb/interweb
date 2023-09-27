@@ -11,6 +11,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
+import io.quarkus.cache.CacheResult;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import org.jboss.resteasy.reactive.RestQuery;
@@ -42,6 +43,7 @@ public class DescribeResource {
 
     @POST
     @Authenticated
+    @CacheResult(cacheName = "describe")
     public Uni<DescribeResults> describe(@Valid DescribeQuery query) {
         describeService.validateServices(query.getServices());
         if (StringUtils.isEmpty(query.getLink()) && (StringUtils.isEmpty(query.getId()) || query.getServices().isEmpty())) {

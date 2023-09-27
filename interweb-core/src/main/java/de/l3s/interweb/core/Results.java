@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({ "elapsed_time", "query", "results" })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Results<T extends ConnectorResults> {
     /**
@@ -14,6 +16,13 @@ public class Results<T extends ConnectorResults> {
      */
     @JsonProperty("elapsed_time")
     private long elapsedTime;
+
+    /**
+     * The query that was used to generate the results.
+     */
+    @JsonProperty("query")
+    private Query query;
+
     /**
      * The list of results from different connectors.
      */
@@ -25,6 +34,14 @@ public class Results<T extends ConnectorResults> {
 
     public Results(Collection<T> results) {
         add(results);
+    }
+
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
     }
 
     public long getElapsedTime() {

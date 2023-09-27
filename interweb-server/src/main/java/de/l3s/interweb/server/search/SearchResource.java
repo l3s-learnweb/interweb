@@ -3,6 +3,7 @@ package de.l3s.interweb.server.search;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -15,6 +16,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 
+import io.quarkus.cache.CacheResult;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
@@ -63,9 +65,13 @@ public class SearchResource {
 
     @POST
     @Authenticated
+    @CacheResult(cacheName = "search")
     public Uni<SearchResults> search(@NotNull @Valid SearchQuery query) {
+        query.setId(UUID.randomUUID().toString());
+
         long start = System.currentTimeMillis();
         return searchService.search(query).map(results -> {
+            results.setQuery(query);
             results.setElapsedTime(System.currentTimeMillis() - start);
             return results;
         });

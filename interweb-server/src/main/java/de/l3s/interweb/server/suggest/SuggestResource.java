@@ -12,6 +12,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
+import io.quarkus.cache.CacheResult;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import org.jboss.resteasy.reactive.RestQuery;
@@ -45,10 +46,12 @@ public class SuggestResource {
 
     @POST
     @Authenticated
+    @CacheResult(cacheName = "suggest")
     public Uni<SuggestResults> suggest(@Valid SuggestQuery query) {
         long start = System.currentTimeMillis();
         suggestService.validateServices(query.getServices());
         return suggestService.suggest(query).map(results -> {
+            results.setQuery(query);
             results.setElapsedTime(System.currentTimeMillis() - start);
             return results;
         });
