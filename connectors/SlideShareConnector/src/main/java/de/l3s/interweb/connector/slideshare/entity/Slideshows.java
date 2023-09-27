@@ -2,9 +2,12 @@ package de.l3s.interweb.connector.slideshare.entity;
 
 import java.util.List;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
+@RegisterForReflection
 public class Slideshows {
 
     @JsonProperty("Meta")
@@ -14,7 +17,7 @@ public class Slideshows {
     private List<Slideshow> searchResults;
 
     @JsonProperty("Message")
-    private ErrorMessage errorMessage;
+    private Message errorMessage;
 
     public Meta getMeta() {
         return meta;
@@ -32,11 +35,11 @@ public class Slideshows {
         this.searchResults = searchResults;
     }
 
-    public ErrorMessage getErrorMessage() {
+    public Message getErrorMessage() {
         return errorMessage;
     }
 
-    public void setErrorMessage(ErrorMessage errorMessage) {
-        this.errorMessage = errorMessage;
+    public void setErrorMessage(Message message) {
+        this.errorMessage = message;
     }
 }

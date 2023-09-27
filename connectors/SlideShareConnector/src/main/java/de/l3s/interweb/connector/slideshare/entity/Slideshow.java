@@ -1,7 +1,10 @@
 package de.l3s.interweb.connector.slideshare.entity;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@RegisterForReflection
 public class Slideshow {
 
     @JsonProperty("ID")

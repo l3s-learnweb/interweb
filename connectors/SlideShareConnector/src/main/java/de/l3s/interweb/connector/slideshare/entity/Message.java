@@ -1,11 +1,14 @@
 package de.l3s.interweb.connector.slideshare.entity;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
+@RegisterForReflection
 @JsonRootName("Message")
-public class ErrorMessage {
+public class Message {
 
     @JsonProperty("ID")
     private int id;

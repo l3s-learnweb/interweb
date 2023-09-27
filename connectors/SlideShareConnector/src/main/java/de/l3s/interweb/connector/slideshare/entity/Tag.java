@@ -1,8 +1,11 @@
 package de.l3s.interweb.connector.slideshare.entity;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
+@RegisterForReflection
 public class Tag {
 
     @JsonProperty("Count")
