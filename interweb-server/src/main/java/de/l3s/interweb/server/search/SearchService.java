@@ -2,11 +2,16 @@ package de.l3s.interweb.server.search;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import io.quarkus.arc.All;
+import io.quarkus.cache.Cache;
+import io.quarkus.cache.CacheName;
+import io.quarkus.cache.CaffeineCache;
+import io.quarkus.cache.CompositeCacheKey;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.jboss.logging.Logger;
@@ -23,6 +28,10 @@ public class SearchService {
     private static final int defaultTimeout = 10_000;
 
     private final Map<String, SearchConnector> services;
+
+    @Inject
+    @CacheName("search")
+    Cache cache;
 
     @Inject
     public SearchService(@All List<SearchConnector> connectors) {
@@ -53,18 +62,41 @@ public class SearchService {
         Duration timeout = Duration.ofMillis(Objects.requireNonNullElse(query.getTimeout(), defaultTimeout));
         return Multi.createFrom()
                 .iterable(getConnectors(query.getServices()))
-                .onItem().transformToUniAndMerge(connector -> search(query, connector, timeout))
+                .onItem().transformToUniAndMerge(connector -> searchIn(query, connector, timeout))
                 .collect().asList().map(SearchResults::new);
     }
 
-    private Uni<SearchConnectorResults> search(SearchQuery query, SearchConnector connector, Duration timeout) {
+    private Uni<SearchConnectorResults> searchIn(SearchQuery query, SearchConnector connector, Duration timeout) {
         long start = System.currentTimeMillis();
-        return connector.search(query).ifNoItem().after(timeout).failWith(new ConnectorException("Timeout"))
+        return searchWithCache(query, connector).ifNoItem().after(timeout).failWith(new ConnectorException("Timeout"))
                 .onFailure(ConnectorException.class).recoverWithItem(failure -> {
                     log.error("Error in search connector " + connector.getId(), failure);
                     SearchConnectorResults results = new SearchConnectorResults();
                     results.setError((ConnectorException) failure);
                     return results;
                 }).onItem().invoke(conRes -> connector.fillResult(conRes, System.currentTimeMillis() - start));
+    }
+
+    private Uni<SearchConnectorResults> searchWithCache(SearchQuery query, SearchConnector connector) {
+        CompositeCacheKey key = generateKey(query, connector);
+        if (query.getIgnoreCache()) {
+            return connector.search(query).invoke(results -> cache.as(CaffeineCache.class).put(key, CompletableFuture.completedFuture(results)));
+        }
+        return cache.getAsync(key, k -> connector.search(query));
+    }
+
+    private CompositeCacheKey generateKey(SearchQuery query, SearchConnector connector) {
+        return new CompositeCacheKey(
+            query.getQuery(),
+            query.getContentTypes(),
+            query.getLanguage(),
+            query.getPage(),
+            query.getPerPage(),
+            query.getExtras(),
+            query.getSort(),
+            query.getDateTo(),
+            query.getDateFrom(),
+            connector.getId()
+        );
     }
 }

@@ -12,11 +12,11 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 
-import io.quarkus.cache.CacheResult;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
@@ -28,6 +28,7 @@ import de.l3s.interweb.core.util.StringUtils;
 
 @Path("/search")
 public class SearchResource {
+    private static final String NO_CACHE = "no-cache";
 
     @Inject
     SearchService searchService;
@@ -47,7 +48,8 @@ public class SearchResource {
                                      @RestQuery("sort") SearchSort sort,
                                      @RestQuery("page") @Min(1) @Max(100) Integer page,
                                      @RestQuery("per_page") @Min(10) @Max(500) Integer perPage,
-                                     @Parameter(description = "An external request timeout in ms", example = "1000") @RestQuery("timeout") @Max(500) Integer timeout) {
+                                     @Parameter(description = "An external request timeout in ms", example = "1000") @RestQuery("timeout") @Min(100) @Max(600000) Integer timeout,
+                                     @HeaderParam("Cache-Control") String cacheControl) {
         SearchQuery searchQuery = new SearchQuery();
         searchQuery.setQuery(query.trim());
         searchQuery.setContentTypes(contentTypes);
@@ -60,16 +62,18 @@ public class SearchResource {
         searchQuery.setPage(page);
         searchQuery.setPerPage(perPage);
         searchQuery.setTimeout(timeout);
-        return search(searchQuery);
+        return search(searchQuery, cacheControl);
     }
 
     @POST
     @Authenticated
-    @CacheResult(cacheName = "search")
-    public Uni<SearchResults> search(@NotNull @Valid SearchQuery query) {
-        query.setId(UUID.randomUUID().toString());
-
+    public Uni<SearchResults> search(@NotNull @Valid SearchQuery query, @HeaderParam("Cache-Control") String cacheControl) {
         long start = System.currentTimeMillis();
+        if (NO_CACHE.equals(cacheControl)) {
+            query.setIgnoreCache(true);
+        }
+
+        query.setId(UUID.randomUUID().toString());
         return searchService.search(query).map(results -> {
             results.setQuery(query);
             results.setElapsedTime(System.currentTimeMillis() - start);

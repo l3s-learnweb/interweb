@@ -44,12 +44,8 @@ public class SearchQuery extends Query {
     @Max(500)
     @JsonProperty("per_page")
     private Integer perPage;
-
     @NotNull
     private SearchSort sort = SearchSort.relevance;
-    @Min(100)
-    @Max(600000)
-    private Integer timeout;
 
     public String getId() {
         return id;
@@ -135,6 +131,10 @@ public class SearchQuery extends Query {
         return perPage == null ? fallback : Math.min(perPage, fallback);
     }
 
+    public Integer getPerPage() {
+        return perPage;
+    }
+
     /**
      * @param perPage a desired number of results per page, the actual number of results per page may be less depending on the service.
      *                Prefer to use bigger values if you need second page, as it reduces API quotas usage. No value fallbacks to max value per service.
@@ -166,17 +166,6 @@ public class SearchQuery extends Query {
 
     public void setSort(final SearchSort sort) {
         this.sort = Objects.requireNonNullElse(sort, SearchSort.relevance);
-    }
-
-    public Integer getTimeout() {
-        return timeout;
-    }
-
-    /**
-     * @param timeout in milliseconds used for the API call, default is 10 seconds
-     */
-    public void setTimeout(Integer timeout) {
-        this.timeout = timeout;
     }
 
     @Override
