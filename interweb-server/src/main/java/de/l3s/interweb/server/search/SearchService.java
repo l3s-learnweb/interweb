@@ -68,13 +68,14 @@ public class SearchService {
 
     private Uni<SearchConnectorResults> searchIn(SearchQuery query, SearchConnector connector, Duration timeout) {
         long start = System.currentTimeMillis();
-        return searchWithCache(query, connector).ifNoItem().after(timeout).failWith(new ConnectorException("Timeout"))
-                .onFailure(ConnectorException.class).recoverWithItem(failure -> {
-                    log.error("Error in search connector " + connector.getId(), failure);
-                    SearchConnectorResults results = new SearchConnectorResults();
-                    results.setError((ConnectorException) failure);
-                    return results;
-                }).onItem().invoke(conRes -> connector.fillResult(conRes, System.currentTimeMillis() - start));
+        return searchWithCache(query, connector)
+            .ifNoItem().after(timeout).failWith(new ConnectorException(connector.getName() + " reached timeout after " + timeout.toMillis() + "ms"))
+            .onFailure(ConnectorException.class).recoverWithItem(failure -> {
+                log.error("Error in search connector " + connector.getId(), failure);
+                SearchConnectorResults results = new SearchConnectorResults();
+                results.setError((ConnectorException) failure);
+                return results;
+            }).onItem().invoke(conRes -> connector.fillResult(conRes, System.currentTimeMillis() - start));
     }
 
     private Uni<SearchConnectorResults> searchWithCache(SearchQuery query, SearchConnector connector) {
