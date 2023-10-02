@@ -9,9 +9,9 @@ import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+import de.l3s.interweb.connector.openai.entity.CompletionResponse;
+import de.l3s.interweb.connector.openai.entity.CompletionsBody;
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
 
 @Path("/openai/deployments")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -22,7 +22,7 @@ public interface OpenaiClient {
 
     @POST
     @Path("/{model}/chat/completions")
-    Uni<CompletionResults> chatCompletions(@PathParam("model") String model, @QueryParam("api-version") String apiVersion, CompletionQuery body);
+    Uni<CompletionResponse> chatCompletions(@PathParam("model") String model, @QueryParam("api-version") String apiVersion, CompletionsBody body);
 
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {

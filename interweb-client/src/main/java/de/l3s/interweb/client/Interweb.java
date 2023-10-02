@@ -1,16 +1,16 @@
 package de.l3s.interweb.client;
 
 import java.io.IOException;
-import java.io.Serial;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -18,6 +18,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import de.l3s.interweb.core.completion.CompletionQuery;
 import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.completion.Conversation;
 import de.l3s.interweb.core.describe.DescribeQuery;
 import de.l3s.interweb.core.describe.DescribeResults;
 import de.l3s.interweb.core.search.SearchQuery;
@@ -27,7 +28,6 @@ import de.l3s.interweb.core.suggest.SuggestResults;
 import de.l3s.interweb.core.util.StringUtils;
 
 public class Interweb implements Serializable {
-    @Serial
     private static final long serialVersionUID = 7231324400348062196L;
 
     private final ObjectMapper mapper;
@@ -72,11 +72,31 @@ public class Interweb implements Serializable {
         return sendRequest("/describe", params, DescribeResults.class);
     }
 
-    public CompletionResults chatCompletions(CompletionQuery query) throws InterwebException {
+    public List<Conversation> conversations(String user) throws InterwebException {
+        return sendRequest("/chat", Map.of("user", user), new TypeReference<>() {});
+    }
+
+    public CompletionResults completion(CompletionQuery query) throws InterwebException {
         return sendRequest("/chat/completions", query, CompletionResults.class);
     }
 
-    private URI createRequestUri(final String apiPath, final TreeMap<String, String> params) {
+    public void completion(Conversation conversation) throws InterwebException {
+        CompletionResults results = sendRequest("/chat/completions", conversation, CompletionResults.class);
+        if (results.getLastMessage() != null) {
+            conversation.addMessage(results.getLastMessage());
+        }
+        if (results.getChatTitle() != null) {
+            conversation.setTitle(results.getChatTitle());
+        }
+        if (results.getCost() != null) {
+            conversation.setEstimatedCost(results.getCost().getChat());
+        }
+        if (results.getUsage() != null) {
+            conversation.setUsedTokens(results.getUsage().getTotalTokens());
+        }
+    }
+
+    private URI createRequestUri(final String apiPath, final Map<String, String> params) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(serverUrl);
@@ -96,29 +116,48 @@ public class Interweb implements Serializable {
         return URI.create(sb.toString());
     }
 
+    public <T> T sendRequest(final String apiPath, final Map<String, String> params, TypeReference<T> valueType) throws InterwebException {
+        try {
+            final URI uri = createRequestUri(apiPath, params);
+            HttpRequest.Builder builder = HttpRequest.newBuilder().uri(uri).GET();
+
+            HttpResponse<String> response = sendRequest(builder);
+            return mapper.readValue(response.body(), valueType);
+        } catch (IOException e) {
+            throw new InterwebException("An error occurred during Interweb request " + apiPath, e);
+        }
+    }
+
     public <T> T sendRequest(final String apiPath, final Object query, Class<T> valueType) throws InterwebException {
         try {
-            final URI uri = createRequestUri(apiPath, null);
             String body = mapper.writeValueAsString(query);
 
-            HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(body))
-                    .uri(uri)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .header("Api-Key", apikey)
-                    .build();
+            final URI uri = createRequestUri(apiPath, null);
+            HttpRequest.Builder builder = HttpRequest.newBuilder().uri(uri);
+            builder.POST(HttpRequest.BodyPublishers.ofString(body)).header("Content-Type", "application/json");
+
+            HttpResponse<String> response = sendRequest(builder);
+            return mapper.readValue(response.body(), valueType);
+        } catch (IOException e) {
+            throw new InterwebException("An error occurred during Interweb request " + query, e);
+        }
+    }
+
+    public HttpResponse<String> sendRequest(final HttpRequest.Builder builder) throws InterwebException {
+        try {
+            builder.header("Api-Key", apikey);
+            builder.header("Accept", "application/json");
 
             HttpClient client = HttpClient.newHttpClient();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            String responseBody = response.body();
+            HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                throw new InterwebException("Interweb request failed, response: " + responseBody);
+                throw new InterwebException("Interweb request failed, response: " + response.body());
             }
 
-            return mapper.readValue(responseBody, valueType);
+            return response;
         } catch (IOException | InterruptedException e) {
-            throw new InterwebException("An error occurred during Interweb request " + query, e);
+            throw new InterwebException("An error occurred during Interweb request", e);
         }
     }
 }

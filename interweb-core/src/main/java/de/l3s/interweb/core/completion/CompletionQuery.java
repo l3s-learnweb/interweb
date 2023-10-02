@@ -20,19 +20,28 @@ public class CompletionQuery {
      * Defaults to "gpt-35-turbo".
      */
     @NotEmpty
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty("model")
     private String model = "gpt-35-turbo";
 
     /**
      * ID of the chat to continue.
      */
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private UUID chatId;
+    @JsonProperty("id")
+    private UUID id;
+
+    /**
+     * Participant involved in the conversation can be denoted by its ID.
+     * When provided, it can be used to filter the conversations.
+     * Applied automatically when using chatId.
+     */
+    @JsonProperty(value = "user")
+    private String user;
 
     /**
      * A list of messages comprising the conversation so far.
      */
     @NotEmpty
+    @JsonProperty("messages")
     private List<Message> messages = new ArrayList<>();
 
     /**
@@ -43,6 +52,7 @@ public class CompletionQuery {
      */
     @Min(0)
     @Max(2)
+    @JsonProperty("temperature")
     private Double temperature = 1.0;
 
     /**
@@ -82,6 +92,12 @@ public class CompletionQuery {
     @JsonProperty("max_tokens")
     private Integer maxTokens = 800;
 
+    /**
+     * Whether the conversation should be summarized into a title. Defaults to false.
+     */
+    @JsonProperty(value = "generate_title")
+    private boolean generateTitle;
+
     public String getModel() {
         return model;
     }
@@ -90,12 +106,12 @@ public class CompletionQuery {
         this.model = model;
     }
 
-    public UUID getChatId() {
-        return chatId;
+    public UUID getId() {
+        return id;
     }
 
-    public void setChatId(UUID chatId) {
-        this.chatId = chatId;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public List<Message> getMessages() {
@@ -106,8 +122,20 @@ public class CompletionQuery {
         this.messages = messages;
     }
 
+    public void addMessage(final Message message) {
+        this.messages.add(message);
+    }
+
     public void addMessage(final String message, final Message.Role role) {
-        this.messages.add(new Message(role, message));
+        addMessage(new Message(role, message));
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public Double getTemperature() {
@@ -148,5 +176,13 @@ public class CompletionQuery {
 
     public void setMaxTokens(final Integer maxTokens) {
         this.maxTokens = maxTokens;
+    }
+
+    public boolean isGenerateTitle() {
+        return generateTitle;
+    }
+
+    public void setGenerateTitle(boolean generateTitle) {
+        this.generateTitle = generateTitle;
     }
 }

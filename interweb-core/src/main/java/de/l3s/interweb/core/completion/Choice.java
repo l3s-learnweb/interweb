@@ -1,15 +1,14 @@
 package de.l3s.interweb.core.completion;
 
-import java.time.Instant;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.ConnectorResults;
 
 @RegisterForReflection
+@JsonIgnoreProperties({"elapsed_time", "created"})
 public class Choice extends ConnectorResults {
     private int index;
     @JsonProperty("finish_reason")
@@ -38,17 +37,5 @@ public class Choice extends ConnectorResults {
 
     public void setMessage(Message message) {
         this.message = message;
-    }
-
-    @Override
-    @JsonIgnore
-    public long getElapsedTime() {
-        return super.getElapsedTime();
-    }
-
-    @Override
-    @JsonIgnore
-    public Instant getCreated() {
-        return super.getCreated();
     }
 }

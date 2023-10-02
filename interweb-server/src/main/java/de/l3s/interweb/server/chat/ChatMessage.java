@@ -49,6 +49,10 @@ public class ChatMessage extends PanacheEntityBase {
         this.content = message.getContent();
     }
 
+    public Message toMessage() {
+        return new Message(role, content);
+    }
+
     public static Uni<List<ChatMessage>> listByChat(UUID id) {
         return list("chat.id", id);
     }

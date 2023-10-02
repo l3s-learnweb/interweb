@@ -17,6 +17,10 @@
 
     <name>Interweb Client</name>
 
+    <properties>
+        <maven.compiler.release>11</maven.compiler.release>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>de.l3s.interweb</groupId>

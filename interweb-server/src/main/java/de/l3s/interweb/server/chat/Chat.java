@@ -21,7 +21,9 @@ import de.l3s.interweb.server.principal.Consumer;
 
 @Entity
 @Cacheable
-@Table(name = "chat")
+@Table(name = "chat", indexes = {
+    @Index(name = "user_index", columnList = "user"),
+})
 public class Chat extends PanacheEntityBase {
     @Id
     @UuidGenerator
@@ -33,17 +35,23 @@ public class Chat extends PanacheEntityBase {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     public Consumer consumer;
 
+    @Size(max = 32)
+    public String user;
+
     @NotNull
     @Size(max = 32)
     public String model;
 
-    @NotNull
-    @ColumnDefault("0")
-    public Integer used_tokens = 0;
+    @Size(max = 512)
+    public String title;
 
     @NotNull
     @ColumnDefault("0")
-    public Double estimated_cost = 0d;
+    public Integer usedTokens = 0;
+
+    @NotNull
+    @ColumnDefault("0")
+    public Double estimatedCost = 0d;
 
     @CreationTimestamp
     public Instant created;
@@ -65,19 +73,11 @@ public class Chat extends PanacheEntityBase {
     }
 
     public void addCosts(int tokens, double cost) {
-        this.used_tokens += tokens;
-        this.estimated_cost += cost;
+        this.usedTokens += tokens;
+        this.estimatedCost += cost;
     }
 
     public static Uni<Chat> findById(UUID id) {
         return find("id", id).firstResult();
-    }
-
-    public static Uni<Chat> findByIdWithMessages(UUID id) {
-        return find("from Chat p left join fetch p.messages WHERE p.id = ?1", id).firstResult();
-    }
-
-    public static Uni<List<Chat>> findByConsumer(Consumer consumer) {
-        return list("consumer.id", consumer.id);
     }
 }

@@ -7,6 +7,7 @@ import jakarta.enterprise.context.Dependent;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import de.l3s.interweb.connector.openai.entity.CompletionsBody;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.completion.CompletionConnector;
 import de.l3s.interweb.core.completion.CompletionQuery;
@@ -49,6 +50,13 @@ public class OpenaiConnector implements CompletionConnector {
 
     @Override
     public Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException {
-        return openai.chatCompletions(query.getModel(), version, query);
+        return openai.chatCompletions(query.getModel(), version, new CompletionsBody(query)).map(response -> {
+            CompletionResults results = new CompletionResults();
+            results.setModel(query.getModel());
+            results.setCreated(response.getCreated());
+            results.setChoices(response.getChoices());
+            results.setUsage(response.getUsage());
+            return results;
+        });
     }
 }

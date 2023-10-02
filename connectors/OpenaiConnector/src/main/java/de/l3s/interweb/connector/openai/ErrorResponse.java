@@ -1,13 +1,13 @@
 package de.l3s.interweb.connector.openai;
 
 public class ErrorResponse {
-    public Error error;
+    Error error;
 
     public static class Error {
-        public String message;
-        public Object type;
-        public String param;
-        public String code;
-        public Integer status;
+        String message;
+        Object type;
+        String param;
+        String code;
+        Integer status;
     }
 }
