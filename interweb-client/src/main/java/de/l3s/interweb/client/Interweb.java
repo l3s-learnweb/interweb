@@ -46,11 +46,11 @@ public class Interweb implements Serializable {
     }
 
     public SearchResults search(SearchQuery query) throws InterwebException {
-        return sendRequest("/search", query, SearchResults.class);
+        return sendPostRequest("/search", query, SearchResults.class);
     }
 
     public SuggestResults suggest(SuggestQuery query) throws InterwebException {
-        return sendRequest("/suggest", query, SuggestResults.class);
+        return sendPostRequest("/suggest", query, SuggestResults.class);
     }
 
     public SuggestResults suggest(String query, String language) throws InterwebException {
@@ -58,30 +58,34 @@ public class Interweb implements Serializable {
         params.setQuery(query);
         params.setLanguage(language);
 
-        return sendRequest("/suggest", params, SuggestResults.class);
+        return sendPostRequest("/suggest", params, SuggestResults.class);
     }
 
     public DescribeResults describe(DescribeQuery query) throws InterwebException {
-        return sendRequest("/describe", query, DescribeResults.class);
+        return sendPostRequest("/describe", query, DescribeResults.class);
     }
 
     public DescribeResults describe(String link) throws InterwebException {
         final DescribeQuery params = new DescribeQuery();
         params.setLink(link);
 
-        return sendRequest("/describe", params, DescribeResults.class);
+        return sendPostRequest("/describe", params, DescribeResults.class);
     }
 
-    public List<Conversation> conversations(String user) throws InterwebException {
-        return sendRequest("/chat", Map.of("user", user), new TypeReference<>() {});
+    public CompletionResults completions(CompletionQuery query) throws InterwebException {
+        return sendPostRequest("/chat/completions", query, CompletionResults.class);
     }
 
-    public CompletionResults completion(CompletionQuery query) throws InterwebException {
-        return sendRequest("/chat/completions", query, CompletionResults.class);
+    public List<Conversation> chatAll(String user) throws InterwebException {
+        return sendGetRequest("/chat", Map.of("user", user), new TypeReference<>() {});
     }
 
-    public void completion(Conversation conversation) throws InterwebException {
-        CompletionResults results = sendRequest("/chat/completions", conversation, CompletionResults.class);
+    public Conversation chatById(String uuid) throws InterwebException {
+        return sendGetRequest("/chat/" + uuid, null, new TypeReference<>() {});
+    }
+
+    public void chatComplete(Conversation conversation) throws InterwebException {
+        CompletionResults results = sendPostRequest("/chat/completions", conversation, CompletionResults.class);
         if (results.getLastMessage() != null) {
             conversation.addMessage(results.getLastMessage());
         }
@@ -116,7 +120,7 @@ public class Interweb implements Serializable {
         return URI.create(sb.toString());
     }
 
-    public <T> T sendRequest(final String apiPath, final Map<String, String> params, TypeReference<T> valueType) throws InterwebException {
+    public <T> T sendGetRequest(final String apiPath, final Map<String, String> params, TypeReference<T> valueType) throws InterwebException {
         try {
             final URI uri = createRequestUri(apiPath, params);
             HttpRequest.Builder builder = HttpRequest.newBuilder().uri(uri).GET();
@@ -128,7 +132,7 @@ public class Interweb implements Serializable {
         }
     }
 
-    public <T> T sendRequest(final String apiPath, final Object query, Class<T> valueType) throws InterwebException {
+    public <T> T sendPostRequest(final String apiPath, final Object query, Class<T> valueType) throws InterwebException {
         try {
             String body = mapper.writeValueAsString(query);
 

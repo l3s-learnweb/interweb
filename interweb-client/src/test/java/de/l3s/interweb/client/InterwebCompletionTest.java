@@ -25,15 +25,7 @@ class InterwebCompletionTest {
     }
 
     @Test
-    void conversationsTest() throws InterwebException {
-        List<Conversation> response = interweb.conversations("user1");
-
-        assertFalse(response.isEmpty());
-        assertFalse(response.get(0).getTitle().isEmpty());
-    }
-
-    @Test
-    void chatCompletionsTest() throws InterwebException {
+    void completionsTest() throws InterwebException {
         CompletionQuery query = new CompletionQuery();
         query.setUser("user1");
         query.setGenerateTitle(true);
@@ -41,7 +33,7 @@ class InterwebCompletionTest {
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
         query.addMessage("What is your name?.", Message.Role.user);
 
-        CompletionResults response = interweb.completion(query);
+        CompletionResults response = interweb.completions(query);
         assertFalse(response.getResults().isEmpty());
 
         for (Choice result : response.getResults()) {
@@ -51,30 +43,50 @@ class InterwebCompletionTest {
     }
 
     @Test
-    void conversationTest() throws InterwebException {
-        Conversation query = new Conversation();
-        query.setUser("user1");
-        query.setGenerateTitle(true);
-        query.setModel("gpt-35-turbo");
-        query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
-        query.addMessage("What is your name?.", Message.Role.user);
+    void chatAllTest() throws InterwebException {
+        List<Conversation> response = interweb.chatAll("user1");
 
-        assertNull(query.getTitle());
-        assertNull(query.getEstimatedCost());
-        assertEquals(2, query.getMessages().size());
+        assertFalse(response.isEmpty());
+        assertFalse(response.get(0).getTitle().isEmpty());
+    }
 
-        interweb.completion(query);
+    @Test
+    void chatByIdTest() throws InterwebException {
+        Conversation conversation = interweb.chatById("ef235b94-09a0-4b0e-b1cb-c06b6a3adf6c");
+        assertNotNull(conversation.getTitle());
+        assertNotNull(conversation.getModel());
 
-        assertNotNull(query.getTitle());
-        assertNotNull(query.getEstimatedCost());
-        assertEquals(3, query.getMessages().size());
+        for (Message message : conversation.getMessages()) {
+            assertNotNull(message.getContent());
+            System.out.println(message.getContent());
+        }
+    }
 
-        query.addMessage("That's time now?", Message.Role.user);
-        interweb.completion(query);
+    @Test
+    void chatCompleteTest() throws InterwebException {
+        Conversation conversation = new Conversation();
+        conversation.setUser("user1");
+        conversation.setGenerateTitle(true);
+        conversation.setModel("gpt-35-turbo");
+        conversation.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
+        conversation.addMessage("What is your name?.", Message.Role.user);
 
-        assertEquals(5, query.getMessages().size());
+        assertNull(conversation.getTitle());
+        assertNull(conversation.getEstimatedCost());
+        assertEquals(2, conversation.getMessages().size());
 
-        for (Message result : query.getMessages()) {
+        interweb.chatComplete(conversation);
+
+        assertNotNull(conversation.getTitle());
+        assertNotNull(conversation.getEstimatedCost());
+        assertEquals(3, conversation.getMessages().size());
+
+        conversation.addMessage("That's time now?", Message.Role.user);
+        interweb.chatComplete(conversation);
+
+        assertEquals(5, conversation.getMessages().size());
+
+        for (Message result : conversation.getMessages()) {
             System.out.println(result.getContent());
         }
     }

@@ -16,10 +16,7 @@ import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.Message;
-import de.l3s.interweb.core.completion.UsagePrice;
+import de.l3s.interweb.core.completion.*;
 import de.l3s.interweb.server.principal.Consumer;
 
 @Path("/chat")
@@ -36,7 +33,7 @@ public class ChatResource {
     public Uni<List<Chat>> chats(@QueryParam("user") String user) {
         Consumer consumer = securityIdentity.getCredential(Consumer.class);
         if (user == null) {
-            return Chat.list("consumer.id = ?1 AND user = NULL ORDER BY created DESC LIMIT 20", consumer.id);
+            return Chat.list("consumer.id = ?1 AND user IS NULL ORDER BY created DESC LIMIT 20", consumer.id);
         } else {
             return Chat.list("consumer.id = ?1 AND user = ?2 ORDER BY created DESC LIMIT 20", consumer.id, user);
         }
@@ -45,8 +42,17 @@ public class ChatResource {
     @GET
     @Authenticated
     @Path("{uuid}")
-    public Uni<List<ChatMessage>> chat(@PathParam("uuid") UUID id) {
-        return ChatMessage.listByChat(id);
+    public Uni<Conversation> chat(@PathParam("uuid") UUID id) {
+        return Chat.findById(id).call(chat -> Mutiny.fetch(chat.getMessages())).map(chat -> {
+            Conversation conversation = new Conversation();
+            conversation.setId(chat.id);
+            conversation.setTitle(chat.title);
+            conversation.setUsedTokens(chat.usedTokens);
+            conversation.setEstimatedCost(chat.estimatedCost);
+            conversation.setCreated(chat.created);
+            conversation.setMessages(chat.getMessages().stream().map(ChatMessage::toMessage).collect(Collectors.toList()));
+            return conversation;
+        });
     }
 
     @GET

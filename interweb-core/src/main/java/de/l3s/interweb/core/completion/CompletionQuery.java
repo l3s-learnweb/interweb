@@ -53,7 +53,7 @@ public class CompletionQuery {
     @Min(0)
     @Max(2)
     @JsonProperty("temperature")
-    private Double temperature = 1.0;
+    private Double temperature;
 
     /**
      * An alternative to sampling with temperature, called nucleus sampling, where the model considers the results
@@ -64,7 +64,7 @@ public class CompletionQuery {
     @Min(0)
     @Max(1)
     @JsonProperty("top_p")
-    private Double topP = 1.0;
+    private Double topP;
 
     /**
      * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far,
@@ -73,7 +73,7 @@ public class CompletionQuery {
     @Min(-2)
     @Max(2)
     @JsonProperty("frequency_penalty")
-    private Double frequencyPenalty = 0.0;
+    private Double frequencyPenalty;
 
     /**
      * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far,
@@ -82,7 +82,7 @@ public class CompletionQuery {
     @Min(-2)
     @Max(2)
     @JsonProperty("presence_penalty")
-    private Double presencePenalty = 0.0;
+    private Double presencePenalty;
 
     /**
      * The maximum number of tokens to generate in the chat completion. Defaults to 800.
@@ -90,7 +90,7 @@ public class CompletionQuery {
      * The total length of input tokens and generated tokens is limited by the model's context length.
      */
     @JsonProperty("max_tokens")
-    private Integer maxTokens = 800;
+    private Integer maxTokens;
 
     /**
      * Whether the conversation should be summarized into a title. Defaults to false.

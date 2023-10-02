@@ -13,7 +13,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class ObjectMapperConfig implements ObjectMapperCustomizer {
     public void customize(ObjectMapper config) {
         config.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-        config.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        config.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
         config.registerModule(new JavaTimeModule());
     }
 }

@@ -3,7 +3,9 @@ package de.l3s.interweb.core.completion;
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({"id", "title", "model", "messages", "used_tokens", "estimated_cost", "created"})
 public class Conversation extends CompletionQuery {
     @JsonProperty("title")
     private String title;

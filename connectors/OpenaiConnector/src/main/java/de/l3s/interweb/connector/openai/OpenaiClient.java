@@ -20,6 +20,10 @@ import de.l3s.interweb.core.ConnectorException;
 @ClientHeaderParam(name = "api-key", value = "${connector.openai.apikey}")
 public interface OpenaiClient {
 
+    /**
+     * OpenAI Completion API
+     * https://learn.microsoft.com/en-us/azure/ai-services/openai/reference
+     */
     @POST
     @Path("/{model}/chat/completions")
     Uni<CompletionResponse> chatCompletions(@PathParam("model") String model, @QueryParam("api-version") String apiVersion, CompletionsBody body);
