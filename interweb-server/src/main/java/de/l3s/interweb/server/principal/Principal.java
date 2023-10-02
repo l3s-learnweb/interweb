@@ -31,6 +31,7 @@ public class Principal extends PanacheEntityBase implements java.security.Princi
     @NotEmpty
     @NotNull
     @Schema(writeOnly = true)
+    @JsonIgnore
     public String password;
 
     @NotNull
