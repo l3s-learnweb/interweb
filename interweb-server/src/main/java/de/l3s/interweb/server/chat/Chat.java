@@ -10,6 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import io.quarkus.panache.common.Parameters;
+import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,6 +19,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import de.l3s.interweb.server.PanacheUtils;
 import de.l3s.interweb.server.principal.Consumer;
 
 @Entity
@@ -77,7 +80,30 @@ public class Chat extends PanacheEntityBase {
         this.estimatedCost += cost;
     }
 
-    public static Uni<Chat> findById(UUID id) {
-        return find("id", id).firstResult();
+    public Uni<Integer> updateTitle() {
+        return update("title = ?1 where id = ?2", title, id);
+    }
+
+    public Uni<Integer> updateTitleAndUsage() {
+        return update("title = ?1, usedTokens = ?2, estimatedCost = ?3 where id = ?4", title, usedTokens, estimatedCost, id);
+    }
+
+    public static Uni<List<Chat>> listByUser(Consumer consumer, String user, String order, int page, int perPage) {
+        String query = "consumer.id = :id AND usedTokens != 0";
+        Parameters params = Parameters.with("id", consumer.id);
+        Sort sort = PanacheUtils.createSort(order);
+
+        if (user == null) {
+            query += " AND user IS NULL";
+        } else {
+            params.and("user", user);
+            query += " AND user = :user";
+        }
+
+        return find(query, sort, params).page(page - 1, perPage).list();
+    }
+
+    public static Uni<Chat> findById(Consumer consumer, UUID id) {
+        return find("consumer.id = ?1 AND id = ?2", consumer.id, id).firstResult();
     }
 }

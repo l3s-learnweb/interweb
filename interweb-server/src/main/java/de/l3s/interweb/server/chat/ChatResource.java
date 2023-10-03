@@ -13,10 +13,12 @@ import jakarta.ws.rs.core.Context;
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import de.l3s.interweb.core.completion.*;
+import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.principal.Consumer;
 
 @Path("/chat")
@@ -30,20 +32,48 @@ public class ChatResource {
 
     @GET
     @Authenticated
-    public Uni<List<Chat>> chats(@QueryParam("user") String user) {
+    @Path("/models")
+    public Map<String, UsagePrice> models() {
+        return chatService.getModels();
+    }
+
+    @GET
+    @Authenticated
+    public Uni<List<Chat>> chats(
+        @QueryParam("user") String user,
+        @QueryParam("sort") @DefaultValue("-created") String order,
+        @QueryParam("page") @DefaultValue("1") Integer page,
+        @QueryParam("perPage") @DefaultValue("20") Integer perPage
+    ) {
         Consumer consumer = securityIdentity.getCredential(Consumer.class);
-        if (user == null) {
-            return Chat.list("consumer.id = ?1 AND user IS NULL ORDER BY created DESC LIMIT 20", consumer.id);
-        } else {
-            return Chat.list("consumer.id = ?1 AND user = ?2 ORDER BY created DESC LIMIT 20", consumer.id, user);
-        }
+
+        return Chat.listByUser(consumer, user, order, page, perPage).flatMap(chats -> Multi.createFrom().iterable(chats).call(chat -> {
+            if (chat.title == null) {
+                return Mutiny.fetch(chat.getMessages()).call(() -> {
+                    if (!chat.getMessages().isEmpty()) {
+                        for (ChatMessage message : chat.getMessages()) {
+                            if (message.role == Message.Role.user) {
+                                chat.title = StringUtils.shorten(message.content, 120);
+                                return chat.updateTitle();
+                            }
+                        }
+                    }
+
+                    return Uni.createFrom().voidItem();
+                });
+            }
+
+            return Uni.createFrom().voidItem();
+        }).collect().asList());
     }
 
     @GET
     @Authenticated
     @Path("{uuid}")
     public Uni<Conversation> chat(@PathParam("uuid") UUID id) {
-        return Chat.findById(id).call(chat -> Mutiny.fetch(chat.getMessages())).map(chat -> {
+        Consumer consumer = securityIdentity.getCredential(Consumer.class);
+
+        return Chat.findById(consumer, id).call(chat -> Mutiny.fetch(chat.getMessages())).map(chat -> {
             Conversation conversation = new Conversation();
             conversation.setId(chat.id);
             conversation.setTitle(chat.title);
@@ -55,19 +85,14 @@ public class ChatResource {
         });
     }
 
-    @GET
-    @Authenticated
-    @Path("/models")
-    public Map<String, UsagePrice> models() {
-        return chatService.getModels();
-    }
-
     @POST
     @Authenticated
     @Path("/completions")
     public Uni<CompletionResults> completions(@Valid CompletionQuery query) {
-        return getOrCreateChat(query).flatMap(chat -> {
-            //noinspection CodeBlock2Expr
+        Consumer consumer = securityIdentity.getCredential(Consumer.class);
+
+        return getOrCreateChat(query, consumer).flatMap(chat -> {
+            // noinspection CodeBlock2Expr
             return chatService.completions(query).call(results -> {
                 results.setChatId(chat.id);
                 return persistMessages(chat, query.getMessages(), results);
@@ -86,17 +111,17 @@ public class ChatResource {
                 } else {
                     return Uni.createFrom().voidItem();
                 }
-            }).call(() -> Chat.update("title = ?1, usedTokens = ?2, estimatedCost = ?3 where id = ?4", chat.title, chat.usedTokens, chat.estimatedCost, chat.id));
+            }).call(chat::updateTitleAndUsage);
         });
     }
 
-    private Uni<Chat> getOrCreateChat(CompletionQuery query) {
+    private Uni<Chat> getOrCreateChat(CompletionQuery query, Consumer consumer) {
         if (query.getId() != null) {
-            return Chat.findById(query.getId()).call(chat -> Mutiny.fetch(chat.getMessages()));
+            return Chat.findById(consumer, query.getId()).call(chat -> Mutiny.fetch(chat.getMessages()));
         }
 
         Chat chat = new Chat();
-        chat.consumer = securityIdentity.getCredential(Consumer.class);
+        chat.consumer = consumer;
         chat.model = query.getModel();
         chat.user = query.getUser();
         return Panache.withTransaction(chat::persist);
