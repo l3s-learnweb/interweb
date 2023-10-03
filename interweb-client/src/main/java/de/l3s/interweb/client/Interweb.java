@@ -86,10 +86,10 @@ public class Interweb implements Serializable {
 
     public void chatComplete(Conversation conversation) throws InterwebException {
         CompletionResults results = sendPostRequest("/chat/completions", conversation, CompletionResults.class);
-        if (results.getLastMessage() != null) {
-            conversation.addMessage(results.getLastMessage());
+        if (conversation.getId() == null) {
+            conversation.setId(results.getChatId());
         }
-        if (results.getChatTitle() != null) {
+        if (conversation.getTitle() == null && results.getChatTitle() != null) {
             conversation.setTitle(results.getChatTitle());
         }
         if (results.getCost() != null) {
@@ -97,6 +97,9 @@ public class Interweb implements Serializable {
         }
         if (results.getUsage() != null) {
             conversation.setUsedTokens(results.getUsage().getTotalTokens());
+        }
+        if (results.getLastMessage() != null) {
+            conversation.addMessage(results.getLastMessage());
         }
     }
 
