@@ -98,6 +98,9 @@ public class Interweb implements Serializable {
         if (results.getUsage() != null) {
             conversation.setUsedTokens(results.getUsage().getTotalTokens());
         }
+        if (conversation.getCreated() == null && results.getCreated() != null) {
+            conversation.setCreated(results.getCreated());
+        }
         if (results.getLastMessage() != null) {
             conversation.addMessage(results.getLastMessage());
         }
