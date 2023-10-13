@@ -1,5 +1,7 @@
 package de.l3s.interweb.core.completion;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -7,7 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({"id", "title", "model", "messages", "used_tokens", "estimated_cost", "created"})
-public class Conversation extends CompletionQuery {
+public class Conversation extends CompletionQuery implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 7841527600165525951L;
+
     @JsonProperty("title")
     private String title;
 

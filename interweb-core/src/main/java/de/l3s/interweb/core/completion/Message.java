@@ -1,5 +1,7 @@
 package de.l3s.interweb.core.completion;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -12,7 +14,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RegisterForReflection
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Message {
+public class Message implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 7110951353515625780L;
+
     public enum Role {
         system,
         user,
