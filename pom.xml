@@ -28,7 +28,7 @@
         <source-plugin.version>3.3.0</source-plugin.version>
         <resources-plugin.version>3.3.1</resources-plugin.version>
         <shade-plugin.version>3.5.1</shade-plugin.version>
-        <jandex-plugin.version>3.1.5</jandex-plugin.version>
+        <jandex-plugin.version>3.1.6</jandex-plugin.version>
         <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
         <spotbugs-plugin.version>4.7.3.6</spotbugs-plugin.version>
     </properties>
