@@ -21,8 +21,10 @@ public class OpenaiConnector implements CompletionConnector {
     private static final Map<String, UsagePrice> models = Map.of(
             "gpt-35-turbo", new UsagePrice(0.0014, 0.0019),
             "gpt-35-turbo-16k", new UsagePrice(0.003, 0.004),
-            "gpt-4", new UsagePrice(0.028, 0.056),
-            "gpt-4-32k", new UsagePrice(0.056, 0.111)
+            "gpt-35-turbo-1106", new UsagePrice(0.001, 0.002),
+            "gpt-4-turbo", new UsagePrice(0.010, 0.028),
+            "gpt-4", new UsagePrice(0.028, 0.055),
+            "gpt-4-32k", new UsagePrice(0.055, 0.109)
     );
 
     @Override
