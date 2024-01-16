@@ -12,13 +12,13 @@
     </parent>
 
     <artifactId>interweb-client</artifactId>
-    <version>4.0.7</version>
+    <version>4.0.12</version>
     <packaging>jar</packaging>
 
     <name>Interweb Client</name>
 
     <properties>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
     <dependencies>

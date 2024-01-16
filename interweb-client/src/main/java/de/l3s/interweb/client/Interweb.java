@@ -134,7 +134,7 @@ public class Interweb implements Serializable {
             HttpResponse<String> response = sendRequest(builder);
             return mapper.readValue(response.body(), valueType);
         } catch (IOException e) {
-            throw new InterwebException("An error occurred during Interweb request " + apiPath, e);
+            throw new InterwebException("Failed GET request " + apiPath, e);
         }
     }
 
@@ -149,7 +149,7 @@ public class Interweb implements Serializable {
             HttpResponse<String> response = sendRequest(builder);
             return mapper.readValue(response.body(), valueType);
         } catch (IOException e) {
-            throw new InterwebException("An error occurred during Interweb request " + query, e);
+            throw new InterwebException("Failed POST request " + query, e);
         }
     }
 
@@ -162,7 +162,7 @@ public class Interweb implements Serializable {
             HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                throw new InterwebException("Interweb request failed, response: " + response.body());
+                throw new InterwebException("Bad response: " + response.statusCode() + ", " + response.body());
             }
 
             return response;

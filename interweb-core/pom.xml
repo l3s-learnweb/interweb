@@ -17,6 +17,10 @@
 
     <name>Interweb-core</name>
 
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
