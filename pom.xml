@@ -30,7 +30,7 @@
         <shade-plugin.version>3.5.1</shade-plugin.version>
         <jandex-plugin.version>3.1.6</jandex-plugin.version>
         <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
-        <spotbugs-plugin.version>4.8.2.0</spotbugs-plugin.version>
+        <spotbugs-plugin.version>4.8.3.0</spotbugs-plugin.version>
     </properties>
 
     <modules>
