@@ -35,6 +35,7 @@ public class SearchQuery extends Query {
     @NotEmpty
     @JsonProperty("content_types")
     private Set<ContentType> contentTypes = new HashSet<>();
+    @JsonProperty("extras")
     private Set<SearchExtra> extras = new HashSet<>();
 
     @Min(1)
