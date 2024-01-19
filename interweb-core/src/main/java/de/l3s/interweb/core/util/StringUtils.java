@@ -9,6 +9,9 @@ import java.util.regex.Pattern;
 public final class StringUtils {
     private static final Pattern SRC_PATTERN = Pattern.compile("src=\"([^\"]+)\"");
 
+    private StringUtils() {
+    }
+
     /**
      * Splits CSV string to list removing duplicates.
      */
@@ -45,6 +48,7 @@ public final class StringUtils {
                 try {
                     set.add(Enum.valueOf(typeClass, token.trim().toLowerCase()));
                 } catch (IllegalArgumentException ignored) {
+                    // ignore invalid values
                 }
             }
         }
@@ -92,8 +96,8 @@ public final class StringUtils {
     public static String parseSourceUrl(String embeddedCode) {
         // embeddedCode = embeddedCode.replaceAll("'", "\"");
         // embeddedCode = embeddedCode.replaceAll("&#34;", "\"");
-        embeddedCode = embeddedCode.replaceAll("&#39;", "\"");
-        embeddedCode = embeddedCode.replaceAll("&quot;", "\"");
+        embeddedCode = embeddedCode.replace("&#39;", "\"");
+        embeddedCode = embeddedCode.replace("&quot;", "\"");
         // embeddedCode = embeddedCode.replaceAll("&apos;", "\"");
         Matcher matcher = SRC_PATTERN.matcher(embeddedCode);
         return matcher.find() ? matcher.group(1) : null;

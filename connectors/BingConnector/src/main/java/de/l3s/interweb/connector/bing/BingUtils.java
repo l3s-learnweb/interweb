@@ -5,6 +5,9 @@ import java.time.format.DateTimeFormatter;
 
 public final class BingUtils {
 
+    private BingUtils() {
+    }
+
     /**
      * Filter search results by the following case-insensitive age values: day, week, month.
      * To get articles discovered by Bing during a specific timeframe, specify a date range in the form, YYYY-MM-DD..YYYY-MM-DD.

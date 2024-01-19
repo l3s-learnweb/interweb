@@ -64,6 +64,7 @@ public class Chat extends PanacheEntityBase {
     private List<ChatMessage> messages = new ArrayList<>();
 
     public Chat() {
+        // required by Panache
     }
 
     public void addMessage(final ChatMessage message) {

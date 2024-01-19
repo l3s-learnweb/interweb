@@ -10,6 +10,10 @@ import de.l3s.interweb.core.search.SearchSort;
 import de.l3s.interweb.core.util.DateUtils;
 
 public final class YouTubeUtils {
+
+    private YouTubeUtils() {
+    }
+
     static String convertSort(SearchSort sort) {
         return switch (sort) {
             case date -> "date";
@@ -73,10 +77,8 @@ public final class YouTubeUtils {
         }
 
         ContentDetails vContentDetails = item.contentDetails();
-        if (vContentDetails != null) {
-            if (vContentDetails.duration() != null) {
-                searchItem.setDuration(Duration.parse(vContentDetails.duration()).get(ChronoUnit.SECONDS));
-            }
+        if (vContentDetails != null && vContentDetails.duration() != null) {
+            searchItem.setDuration(Duration.parse(vContentDetails.duration()).get(ChronoUnit.SECONDS));
         }
     }
 }

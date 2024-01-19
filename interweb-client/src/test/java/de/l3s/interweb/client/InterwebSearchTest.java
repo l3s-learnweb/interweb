@@ -35,7 +35,7 @@ class InterwebSearchTest {
         query.setExtras(SearchExtra.duration, SearchExtra.tags);
 
         SearchResults response = interweb.search(query);
-        assertEquals(response.getResults().size(), 2);
+        assertEquals(2, response.getResults().size());
 
         for (SearchConnectorResults result : response.getResults()) {
             assertTrue(result.getTotalResults() > 0);

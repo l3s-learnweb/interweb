@@ -32,7 +32,7 @@ class InterwebSuggestTest {
         query.setLanguage("de");
 
         SuggestResults response = interweb.suggest(query);
-        assertEquals(response.getResults().size(), 2);
+        assertEquals(2, response.getResults().size());
 
         for (SuggestConnectorResults result : response.getResults()) {
             assertFalse(result.getItems().isEmpty());

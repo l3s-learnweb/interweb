@@ -10,7 +10,7 @@ import io.quarkus.security.identity.SecurityIdentityAugmentor;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
 
-import de.l3s.interweb.server.principal.Principal;
+import de.l3s.interweb.server.principal.User;
 
 @ApplicationScoped
 public class PrincipalAugmentor implements SecurityIdentityAugmentor {
@@ -18,12 +18,12 @@ public class PrincipalAugmentor implements SecurityIdentityAugmentor {
     @ActivateRequestContext
     @WithSessionOnDemand
     public Uni<SecurityIdentity> augment(SecurityIdentity identity, AuthenticationRequestContext context) {
-        if (identity.isAnonymous() || identity.getPrincipal() instanceof Principal) {
+        if (identity.isAnonymous() || identity.getPrincipal() instanceof User) {
             return Uni.createFrom().item(identity);
         }
 
         QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder(identity);
-        return Principal.findByName(identity.getPrincipal().getName()).map(principal -> {
+        return User.findByName(identity.getPrincipal().getName()).map(principal -> {
             builder.setPrincipal(principal);
             return builder.build();
         });

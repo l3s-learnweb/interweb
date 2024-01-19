@@ -9,6 +9,9 @@ public final class FlickrUtils {
     private static final String MEDIA_PHOTOS = "photos";
     private static final String MEDIA_VIDEOS = "videos";
 
+    private FlickrUtils() {
+    }
+
     static String getMediaType(SearchQuery query) {
         if (query.getContentTypes().size() == 1) {
             if (query.getContentTypes().contains(ContentType.image)) {

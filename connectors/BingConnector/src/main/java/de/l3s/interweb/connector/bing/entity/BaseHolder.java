@@ -1,8 +1,10 @@
 package de.l3s.interweb.connector.bing.entity;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public abstract class BaseHolder {
+public abstract class BaseHolder<T> {
 
     @JsonProperty("id")
     String id;
@@ -16,6 +18,8 @@ public abstract class BaseHolder {
     Integer currentOffset;
     @JsonProperty("nextOffset")
     Integer nextOffset;
+    @JsonProperty("value")
+    List<T> values;
 
     public String getId() {
         return id;
@@ -63,5 +67,13 @@ public abstract class BaseHolder {
 
     public void setNextOffset(final Integer nextOffset) {
         this.nextOffset = nextOffset;
+    }
+
+    public List<T> getValues() {
+        return values;
+    }
+
+    public void setValues(List<T> values) {
+        this.values = values;
     }
 }

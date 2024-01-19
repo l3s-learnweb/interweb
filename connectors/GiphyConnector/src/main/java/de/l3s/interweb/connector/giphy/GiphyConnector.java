@@ -4,7 +4,6 @@ import jakarta.enterprise.context.Dependent;
 
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.logging.Logger;
 
 import de.l3s.interweb.connector.giphy.entity.giphy.GiphyContainer;
 import de.l3s.interweb.connector.giphy.entity.giphy.GiphyData;
@@ -77,39 +76,25 @@ public class GiphyConnector implements SearchConnector {
         }
 
         GiphyContainer giphyThumbnails = image.getImages();
+        resultItem.setThumbnailSmall(createThumbnail(giphyThumbnails.getFixedHeightSmallStill(), giphyThumbnails.getFixedHeightSmall()));
+        resultItem.setThumbnailMedium(createThumbnail(giphyThumbnails.getFixedHeightDownsampled(), giphyThumbnails.getFixedHeight()));
+        resultItem.setThumbnailLarge(createThumbnail(giphyThumbnails.getDownsizedMedium(), giphyThumbnails.getDownsizedLarge()));
+        resultItem.setThumbnailOriginal(createThumbnail(giphyThumbnails.getOriginal(), giphyThumbnails.getOriginalStill()));
 
-        if (giphyThumbnails.getFixedHeightSmallStill() != null && giphyThumbnails.getFixedHeightSmallStill().getUrl() != null) {
-            resultItem.setThumbnailSmall(createThumbnail(giphyThumbnails.getFixedHeightSmallStill()));
-        } else if (giphyThumbnails.getFixedHeightSmall() != null && giphyThumbnails.getFixedHeightSmall().getUrl() != null) {
-            resultItem.setThumbnailSmall(createThumbnail(giphyThumbnails.getFixedHeightSmall()));
-        }
-
-        if (giphyThumbnails.getFixedHeightDownsampled() != null && giphyThumbnails.getFixedHeightDownsampled().getUrl() != null) {
-            resultItem.setThumbnailMedium(createThumbnail(giphyThumbnails.getFixedHeightDownsampled()));
-        } else if (giphyThumbnails.getFixedHeight() != null && giphyThumbnails.getFixedHeight().getUrl() != null) {
-            resultItem.setThumbnailMedium(createThumbnail(giphyThumbnails.getFixedHeight()));
-        }
-
-        if (giphyThumbnails.getDownsizedMedium() != null && giphyThumbnails.getDownsizedMedium().getUrl() != null) {
-            resultItem.setThumbnailLarge(createThumbnail(giphyThumbnails.getDownsizedMedium()));
-        } else if (giphyThumbnails.getDownsizedLarge() != null && giphyThumbnails.getDownsizedLarge().getUrl() != null) {
-            resultItem.setThumbnailLarge(createThumbnail(giphyThumbnails.getDownsizedLarge()));
-        }
-
-        if (giphyThumbnails.getOriginal() != null && giphyThumbnails.getOriginal().getUrl() != null) {
-            resultItem.setThumbnailOriginal(createThumbnail(giphyThumbnails.getOriginal()));
-            resultItem.setWidth(giphyThumbnails.getOriginal().getWidth());
-            resultItem.setHeight(giphyThumbnails.getOriginal().getHeight());
-        } else if (giphyThumbnails.getOriginalStill() != null && giphyThumbnails.getOriginalStill().getUrl() != null) {
-            resultItem.setThumbnailOriginal(createThumbnail(giphyThumbnails.getOriginalStill()));
-            resultItem.setWidth(giphyThumbnails.getOriginalStill().getWidth());
-            resultItem.setHeight(giphyThumbnails.getOriginalStill().getHeight());
+        if (resultItem.getLargestThumbnail() != null) {
+            resultItem.setWidth(resultItem.getLargestThumbnail().getWidth());
+            resultItem.setHeight(resultItem.getLargestThumbnail().getHeight());
         }
 
         return resultItem;
     }
 
-    private static Thumbnail createThumbnail(GiphyImage image) {
-        return new Thumbnail(image.getUrl(), image.getWidth(), image.getHeight());
+    private static Thumbnail createThumbnail(GiphyImage first, GiphyImage second) {
+        if (first != null && first.getUrl() != null) {
+            return new Thumbnail(first.getUrl(), first.getWidth(), first.getHeight());
+        } else if (second != null && second.getUrl() != null) {
+            return new Thumbnail(second.getUrl(), second.getWidth(), second.getHeight());
+        }
+        return null;
     }
 }

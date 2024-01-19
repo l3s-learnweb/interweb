@@ -26,9 +26,9 @@ import de.l3s.interweb.core.util.StringUtils;
 
 @Dependent
 public class BingConnector implements SearchConnector, SuggestConnector {
-    private static final int fallbackPerPageWeb = 50;
-    private static final int fallbackPerPageImages = 150;
-    private static final int fallbackPerPageVideos = 105;
+    private static final int FALLBACK_PER_PAGE_WEB = 50;
+    private static final int FALLBACK_PER_PAGE_IMAGES = 150;
+    private static final int FALLBACK_PER_PAGE_VIDEOS = 105;
 
     @Inject
     ObjectMapper mapper;
@@ -64,8 +64,8 @@ public class BingConnector implements SearchConnector, SuggestConnector {
             if (query.getContentTypes().contains(ContentType.image)) {
                 return searchClient.searchImages(
                         query.getQuery(),
-                        query.getPerPage(fallbackPerPageImages),
-                        query.getOffset(fallbackPerPageImages),
+                        query.getPerPage(FALLBACK_PER_PAGE_IMAGES),
+                        query.getOffset(FALLBACK_PER_PAGE_IMAGES),
                         query.getLanguage(),
                         BingUtils.getMarket(query.getLanguage()),
                         BingUtils.createFreshness(null, query.getDateTo())
@@ -73,8 +73,8 @@ public class BingConnector implements SearchConnector, SuggestConnector {
             } else if (query.getContentTypes().contains(ContentType.video)) {
                 return searchClient.searchVideos(
                         query.getQuery(),
-                        query.getPerPage(fallbackPerPageVideos),
-                        query.getOffset(fallbackPerPageVideos),
+                        query.getPerPage(FALLBACK_PER_PAGE_VIDEOS),
+                        query.getOffset(FALLBACK_PER_PAGE_VIDEOS),
                         query.getLanguage(),
                         BingUtils.getMarket(query.getLanguage()),
                         BingUtils.createFreshness(null, query.getDateTo())
@@ -97,8 +97,8 @@ public class BingConnector implements SearchConnector, SuggestConnector {
 
         return searchClient.search(
                 query.getQuery(),
-                query.getPerPage(fallbackPerPageWeb),
-                query.getOffset(fallbackPerPageWeb),
+                query.getPerPage(FALLBACK_PER_PAGE_WEB),
+                query.getOffset(FALLBACK_PER_PAGE_WEB),
                 query.getLanguage(),
                 BingUtils.getMarket(query.getLanguage()),
                 BingUtils.createFreshness(query.getDateFrom(), query.getDateTo()),
@@ -133,93 +133,91 @@ public class BingConnector implements SearchConnector, SuggestConnector {
         int rank = 0;
         SearchConnectorResults results = new SearchConnectorResults();
         if (response.getWebPages() != null && response.getWebPages().getValues() != null) {
-            WebPagesHolder webResults = response.getWebPages();
-            if (webResults.getCurrentOffset() != null) {
-                rank += webResults.getCurrentOffset();
-            }
-
-            if (webResults.getTotalEstimatedMatches() != null) {
-                results.addTotalResults(webResults.getTotalEstimatedMatches());
-            } else {
-                results.addTotalResults(webResults.getValues().size());
-            }
-
-            for (WebPage page : webResults.getValues()) {
-                SearchItem resultItem = new SearchItem(++rank);
-                resultItem.setType(ContentType.webpage);
-                resultItem.setTitle(page.getName());
-                resultItem.setDescription(page.getSnippet());
-                resultItem.setUrl(page.getUrl());
-                resultItem.setDate(DateUtils.parse(page.getDateLastCrawled()));
-
-                results.addResultItem(resultItem);
-            }
+            rank = processWebPages(response.getWebPages(), rank, results);
         }
 
         if (response.getImages() != null && response.getImages().getValues() != null) {
-            ImageHolder imagesResults = response.getImages();
-            if (imagesResults.getCurrentOffset() != null) {
-                rank += imagesResults.getCurrentOffset();
-            }
-
-            if (imagesResults.getTotalEstimatedMatches() != null) {
-                results.addTotalResults(imagesResults.getTotalEstimatedMatches());
-            } else {
-                results.addTotalResults(imagesResults.getValues().size());
-            }
-
-            for (Image image : imagesResults.getValues()) {
-                SearchItem resultItem = new SearchItem(++rank);
-                resultItem.setType(ContentType.image);
-                resultItem.setTitle(image.getName());
-                resultItem.setUrl(image.getContentUrl());
-                resultItem.setDate(DateUtils.parse(image.getDatePublished()));
-                resultItem.setWidth(image.getWidth());
-                resultItem.setHeight(image.getHeight());
-
-                resultItem.setThumbnailMedium(new Thumbnail(image.getThumbnailUrl(), image.getThumbnail().getWidth(), image.getThumbnail().getHeight()));
-                resultItem.setThumbnail(new Thumbnail(image.getContentUrl(), image.getWidth(), image.getHeight()));
-
-                results.addResultItem(resultItem);
-            }
+            rank = processImages(response.getImages(), rank, results);
         }
 
         if (response.getVideos() != null && response.getVideos().getValues() != null) {
-            VideoHolder videosResults = response.getVideos();
-            if (videosResults.getCurrentOffset() != null) {
-                rank += videosResults.getCurrentOffset();
-            }
-
-            if (videosResults.getTotalEstimatedMatches() != null) {
-                results.addTotalResults(videosResults.getTotalEstimatedMatches());
-            } else {
-                results.addTotalResults(videosResults.getValues().size());
-            }
-
-            for (Video video : videosResults.getValues()) {
-                SearchItem resultItem = new SearchItem(++rank);
-                resultItem.setType(ContentType.video);
-                resultItem.setTitle(video.getName());
-                resultItem.setDescription(video.getDescription());
-                resultItem.setUrl(video.getContentUrl());
-                resultItem.setDate(DateUtils.parse(video.getDatePublished()));
-                resultItem.setWidth(video.getWidth());
-                resultItem.setHeight(video.getHeight());
-
-                if (video.getDuration() != null) {
-                    Duration duration = Duration.parse(video.getDuration());
-                    resultItem.setDuration(duration.getSeconds());
-                }
-
-                resultItem.setThumbnailMedium(new Thumbnail(video.getThumbnailUrl(), video.getThumbnail().getWidth(), video.getThumbnail().getHeight()));
-                if (video.getEmbedHtml() != null) {
-                    resultItem.setEmbedUrl(StringUtils.parseSourceUrl(video.getEmbedHtml()));
-                }
-
-                results.addResultItem(resultItem);
-            }
+            processVideos(response.getVideos(), rank, results);
         }
 
         return results;
+    }
+
+    private static int getResponseOffset(BaseHolder<?> response, int rank, SearchConnectorResults results) {
+        if (response.getCurrentOffset() != null) {
+            rank += response.getCurrentOffset();
+        }
+
+        if (response.getTotalEstimatedMatches() != null) {
+            results.addTotalResults(response.getTotalEstimatedMatches());
+        } else {
+            results.addTotalResults(response.getValues().size());
+        }
+        return rank;
+    }
+
+    private static int processWebPages(WebPagesHolder response, int rank, SearchConnectorResults results) {
+        rank = getResponseOffset(response, rank, results);
+        for (WebPage page : response.getValues()) {
+            SearchItem resultItem = new SearchItem(++rank);
+            resultItem.setType(ContentType.webpage);
+            resultItem.setTitle(page.getName());
+            resultItem.setDescription(page.getSnippet());
+            resultItem.setUrl(page.getUrl());
+            resultItem.setDate(DateUtils.parse(page.getDateLastCrawled()));
+
+            results.addResultItem(resultItem);
+        }
+        return rank;
+    }
+
+    private static int processImages(ImageHolder response, int rank, SearchConnectorResults results) {
+        rank = getResponseOffset(response, rank, results);
+        for (Image image : response.getValues()) {
+            SearchItem resultItem = new SearchItem(++rank);
+            resultItem.setType(ContentType.image);
+            resultItem.setTitle(image.getName());
+            resultItem.setUrl(image.getContentUrl());
+            resultItem.setDate(DateUtils.parse(image.getDatePublished()));
+            resultItem.setWidth(image.getWidth());
+            resultItem.setHeight(image.getHeight());
+
+            resultItem.setThumbnailMedium(new Thumbnail(image.getThumbnailUrl(), image.getThumbnail().getWidth(), image.getThumbnail().getHeight()));
+            resultItem.setThumbnail(new Thumbnail(image.getContentUrl(), image.getWidth(), image.getHeight()));
+
+            results.addResultItem(resultItem);
+        }
+        return rank;
+    }
+
+    private static int processVideos(VideoHolder response, int rank, SearchConnectorResults results) {
+        rank = getResponseOffset(response, rank, results);
+        for (Video video : response.getValues()) {
+            SearchItem resultItem = new SearchItem(++rank);
+            resultItem.setType(ContentType.video);
+            resultItem.setTitle(video.getName());
+            resultItem.setDescription(video.getDescription());
+            resultItem.setUrl(video.getContentUrl());
+            resultItem.setDate(DateUtils.parse(video.getDatePublished()));
+            resultItem.setWidth(video.getWidth());
+            resultItem.setHeight(video.getHeight());
+
+            if (video.getDuration() != null) {
+                Duration duration = Duration.parse(video.getDuration());
+                resultItem.setDuration(duration.getSeconds());
+            }
+
+            resultItem.setThumbnailMedium(new Thumbnail(video.getThumbnailUrl(), video.getThumbnail().getWidth(), video.getThumbnail().getHeight()));
+            if (video.getEmbedHtml() != null) {
+                resultItem.setEmbedUrl(StringUtils.parseSourceUrl(video.getEmbedHtml()));
+            }
+
+            results.addResultItem(resultItem);
+        }
+        return rank;
     }
 }

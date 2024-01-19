@@ -3,6 +3,10 @@ package de.l3s.interweb.server;
 import io.quarkus.panache.common.Sort;
 
 public final class PanacheUtils {
+
+    private PanacheUtils() {
+    }
+
     public static Sort createSort(String order) {
         Sort sort = Sort.empty();
         if (order != null) {

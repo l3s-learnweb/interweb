@@ -8,7 +8,6 @@ import jakarta.enterprise.context.Dependent;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.logging.Logger;
 
 import de.l3s.interweb.connector.flickr.entity.InfoPhoto;
 import de.l3s.interweb.connector.flickr.entity.PhotoItem;

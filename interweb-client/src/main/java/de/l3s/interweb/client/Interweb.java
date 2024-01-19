@@ -166,8 +166,11 @@ public class Interweb implements Serializable {
             }
 
             return response;
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             throw new InterwebException("An error occurred during Interweb request", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InterwebException("An Interweb request was interrupted", e);
         }
     }
 }

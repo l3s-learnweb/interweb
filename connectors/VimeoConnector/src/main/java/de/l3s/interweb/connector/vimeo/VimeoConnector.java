@@ -21,7 +21,7 @@ import de.l3s.interweb.core.util.DateUtils;
 
 @Dependent
 public class VimeoConnector implements SearchConnector, DescribeConnector {
-    private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:www\\.)?(?:player\\.)?vimeo\\.com/(?:[a-z]*/)*([0-9]{6,11})[?]?.*", Pattern.CASE_INSENSITIVE);
+    private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:www\\.)?(?:player\\.)?vimeo\\.com/(?:[a-z]*/)*+(\\d{6,11})[?]?.*", Pattern.CASE_INSENSITIVE);
     private static final int fallbackPerPage = 100;
 
     @RestClient

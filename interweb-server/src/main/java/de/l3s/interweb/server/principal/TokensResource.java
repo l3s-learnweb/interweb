@@ -28,7 +28,7 @@ public class TokensResource {
     @RolesAllowed({Roles.USER})
     @Operation(summary = "List all tokens", description = "Use this method to list all tokens")
     public Uni<List<Consumer>> tokens() {
-        return Consumer.findByPrincipal((Principal) securityIdentity.getPrincipal());
+        return Consumer.findByPrincipal((User) securityIdentity.getPrincipal());
     }
 
     @POST
@@ -40,7 +40,7 @@ public class TokensResource {
         consumer.name = model.name;
         consumer.url = model.url;
         consumer.description = model.description;
-        consumer.principal = (Principal) securityIdentity.getPrincipal();
+        consumer.principal = (User) securityIdentity.getPrincipal();
         return consumer.persist();
     }
 
@@ -49,9 +49,9 @@ public class TokensResource {
     @Operation(summary = "Delete a token", description = "Use this method to delete a token. ")
     public Uni<Void> deleteToken(@QueryParam("id") Long tokenId, @QueryParam("token") String token) {
         Uni<Consumer> item;
-        Principal principal = (Principal) securityIdentity.getPrincipal();
-        if (tokenId != null && principal != null) {
-            item = Consumer.findById(tokenId, principal);
+        User user = (User) securityIdentity.getPrincipal();
+        if (tokenId != null && user != null) {
+            item = Consumer.findById(tokenId, user);
         } else {
             item = Consumer.findByApiKey(token);
         }

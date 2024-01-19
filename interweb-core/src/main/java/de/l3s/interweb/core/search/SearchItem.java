@@ -251,8 +251,17 @@ public class SearchItem implements Serializable {
         this.thumbnailOriginal = thumbnailOriginal;
     }
 
+    /**
+     * @deprecated Use {@link #getLargestThumbnail()} instead.
+     */
+    @Deprecated(forRemoval = true)
     @JsonIgnore
     public Thumbnail getBiggestThumbnail() {
+        return getLargestThumbnail();
+    }
+
+    @JsonIgnore
+    public Thumbnail getLargestThumbnail() {
         if (thumbnailOriginal != null) {
             return thumbnailOriginal;
         }
@@ -266,22 +275,14 @@ public class SearchItem implements Serializable {
     }
 
     public void setThumbnail(Thumbnail thumbnail) {
-        if (thumbnail.getHeight() < THUMBNAIL_SMALL_MAX_HEIGHT) {
-            if (thumbnailSmall == null || thumbnailSmall.getHeight() < thumbnail.getHeight()) {
-                thumbnailSmall = thumbnail;
-            }
-        } else if (thumbnail.getHeight() < THUMBNAIL_MEDIUM_MAX_HEIGHT) {
-            if (thumbnailMedium == null || thumbnailMedium.getHeight() < thumbnail.getHeight()) {
-                thumbnailMedium = thumbnail;
-            }
-        } else if (thumbnail.getHeight() < THUMBNAIL_LARGE_MAX_HEIGHT) {
-            if (thumbnailLarge == null || thumbnailLarge.getHeight() < thumbnail.getHeight()) {
-                thumbnailLarge = thumbnail;
-            }
-        } else {
-            if (thumbnailOriginal == null || thumbnailOriginal.getHeight() < thumbnail.getHeight()) {
-                thumbnailOriginal = thumbnail;
-            }
+        if (thumbnail.getHeight() <= THUMBNAIL_SMALL_MAX_HEIGHT && (thumbnailSmall == null || thumbnailSmall.getHeight() < thumbnail.getHeight())) {
+            thumbnailSmall = thumbnail;
+        } else if (thumbnail.getHeight() <= THUMBNAIL_MEDIUM_MAX_HEIGHT && (thumbnailMedium == null || thumbnailMedium.getHeight() < thumbnail.getHeight())) {
+            thumbnailMedium = thumbnail;
+        } else if (thumbnail.getHeight() <= THUMBNAIL_LARGE_MAX_HEIGHT && (thumbnailLarge == null || thumbnailLarge.getHeight() < thumbnail.getHeight())) {
+            thumbnailLarge = thumbnail;
+        } else if (thumbnail.getHeight() > THUMBNAIL_LARGE_MAX_HEIGHT && (thumbnailOriginal == null || thumbnailOriginal.getHeight() < thumbnail.getHeight())) {
+            thumbnailOriginal = thumbnail;
         }
     }
 }

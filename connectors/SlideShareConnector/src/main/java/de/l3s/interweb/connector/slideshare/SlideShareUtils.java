@@ -11,6 +11,10 @@ import de.l3s.interweb.core.search.SearchSort;
 import de.l3s.interweb.core.search.Thumbnail;
 
 public final class SlideShareUtils {
+
+    private SlideShareUtils() {
+    }
+
     static Thumbnail parseThumbnail(String url) {
         if (url == null) {
             return null;
@@ -57,9 +61,7 @@ public final class SlideShareUtils {
             case 1 -> ContentType.webpage;
             case 2 -> ContentType.image;
             case 3 -> ContentType.video;
-            default -> {
-                yield null;
-            }
+            default -> null;
         };
     }
 

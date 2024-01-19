@@ -30,10 +30,10 @@ public class AuthResource {
     @Path("/register")
     @WithTransaction
     @Operation(summary = "Register a new user", description = "Use this method to register a new user")
-    public Uni<Principal> register(@Valid CreatePrincipal user) {
-        return Principal.findByName(user.email)
+    public Uni<User> register(@Valid CreatePrincipal user) {
+        return User.findByName(user.email)
                         .onItem().ifNotNull().failWith(() -> new BadRequestException("User already exists"))
-                        .chain(() -> Principal.add(user.email, user.password));
+                        .chain(() -> User.add(user.email, user.password));
     }
 
     @GET
@@ -41,7 +41,7 @@ public class AuthResource {
     @Produces(MediaType.TEXT_PLAIN)
     @Operation(summary = "Request JWT token for the given email and password", description = "Use this method to login to the app and manage tokens")
     public Uni<String> login(@NotEmpty @QueryParam("email") String email, @NotEmpty @QueryParam("password") String password) {
-        return Principal.findByNameAndPassword(email, password)
+        return User.findByNameAndPassword(email, password)
                         .onItem().ifNotNull().transform(principal -> Jwt.upn(principal.getName()).groups(Roles.USER).sign())
                         .onItem().ifNull().failWith(() -> new BadRequestException("No user found or password is incorrect"));
     }
@@ -50,8 +50,8 @@ public class AuthResource {
     @Path("/users/me")
     @Authenticated
     @Operation(summary = "Return the current user", description = "Use this method to get the current user")
-    public Principal me() {
-        return (Principal) securityIdentity.getPrincipal();
+    public User me() {
+        return (User) securityIdentity.getPrincipal();
     }
 
     public record CreatePrincipal(@NotNull @NotEmpty @Email @Size(max = 255) String email, @NotNull @NotEmpty @Size(max = 255) String password) {

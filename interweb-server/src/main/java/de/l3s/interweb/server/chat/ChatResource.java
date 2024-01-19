@@ -3,7 +3,6 @@ package de.l3s.interweb.server.chat;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -47,24 +46,23 @@ public class ChatResource {
     ) {
         Consumer consumer = securityIdentity.getCredential(Consumer.class);
 
-        return Chat.listByUser(consumer, user, order, page, perPage).flatMap(chats -> Multi.createFrom().iterable(chats).call(chat -> {
-            if (chat.title == null) {
-                return Mutiny.fetch(chat.getMessages()).call(() -> {
-                    if (!chat.getMessages().isEmpty()) {
-                        for (ChatMessage message : chat.getMessages()) {
-                            if (message.role == Message.Role.user) {
-                                chat.title = StringUtils.shorten(message.content, 120);
-                                return chat.updateTitle();
-                            }
-                        }
-                    }
+        return Chat.listByUser(consumer, user, order, page, perPage)
+            .flatMap(chats -> Multi.createFrom().iterable(chats).filter(chat -> chat.title == null).call(ChatResource::createChatTitle).collect().asList());
+    }
 
-                    return Uni.createFrom().voidItem();
-                });
+    private static Uni<List<ChatMessage>> createChatTitle(Chat chat) {
+        return Mutiny.fetch(chat.getMessages()).call(() -> {
+            if (!chat.getMessages().isEmpty()) {
+                for (ChatMessage message : chat.getMessages()) {
+                    if (message.role == Message.Role.user) {
+                        chat.title = StringUtils.shorten(message.content, 120);
+                        return chat.updateTitle();
+                    }
+                }
             }
 
             return Uni.createFrom().voidItem();
-        }).collect().asList());
+        });
     }
 
     @GET
@@ -80,7 +78,7 @@ public class ChatResource {
             conversation.setUsedTokens(chat.usedTokens);
             conversation.setEstimatedCost(chat.estimatedCost);
             conversation.setCreated(chat.created);
-            conversation.setMessages(chat.getMessages().stream().map(ChatMessage::toMessage).collect(Collectors.toList()));
+            conversation.setMessages(chat.getMessages().stream().map(ChatMessage::toMessage).toList());
             return conversation;
         });
     }
@@ -143,7 +141,7 @@ public class ChatResource {
 
     private Uni<CompletionResults> generateTitle(final Chat chat) {
         CompletionQuery query = new CompletionQuery();
-        query.setMessages(chat.getMessages().stream().map(ChatMessage::toMessage).collect(Collectors.toList()));
+        query.setMessages(chat.getMessages().stream().map(ChatMessage::toMessage).toList());
         query.addMessage("Give a short name for this conversation; don't use any formatting; length between 80 and 120 characters", Message.Role.user);
         return chatService.completions(query);
     }

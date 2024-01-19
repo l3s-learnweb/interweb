@@ -11,7 +11,6 @@ import jakarta.inject.Inject;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +25,7 @@ import de.l3s.interweb.core.util.DateUtils;
 
 @Dependent
 public class IpernityConnector implements SearchConnector, DescribeConnector {
-    private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:www\\.)?ipernity\\.com/(?:doc/[^/]+/(\\d+))", Pattern.CASE_INSENSITIVE);
+    private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:www\\.)?ipernity\\.com/doc/[^/]+/(\\d+)", Pattern.CASE_INSENSITIVE);
     private static final int fallbackPerPage = 100;
 
     @Inject

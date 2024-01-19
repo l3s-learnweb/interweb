@@ -25,7 +25,7 @@ public class Consumer extends PanacheEntityBase implements Credential {
 
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    public Principal principal;
+    public User principal;
 
     @NotEmpty
     @NotNull
@@ -43,6 +43,7 @@ public class Consumer extends PanacheEntityBase implements Credential {
     public String apikey;
 
     public Consumer() {
+        // required for Panache
     }
 
     public static Consumer generate() {
@@ -51,12 +52,12 @@ public class Consumer extends PanacheEntityBase implements Credential {
         return consumer;
     }
 
-    public static Uni<List<Consumer>> findByPrincipal(Principal principal) {
-        return list("principal.id", principal.id);
+    public static Uni<List<Consumer>> findByPrincipal(User user) {
+        return list("principal.id", user.id);
     }
 
-    public static Uni<Consumer> findById(Object id, Principal principal) {
-        return find("id = ?1 and principal.id = ?2", id, principal.id).firstResult();
+    public static Uni<Consumer> findById(Object id, User user) {
+        return find("id = ?1 and principal.id = ?2", id, user.id).firstResult();
     }
 
     public static Uni<Consumer> findByApiKey(String apikey) {

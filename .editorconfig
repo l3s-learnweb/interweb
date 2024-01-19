@@ -1,0 +1,30 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 160
+tab_width = 4
+ij_continuation_indent_size = 4
+
+[*.properties]
+ij_properties_keep_blank_lines = true
+
+[{*.yml,*.json}]
+indent_size = 2
+
+[*.java]
+ij_java_imports_layout = $*,|,javax.**,java.**,|,jakarta.**,|,io.**,org.**,|,*,|,de.**
+ij_java_builder_methods = given,when,then
+ij_java_keep_builder_methods_indents = true
+ij_java_keep_simple_blocks_in_one_line = true
+ij_java_line_comment_add_space = true
+ij_java_line_comment_add_space_on_reformat = true
+ij_java_line_comment_at_first_column = false
+ij_java_keep_first_column_comment = false
+ij_java_method_call_chain_wrap = on_every_item
+ij_java_packages_to_use_import_on_demand = java.awt.*,javax.swing.*,org.junit.jupiter.api.Assertions.*

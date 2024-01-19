@@ -1,5 +1,6 @@
 package de.l3s.interweb.server.principal;
 
+import java.security.Principal;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Cacheable
 @Table(name = "principal")
-public class Principal extends PanacheEntityBase implements java.security.Principal {
+public class User extends PanacheEntityBase implements Principal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(readOnly = true)
@@ -42,24 +43,24 @@ public class Principal extends PanacheEntityBase implements java.security.Princi
     @OneToMany(mappedBy = "principal", fetch = FetchType.LAZY, orphanRemoval = true)
     public Set<Consumer> tokens;
 
-    protected Principal() {
+    protected User() {
     }
 
     /**
      * Adds a new user to the database
      */
-    public static Uni<Principal> add(String email, String password) {
-        Principal user = new Principal();
+    public static Uni<User> add(String email, String password) {
+        User user = new User();
         user.email = email;
         user.password = BcryptUtil.bcryptHash(password);
         return user.persist();
     }
 
-    public static Uni<Principal> findByName(String name) {
+    public static Uni<User> findByName(String name) {
         return find("email", name).firstResult();
     }
 
-    public static Uni<Principal> findByNameAndPassword(String name, String password) {
+    public static Uni<User> findByNameAndPassword(String name, String password) {
         return findByName(name).onItem().ifNotNull().transform(principal -> {
             if (BcryptUtil.matches(password, principal.password)) {
                 return principal;
