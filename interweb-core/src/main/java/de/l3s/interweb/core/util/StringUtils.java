@@ -12,13 +12,6 @@ public final class StringUtils {
     private StringUtils() {
     }
 
-    /**
-     * Splits CSV string to list removing duplicates.
-     */
-    public static List<String> toList(String s) {
-        return Arrays.asList(s.split("[,\\s]"));
-    }
-
     public static Set<String> toIdSet(String s) {
         Set<String> set = new HashSet<>();
         String[] tokens = s.split("[,\\s]");
@@ -35,21 +28,6 @@ public final class StringUtils {
         for (String token : tokens) {
             if (!token.isBlank()) {
                 set.add(token.trim().toLowerCase());
-            }
-        }
-        return set;
-    }
-
-    public static <T extends Enum<T>> Set<T> toEnumSet(String s, Class<T> typeClass) {
-        Set<T> set = new HashSet<>();
-        String[] tokens = s.split("[,\\s]");
-        for (String token : tokens) {
-            if (!token.isBlank()) {
-                try {
-                    set.add(Enum.valueOf(typeClass, token.trim().toLowerCase()));
-                } catch (IllegalArgumentException ignored) {
-                    // ignore invalid values
-                }
             }
         }
         return set;

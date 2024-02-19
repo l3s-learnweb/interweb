@@ -47,7 +47,7 @@ public class ChatResource {
         Token token = securityIdentity.getCredential(Token.class);
 
         return Chat.listByUser(token, user, order, page, perPage)
-            .flatMap(chats -> Multi.createFrom().iterable(chats).filter(chat -> chat.title == null).call(ChatResource::createChatTitle).collect().asList());
+            .call(chats -> Multi.createFrom().iterable(chats).filter(chat -> chat.title == null).map(ChatResource::createChatTitle).collect().asList());
     }
 
     private static Uni<List<ChatMessage>> createChatTitle(Chat chat) {
