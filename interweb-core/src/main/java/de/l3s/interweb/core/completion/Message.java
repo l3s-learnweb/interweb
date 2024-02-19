@@ -10,7 +10,6 @@ import jakarta.validation.constraints.NotNull;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RegisterForReflection
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -24,13 +23,12 @@ public class Message implements Serializable {
         assistant
     }
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long id;
     @NotNull
     private Role role;
+    private String name;
     @NotEmpty
     private String content;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Instant created;
 
     public Message() {
@@ -60,6 +58,14 @@ public class Message implements Serializable {
 
     public void setRole(final Role role) {
         this.role = role;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getContent() {

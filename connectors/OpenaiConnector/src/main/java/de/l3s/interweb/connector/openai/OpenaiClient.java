@@ -10,7 +10,7 @@ import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import de.l3s.interweb.connector.openai.entity.CompletionResponse;
-import de.l3s.interweb.connector.openai.entity.CompletionsBody;
+import de.l3s.interweb.connector.openai.entity.CompletionBody;
 import de.l3s.interweb.core.ConnectorException;
 
 @Path("/openai/deployments")
@@ -26,7 +26,7 @@ public interface OpenaiClient {
      */
     @POST
     @Path("/{model}/chat/completions")
-    Uni<CompletionResponse> chatCompletions(@PathParam("model") String model, @QueryParam("api-version") String apiVersion, CompletionsBody body);
+    Uni<CompletionResponse> chatCompletions(@PathParam("model") String model, @QueryParam("api-version") String apiVersion, CompletionBody body);
 
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {

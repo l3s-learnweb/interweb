@@ -5,12 +5,11 @@ import java.util.List;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.Message;
 
 @RegisterForReflection
-public final class CompletionsBody {
+public final class CompletionBody {
 
-    private List<Message> messages;
+    private List<CompletionMessage> messages;
 
     private Double temperature;
 
@@ -22,8 +21,8 @@ public final class CompletionsBody {
 
     private Integer maxTokens;
 
-    public CompletionsBody(CompletionQuery query) {
-        this.messages = query.getMessages();
+    public CompletionBody(CompletionQuery query) {
+        this.messages = query.getMessages().stream().map(CompletionMessage::new).toList();
         this.temperature = query.getTemperature();
         this.topP = query.getTopP();
         this.frequencyPenalty = query.getPresencePenalty();
@@ -31,7 +30,7 @@ public final class CompletionsBody {
         this.maxTokens = query.getMaxTokens();
     }
 
-    public List<Message> getMessages() {
+    public List<CompletionMessage> getMessages() {
         return messages;
     }
 
