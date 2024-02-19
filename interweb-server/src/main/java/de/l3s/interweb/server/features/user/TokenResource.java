@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.principal;
+package de.l3s.interweb.server.features.user;
 
 import java.util.List;
 
@@ -17,9 +17,11 @@ import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import de.l3s.interweb.server.Roles;
+
 @Path("/users/tokens")
 @Tag(name = "Tokens", description = "Use to create a new client with Api-Key auth.")
-public class TokensResource {
+public class TokenResource {
 
     @Context
     SecurityIdentity securityIdentity;
@@ -27,33 +29,33 @@ public class TokensResource {
     @GET
     @RolesAllowed({Roles.USER})
     @Operation(summary = "List all tokens", description = "Use this method to list all tokens")
-    public Uni<List<Consumer>> tokens() {
-        return Consumer.findByPrincipal((User) securityIdentity.getPrincipal());
+    public Uni<List<Token>> tokens() {
+        return Token.findByUser((User) securityIdentity.getPrincipal());
     }
 
     @POST
     @WithTransaction
     @RolesAllowed({Roles.USER})
     @Operation(summary = "Create a new token", description = "Use this method to create a new token")
-    public Uni<Consumer> newToken(@Valid CreateToken model) {
-        Consumer consumer = Consumer.generate();
-        consumer.name = model.name;
-        consumer.url = model.url;
-        consumer.description = model.description;
-        consumer.principal = (User) securityIdentity.getPrincipal();
-        return consumer.persist();
+    public Uni<Token> newToken(@Valid CreateToken model) {
+        Token token = Token.generate();
+        token.name = model.name;
+        token.url = model.url;
+        token.description = model.description;
+        token.user = (User) securityIdentity.getPrincipal();
+        return token.persist();
     }
 
     @DELETE
     @WithTransaction
     @Operation(summary = "Delete a token", description = "Use this method to delete a token. ")
     public Uni<Void> deleteToken(@QueryParam("id") Long tokenId, @QueryParam("token") String token) {
-        Uni<Consumer> item;
+        Uni<Token> item;
         User user = (User) securityIdentity.getPrincipal();
         if (tokenId != null && user != null) {
-            item = Consumer.findById(tokenId, user);
+            item = Token.findById(tokenId, user);
         } else {
-            item = Consumer.findByApiKey(token);
+            item = Token.findByApiKey(token);
         }
 
         return item.onItem().ifNotNull().call(PanacheEntityBase::delete).replaceWithVoid();

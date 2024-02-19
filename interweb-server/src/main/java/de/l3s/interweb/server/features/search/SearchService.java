@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.search;
+package de.l3s.interweb.server.features.search;
 
 import java.time.Duration;
 import java.util.*;

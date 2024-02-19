@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.chat;
+package de.l3s.interweb.server.features.chat;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 import de.l3s.interweb.core.completion.*;
 import de.l3s.interweb.core.util.StringUtils;
-import de.l3s.interweb.server.principal.Consumer;
+import de.l3s.interweb.server.features.user.Token;
 
 @Path("/chat")
 public class ChatResource {
@@ -44,9 +44,9 @@ public class ChatResource {
         @QueryParam("page") @DefaultValue("1") Integer page,
         @QueryParam("perPage") @DefaultValue("20") Integer perPage
     ) {
-        Consumer consumer = securityIdentity.getCredential(Consumer.class);
+        Token token = securityIdentity.getCredential(Token.class);
 
-        return Chat.listByUser(consumer, user, order, page, perPage)
+        return Chat.listByUser(token, user, order, page, perPage)
             .flatMap(chats -> Multi.createFrom().iterable(chats).filter(chat -> chat.title == null).call(ChatResource::createChatTitle).collect().asList());
     }
 
@@ -69,9 +69,9 @@ public class ChatResource {
     @Authenticated
     @Path("{uuid}")
     public Uni<Conversation> chat(@PathParam("uuid") UUID id) {
-        Consumer consumer = securityIdentity.getCredential(Consumer.class);
+        Token token = securityIdentity.getCredential(Token.class);
 
-        return Chat.findById(consumer, id).call(chat -> Mutiny.fetch(chat.getMessages())).map(chat -> {
+        return Chat.findById(token, id).call(chat -> Mutiny.fetch(chat.getMessages())).map(chat -> {
             Conversation conversation = new Conversation();
             conversation.setId(chat.id);
             conversation.setTitle(chat.title);
@@ -87,9 +87,9 @@ public class ChatResource {
     @Authenticated
     @Path("/completions")
     public Uni<CompletionResults> completions(@Valid CompletionQuery query) {
-        Consumer consumer = securityIdentity.getCredential(Consumer.class);
+        Token token = securityIdentity.getCredential(Token.class);
 
-        return getOrCreateChat(query, consumer).flatMap(chat -> {
+        return getOrCreateChat(query, token).flatMap(chat -> {
             // noinspection CodeBlock2Expr
             return chatService.completions(query).call(results -> {
                 results.setChatId(chat.id);
@@ -113,13 +113,13 @@ public class ChatResource {
         });
     }
 
-    private Uni<Chat> getOrCreateChat(CompletionQuery query, Consumer consumer) {
+    private Uni<Chat> getOrCreateChat(CompletionQuery query, Token token) {
         if (query.getId() != null) {
-            return Chat.findById(consumer, query.getId()).call(chat -> Mutiny.fetch(chat.getMessages()));
+            return Chat.findById(token, query.getId()).call(chat -> Mutiny.fetch(chat.getMessages()));
         }
 
         Chat chat = new Chat();
-        chat.consumer = consumer;
+        chat.token = token;
         chat.model = query.getModel();
         chat.user = query.getUser();
         return Panache.withTransaction(chat::persist);

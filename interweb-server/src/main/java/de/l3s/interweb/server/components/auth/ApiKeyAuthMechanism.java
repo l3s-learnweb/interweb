@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.principal.auth;
+package de.l3s.interweb.server.components.auth;
 
 import java.util.Optional;
 import java.util.Set;

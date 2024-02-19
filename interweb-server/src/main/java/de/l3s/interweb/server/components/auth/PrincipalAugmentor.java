@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.principal.auth;
+package de.l3s.interweb.server.components.auth;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
@@ -10,7 +10,7 @@ import io.quarkus.security.identity.SecurityIdentityAugmentor;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
 
-import de.l3s.interweb.server.principal.User;
+import de.l3s.interweb.server.features.user.User;
 
 @ApplicationScoped
 public class PrincipalAugmentor implements SecurityIdentityAugmentor {

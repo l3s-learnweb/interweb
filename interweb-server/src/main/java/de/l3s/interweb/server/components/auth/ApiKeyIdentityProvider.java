@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.principal.auth;
+package de.l3s.interweb.server.components.auth;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -9,8 +9,8 @@ import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
 
-import de.l3s.interweb.server.principal.Consumer;
-import de.l3s.interweb.server.principal.Roles;
+import de.l3s.interweb.server.features.user.Token;
+import de.l3s.interweb.server.Roles;
 
 @ApplicationScoped
 public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthenticationRequest> {
@@ -23,10 +23,10 @@ public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthentica
     @Override
     @WithSession
     public Uni<SecurityIdentity> authenticate(ApiKeyAuthenticationRequest request, AuthenticationRequestContext authenticationRequestContext) {
-        return Consumer.findByApiKey(request.getValue())
+        return Token.findByApiKey(request.getValue())
                 .onItem().ifNotNull()
                 .transform(consumer -> QuarkusSecurityIdentity.builder()
-                        .setPrincipal(consumer.principal)
+                        .setPrincipal(consumer.user)
                         .addCredential(consumer)
                         .setAnonymous(false)
                         .addRole(Roles.SERVICE)

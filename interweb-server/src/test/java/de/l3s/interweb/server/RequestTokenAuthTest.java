@@ -21,9 +21,9 @@ import org.mockito.Mockito;
 
 import de.l3s.interweb.core.search.SearchQuery;
 import de.l3s.interweb.core.search.SearchResults;
-import de.l3s.interweb.server.principal.Consumer;
-import de.l3s.interweb.server.principal.User;
-import de.l3s.interweb.server.search.SearchService;
+import de.l3s.interweb.server.features.user.Token;
+import de.l3s.interweb.server.features.user.User;
+import de.l3s.interweb.server.features.search.SearchService;
 
 @QuarkusTest
 class RequestTokenAuthTest {
@@ -33,10 +33,10 @@ class RequestTokenAuthTest {
 
     @BeforeEach
     public void setup() {
-        PanacheMock.mock(Consumer.class);
-        Consumer testConsumer = Mockito.mock(Consumer.class);
-        Mockito.when(testConsumer.principal).thenReturn(Mockito.mock(User.class));
-        Mockito.when(Consumer.findByApiKey("testkey")).thenReturn(Uni.createFrom().item(testConsumer));
+        PanacheMock.mock(Token.class);
+        Token testToken = Mockito.mock(Token.class);
+        Mockito.when(testToken.user).thenReturn(Mockito.mock(User.class));
+        Mockito.when(Token.findByApiKey("testkey")).thenReturn(Uni.createFrom().item(testToken));
 
         SearchQuery searchQuery = new SearchQuery();
         searchQuery.setQuery("hello world");

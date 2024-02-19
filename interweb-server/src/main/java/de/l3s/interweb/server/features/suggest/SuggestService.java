@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.suggest;
+package de.l3s.interweb.server.features.suggest;
 
 import java.util.*;
 

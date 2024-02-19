@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.principal;
+package de.l3s.interweb.server.features.user;
 
 import java.util.List;
 
@@ -17,15 +17,15 @@ import de.l3s.interweb.core.util.StringUtils;
 
 @Entity
 @Cacheable
-@Table(name = "principal_consumer")
-public class Consumer extends PanacheEntityBase implements Credential {
+@Table(name = "user_token")
+public class Token extends PanacheEntityBase implements Credential {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    public User principal;
+    public User user;
 
     @NotEmpty
     @NotNull
@@ -42,25 +42,25 @@ public class Consumer extends PanacheEntityBase implements Credential {
     @Column(unique = true, length = 64)
     public String apikey;
 
-    public Consumer() {
+    public Token() {
         // required for Panache
     }
 
-    public static Consumer generate() {
-        Consumer consumer = new Consumer();
-        consumer.apikey = StringUtils.randomAlphanumeric(64);
-        return consumer;
+    public static Token generate() {
+        Token token = new Token();
+        token.apikey = StringUtils.randomAlphanumeric(64);
+        return token;
     }
 
-    public static Uni<List<Consumer>> findByPrincipal(User user) {
-        return list("principal.id", user.id);
+    public static Uni<List<Token>> findByUser(User user) {
+        return list("user.id", user.id);
     }
 
-    public static Uni<Consumer> findById(Object id, User user) {
-        return find("id = ?1 and principal.id = ?2", id, user.id).firstResult();
+    public static Uni<Token> findById(Object id, User user) {
+        return find("id = ?1 and user.id = ?2", id, user.id).firstResult();
     }
 
-    public static Uni<Consumer> findByApiKey(String apikey) {
+    public static Uni<Token> findByApiKey(String apikey) {
         return find("apikey", apikey).firstResult();
     }
 }

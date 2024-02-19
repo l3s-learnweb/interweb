@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.principal;
+package de.l3s.interweb.server.features.user;
 
 import java.security.Principal;
 import java.util.Set;
@@ -15,9 +15,11 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import de.l3s.interweb.server.Roles;
+
 @Entity
 @Cacheable
-@Table(name = "principal")
+@Table(name = "user")
 public class User extends PanacheEntityBase implements Principal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,8 +42,8 @@ public class User extends PanacheEntityBase implements Principal {
     public String role = Roles.USER;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "principal", fetch = FetchType.LAZY, orphanRemoval = true)
-    public Set<Consumer> tokens;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
+    public Set<Token> tokens;
 
     protected User() {
     }
@@ -61,9 +63,9 @@ public class User extends PanacheEntityBase implements Principal {
     }
 
     public static Uni<User> findByNameAndPassword(String name, String password) {
-        return findByName(name).onItem().ifNotNull().transform(principal -> {
-            if (BcryptUtil.matches(password, principal.password)) {
-                return principal;
+        return findByName(name).onItem().ifNotNull().transform(user -> {
+            if (BcryptUtil.matches(password, user.password)) {
+                return user;
             }
 
             return null;

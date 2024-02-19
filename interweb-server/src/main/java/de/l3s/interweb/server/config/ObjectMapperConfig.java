@@ -1,4 +1,4 @@
-package de.l3s.interweb.server;
+package de.l3s.interweb.server.config;
 
 import jakarta.inject.Singleton;
 

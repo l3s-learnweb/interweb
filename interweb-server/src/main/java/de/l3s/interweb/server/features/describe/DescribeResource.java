@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.describe;
+package de.l3s.interweb.server.features.describe;
 
 import java.util.ArrayList;
 import java.util.List;

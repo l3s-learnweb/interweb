@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.chat;
+package de.l3s.interweb.server.features.chat;
 
 import java.time.Instant;
 import java.util.List;

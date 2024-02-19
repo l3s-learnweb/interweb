@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.principal.auth;
+package de.l3s.interweb.server.components.auth;
 
 import io.quarkus.security.identity.request.AuthenticationRequest;
 import io.quarkus.security.identity.request.BaseAuthenticationRequest;

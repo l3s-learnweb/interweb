@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.principal;
+package de.l3s.interweb.server.features.user;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -17,11 +17,13 @@ import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import de.l3s.interweb.server.Roles;
+
 @Path("/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Tag(name = "Identity", description = "Identity & tokens management")
-public class AuthResource {
+public class UserResource {
 
     @Context
     SecurityIdentity securityIdentity;
@@ -30,7 +32,7 @@ public class AuthResource {
     @Path("/register")
     @WithTransaction
     @Operation(summary = "Register a new user", description = "Use this method to register a new user")
-    public Uni<User> register(@Valid CreatePrincipal user) {
+    public Uni<User> register(@Valid UserResource.CreateUser user) {
         return User.findByName(user.email)
                         .onItem().ifNotNull().failWith(() -> new BadRequestException("User already exists"))
                         .chain(() -> User.add(user.email, user.password));
@@ -42,7 +44,7 @@ public class AuthResource {
     @Operation(summary = "Request JWT token for the given email and password", description = "Use this method to login to the app and manage tokens")
     public Uni<String> login(@NotEmpty @QueryParam("email") String email, @NotEmpty @QueryParam("password") String password) {
         return User.findByNameAndPassword(email, password)
-                        .onItem().ifNotNull().transform(principal -> Jwt.upn(principal.getName()).groups(Roles.USER).sign())
+                        .onItem().ifNotNull().transform(user -> Jwt.upn(user.getName()).groups(Roles.USER).sign())
                         .onItem().ifNull().failWith(() -> new BadRequestException("No user found or password is incorrect"));
     }
 
@@ -54,6 +56,6 @@ public class AuthResource {
         return (User) securityIdentity.getPrincipal();
     }
 
-    public record CreatePrincipal(@NotNull @NotEmpty @Email @Size(max = 255) String email, @NotNull @NotEmpty @Size(max = 255) String password) {
+    public record CreateUser(@NotNull @NotEmpty @Email @Size(max = 255) String email, @NotNull @NotEmpty @Size(max = 255) String password) {
     }
 }
