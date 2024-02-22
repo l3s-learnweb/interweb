@@ -142,7 +142,7 @@ public class ChatResource {
 
     private Uni<CompletionResults> generateTitle(final Chat chat) {
         CompletionQuery query = new CompletionQuery();
-        query.setMessages(chat.getMessages().stream().map(ChatMessage::toMessage).toList());
+        query.setMessages(new ArrayList<>(chat.getMessages().stream().map(ChatMessage::toMessage).toList()));
         query.addMessage("Give a short name for this conversation; don't use any formatting; length between 80 and 120 characters", Message.Role.user);
         return chatService.completions(query);
     }
