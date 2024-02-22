@@ -1,5 +1,6 @@
 package de.l3s.interweb.server.features.chat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -78,7 +79,7 @@ public class ChatResource {
             conversation.setUsedTokens(chat.usedTokens);
             conversation.setEstimatedCost(chat.estimatedCost);
             conversation.setCreated(chat.created);
-            conversation.setMessages(chat.getMessages().stream().map(ChatMessage::toMessage).toList());
+            conversation.setMessages(new ArrayList<>(chat.getMessages().stream().map(ChatMessage::toMessage).toList()));
             return conversation;
         });
     }

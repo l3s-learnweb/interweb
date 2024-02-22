@@ -2,6 +2,9 @@ package de.l3s.interweb.connector.bing.entity;
 
 import java.util.List;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public class Video extends BaseMedia {
 
     private String description;

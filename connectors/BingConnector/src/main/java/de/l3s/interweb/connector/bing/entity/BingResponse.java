@@ -1,9 +1,12 @@
 package de.l3s.interweb.connector.bing.entity;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import de.l3s.interweb.connector.bing.adapters.BingResponseAdapter;
 
+@RegisterForReflection
 @JsonDeserialize(using = BingResponseAdapter.class)
 public class BingResponse {
 

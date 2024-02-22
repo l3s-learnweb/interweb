@@ -2,8 +2,11 @@ package de.l3s.interweb.connector.bing.entity;
 
 import java.util.List;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@RegisterForReflection
 public abstract class BaseHolder<T> {
 
     @JsonProperty("id")
