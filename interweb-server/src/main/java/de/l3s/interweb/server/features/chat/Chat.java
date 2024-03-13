@@ -94,9 +94,7 @@ public class Chat extends PanacheEntityBase {
         Parameters params = Parameters.with("id", token.id);
         Sort sort = PanacheUtils.createSort(order);
 
-        if (user == null) {
-            query += " AND user IS NULL";
-        } else {
+        if (user != null) {
             params.and("user", user);
             query += " AND user = :user";
         }
