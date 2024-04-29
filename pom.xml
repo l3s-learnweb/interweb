@@ -25,7 +25,7 @@
         <enforcer-plugin.version>3.4.1</enforcer-plugin.version>
         <dependency-plugin.version>3.6.1</dependency-plugin.version>
         <compiler-plugin.version>3.12.1</compiler-plugin.version>
-        <source-plugin.version>3.3.0</source-plugin.version>
+        <source-plugin.version>3.3.1</source-plugin.version>
         <resources-plugin.version>3.3.1</resources-plugin.version>
         <shade-plugin.version>3.5.3</shade-plugin.version>
         <jandex-plugin.version>3.1.6</jandex-plugin.version>
