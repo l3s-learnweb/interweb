@@ -25,9 +25,9 @@ public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthentica
     public Uni<SecurityIdentity> authenticate(ApiKeyAuthenticationRequest request, AuthenticationRequestContext authenticationRequestContext) {
         return Token.findByApiKey(request.getValue())
                 .onItem().ifNotNull()
-                .transform(consumer -> QuarkusSecurityIdentity.builder()
-                        .setPrincipal(consumer.user)
-                        .addCredential(consumer)
+                .transform(token -> QuarkusSecurityIdentity.builder()
+                        .setPrincipal(token.user)
+                        .addCredential(token)
                         .setAnonymous(false)
                         .addRole(Roles.SERVICE)
                         .build());

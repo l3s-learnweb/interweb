@@ -1,5 +1,7 @@
 package de.l3s.interweb.connector.openai.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import de.l3s.interweb.core.completion.Message;
@@ -7,6 +9,7 @@ import de.l3s.interweb.core.completion.Message;
 @RegisterForReflection
 public final class CompletionMessage {
     private String role;
+    @JsonIgnore
     private String name;
     private String content;
 

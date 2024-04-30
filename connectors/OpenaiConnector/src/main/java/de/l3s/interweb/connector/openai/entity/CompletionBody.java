@@ -2,6 +2,8 @@ package de.l3s.interweb.connector.openai.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import de.l3s.interweb.core.completion.CompletionQuery;
@@ -13,12 +15,16 @@ public final class CompletionBody {
 
     private Double temperature;
 
+    @JsonProperty("top_p")
     private Double topP;
 
+    @JsonProperty("frequency_penalty")
     private Double frequencyPenalty;
 
+    @JsonProperty("presence_penalty")
     private Double presencePenalty;
 
+    @JsonProperty("max_tokens")
     private Integer maxTokens;
 
     public CompletionBody(CompletionQuery query) {
