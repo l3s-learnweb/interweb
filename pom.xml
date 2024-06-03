@@ -19,15 +19,15 @@
 
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.10.2</quarkus.platform.version>
+        <quarkus.platform.version>3.11.0</quarkus.platform.version>
 
         <surefire-plugin.version>3.2.5</surefire-plugin.version>
-        <enforcer-plugin.version>3.4.1</enforcer-plugin.version>
+        <enforcer-plugin.version>3.5.0</enforcer-plugin.version>
         <dependency-plugin.version>3.6.1</dependency-plugin.version>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <source-plugin.version>3.3.1</source-plugin.version>
         <resources-plugin.version>3.3.1</resources-plugin.version>
-        <shade-plugin.version>3.5.3</shade-plugin.version>
+        <shade-plugin.version>3.6.0</shade-plugin.version>
         <jandex-plugin.version>3.1.8</jandex-plugin.version>
         <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
         <spotbugs-plugin.version>4.8.5.0</spotbugs-plugin.version>
