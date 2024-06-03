@@ -99,6 +99,10 @@ public class Chat extends PanacheEntityBase {
             query += " AND user = :user";
         }
 
+         if (page <= 0) {
+            page = 1; // foolproof
+        }
+
         return find(query, sort, params).page(page - 1, perPage).list();
     }
 
