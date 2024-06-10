@@ -19,6 +19,8 @@ import de.l3s.interweb.core.util.StringUtils;
 @Cacheable
 @Table(name = "user_token")
 public class Token extends PanacheEntityBase implements Credential {
+    public static final int TOKEN_LENGTH = 64;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
@@ -39,7 +41,7 @@ public class Token extends PanacheEntityBase implements Credential {
 
     @NotEmpty
     @NotNull
-    @Column(unique = true, length = 64)
+    @Column(unique = true, length = TOKEN_LENGTH)
     public String apikey;
 
     public Token() {
@@ -48,7 +50,7 @@ public class Token extends PanacheEntityBase implements Credential {
 
     public static Token generate() {
         Token token = new Token();
-        token.apikey = StringUtils.randomAlphanumeric(64);
+        token.apikey = StringUtils.randomAlphanumeric(TOKEN_LENGTH);
         return token;
     }
 

@@ -10,10 +10,10 @@ import jakarta.inject.Inject;
 import io.quarkus.security.identity.IdentityProviderManager;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.identity.request.AuthenticationRequest;
-import io.quarkus.security.identity.request.TokenAuthenticationRequest;
 import io.quarkus.smallrye.jwt.runtime.auth.JWTAuthMechanism;
 import io.quarkus.vertx.http.runtime.security.ChallengeData;
 import io.quarkus.vertx.http.runtime.security.HttpAuthenticationMechanism;
+import io.quarkus.vertx.http.runtime.security.HttpCredentialTransport;
 import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.RoutingContext;
 
@@ -30,18 +30,33 @@ public class HybridAuthMechanism implements HttpAuthenticationMechanism {
 
     @Override
     public Uni<SecurityIdentity> authenticate(RoutingContext context, IdentityProviderManager identityProviderManager) {
-        return apiKeyMechanism.authenticate(context, identityProviderManager)
-                .onItem().ifNull().switchTo(() -> jwtMechanism.authenticate(context, identityProviderManager));
+        return selectBetweenJwtAndOidc(context).authenticate(context, identityProviderManager);
     }
 
     @Override
     public Uni<ChallengeData> getChallenge(RoutingContext context) {
-        return apiKeyMechanism.getChallenge(context)
-                .onItem().ifNull().switchTo(() -> jwtMechanism.getChallenge(context));
+        return jwtMechanism.getChallenge(context);
     }
 
     @Override
     public Set<Class<? extends AuthenticationRequest>> getCredentialTypes() {
-        return Set.of(TokenAuthenticationRequest.class, ApiKeyAuthenticationRequest.class);
+        return jwtMechanism.getCredentialTypes();
+    }
+
+    @Override
+    public Uni<HttpCredentialTransport> getCredentialTransport(RoutingContext context) {
+        return jwtMechanism.getCredentialTransport(context);
+    }
+
+    private HttpAuthenticationMechanism selectBetweenJwtAndOidc(RoutingContext context) {
+        String apikeyHeader = context.request().headers().get(ApiKeyAuthMechanism.APIKEY_HEADER);
+        if (apikeyHeader != null) {
+            return apiKeyMechanism;
+        }
+        String authHeader = context.request().headers().get(ApiKeyAuthMechanism.AUTHORIZATION_HEADER);
+        if (authHeader != null && authHeader.length() == ApiKeyAuthMechanism.AUTHORIZATION_HEADER_LENGTH) {
+            return apiKeyMechanism;
+        }
+        return jwtMechanism;
     }
 }
