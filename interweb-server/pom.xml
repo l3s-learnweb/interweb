@@ -21,6 +21,11 @@
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
+            <artifactId>connector-anthropic</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-bing</artifactId>
             <version>4.0.0-SNAPSHOT</version>
         </dependency>
