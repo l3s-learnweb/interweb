@@ -89,8 +89,9 @@ public class CompletionQuery {
      * <br/>
      * The total length of input tokens and generated tokens is limited by the model's context length.
      */
+    @NotEmpty
     @JsonProperty("max_tokens")
-    private Integer maxTokens;
+    private Integer maxTokens = 800;
 
     /**
      * Whether the conversation should be summarized into a title. Defaults to false.

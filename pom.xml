@@ -37,6 +37,7 @@
         <module>interweb-core</module>
         <module>interweb-server</module>
         <module>interweb-client</module>
+        <module>connectors/AnthropicConnector</module>
         <module>connectors/BingConnector</module>
         <module>connectors/FlickrConnector</module>
         <module>connectors/GiphyConnector</module>
