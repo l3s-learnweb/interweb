@@ -18,6 +18,7 @@ import de.l3s.interweb.core.ConnectorException;
 @Produces(MediaType.APPLICATION_JSON)
 @RegisterRestClient(configKey = "anthropic")
 @ClientHeaderParam(name = "x-api-key", value = "${connector.anthropic.apikey}")
+@ClientHeaderParam(name = "anthropic-version", value = "2023-06-01")
 public interface AnthropicClient {
 
     /**
@@ -26,7 +27,7 @@ public interface AnthropicClient {
      */
     @POST
     @Path("/v1/messages")
-    Uni<CompletionResponse> chatCompletions(@HeaderParam("anthropic-version") String version, CompletionBody body);
+    Uni<CompletionResponse> chatCompletions(CompletionBody body);
 
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {

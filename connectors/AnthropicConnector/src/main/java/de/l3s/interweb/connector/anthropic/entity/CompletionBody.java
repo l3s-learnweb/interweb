@@ -29,26 +29,25 @@ public final class CompletionBody {
     @JsonProperty("max_tokens")
     private Integer maxTokens;
 
-    public CompletionBody(String model, CompletionQuery query) {
-        this.model = model;
-        System.out.println("model: " + model);
-        if (this.model == null) {
-            throw new IllegalArgumentException("model must be set");
-        }
+    public CompletionBody(CompletionQuery query) {
+        this.model = query.getModel();
 
-        this.messages = query.getMessages().stream().filter(
-            m -> m.getRole() != Role.system
-        ).map(CompletionMessage::new).toList();
-        this.system = query.getMessages().stream().filter(
-            m -> m.getRole() == Role.system
-        ).findFirst().map(Message::getContent).orElse(null);
+        this.messages = query.getMessages().stream()
+                .filter(m -> m.getRole() != Role.system)
+                .map(CompletionMessage::new)
+                .toList();
+        this.system = query.getMessages().stream()
+                .filter(m -> m.getRole() == Role.system)
+                .findFirst()
+                .map(Message::getContent)
+                .orElse(null);
         
         this.temperature = query.getTemperature();
         this.topP = query.getTopP();
         this.maxTokens = query.getMaxTokens();
 
         if (this.maxTokens == null) {
-            throw new IllegalArgumentException("maxTokens must be set");
+            this.maxTokens = 800;
         }
     }
 

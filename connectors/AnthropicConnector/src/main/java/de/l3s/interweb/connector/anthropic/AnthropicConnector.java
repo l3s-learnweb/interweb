@@ -2,8 +2,6 @@ package de.l3s.interweb.connector.anthropic;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
 
 import jakarta.enterprise.context.Dependent;
 
@@ -11,6 +9,7 @@ import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import de.l3s.interweb.connector.anthropic.entity.AnthropicContent;
+import de.l3s.interweb.connector.anthropic.entity.AnthropicUsage;
 import de.l3s.interweb.connector.anthropic.entity.CompletionBody;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.completion.CompletionConnector;
@@ -24,7 +23,6 @@ import de.l3s.interweb.core.completion.Choice;
 @Dependent
 public class AnthropicConnector implements CompletionConnector {
 
-    private static final String version = "2023-06-01";
     private static final Map<String, UsagePrice> models = Map.of(
         "claude-3-opus-20240229", new UsagePrice(0.015, 0.075),
         "claude-3-sonnet-20240229", new UsagePrice(0.003, 0.015),
@@ -38,7 +36,7 @@ public class AnthropicConnector implements CompletionConnector {
 
     @Override
     public String getBaseUrl() {
-        return "https://api.anthropic.com/";
+        return "https://anthropic.com/";
     }
 
     @Override
@@ -56,28 +54,26 @@ public class AnthropicConnector implements CompletionConnector {
 
     @Override
     public Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException {
-        return anthropic.chatCompletions(version, new CompletionBody(query.getModel(), query)).map(response -> {
-            CompletionResults results = new CompletionResults();
-            results.setModel(query.getModel());
-            results.setCreated(Instant.now());
-
-            List<Choice> choices = new ArrayList<>();
-            Choice choice = new Choice();
+        return anthropic.chatCompletions(new CompletionBody(query)).map(response -> {
+            AnthropicUsage anthropicUsage = response.getUsage();
+            Usage usage = new Usage(
+                anthropicUsage.getInputTokens(),
+                anthropicUsage.getOutputTokens()
+            );
+            
+            
             AnthropicContent content = response.getContent().get(0);
-            Message message = new Message();
-            message.setContent(content.getText());
-            message.setRole(Message.Role.assistant);
-            choice.setMessage(message);
-            choice.setIndex(0);
-            choice.setFinishReason(response.getStopReason());
-            choices.add(choice);
-            results.setChoices(choices);
+            Message message = new Message(Message.Role.user, content.getText());
+            Choice choice = new Choice(0, response.getStopReason(), message);
+            
 
-            Usage usage = new Usage();
-            usage.setPromptTokens(response.getUsage().getInputTokens());
-            usage.setCompletionTokens(response.getUsage().getOutputTokens());
-            usage.setTotalTokens(response.getUsage().getInputTokens() + response.getUsage().getOutputTokens());
-            results.setUsage(usage);
+            CompletionResults results = new CompletionResults(
+                query.getModel(),
+                usage,
+                choice,
+                Instant.now()
+            );
+                
             return results;
         });
     }

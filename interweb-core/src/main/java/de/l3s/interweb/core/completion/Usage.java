@@ -13,6 +13,12 @@ public class Usage {
     @JsonProperty("total_tokens")
     private int totalTokens;
 
+    public Usage(int promptTokens, int completionTokens) {
+        this.promptTokens = promptTokens;
+        this.completionTokens = completionTokens;
+        this.totalTokens = promptTokens + completionTokens;
+    }
+
     public int getPromptTokens() {
         return promptTokens;
     }
