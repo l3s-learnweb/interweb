@@ -63,8 +63,8 @@ Interweb currently supports the following data providers:
    - Search: locate videos created by creative content creators.
    - Describe: obtain video information using its url.
 10. **YouTube**:
-   - Search: for videos in the largest video hosting platform.
-   - Describe: obtain detailed information about a video using its url.
+    - Search: for videos in the largest video hosting platform.
+    - Describe: obtain detailed information about a video using its url.
 
 ## How to Use Interweb
 
