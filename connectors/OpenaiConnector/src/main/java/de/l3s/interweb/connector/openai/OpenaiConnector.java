@@ -53,11 +53,13 @@ public class OpenaiConnector implements CompletionConnector {
     @Override
     public Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException {
         return openai.chatCompletions(query.getModel(), version, new CompletionBody(query)).map(response -> {
-            CompletionResults results = new CompletionResults();
-            results.setModel(query.getModel());
-            results.setCreated(response.getCreated());
-            results.setChoices(response.getChoices());
-            results.setUsage(response.getUsage());
+            CompletionResults results = new CompletionResults(
+                    query.getModel(),
+                    response.getUsage(),
+                    response.getChoices(),
+                    response.getCreated()
+            );
+
             return results;
         });
     }

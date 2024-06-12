@@ -49,12 +49,13 @@ class AnthropicConnectorTest {
     @Test
     void jsonBody() {
         CompletionQuery query = new CompletionQuery();
+        query.setModel("claude-3-haiku-20240307");
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
         query.addMessage("What is your name?.", Message.Role.user);
         query.addMessage("My name is Interweb Assistant.", Message.Role.assistant);
         query.addMessage("Hi Interweb Assistant, I am a user.", Message.Role.user);
 
-        CompletionBody body = new CompletionBody("haiku", query);
+        CompletionBody body = new CompletionBody(query);
 
         // Print body as json
         ObjectMapper mapper = new ObjectMapper();
