@@ -15,4 +15,8 @@ public interface Connector {
         results.setServiceUrl(getBaseUrl());
         results.setElapsedTime(elapsedTime);
     }
+
+    default boolean validate() {
+        return true;
+    }
 }

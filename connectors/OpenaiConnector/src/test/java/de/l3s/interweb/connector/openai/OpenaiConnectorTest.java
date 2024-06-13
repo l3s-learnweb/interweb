@@ -1,7 +1,5 @@
 package de.l3s.interweb.connector.openai;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import jakarta.inject.Inject;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -15,6 +13,8 @@ import de.l3s.interweb.core.completion.CompletionQuery;
 import de.l3s.interweb.core.completion.CompletionResults;
 import de.l3s.interweb.core.completion.Message;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @Disabled
 @QuarkusTest
 class OpenaiConnectorTest {
@@ -22,6 +22,11 @@ class OpenaiConnectorTest {
 
     @Inject
     OpenaiConnector connector;
+
+    @Test
+    void validate() throws ConnectorException {
+        assertTrue(connector.validate());
+    }
 
     @Test
     void complete() throws ConnectorException {
@@ -32,9 +37,9 @@ class OpenaiConnectorTest {
         CompletionResults results = connector.complete(query).await().indefinitely();
 
         assertEquals(1, results.getChoices().size());
-        System.out.println("Results for '" + query.getMessages().get(query.getMessages().size() - 1).getContent() + "':");
+        log.infov("user: {0}", query.getMessages().getLast().getContent());
         for (Choice result : results.getChoices()) {
-            System.out.println(result.getMessage().getContent());
+            log.infov("assistant: {0}", result.getMessage().getContent());
         }
     }
 }

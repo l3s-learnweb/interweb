@@ -15,6 +15,9 @@ public class Choice extends ConnectorResults {
     private String finishReason;
     private Message message;
 
+    public Choice() {
+    }
+
     public Choice(int index, String finishReason, Message message) {
         this.index = index;
         this.finishReason = finishReason;

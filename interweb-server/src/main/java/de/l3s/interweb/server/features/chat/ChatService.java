@@ -27,8 +27,12 @@ public class ChatService {
     public ChatService(@All List<CompletionConnector> connectors) {
         services = new HashMap<>();
         connectors.forEach(connector -> {
-            for (String model : connector.getModels()) {
-                services.put(model, connector);
+            if (connector.validate()) {
+                for (String model : connector.getModels()) {
+                    services.put(model, connector);
+                }
+            } else {
+                log.error("Connector skipped due to failed validation: " + connector.getClass().getName());
             }
         });
 

@@ -26,32 +26,6 @@ public class CompletionResults extends Results<Choice> {
     private UsageCost cost;
     private Instant created;
 
-    public CompletionResults(
-        String model,
-        Usage usage,
-        Choice choice,
-        Instant created
-    ) {
-        this.model = model;
-        this.usage = usage;
-        this.created = created;
-
-        add(choice);
-    }
-
-    public CompletionResults(
-        String model,
-        Usage usage,
-        List<Choice> choices,
-        Instant created
-    ) {
-        this.model = model;
-        this.usage = usage;
-        this.created = created;
-
-        add(choices);
-    }
-
     public UUID getChatId() {
         return chatId;
     }
