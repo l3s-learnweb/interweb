@@ -1,6 +1,7 @@
 package de.l3s.interweb.client;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -28,6 +29,7 @@ import de.l3s.interweb.core.suggest.SuggestResults;
 import de.l3s.interweb.core.util.StringUtils;
 
 public class Interweb implements Serializable {
+    @Serial
     private static final long serialVersionUID = 7231324400348062196L;
 
     private final ObjectMapper mapper;
@@ -155,7 +157,7 @@ public class Interweb implements Serializable {
 
     public HttpResponse<String> sendRequest(final HttpRequest.Builder builder) throws InterwebException {
         try {
-            builder.header("Api-Key", apikey);
+            builder.header("Authorization", "Bearer " + apikey);
             builder.header("Accept", "application/json");
 
             HttpClient client = HttpClient.newHttpClient();
