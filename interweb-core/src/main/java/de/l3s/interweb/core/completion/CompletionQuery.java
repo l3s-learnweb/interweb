@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RegisterForReflection
@@ -98,6 +99,16 @@ public class CompletionQuery {
     @JsonProperty(value = "generate_title")
     private boolean generateTitle;
 
+
+    private Integer n;
+
+    private Integer seed;
+
+    private ResponseFormat responseFormat;
+
+    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+    private String[] stop;
+
     public String getModel() {
         return model;
     }
@@ -184,5 +195,37 @@ public class CompletionQuery {
 
     public void setGenerateTitle(boolean generateTitle) {
         this.generateTitle = generateTitle;
+    }
+
+    public void setN(Integer n) {
+        this.n = n;
+    }
+
+    public Integer getN() {
+        return n;
+    }
+
+    public void setSeed(Integer seed) {
+        this.seed = seed;
+    }
+
+    public Integer getSeed() {
+        return seed;
+    }
+
+    public void setResponseFormat(ResponseFormat responseFormat) {
+        this.responseFormat = responseFormat;
+    }
+
+    public ResponseFormat getResponseFormat() {
+        return responseFormat;
+    }
+
+    public void setStop(String[] stop) {
+        this.stop = stop;
+    }
+
+    public String[] getStop() {
+        return stop;
     }
 }

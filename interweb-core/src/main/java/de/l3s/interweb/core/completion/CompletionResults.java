@@ -25,6 +25,7 @@ public class CompletionResults extends Results<Choice> {
     private Usage usage;
     private UsageCost cost;
     private Instant created;
+    private final String object = "chat.completion";
 
     public UUID getChatId() {
         return chatId;
@@ -95,5 +96,9 @@ public class CompletionResults extends Results<Choice> {
 
         cost = new UsageCost();
         cost.setResponse(promptCost + completionCost);
+    }
+
+    public String getObject() {
+        return this.object;
     }
 }
