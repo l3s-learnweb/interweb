@@ -40,6 +40,18 @@ public class ChatResource {
     @GET
     @Authenticated
     public Uni<List<Chat>> chats(
+        @QueryParam("sort") @DefaultValue("-created") String order,
+        @QueryParam("page") @DefaultValue("1") Integer page,
+        @QueryParam("perPage") @DefaultValue("20") Integer perPage
+    ) {
+        Token token = securityIdentity.getCredential(Token.class);
+
+        return Chat.listByUser(token, null, order, page, perPage).call(ChatResource::ensureChatsTitle);
+    }
+
+    @GET
+    @Authenticated
+    public Uni<List<Chat>> chats(
         @QueryParam("user") String user,
         @QueryParam("sort") @DefaultValue("-created") String order,
         @QueryParam("page") @DefaultValue("1") Integer page,
@@ -47,8 +59,11 @@ public class ChatResource {
     ) {
         Token token = securityIdentity.getCredential(Token.class);
 
-        return Chat.listByUser(token, user, order, page, perPage)
-            .call(chats -> Multi.createFrom().iterable(chats).filter(chat -> chat.title == null).map(ChatResource::createChatTitle).collect().asList());
+        return Chat.listByUser(token, user, order, page, perPage).call(ChatResource::ensureChatsTitle);
+    }
+
+    private static Uni<List<Uni<List<ChatMessage>>>> ensureChatsTitle(List<Chat> chats) {
+        return Multi.createFrom().iterable(chats).filter(chat -> chat.title == null).map(ChatResource::createChatTitle).collect().asList();
     }
 
     private static Uni<List<ChatMessage>> createChatTitle(Chat chat) {
