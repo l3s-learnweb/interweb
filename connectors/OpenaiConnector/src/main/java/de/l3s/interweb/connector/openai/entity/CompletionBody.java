@@ -2,16 +2,16 @@ package de.l3s.interweb.connector.openai.entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import de.l3s.interweb.core.completion.CompletionQuery;
 import de.l3s.interweb.core.completion.ResponseFormat;
 
 @RegisterForReflection
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public final class CompletionBody {
 
     private List<CompletionMessage> messages;
@@ -30,17 +30,22 @@ public final class CompletionBody {
     @JsonProperty("max_tokens")
     private Integer maxTokens;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    /**
+     * How many completions to generate for each prompt. Minimum of 1 (default) and maximum of 128 allowed.
+     * Note: Because this parameter generates many completions, it can quickly consume your token quota.
+     */
     private Integer n;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    /**
+     * If specified, our system will make the best effort to sample deterministically,
+     * such that repeated requests with the same seed and parameters should return the same result.
+     * Determinism isn't guaranteed, and you should refer to the system_fingerprint response parameter to monitor changes in the backend.
+     */
     private Integer seed;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("response_format")
     private ResponseFormat responseFormat;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String[] stop;
 
     public CompletionBody(CompletionQuery query) {
