@@ -65,6 +65,8 @@ public class OpenaiConnector implements CompletionConnector {
             results.setCreated(response.getCreated());
             results.setChoices(response.getChoices());
             results.setUsage(response.getUsage());
+            results.setObject(response.getObject());
+            results.setSystemFingerprint(response.getSystemFingerprint());
             return results;
         });
     }

@@ -99,13 +99,27 @@ public class CompletionQuery {
     @JsonProperty(value = "generate_title")
     private boolean generateTitle;
 
-
+    /**
+     * How many completions to generate for each prompt. Minimum of 1 (default) and maximum of 128 allowed.
+     * Note: Because this parameter generates many completions, it can quickly consume your token quota.
+     */
     private Integer n;
 
+    /**
+     * If specified, our system will make the best effort to sample deterministically,
+     * such that repeated requests with the same seed and parameters should return the same result.
+     * Determinism isn't guaranteed, and you should refer to the system_fingerprint response parameter to monitor changes in the backend.
+     */
     private Integer seed;
 
+    /**
+     * An object specifying the format that the model must output. Used to enable JSON mode.
+     */
     private ResponseFormat responseFormat;
 
+    /**
+     * Up to 4 sequences where the API will stop generating further tokens.
+     */
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private String[] stop;
 

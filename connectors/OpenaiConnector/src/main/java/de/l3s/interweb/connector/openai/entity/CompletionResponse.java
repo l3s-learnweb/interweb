@@ -5,6 +5,8 @@ import java.util.List;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import de.l3s.interweb.core.completion.Choice;
 import de.l3s.interweb.core.completion.Usage;
 
@@ -14,6 +16,8 @@ public class CompletionResponse {
     private String object;
     private String model;
     private Usage usage;
+    @JsonProperty("system_fingerprint")
+    private String systemFingerprint;
     private Instant created;
     private List<Choice> choices;
 
@@ -41,14 +45,6 @@ public class CompletionResponse {
         this.model = model;
     }
 
-    public List<Choice> getChoices() {
-        return choices;
-    }
-
-    public void setChoices(List<Choice> choices) {
-        this.choices = choices;
-    }
-
     public Usage getUsage() {
         return usage;
     }
@@ -57,11 +53,27 @@ public class CompletionResponse {
         this.usage = usage;
     }
 
+    public String getSystemFingerprint() {
+        return systemFingerprint;
+    }
+
+    public void setSystemFingerprint(String systemFingerprint) {
+        this.systemFingerprint = systemFingerprint;
+    }
+
     public Instant getCreated() {
         return created;
     }
 
     public void setCreated(Instant created) {
         this.created = created;
+    }
+
+    public List<Choice> getChoices() {
+        return choices;
+    }
+
+    public void setChoices(List<Choice> choices) {
+        this.choices = choices;
     }
 }

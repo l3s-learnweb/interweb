@@ -15,17 +15,19 @@ import de.l3s.interweb.core.Results;
 
 @RegisterForReflection
 @JsonIgnoreProperties("results")
-@JsonPropertyOrder({"id", "title", "model", "choices", "usage", "cost", "elapsed_time", "created"})
+@JsonPropertyOrder({"id", "object", "title", "model", "choices", "usage", "cost", "elapsed_time", "system_fingerprint", "created"})
 public class CompletionResults extends Results<Choice> {
     @JsonProperty(value = "id")
     private UUID chatId;
     @JsonProperty(value = "title")
     private String chatTitle;
+    private String object;
     private String model;
     private Usage usage;
     private UsageCost cost;
+    @JsonProperty(value = "system_fingerprint")
+    private String systemFingerprint;
     private Instant created;
-    private final String object = "chat.completion";
 
     public UUID getChatId() {
         return chatId;
@@ -41,6 +43,14 @@ public class CompletionResults extends Results<Choice> {
 
     public void setChatTitle(String chatTitle) {
         this.chatTitle = chatTitle;
+    }
+
+    public String getObject() {
+        return this.object;
+    }
+
+    public void setObject(String object) {
+        this.object = object;
     }
 
     public String getModel() {
@@ -82,6 +92,14 @@ public class CompletionResults extends Results<Choice> {
         return cost;
     }
 
+    public String getSystemFingerprint() {
+        return systemFingerprint;
+    }
+
+    public void setSystemFingerprint(String systemFingerprint) {
+        this.systemFingerprint = systemFingerprint;
+    }
+
     public Instant getCreated() {
         return created;
     }
@@ -96,9 +114,5 @@ public class CompletionResults extends Results<Choice> {
 
         cost = new UsageCost();
         cost.setResponse(promptCost + completionCost);
-    }
-
-    public String getObject() {
-        return this.object;
     }
 }
