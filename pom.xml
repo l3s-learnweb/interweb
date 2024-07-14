@@ -43,6 +43,7 @@
         <module>connectors/GiphyConnector</module>
         <module>connectors/GoogleConnector</module>
         <module>connectors/IpernityConnector</module>
+        <module>connectors/OllamaConnector</module>
         <module>connectors/OpenaiConnector</module>
         <module>connectors/SlideShareConnector</module>
         <module>connectors/VimeoConnector</module>
