@@ -4,66 +4,55 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.completion.CompletionQuery;
 
-
-public class CompletionOptions {
+public class OllamaModelOptions {
+    @JsonProperty("repeat_penalty")
+    private Double repeatPenalty;
+    private Double temperature;
     private Integer seed;
     private String stop;
     @JsonProperty("num_predict")
     private Integer numPredict;
-    private Double temperature;
     @JsonProperty("top_p")
     private Double topP;
+    @JsonProperty("top_k")
+    private Integer topK;
 
-    public CompletionOptions() {
-    }
-
-    public CompletionOptions(CompletionQuery query) {
+    public OllamaModelOptions(CompletionQuery query) {
         this.seed = query.getSeed();
         if (query.getStop() != null && query.getStop().length > 0) {
             this.stop = query.getStop()[0];
         }
+        this.repeatPenalty = query.getFrequencyPenalty();
         this.numPredict = query.getMaxTokens();
         this.temperature = query.getTemperature();
         this.topP = query.getTopP();
     }
 
-    public Integer getSeed() {
-        return seed;
-    }
-
-    public void setSeed(Integer seed) {
-        this.seed = seed;
-    }
-
-    public String getStop() {
-        return stop;
-    }
-
-    public void setStop(String stop) {
-        this.stop = stop;
-    }
-
-    public Integer getNumPredict() {
-        return numPredict;
-    }
-
-    public void setNumPredict(Integer numPredict) {
-        this.numPredict = numPredict;
+    public Double getRepeatPenalty() {
+        return repeatPenalty;
     }
 
     public Double getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(Double temperature) {
-        this.temperature = temperature;
+    public Integer getSeed() {
+        return seed;
+    }
+
+    public String getStop() {
+        return stop;
+    }
+
+    public Integer getNumPredict() {
+        return numPredict;
     }
 
     public Double getTopP() {
         return topP;
     }
 
-    public void setTopP(Double topP) {
-        this.topP = topP;
+    public Integer getTopK() {
+        return topK;
     }
 }

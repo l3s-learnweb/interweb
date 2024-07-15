@@ -8,9 +8,9 @@ import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import de.l3s.interweb.connector.ollama.entity.CompletionResponse;
+import de.l3s.interweb.connector.ollama.entity.ChatBody;
+import de.l3s.interweb.connector.ollama.entity.ChatResponse;
 import de.l3s.interweb.connector.ollama.entity.TagsResponse;
-import de.l3s.interweb.connector.ollama.entity.CompletionBody;
 import de.l3s.interweb.core.ConnectorException;
 
 @Path("")
@@ -25,7 +25,7 @@ public interface OllamaClient {
      */
     @POST
     @Path("/api/chat")
-    Uni<CompletionResponse> chatCompletions(CompletionBody body);
+    Uni<ChatResponse> chatCompletions(ChatBody body);
 
     @GET
     @Path("/api/tags")

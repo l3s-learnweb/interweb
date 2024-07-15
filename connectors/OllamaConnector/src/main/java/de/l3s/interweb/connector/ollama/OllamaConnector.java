@@ -1,33 +1,31 @@
 package de.l3s.interweb.connector.ollama;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Optional;
 
 import jakarta.enterprise.context.Dependent;
 
 import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-
-import de.l3s.interweb.connector.ollama.entity.TagsResponse;
-import de.l3s.interweb.connector.ollama.entity.CompletionBody;
-import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.completion.CompletionConnector;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.Message;
-import de.l3s.interweb.core.completion.UsagePrice;
-import de.l3s.interweb.core.completion.Usage;
-import de.l3s.interweb.core.completion.Choice;
-
 import org.jboss.logging.Logger;
+
+import de.l3s.interweb.connector.ollama.entity.ChatBody;
+import de.l3s.interweb.connector.ollama.entity.TagsResponse;
+import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.completion.*;
 
 @Dependent
 public class OllamaConnector implements CompletionConnector {
     private static final Logger log = Logger.getLogger(OllamaConnector.class);
 
     private static final Map<String, UsagePrice> models = new HashMap<>();
+
+    @RestClient
+    OllamaClient ollama;
 
     @Override
     public String getName() {
@@ -41,20 +39,34 @@ public class OllamaConnector implements CompletionConnector {
 
     @Override
     public String[] getModels() {
+        if (models.isEmpty()) {
+            try {
+                TagsResponse tags = ollama.tags().await().indefinitely();
+                if (tags.getModels().isEmpty()) {
+                    throw new ConnectorException("No models deployed on Ollama instance");
+                }
+
+                tags.getModels().forEach(tag -> {
+                    models.put(tag.getName(), new UsagePrice(0, 0));
+                });
+            } catch (Exception e) {
+                throw new ConnectorException("Failed to fetch Ollama models", e);
+            }
+        }
         return models.keySet().toArray(new String[0]);
     }
 
     @Override
     public UsagePrice getPrice(String model) {
+        if (models.isEmpty()) {
+            getModels(); // make sure models are loaded
+        }
         return models.get(model);
     }
 
-    @RestClient
-    OllamaClient ollama;
-
     @Override
     public Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException {
-        return ollama.chatCompletions(new CompletionBody(query)).map(response -> {
+        return ollama.chatCompletions(new ChatBody(query)).map(response -> {
             Usage usage = new Usage(
                 response.getPromptEvalCount(),
                 response.getEvalCount()
@@ -82,25 +94,11 @@ public class OllamaConnector implements CompletionConnector {
 
     @Override
     public boolean validate() {
-        TagsResponse tags;
-        try {
-            tags = ollama.tags().await().indefinitely();
-        } catch (Exception e) {
-            log.error("Failed to validate Ollama connector", e);
+        Optional<String> apikey = ConfigProvider.getConfig().getOptionalValue("connector.ollama.url", String.class);
+        if (apikey.isEmpty()) {
+            log.warn("URL is empty, please provide a valid URL in the configuration.");
             return false;
         }
-
-        List<String> models = tags.getModels().stream().map(model -> model.getName()).toList();
-        if (models.isEmpty()) {
-            log.warn("No models found in Ollama connector");
-            return false;
-        }
-        
-        OllamaConnector.models.clear();
-        for (String model : models) {
-            OllamaConnector.models.put(model, new UsagePrice(0, 0));
-        }
-
         return true;
     }
 }

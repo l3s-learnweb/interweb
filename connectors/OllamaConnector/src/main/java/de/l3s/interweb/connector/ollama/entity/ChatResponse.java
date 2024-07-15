@@ -1,19 +1,14 @@
 package de.l3s.interweb.connector.ollama.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @RegisterForReflection
-public class CompletionResponse {
+public class ChatResponse {
 
     private String model;
-    @JsonProperty("created_at")
-    private String createdAt;
-    private CompletionMessage message;
-    @JsonProperty("done_reason")
-    private String doneReason;
-    private Boolean done;
+    private OllamaMessage message;
     @JsonProperty("total_duration")
     private Long totalDuration;
     @JsonProperty("load_duration")
@@ -26,6 +21,11 @@ public class CompletionResponse {
     private Integer evalCount;
     @JsonProperty("eval_duration")
     private Long evalDuration;
+    private Boolean done;
+    @JsonProperty("done_reason")
+    private String doneReason;
+    @JsonProperty("created_at")
+    private String createdAt;
 
     public String getModel() {
         return model;
@@ -35,36 +35,12 @@ public class CompletionResponse {
         this.model = model;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public CompletionMessage getMessage() {
+    public OllamaMessage getMessage() {
         return message;
     }
 
-    public void setMessage(CompletionMessage message) {
+    public void setMessage(OllamaMessage message) {
         this.message = message;
-    }
-
-    public String getDoneReason() {
-        return doneReason;
-    }
-
-    public void setDoneReason(String doneReason) {
-        this.doneReason = doneReason;
-    }
-
-    public Boolean getDone() {
-        return done;
-    }
-
-    public void setDone(Boolean done) {
-        this.done = done;
     }
 
     public Long getTotalDuration() {
@@ -113,5 +89,29 @@ public class CompletionResponse {
 
     public void setEvalDuration(Long evalDuration) {
         this.evalDuration = evalDuration;
+    }
+
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
+    }
+
+    public String getDoneReason() {
+        return doneReason;
+    }
+
+    public void setDoneReason(String doneReason) {
+        this.doneReason = doneReason;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }

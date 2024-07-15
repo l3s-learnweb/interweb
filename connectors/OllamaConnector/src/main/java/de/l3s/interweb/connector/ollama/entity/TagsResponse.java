@@ -1,18 +1,18 @@
 package de.l3s.interweb.connector.ollama.entity;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
 import java.util.List;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class TagsResponse {
-    private List<TagsModel> models;
+    private List<OllamaTag> models;
 
-    public List<TagsModel> getModels() {
+    public List<OllamaTag> getModels() {
         return models;
     }
 
-    public void setModels(List<TagsModel> models) {
+    public void setModels(List<OllamaTag> models) {
         this.models = models;
     }
 }

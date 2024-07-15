@@ -1,9 +1,6 @@
 package de.l3s.interweb.server.features.chat;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -21,40 +18,43 @@ import de.l3s.interweb.core.completion.UsagePrice;
 public class ChatService {
     private static final Logger log = Logger.getLogger(ChatService.class);
 
-    private final Map<String, CompletionConnector> services;
+    private final List<CompletionConnector> providers;
+    private final Map<String, CompletionConnector> models;
 
     @Inject
     public ChatService(@All List<CompletionConnector> connectors) {
-        services = new HashMap<>();
+        providers = new ArrayList<>();
+        models = new HashMap<>();
+
         connectors.forEach(connector -> {
             if (connector.validate()) {
+                providers.add(connector);
+
                 for (String model : connector.getModels()) {
-                    services.put(model, connector);
+                    models.put(model, connector);
                 }
             } else {
                 log.error("Connector skipped due to failed validation: " + connector.getClass().getName());
             }
         });
 
-        log.info("Loaded " + services.size() + " completion connectors");
+        log.info("Loaded " + providers.size() + " completion connectors");
     }
 
     public Collection<CompletionConnector> getConnectors() {
-        return this.services.values();
+        return providers;
     }
 
     public Map<String, UsagePrice> getModels() {
         Map<String, UsagePrice> models = new HashMap<>();
-        for (CompletionConnector connector : this.services.values()) {
-            for (String model : connector.getModels()) {
-                models.put(model, connector.getPrice(model));
-            }
+        for (Map.Entry<String, CompletionConnector> modelEntry : this.models.entrySet()) {
+            models.put(modelEntry.getKey(), modelEntry.getValue().getPrice(modelEntry.getKey()));
         }
         return models;
     }
 
     public Uni<CompletionResults> completions(CompletionQuery query) {
-        return completions(query, services.get(query.getModel()));
+        return completions(query, models.get(query.getModel()));
     }
 
     private Uni<CompletionResults> completions(CompletionQuery query, CompletionConnector connector) {
