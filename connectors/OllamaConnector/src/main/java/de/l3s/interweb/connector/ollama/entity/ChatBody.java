@@ -13,7 +13,7 @@ import de.l3s.interweb.core.completion.CompletionQuery;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public final class ChatBody {
+public class ChatBody {
 
     private String model;
     private List<OllamaMessage> messages;

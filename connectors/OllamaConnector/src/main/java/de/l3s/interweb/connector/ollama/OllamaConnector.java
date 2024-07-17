@@ -1,10 +1,14 @@
 package de.l3s.interweb.connector.ollama;
 
-import java.time.Instant;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import de.l3s.interweb.connector.ollama.entity.ChatResponse;
+
+import de.l3s.interweb.connector.ollama.entity.ChatStreamBody;
+
+import io.smallrye.mutiny.Multi;
 
 import jakarta.enterprise.context.Dependent;
 
@@ -66,30 +70,14 @@ public class OllamaConnector implements CompletionConnector {
 
     @Override
     public Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException {
-        return ollama.chatCompletions(new ChatBody(query)).map(response -> {
-            Usage usage = new Usage(
-                response.getPromptEvalCount(),
-                response.getEvalCount()
-            );
+        final ChatBody body = new ChatBody(query);
+        return ollama.chat(body).map(ChatResponse::toCompletionResults);
+    }
 
-            List<Choice> choices = List.of(
-                new Choice(
-                    0,
-                    response.getDoneReason(),
-                    new Message(
-                        Message.Role.assistant,
-                        response.getMessage().getContent()
-                    )
-                )
-            );
-
-            CompletionResults results = new CompletionResults();
-            results.setModel(response.getModel());
-            results.setUsage(usage);
-            results.setChoices(choices);
-            results.setCreated(Instant.now());
-            return results;
-        });
+    @Override
+    public Multi<CompletionResults> completeStream(CompletionQuery query) throws ConnectorException {
+        final ChatStreamBody body = new ChatStreamBody(query);
+        return ollama.chatStream(body).map(ChatResponse::toCompletionResults);
     }
 
     @Override

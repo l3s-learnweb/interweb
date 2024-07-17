@@ -1,5 +1,9 @@
 package de.l3s.interweb.connector.ollama;
 
+import de.l3s.interweb.connector.ollama.entity.ChatStreamBody;
+
+import io.smallrye.mutiny.Multi;
+
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -13,6 +17,8 @@ import de.l3s.interweb.connector.ollama.entity.ChatResponse;
 import de.l3s.interweb.connector.ollama.entity.TagsResponse;
 import de.l3s.interweb.core.ConnectorException;
 
+import org.jboss.resteasy.reactive.common.util.RestMediaType;
+
 @Path("")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,7 +31,12 @@ public interface OllamaClient {
      */
     @POST
     @Path("/api/chat")
-    Uni<ChatResponse> chatCompletions(ChatBody body);
+    Uni<ChatResponse> chat(ChatBody body);
+
+    @POST
+    @Path("/api/chat")
+    @Produces(RestMediaType.APPLICATION_NDJSON)
+    Multi<ChatResponse> chatStream(ChatStreamBody body);
 
     @GET
     @Path("/api/tags")

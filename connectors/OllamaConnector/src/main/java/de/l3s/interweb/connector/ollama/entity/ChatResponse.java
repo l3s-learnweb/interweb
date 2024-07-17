@@ -1,8 +1,16 @@
 package de.l3s.interweb.connector.ollama.entity;
 
+import java.time.Instant;
+import java.util.List;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.l3s.interweb.core.completion.Choice;
+import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.completion.Message;
+import de.l3s.interweb.core.completion.Usage;
 
 @RegisterForReflection
 public class ChatResponse {
@@ -113,5 +121,26 @@ public class ChatResponse {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public CompletionResults toCompletionResults() {
+        CompletionResults results = new CompletionResults();
+        results.setModel(model);
+
+        if (promptEvalCount != null && evalCount != null) {
+            Usage usage = new Usage(promptEvalCount, evalCount);
+            results.setUsage(usage);
+        }
+
+        if (message != null) {
+            Choice choice = new Choice(0, doneReason, new Message(Message.Role.assistant, message.getContent()));
+            results.setChoices(List.of(choice));
+        }
+
+        if (createdAt != null) {
+            results.setCreated(Instant.parse(createdAt));
+        }
+
+        return results;
     }
 }
