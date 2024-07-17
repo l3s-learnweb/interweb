@@ -31,7 +31,7 @@ class InterwebCompletionTest {
         query.setGenerateTitle(true);
         query.setModel("gpt-35-turbo");
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
-        query.addMessage("What is your name?.", Message.Role.user);
+        query.addMessage("What is your name?", Message.Role.user);
 
         CompletionResults response = interweb.completions(query);
         assertFalse(response.getResults().isEmpty());
@@ -69,7 +69,7 @@ class InterwebCompletionTest {
         conversation.setGenerateTitle(true);
         conversation.setModel("gpt-35-turbo");
         conversation.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
-        conversation.addMessage("What is your name?.", Message.Role.user);
+        conversation.addMessage("What is your name?", Message.Role.user);
 
         assertNull(conversation.getTitle());
         assertNull(conversation.getEstimatedCost());

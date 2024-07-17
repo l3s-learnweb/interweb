@@ -36,7 +36,7 @@ class AnthropicConnectorTest {
     void complete() throws ConnectorException {
         CompletionQuery query = new CompletionQuery();
         query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Message.Role.system);
-        query.addMessage("What is your name?.", Message.Role.user);
+        query.addMessage("What is your name?", Message.Role.user);
         query.setMaxTokens(100);
         query.setModel("claude-3-haiku-20240307");
 
@@ -54,7 +54,7 @@ class AnthropicConnectorTest {
         CompletionQuery query = new CompletionQuery();
         query.setModel("claude-3-haiku-20240307");
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
-        query.addMessage("What is your name?.", Message.Role.user);
+        query.addMessage("What is your name?", Message.Role.user);
         query.addMessage("My name is Interweb Assistant.", Message.Role.assistant);
         query.addMessage("Hi Interweb Assistant, I am a user.", Message.Role.user);
 
