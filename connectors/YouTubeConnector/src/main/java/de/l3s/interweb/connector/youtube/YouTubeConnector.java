@@ -27,7 +27,7 @@ import de.l3s.interweb.core.util.DateUtils;
 @Dependent
 public class YouTubeConnector implements SearchConnector, DescribeConnector {
     private static final Logger log = Logger.getLogger(YouTubeConnector.class);
-    private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:[0-9A-Z-]+\\.)?(?:youtu\\.be/|(?:youtube\\.com|youtube-nocookie\\.com)\\S*[^\\w\\-\\s])([\\w\\-]{11})(?=[^\\w\\-]|$)(?![?=&+%\\w]*(?:['\"][^<>]*>|</a>))[?=&+%\\w]*", Pattern.CASE_INSENSITIVE);
+    private static final Pattern pattern = Pattern.compile("(?:https?:)?//(?:[\\w-]+\\.)?(?:youtu\\.be/|(?:youtube\\.com|youtube-nocookie\\.com)\\S*[^\\w\\-\\s])([\\w\\-]{11})(?=[^\\w\\-]|$)(?![?=&+%\\w]*(?:['\"][^<>]*>|</a>))[?=&+%\\w]*", Pattern.CASE_INSENSITIVE);
     private static final int fallbackPerPage = 50;
 
     @RestClient

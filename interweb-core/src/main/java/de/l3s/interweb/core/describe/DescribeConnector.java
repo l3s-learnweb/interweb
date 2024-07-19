@@ -13,10 +13,14 @@ public interface DescribeConnector extends Connector {
     Pattern getLinkPattern();
 
     default String findId(String link) {
-        final Matcher vimeoMatcher = getLinkPattern().matcher(link);
-        if (vimeoMatcher.find()) {
-            for (int i = 1; i <= vimeoMatcher.groupCount(); i++) {
-                String group = vimeoMatcher.group(i);
+        if (link.length() > 1000) {
+            throw new IllegalArgumentException("Input too long");
+        }
+
+        final Matcher matcher = getLinkPattern().matcher(link);
+        if (matcher.find()) {
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                String group = matcher.group(i);
                 if (group != null) {
                     return group;
                 }
