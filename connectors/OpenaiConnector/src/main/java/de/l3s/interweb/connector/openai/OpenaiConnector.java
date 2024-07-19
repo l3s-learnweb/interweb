@@ -31,7 +31,8 @@ public class OpenaiConnector implements CompletionConnector {
         "gpt-35-turbo-1106", new UsagePrice(0.001, 0.002),
         "gpt-4-turbo", new UsagePrice(0.01, 0.03),
         "gpt-4", new UsagePrice(0.03, 0.06),
-        "gpt-4-32k", new UsagePrice(0.06, 0.12)
+        "gpt-4-32k", new UsagePrice(0.06, 0.12),
+        "gpt-4o", new UsagePrice(0.005, 0.015)
     );
 
     @Override
