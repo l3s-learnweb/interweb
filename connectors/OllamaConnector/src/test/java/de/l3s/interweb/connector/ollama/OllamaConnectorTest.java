@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.completion.Choice;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.Message;
+import de.l3s.interweb.core.chat.Choice;
+import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.chat.Message;
 
 
 @Disabled
@@ -32,8 +32,8 @@ class OllamaConnectorTest {
     }
 
     @Test
-    void complete() throws ConnectorException {
-        CompletionQuery query = new CompletionQuery();
+    void completions() throws ConnectorException {
+        CompletionsQuery query = new CompletionsQuery();
         query.setModel("llama3");
         query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Message.Role.system);
         query.addMessage("What is your name?", Message.Role.user);
@@ -42,7 +42,7 @@ class OllamaConnectorTest {
         query.setTopP(1.0);
 
         long start = System.currentTimeMillis();
-        CompletionResults results = connector.complete(query).await().indefinitely();
+        CompletionsResults results = connector.completions(query).await().indefinitely();
         log.infov("duration: {0} ms", System.currentTimeMillis() - start);
 
         assertEquals(1, results.getChoices().size());
@@ -53,21 +53,21 @@ class OllamaConnectorTest {
     }
 
     @Test
-    void completeStream() throws ConnectorException {
-        CompletionQuery query = new CompletionQuery();
+    void completionsStream() throws ConnectorException {
+        CompletionsQuery query = new CompletionsQuery();
         query.setModel("llama3");
         query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Message.Role.system);
         query.addMessage("What is your name?", Message.Role.user);
 
         long start = System.currentTimeMillis();
-        List<CompletionResults> list = connector.completeStream(query).onItem().invoke(() -> {
+        List<CompletionsResults> list = connector.completionsStream(query).onItem().invoke(() -> {
             log.infov("message after: {0} ms", System.currentTimeMillis() - start);
         }).collect().asList().await().indefinitely();
         log.infov("duration: {0} ms", System.currentTimeMillis() - start);
         assertTrue(list.size() > 10);
 
         StringBuilder sb = new StringBuilder();
-        for (CompletionResults results : list) {
+        for (CompletionsResults results : list) {
             for (Choice result : results.getChoices()) {
                 sb.append(result.getMessage().getContent());
             }

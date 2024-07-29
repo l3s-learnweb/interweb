@@ -7,10 +7,10 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interweb.core.completion.Choice;
-import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.Message;
-import de.l3s.interweb.core.completion.Usage;
+import de.l3s.interweb.core.chat.Choice;
+import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.chat.Message;
+import de.l3s.interweb.core.chat.Usage;
 
 @RegisterForReflection
 public class ChatResponse {
@@ -123,8 +123,8 @@ public class ChatResponse {
         this.createdAt = createdAt;
     }
 
-    public CompletionResults toCompletionResults() {
-        CompletionResults results = new CompletionResults();
+    public CompletionsResults toCompletionResults() {
+        CompletionsResults results = new CompletionsResults();
         results.setModel(model);
 
         if (promptEvalCount != null && evalCount != null) {

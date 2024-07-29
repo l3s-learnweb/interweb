@@ -13,14 +13,14 @@ import org.jboss.logging.Logger;
 
 import de.l3s.interweb.connector.openai.entity.CompletionBody;
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.completion.CompletionConnector;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.chat.ChatConnector;
+import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.models.UsagePrice;
 
 @Dependent
-public class OpenaiConnector implements CompletionConnector {
+public class OpenaiConnector implements ChatConnector {
     private static final Logger log = Logger.getLogger(OpenaiConnector.class);
 
     /**
@@ -55,9 +55,9 @@ public class OpenaiConnector implements CompletionConnector {
     }
 
     @Override
-    public Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException {
+    public Uni<CompletionsResults> completions(CompletionsQuery query) throws ConnectorException {
         return openai.chatCompletions(query.getModel(), new CompletionBody(query)).map(response -> {
-            CompletionResults results = new CompletionResults();
+            CompletionsResults results = new CompletionsResults();
             results.setModel(query.getModel());
             results.setCreated(response.getCreated());
             results.setChoices(response.getChoices());

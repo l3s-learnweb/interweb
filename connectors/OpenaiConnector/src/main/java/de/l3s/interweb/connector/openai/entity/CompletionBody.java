@@ -7,8 +7,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.ResponseFormat;
+import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.chat.ResponseFormat;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -48,7 +48,7 @@ public final class CompletionBody {
 
     private String[] stop;
 
-    public CompletionBody(CompletionQuery query) {
+    public CompletionBody(CompletionsQuery query) {
         this.messages = query.getMessages().stream().map(CompletionMessage::new).toList();
         this.temperature = query.getTemperature();
         this.topP = query.getTopP();

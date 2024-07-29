@@ -16,10 +16,10 @@ import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.Message;
-import de.l3s.interweb.core.completion.Conversation;
+import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.chat.Message;
+import de.l3s.interweb.core.chat.Conversation;
 import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.features.user.Token;
 
@@ -86,7 +86,7 @@ public class ChatResource {
     @POST
     @Authenticated
     @Path("/completions")
-    public Uni<CompletionResults> completions(@Valid CompletionQuery query) {
+    public Uni<CompletionsResults> completions(@Valid CompletionsQuery query) {
         Token token = securityIdentity.getCredential(Token.class);
 
         return getOrCreateChat(query, token).flatMap(chat -> {
@@ -113,7 +113,7 @@ public class ChatResource {
         });
     }
 
-    private Uni<Chat> getOrCreateChat(CompletionQuery query, Token token) {
+    private Uni<Chat> getOrCreateChat(CompletionsQuery query, Token token) {
         if (query.getId() != null) {
             return Chat.findById(token, query.getId()).call(chat -> Mutiny.fetch(chat.getMessages()));
         }
@@ -125,7 +125,7 @@ public class ChatResource {
         return Panache.withTransaction(chat::persist);
     }
 
-    private Uni<Void> persistMessages(final Chat chat, final List<Message> queryMessages, final CompletionResults results) {
+    private Uni<Void> persistMessages(final Chat chat, final List<Message> queryMessages, final CompletionsResults results) {
         for (Message message : queryMessages) {
             if (message.getId() == null) {
                 ChatMessage cm = new ChatMessage(message);

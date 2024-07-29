@@ -15,12 +15,12 @@ import org.jboss.logging.Logger;
 import de.l3s.interweb.connector.anthropic.entity.AnthropicUsage;
 import de.l3s.interweb.connector.anthropic.entity.CompletionBody;
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.completion.*;
+import de.l3s.interweb.core.chat.*;
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.models.UsagePrice;
 
 @Dependent
-public class AnthropicConnector implements CompletionConnector {
+public class AnthropicConnector implements ChatConnector {
     private static final Logger log = Logger.getLogger(AnthropicConnector.class);
 
     /**
@@ -56,7 +56,7 @@ public class AnthropicConnector implements CompletionConnector {
     }
 
     @Override
-    public Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException {
+    public Uni<CompletionsResults> completions(CompletionsQuery query) throws ConnectorException {
         return anthropic.chatCompletions(new CompletionBody(query)).map(response -> {
             AnthropicUsage anthropicUsage = response.getUsage();
             Usage usage = new Usage(
@@ -70,7 +70,7 @@ public class AnthropicConnector implements CompletionConnector {
                 return new Choice(index.getAndIncrement(), response.getStopReason(), message);
             }).toList();
 
-            CompletionResults results = new CompletionResults();
+            CompletionsResults results = new CompletionsResults();
             results.setModel(query.getModel());
             results.setUsage(usage);
             results.setChoices(choices);

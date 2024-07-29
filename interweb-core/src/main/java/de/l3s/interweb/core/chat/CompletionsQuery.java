@@ -1,4 +1,4 @@
-package de.l3s.interweb.core.completion;
+package de.l3s.interweb.core.chat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RegisterForReflection
-public class CompletionQuery {
+public class CompletionsQuery {
 
     /**
      * ID of the model to use.

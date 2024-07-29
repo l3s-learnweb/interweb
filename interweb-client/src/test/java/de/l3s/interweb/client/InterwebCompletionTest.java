@@ -11,11 +11,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.l3s.interweb.core.completion.Choice;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.Message;
-import de.l3s.interweb.core.completion.Conversation;
+import de.l3s.interweb.core.chat.Choice;
+import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.chat.Message;
+import de.l3s.interweb.core.chat.Conversation;
 
 @Disabled
 @QuarkusTest
@@ -29,14 +29,14 @@ class InterwebCompletionTest {
     }
 
     @Test
-    void completionsTest() throws InterwebException {
-        CompletionQuery query = new CompletionQuery();
+    void chatCompletionsTest() throws InterwebException {
+        CompletionsQuery query = new CompletionsQuery();
         query.setUser("user1");
         query.setGenerateTitle(true);
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
         query.addMessage("What is your name?", Message.Role.user);
 
-        CompletionResults response = interweb.completions(query);
+        CompletionsResults response = interweb.chatCompletions(query);
         assertFalse(response.getResults().isEmpty());
 
         for (Choice result : response.getResults()) {

@@ -7,8 +7,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interweb.core.completion.Choice;
-import de.l3s.interweb.core.completion.Usage;
+import de.l3s.interweb.core.chat.Choice;
+import de.l3s.interweb.core.chat.Usage;
 
 @RegisterForReflection
 public class CompletionResponse {

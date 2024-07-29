@@ -27,27 +27,27 @@ public class SearchService {
     private static final Logger log = Logger.getLogger(SearchService.class);
     private static final int defaultTimeout = 10_000;
 
-    private final Map<String, SearchConnector> services;
-
     @Inject
     @CacheName("search")
     Cache cache;
 
+    private final Map<String, SearchConnector> providers;
+
     @Inject
     public SearchService(@All List<SearchConnector> connectors) {
-        services = new HashMap<>();
-        connectors.forEach(connector -> services.put(connector.getId(), connector));
-        log.info("Loaded " + services.size() + " search connectors");
+        providers = new HashMap<>();
+        connectors.forEach(connector -> providers.put(connector.getId(), connector));
+        log.info("Loaded " + providers.size() + " search connectors");
     }
 
     public Collection<SearchConnector> getConnectors() {
-        return this.services.values();
+        return this.providers.values();
     }
 
     private Collection<SearchConnector> getConnectors(Set<String> services) {
         if (services != null && !services.isEmpty()) {
             return services.stream().map(val -> {
-                SearchConnector connector = this.services.get(val.toLowerCase(Locale.ROOT));
+                SearchConnector connector = this.providers.get(val.toLowerCase(Locale.ROOT));
                 if (connector == null) {
                     throw new ConnectorException("Unknown service: " + val);
                 }
@@ -55,7 +55,7 @@ public class SearchService {
             }).toList();
         }
 
-        return this.services.values();
+        return this.providers.values();
     }
 
     public Uni<SearchResults> search(SearchQuery query) {

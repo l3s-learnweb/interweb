@@ -1,4 +1,4 @@
-package de.l3s.interweb.core.completion;
+package de.l3s.interweb.core.chat;
 
 import java.time.Instant;
 import java.util.List;
@@ -17,7 +17,7 @@ import de.l3s.interweb.core.models.UsagePrice;
 @RegisterForReflection
 @JsonIgnoreProperties("results")
 @JsonPropertyOrder({"id", "object", "title", "model", "choices", "usage", "cost", "elapsed_time", "system_fingerprint", "created"})
-public class CompletionResults extends Results<Choice> {
+public class CompletionsResults extends Results<Choice> {
     @JsonProperty(value = "id")
     private UUID chatId;
     @JsonProperty(value = "title")

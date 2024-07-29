@@ -2,14 +2,14 @@ package de.l3s.interweb.connector.ollama.entity;
 
 import java.util.List;
 
-import de.l3s.interweb.core.completion.ResponseFormat;
+import de.l3s.interweb.core.chat.ResponseFormat;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interweb.core.completion.CompletionQuery;
+import de.l3s.interweb.core.chat.CompletionsQuery;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -23,7 +23,7 @@ public class ChatBody {
     @JsonProperty("keep_alive")
     private String keepAlive;
 
-    public ChatBody(CompletionQuery query) {
+    public ChatBody(CompletionsQuery query) {
         this.model = query.getModel();
 
         this.messages = query.getMessages().stream()

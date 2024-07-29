@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import de.l3s.interweb.core.completion.Message;
+import de.l3s.interweb.core.chat.Message;
 
 @RegisterForReflection
 public final class OllamaMessage {

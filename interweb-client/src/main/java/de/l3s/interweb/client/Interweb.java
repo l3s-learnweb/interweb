@@ -18,10 +18,10 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import de.l3s.interweb.core.ObjectWrapper;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.models.Model;
-import de.l3s.interweb.core.completion.Conversation;
+import de.l3s.interweb.core.chat.Conversation;
 import de.l3s.interweb.core.describe.DescribeQuery;
 import de.l3s.interweb.core.describe.DescribeResults;
 import de.l3s.interweb.core.search.SearchQuery;
@@ -80,8 +80,8 @@ public class Interweb implements Serializable {
         return sendGetRequest("/models", Map.of(), new TypeReference<>() {});
     }
 
-    public CompletionResults completions(CompletionQuery query) throws InterwebException {
-        return sendPostRequest("/chat/completions", query, CompletionResults.class);
+    public CompletionsResults chatCompletions(CompletionsQuery query) throws InterwebException {
+        return sendPostRequest("/chat/completions", query, CompletionsResults.class);
     }
 
     public List<Conversation> chatAll() throws InterwebException {
@@ -97,7 +97,7 @@ public class Interweb implements Serializable {
     }
 
     public void chatComplete(Conversation conversation) throws InterwebException {
-        CompletionResults results = sendPostRequest("/chat/completions", conversation, CompletionResults.class);
+        CompletionsResults results = sendPostRequest("/chat/completions", conversation, CompletionsResults.class);
         if (conversation.getId() == null) {
             conversation.setId(results.getChatId());
         }

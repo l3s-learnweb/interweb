@@ -2,7 +2,7 @@ package de.l3s.interweb.connector.ollama.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interweb.core.completion.CompletionQuery;
+import de.l3s.interweb.core.chat.CompletionsQuery;
 
 public class OllamaModelOptions {
     @JsonProperty("repeat_penalty")
@@ -17,7 +17,7 @@ public class OllamaModelOptions {
     @JsonProperty("top_k")
     private Integer topK;
 
-    public OllamaModelOptions(CompletionQuery query) {
+    public OllamaModelOptions(CompletionsQuery query) {
         this.seed = query.getSeed();
         if (query.getStop() != null && query.getStop().length > 0) {
             this.stop = query.getStop()[0];

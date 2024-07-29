@@ -15,14 +15,14 @@ import de.l3s.interweb.connector.ollama.entity.ChatBody;
 import de.l3s.interweb.connector.ollama.entity.ChatResponse;
 import de.l3s.interweb.connector.ollama.entity.ChatStreamBody;
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.completion.CompletionConnector;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.chat.ChatConnector;
+import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.models.UsagePrice;
 
 @Dependent
-public class OllamaConnector implements CompletionConnector {
+public class OllamaConnector implements ChatConnector {
     private static final Logger log = Logger.getLogger(OllamaConnector.class);
 
     @RestClient
@@ -50,13 +50,13 @@ public class OllamaConnector implements CompletionConnector {
     }
 
     @Override
-    public Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException {
+    public Uni<CompletionsResults> completions(CompletionsQuery query) throws ConnectorException {
         final ChatBody body = new ChatBody(query);
         return ollama.chat(body).map(ChatResponse::toCompletionResults);
     }
 
     @Override
-    public Multi<CompletionResults> completeStream(CompletionQuery query) throws ConnectorException {
+    public Multi<CompletionsResults> completionsStream(CompletionsQuery query) throws ConnectorException {
         final ChatStreamBody body = new ChatStreamBody(query);
         return ollama.chatStream(body).map(ChatResponse::toCompletionResults);
     }

@@ -1,4 +1,4 @@
-package de.l3s.interweb.core.completion;
+package de.l3s.interweb.core.chat;
 
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -7,11 +7,11 @@ import de.l3s.interweb.core.Connector;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.models.ModelsConnector;
 
-public interface CompletionConnector extends ModelsConnector, Connector {
+public interface ChatConnector extends ModelsConnector, Connector {
 
-    Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException;
+    Uni<CompletionsResults> completions(CompletionsQuery query) throws ConnectorException;
 
-    default Multi<CompletionResults> completeStream(CompletionQuery query) throws ConnectorException {
+    default Multi<CompletionsResults> completionsStream(CompletionsQuery query) throws ConnectorException {
         throw new UnsupportedOperationException("Streaming completions are not implemented!");
     }
 }

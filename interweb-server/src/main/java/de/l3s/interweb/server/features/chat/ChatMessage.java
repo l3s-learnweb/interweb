@@ -15,7 +15,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.l3s.interweb.core.completion.Message;
+import de.l3s.interweb.core.chat.Message;
 
 @Entity
 @Cacheable

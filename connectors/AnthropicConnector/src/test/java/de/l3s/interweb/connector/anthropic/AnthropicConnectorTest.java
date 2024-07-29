@@ -14,10 +14,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.l3s.interweb.connector.anthropic.entity.CompletionBody;
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.completion.Choice;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.Message;
+import de.l3s.interweb.core.chat.Choice;
+import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.chat.Message;
 
 @Disabled
 @QuarkusTest
@@ -33,14 +33,14 @@ class AnthropicConnectorTest {
     }
 
     @Test
-    void complete() throws ConnectorException {
-        CompletionQuery query = new CompletionQuery();
+    void completions() throws ConnectorException {
+        CompletionsQuery query = new CompletionsQuery();
         query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Message.Role.system);
         query.addMessage("What is your name?", Message.Role.user);
         query.setMaxTokens(100);
         query.setModel("claude-3-haiku-20240307");
 
-        CompletionResults results = connector.complete(query).await().indefinitely();
+        CompletionsResults results = connector.completions(query).await().indefinitely();
 
         assertEquals(1, results.getChoices().size());
         log.infov("user: {0}", query.getMessages().getLast().getContent());
@@ -51,7 +51,7 @@ class AnthropicConnectorTest {
 
     @Test
     void jsonBody() throws JsonProcessingException {
-        CompletionQuery query = new CompletionQuery();
+        CompletionsQuery query = new CompletionsQuery();
         query.setModel("claude-3-haiku-20240307");
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
         query.addMessage("What is your name?", Message.Role.user);

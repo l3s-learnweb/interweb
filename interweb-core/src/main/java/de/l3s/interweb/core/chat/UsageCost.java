@@ -1,4 +1,4 @@
-package de.l3s.interweb.core.completion;
+package de.l3s.interweb.core.chat;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

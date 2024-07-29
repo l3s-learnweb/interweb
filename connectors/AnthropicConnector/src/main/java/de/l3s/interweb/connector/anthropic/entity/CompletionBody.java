@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.Message;
-import de.l3s.interweb.core.completion.Message.Role;
+import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.chat.Message;
+import de.l3s.interweb.core.chat.Message.Role;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @RegisterForReflection
@@ -18,7 +18,7 @@ public final class CompletionBody {
     private List<CompletionMessage> messages;
 
     private String model;
-    
+
     private String system;
 
     private Double temperature;
@@ -29,7 +29,7 @@ public final class CompletionBody {
     @JsonProperty("max_tokens")
     private Integer maxTokens;
 
-    public CompletionBody(CompletionQuery query) {
+    public CompletionBody(CompletionsQuery query) {
         this.model = query.getModel();
 
         this.messages = query.getMessages().stream()
@@ -41,7 +41,7 @@ public final class CompletionBody {
                 .findFirst()
                 .map(Message::getContent)
                 .orElse(null);
-        
+
         this.temperature = query.getTemperature();
         this.topP = query.getTopP();
         this.maxTokens = query.getMaxTokens();

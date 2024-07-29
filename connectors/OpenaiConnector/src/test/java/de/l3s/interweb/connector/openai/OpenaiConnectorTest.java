@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.completion.Choice;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.Message;
+import de.l3s.interweb.core.chat.Choice;
+import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.chat.Message;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,12 +29,12 @@ class OpenaiConnectorTest {
     }
 
     @Test
-    void complete() throws ConnectorException {
-        CompletionQuery query = new CompletionQuery();
+    void completions() throws ConnectorException {
+        CompletionsQuery query = new CompletionsQuery();
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
         query.addMessage("What is your name?", Message.Role.user);
 
-        CompletionResults results = connector.complete(query).await().indefinitely();
+        CompletionsResults results = connector.completions(query).await().indefinitely();
 
         assertEquals(1, results.getChoices().size());
         log.infov("user: {0}", query.getMessages().getLast().getContent());
