@@ -2,7 +2,10 @@ package de.l3s.interweb.core.models;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 @RegisterForReflection
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UsagePrice {
     private double input;
     private double output;

@@ -1,6 +1,8 @@
 package de.l3s.interweb.core.models;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -70,12 +72,14 @@ public class Model {
         this.created = created;
     }
 
-    public static Model of(String id, String ownedBy, UsagePrice price, Instant created) {
+    public static Model of(String id, String ownedBy, UsagePrice price, LocalDate created) {
         Model model = new Model();
         model.setId(id);
         model.setOwnedBy(ownedBy);
         model.setPrice(price);
-        model.setCreated(created);
+        if (created != null) {
+            model.setCreated(created.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        }
         return model;
     }
 }

@@ -1,6 +1,7 @@
 package de.l3s.interweb.connector.anthropic;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,13 +29,13 @@ public class AnthropicConnector implements ChatConnector {
      * https://docs.anthropic.com/en/docs/about-claude/models
      */
     private static final List<Model> models = List.of(
-        Model.of("claude-3-5-sonnet-20240620", "anthropic", new UsagePrice(0.003, 0.015), Instant.parse("2024-06-20")),
-        Model.of("claude-3-opus-20240229", "anthropic", new UsagePrice(0.015, 0.075), Instant.parse("2024-02-29")),
-        Model.of("claude-3-sonnet-20240229", "anthropic", new UsagePrice(0.003, 0.015), Instant.parse("2024-02-29")),
-        Model.of("claude-3-haiku-20240307", "anthropic", new UsagePrice(0.00025, 0.00125), Instant.parse("2024-03-07")),
-        Model.of("claude-2.1", "anthropic", new UsagePrice(0.008, 0.024), Instant.parse("2023-11-23")),
-        Model.of("claude-2.0", "anthropic", new UsagePrice(0.008, 0.024), Instant.parse("2023-07-11")),
-        Model.of("claude-instant-1.2", "anthropic", new UsagePrice(0.0008, 0.0024), Instant.parse("2023-08-09"))
+        Model.of("claude-3-5-sonnet-20240620", "anthropic", new UsagePrice(0.003, 0.015), LocalDate.of(2024, 6, 20)),
+        Model.of("claude-3-opus-20240229", "anthropic", new UsagePrice(0.015, 0.075), LocalDate.of(2024, 2, 29)),
+        Model.of("claude-3-sonnet-20240229", "anthropic", new UsagePrice(0.003, 0.015), LocalDate.of(2024, 2, 29)),
+        Model.of("claude-3-haiku-20240307", "anthropic", new UsagePrice(0.00025, 0.00125), LocalDate.of(2024, 3, 7)),
+        Model.of("claude-2.1", "anthropic", new UsagePrice(0.008, 0.024), LocalDate.of(2023, 11, 23)),
+        Model.of("claude-2.0", "anthropic", new UsagePrice(0.008, 0.024), LocalDate.of(2023, 7, 11)),
+        Model.of("claude-instant-1.2", "anthropic", new UsagePrice(0.0008, 0.0024), LocalDate.of(2023, 8, 9))
     );
 
     @RestClient
