@@ -17,8 +17,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import de.l3s.interweb.core.ObjectWrapper;
 import de.l3s.interweb.core.completion.CompletionQuery;
 import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.completion.Conversation;
 import de.l3s.interweb.core.describe.DescribeQuery;
 import de.l3s.interweb.core.describe.DescribeResults;
@@ -72,6 +74,10 @@ public class Interweb implements Serializable {
         params.setLink(link);
 
         return sendPostRequest("/describe", params, DescribeResults.class);
+    }
+
+    public ObjectWrapper<List<Model>> models() throws InterwebException {
+        return sendGetRequest("/models", Map.of(), new TypeReference<>() {});
     }
 
     public CompletionResults completions(CompletionQuery query) throws InterwebException {
@@ -132,7 +138,7 @@ public class Interweb implements Serializable {
         return URI.create(sb.toString());
     }
 
-    public <T> T sendGetRequest(final String apiPath, final Map<String, String> params, TypeReference<T> valueType) throws InterwebException {
+    private <T> T sendGetRequest(final String apiPath, final Map<String, String> params, TypeReference<T> valueType) throws InterwebException {
         try {
             final URI uri = createRequestUri(apiPath, params);
             HttpRequest.Builder builder = HttpRequest.newBuilder().uri(uri).GET();
@@ -144,7 +150,7 @@ public class Interweb implements Serializable {
         }
     }
 
-    public <T> T sendPostRequest(final String apiPath, final Object query, Class<T> valueType) throws InterwebException {
+    private <T> T sendPostRequest(final String apiPath, final Object query, Class<T> valueType) throws InterwebException {
         try {
             String body = mapper.writeValueAsString(query);
 
@@ -159,7 +165,7 @@ public class Interweb implements Serializable {
         }
     }
 
-    public HttpResponse<String> sendRequest(final HttpRequest.Builder builder) throws InterwebException {
+    private HttpResponse<String> sendRequest(final HttpRequest.Builder builder) throws InterwebException {
         try {
             builder.header("Authorization", "Bearer " + apikey);
             builder.header("Accept", "application/json");
@@ -175,7 +181,7 @@ public class Interweb implements Serializable {
         } catch (IOException e) {
             throw new InterwebException("An error occurred during Interweb request", e);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            java.lang.Thread.currentThread().interrupt();
             throw new InterwebException("An Interweb request was interrupted", e);
         }
     }

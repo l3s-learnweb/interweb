@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.l3s.interweb.core.Results;
+import de.l3s.interweb.core.models.UsagePrice;
 
 @RegisterForReflection
 @JsonIgnoreProperties("results")
@@ -109,8 +110,8 @@ public class CompletionResults extends Results<Choice> {
     }
 
     public void updateCosts(UsagePrice price) {
-        double promptCost = (usage.getPromptTokens() / 1000d) * price.getPrompt();
-        double completionCost = (usage.getCompletionTokens() / 1000d) * price.getCompletion();
+        double promptCost = (usage.getPromptTokens() / 1000d) * price.getInput();
+        double completionCost = (usage.getCompletionTokens() / 1000d) * price.getOutput();
 
         cost = new UsageCost();
         cost.setResponse(promptCost + completionCost);

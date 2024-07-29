@@ -2,7 +2,6 @@ package de.l3s.interweb.server.features.chat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import jakarta.inject.Inject;
@@ -17,7 +16,10 @@ import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import de.l3s.interweb.core.completion.*;
+import de.l3s.interweb.core.completion.CompletionQuery;
+import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.completion.Message;
+import de.l3s.interweb.core.completion.Conversation;
 import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.features.user.Token;
 
@@ -32,13 +34,6 @@ public class ChatResource {
 
     @GET
     @Authenticated
-    @Path("/models")
-    public Map<String, UsagePrice> models() {
-        return chatService.getModels();
-    }
-
-    @GET
-    @Authenticated
     public Uni<List<Chat>> chats(
         @QueryParam("user") String user,
         @QueryParam("sort") @DefaultValue("-created") String order,
@@ -48,7 +43,11 @@ public class ChatResource {
         Token token = securityIdentity.getCredential(Token.class);
 
         return Chat.listByUser(token, user, order, page, perPage)
-            .call(chats -> Multi.createFrom().iterable(chats).filter(chat -> chat.title == null).map(ChatResource::createChatTitle).collect().asList());
+            .call(chats -> Multi.createFrom().iterable(chats)
+                .filter(chat -> chat.title == null)
+                .map(ChatResource::createChatTitle)
+                .collect()
+                .asList());
     }
 
     private static Uni<List<ChatMessage>> createChatTitle(Chat chat) {
@@ -100,7 +99,7 @@ public class ChatResource {
                 results.getCost().setChat(chat.estimatedCost);
             }).call(results -> {
                 if (chat.title == null && query.isGenerateTitle()) {
-                    return generateTitle(chat).invoke(titleCompletion -> {
+                    return chatService.generateTitle(chat).invoke(titleCompletion -> {
                         chat.title = titleCompletion.getLastMessage().getContent();
                         results.setChatTitle(chat.title);
 
@@ -138,12 +137,5 @@ public class ChatResource {
 
         chat.addMessage(new ChatMessage(results.getLastMessage()));
         return Panache.withTransaction(() -> ChatMessage.persist(chat.getMessages()));
-    }
-
-    private Uni<CompletionResults> generateTitle(final Chat chat) {
-        CompletionQuery query = new CompletionQuery();
-        query.setMessages(new ArrayList<>(chat.getMessages().stream().map(ChatMessage::toMessage).toList()));
-        query.addMessage("Give a short name for this conversation; don't use any formatting; length between 80 and 120 characters", Message.Role.user);
-        return chatService.completions(query);
     }
 }

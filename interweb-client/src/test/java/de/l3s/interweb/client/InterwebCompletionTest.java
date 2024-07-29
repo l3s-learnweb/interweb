@@ -11,7 +11,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.l3s.interweb.core.completion.*;
+import de.l3s.interweb.core.completion.Choice;
+import de.l3s.interweb.core.completion.CompletionQuery;
+import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.completion.Message;
+import de.l3s.interweb.core.completion.Conversation;
 
 @Disabled
 @QuarkusTest
@@ -29,7 +33,6 @@ class InterwebCompletionTest {
         CompletionQuery query = new CompletionQuery();
         query.setUser("user1");
         query.setGenerateTitle(true);
-        query.setModel("gpt-35-turbo");
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
         query.addMessage("What is your name?", Message.Role.user);
 
@@ -67,7 +70,6 @@ class InterwebCompletionTest {
         Conversation conversation = new Conversation();
         conversation.setUser("user1");
         conversation.setGenerateTitle(true);
-        conversation.setModel("gpt-35-turbo");
         conversation.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
         conversation.addMessage("What is your name?", Message.Role.user);
 

@@ -2,7 +2,6 @@ package de.l3s.interweb.connector.anthropic;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,33 +10,35 @@ import jakarta.enterprise.context.Dependent;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.logging.Logger;
 
 import de.l3s.interweb.connector.anthropic.entity.AnthropicUsage;
 import de.l3s.interweb.connector.anthropic.entity.CompletionBody;
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.completion.CompletionConnector;
-import de.l3s.interweb.core.completion.CompletionQuery;
-import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.Message;
-import de.l3s.interweb.core.completion.UsagePrice;
-import de.l3s.interweb.core.completion.Usage;
-import de.l3s.interweb.core.completion.Choice;
-
-import org.jboss.logging.Logger;
+import de.l3s.interweb.core.completion.*;
+import de.l3s.interweb.core.models.Model;
+import de.l3s.interweb.core.models.UsagePrice;
 
 @Dependent
 public class AnthropicConnector implements CompletionConnector {
     private static final Logger log = Logger.getLogger(AnthropicConnector.class);
 
-    private static final Map<String, UsagePrice> models = Map.of(
-        "claude-3-opus-20240229", new UsagePrice(0.015, 0.075),
-        "claude-3-sonnet-20240229", new UsagePrice(0.003, 0.015),
-        "claude-3-haiku-20240307", new UsagePrice(0.00025, 0.00125),
-         // legacy
-        "claude-2.1", new UsagePrice(0.008, 0.024),
-        "claude-2.0", new UsagePrice(0.008, 0.024),
-        "claude-instant-1.2", new UsagePrice(0.0008, 0.0024)
+    /**
+     * https://www.anthropic.com/pricing#anthropic-api
+     * https://docs.anthropic.com/en/docs/about-claude/models
+     */
+    private static final List<Model> models = List.of(
+        Model.of("claude-3-5-sonnet-20240620", "anthropic", new UsagePrice(0.003, 0.015), Instant.parse("2024-06-20")),
+        Model.of("claude-3-opus-20240229", "anthropic", new UsagePrice(0.015, 0.075), Instant.parse("2024-02-29")),
+        Model.of("claude-3-sonnet-20240229", "anthropic", new UsagePrice(0.003, 0.015), Instant.parse("2024-02-29")),
+        Model.of("claude-3-haiku-20240307", "anthropic", new UsagePrice(0.00025, 0.00125), Instant.parse("2024-03-07")),
+        Model.of("claude-2.1", "anthropic", new UsagePrice(0.008, 0.024), Instant.parse("2023-11-23")),
+        Model.of("claude-2.0", "anthropic", new UsagePrice(0.008, 0.024), Instant.parse("2023-07-11")),
+        Model.of("claude-instant-1.2", "anthropic", new UsagePrice(0.0008, 0.0024), Instant.parse("2023-08-09"))
     );
+
+    @RestClient
+    AnthropicClient anthropic;
 
     @Override
     public String getName() {
@@ -50,17 +51,9 @@ public class AnthropicConnector implements CompletionConnector {
     }
 
     @Override
-    public String[] getModels() {
-        return models.keySet().toArray(new String[0]);
+    public Uni<List<Model>> getModels() {
+        return Uni.createFrom().item(models);
     }
-
-    @Override
-    public UsagePrice getPrice(String model) {
-        return models.get(model);
-    }
-
-    @RestClient
-    AnthropicClient anthropic;
 
     @Override
     public Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException {

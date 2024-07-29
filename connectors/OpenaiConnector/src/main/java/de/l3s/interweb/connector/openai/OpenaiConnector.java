@@ -1,6 +1,7 @@
 package de.l3s.interweb.connector.openai;
 
-import java.util.Map;
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.enterprise.context.Dependent;
@@ -15,7 +16,8 @@ import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.completion.CompletionConnector;
 import de.l3s.interweb.core.completion.CompletionQuery;
 import de.l3s.interweb.core.completion.CompletionResults;
-import de.l3s.interweb.core.completion.UsagePrice;
+import de.l3s.interweb.core.models.Model;
+import de.l3s.interweb.core.models.UsagePrice;
 
 @Dependent
 public class OpenaiConnector implements CompletionConnector {
@@ -25,15 +27,17 @@ public class OpenaiConnector implements CompletionConnector {
      * UK South, US-Dollar prices (as EUR price is automatically converted from USD it's floating a bit)
      * https://azure.microsoft.com/de-de/pricing/details/cognitive-services/openai-service/
      */
-    private static final Map<String, UsagePrice> models = Map.of(
-        "gpt-35-turbo", new UsagePrice(0.002, 0.002),
-        "gpt-35-turbo-16k", new UsagePrice(0.003, 0.004),
-        "gpt-35-turbo-1106", new UsagePrice(0.001, 0.002),
-        "gpt-4-turbo", new UsagePrice(0.01, 0.03),
-        "gpt-4", new UsagePrice(0.03, 0.06),
-        "gpt-4-32k", new UsagePrice(0.06, 0.12),
-        "gpt-4o", new UsagePrice(0.005, 0.015)
+    private static final List<Model> models = List.of(
+        Model.of("gpt-35-turbo", "openai", new UsagePrice(0.002, 0.002), Instant.parse("2023-03-01")),
+        Model.of("gpt-35-turbo-16k", "openai", new UsagePrice(0.003, 0.004), Instant.parse("2023-06-13")),
+        Model.of("gpt-35-turbo-1106", "openai", new UsagePrice(0.001, 0.002), Instant.parse("2023-11-06")),
+        Model.of("gpt-4", "openai", new UsagePrice(0.03, 0.06), Instant.parse("2023-06-13")),
+        Model.of("gpt-4-turbo", "openai", new UsagePrice(0.01, 0.03), Instant.parse("2024-01-25")),
+        Model.of("gpt-4o", "openai", new UsagePrice(0.005, 0.015), Instant.parse("2024-05-13"))
     );
+
+    @RestClient
+    OpenaiClient openai;
 
     @Override
     public String getName() {
@@ -46,17 +50,9 @@ public class OpenaiConnector implements CompletionConnector {
     }
 
     @Override
-    public String[] getModels() {
-        return models.keySet().toArray(new String[0]);
+    public Uni<List<Model>> getModels() {
+        return Uni.createFrom().item(models);
     }
-
-    @Override
-    public UsagePrice getPrice(String model) {
-        return models.get(model);
-    }
-
-    @RestClient
-    OpenaiClient openai;
 
     @Override
     public Uni<CompletionResults> complete(CompletionQuery query) throws ConnectorException {

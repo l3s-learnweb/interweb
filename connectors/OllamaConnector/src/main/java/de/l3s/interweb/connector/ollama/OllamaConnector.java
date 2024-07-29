@@ -1,32 +1,29 @@
 package de.l3s.interweb.connector.ollama;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
-
-import de.l3s.interweb.connector.ollama.entity.ChatResponse;
-
-import de.l3s.interweb.connector.ollama.entity.ChatStreamBody;
-
-import io.smallrye.mutiny.Multi;
 
 import jakarta.enterprise.context.Dependent;
 
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
 import de.l3s.interweb.connector.ollama.entity.ChatBody;
-import de.l3s.interweb.connector.ollama.entity.TagsResponse;
+import de.l3s.interweb.connector.ollama.entity.ChatResponse;
+import de.l3s.interweb.connector.ollama.entity.ChatStreamBody;
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.completion.*;
+import de.l3s.interweb.core.completion.CompletionConnector;
+import de.l3s.interweb.core.completion.CompletionQuery;
+import de.l3s.interweb.core.completion.CompletionResults;
+import de.l3s.interweb.core.models.Model;
+import de.l3s.interweb.core.models.UsagePrice;
 
 @Dependent
 public class OllamaConnector implements CompletionConnector {
     private static final Logger log = Logger.getLogger(OllamaConnector.class);
-
-    private static final Map<String, UsagePrice> models = new HashMap<>();
 
     @RestClient
     OllamaClient ollama;
@@ -42,30 +39,14 @@ public class OllamaConnector implements CompletionConnector {
     }
 
     @Override
-    public String[] getModels() {
-        if (models.isEmpty()) {
-            try {
-                TagsResponse tags = ollama.tags().await().indefinitely();
-                if (tags.getModels().isEmpty()) {
-                    throw new ConnectorException("No models deployed on Ollama instance");
-                }
-
-                tags.getModels().forEach(tag -> {
-                    models.put(tag.getName(), new UsagePrice(0, 0));
-                });
-            } catch (Exception e) {
-                throw new ConnectorException("Failed to fetch Ollama models", e);
-            }
-        }
-        return models.keySet().toArray(new String[0]);
-    }
-
-    @Override
-    public UsagePrice getPrice(String model) {
-        if (models.isEmpty()) {
-            getModels(); // make sure models are loaded
-        }
-        return models.get(model);
+    public Uni<List<Model>> getModels() {
+        return ollama.tags().map(tags -> tags.getModels().stream().map(tag -> {
+            Model model = new Model();
+            model.setId(tag.getName());
+            model.setOwnedBy("ollama");
+            model.setPrice(new UsagePrice(0.0, 0.0));
+            return model;
+        }).toList());
     }
 
     @Override
