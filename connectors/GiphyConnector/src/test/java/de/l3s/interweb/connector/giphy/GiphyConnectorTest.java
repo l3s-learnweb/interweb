@@ -1,6 +1,6 @@
 package de.l3s.interweb.connector.giphy;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.inject.Inject;
 

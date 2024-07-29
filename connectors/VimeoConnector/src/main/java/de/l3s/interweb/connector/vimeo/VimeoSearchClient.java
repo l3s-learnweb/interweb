@@ -38,10 +38,10 @@ public interface VimeoSearchClient {
     @GET
     @Path("/videos")
     Uni<VimeoResponse> search(
-            @NotNull @QueryParam("query") String query,
-            @QueryParam("page") Integer page,
-            @QueryParam("per_page") Integer perPage,
-            @QueryParam("sort") String sort
+        @NotNull @QueryParam("query") String query,
+        @QueryParam("page") Integer page,
+        @QueryParam("per_page") Integer perPage,
+        @QueryParam("sort") String sort
     );
 
     /**

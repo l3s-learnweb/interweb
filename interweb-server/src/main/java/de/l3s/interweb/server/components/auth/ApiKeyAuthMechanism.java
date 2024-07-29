@@ -3,10 +3,6 @@ package de.l3s.interweb.server.components.auth;
 import java.util.Optional;
 import java.util.Set;
 
-import de.l3s.interweb.server.features.user.Token;
-
-import io.quarkus.smallrye.jwt.runtime.auth.JWTAuthMechanism;
-
 import jakarta.enterprise.context.ApplicationScoped;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -14,11 +10,14 @@ import io.netty.util.AsciiString;
 import io.quarkus.security.identity.IdentityProviderManager;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.identity.request.AuthenticationRequest;
+import io.quarkus.smallrye.jwt.runtime.auth.JWTAuthMechanism;
 import io.quarkus.vertx.http.runtime.security.ChallengeData;
 import io.quarkus.vertx.http.runtime.security.HttpAuthenticationMechanism;
 import io.quarkus.vertx.http.runtime.security.HttpSecurityUtils;
 import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.RoutingContext;
+
+import de.l3s.interweb.server.features.user.Token;
 
 @ApplicationScoped
 public class ApiKeyAuthMechanism implements HttpAuthenticationMechanism {

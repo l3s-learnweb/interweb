@@ -54,14 +54,14 @@ public class VimeoConnector implements SearchConnector, DescribeConnector {
     @Override
     public Uni<SearchConnectorResults> search(SearchQuery query) throws ConnectorException {
         return searchClient.search(
-                query.getQuery(),
-                query.getPage(),
-                query.getPerPage(fallbackPerPage),
-                convertSort(query.getSort())
+            query.getQuery(),
+            query.getPage(),
+            query.getPerPage(fallbackPerPage),
+            convertSort(query.getSort())
         ).invoke(Unchecked.consumer(vimeoResponse -> {
             if (vimeoResponse.getError() != null
-                    && vimeoResponse.getErrorCode() != 2286 // 2286 - no results for this page (when not first page requested)
-                    && vimeoResponse.getErrorCode() != 2969) { // 2969 - requested a page of results that does not exist
+                && vimeoResponse.getErrorCode() != 2286 // 2286 - no results for this page (when not first page requested)
+                && vimeoResponse.getErrorCode() != 2969) { // 2969 - requested a page of results that does not exist
                 throw new ConnectorException(vimeoResponse.getErrorCode() + ": " + vimeoResponse.getDeveloperMessage());
             }
         })).map(vimeoResponse -> {

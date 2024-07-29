@@ -60,8 +60,8 @@ public class SuggestService {
 
     public Uni<SuggestResults> suggest(SuggestQuery query) {
         return Multi.createFrom().iterable(getConnectors(query.getServices()))
-                .onItem().transformToUniAndMerge(connector -> suggest(query, connector))
-                .collect().asList().map(SuggestResults::new);
+            .onItem().transformToUniAndMerge(connector -> suggest(query, connector))
+            .collect().asList().map(SuggestResults::new);
     }
 
     private Uni<SuggestConnectorResults> suggest(SuggestQuery query, SuggestConnector connector) {

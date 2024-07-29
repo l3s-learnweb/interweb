@@ -2,9 +2,9 @@ package de.l3s.interweb.connector.anthropic.entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RegisterForReflection
 public class CompletionResponse {

@@ -1,23 +1,20 @@
 package de.l3s.interweb.connector.ollama;
 
-import de.l3s.interweb.connector.ollama.entity.ChatStreamBody;
-
-import io.smallrye.mutiny.Multi;
-
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.resteasy.reactive.common.util.RestMediaType;
 
 import de.l3s.interweb.connector.ollama.entity.ChatBody;
 import de.l3s.interweb.connector.ollama.entity.ChatResponse;
+import de.l3s.interweb.connector.ollama.entity.ChatStreamBody;
 import de.l3s.interweb.connector.ollama.entity.TagsResponse;
 import de.l3s.interweb.core.ConnectorException;
-
-import org.jboss.resteasy.reactive.common.util.RestMediaType;
 
 @Path("")
 @Consumes(MediaType.APPLICATION_JSON)

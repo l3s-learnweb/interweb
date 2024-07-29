@@ -37,16 +37,16 @@ public interface SlideShareSearchClient {
     @Path("/search_slideshows")
     @ClientFormParam(name = "api_key", value = "${connector.slideshare.apikey}")
     Uni<String> search(
-            @NotNull @QueryParam("q") String query,
-            @QueryParam("page") Integer page,
-            @QueryParam("items_per_page") Integer itemsPerPage,
-            @QueryParam("sort") String sort,
-            @QueryParam("lang") String lang,
-            @QueryParam("file_type") String fileTpe,
-            @QueryParam("upload_date") String uploadDate,
+        @NotNull @QueryParam("q") String query,
+        @QueryParam("page") Integer page,
+        @QueryParam("items_per_page") Integer itemsPerPage,
+        @QueryParam("sort") String sort,
+        @QueryParam("lang") String lang,
+        @QueryParam("file_type") String fileTpe,
+        @QueryParam("upload_date") String uploadDate,
 
-            @FormParam("ts") Long timestamp,
-            @FormParam("hash") String hash
+        @FormParam("ts") Long timestamp,
+        @FormParam("hash") String hash
     );
 
     @ClientExceptionMapper

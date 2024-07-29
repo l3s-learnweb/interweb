@@ -61,13 +61,13 @@ public interface BingSearchClient {
     @GET
     @Path("/search")
     Uni<BingResponse> search(
-            @NotNull @QueryParam("q") String query,
-            @QueryParam("count") Integer count,
-            @QueryParam("offset") Integer offset,
-            @QueryParam("setLang") String language,
-            @QueryParam("mkt") String market,
-            @QueryParam("freshness") String freshness,
-            @QueryParam("responseFilter") String responseFilter
+        @NotNull @QueryParam("q") String query,
+        @QueryParam("count") Integer count,
+        @QueryParam("offset") Integer offset,
+        @QueryParam("setLang") String language,
+        @QueryParam("mkt") String market,
+        @QueryParam("freshness") String freshness,
+        @QueryParam("responseFilter") String responseFilter
     );
 
     /**
@@ -87,12 +87,12 @@ public interface BingSearchClient {
     @GET
     @Path("/images/search")
     Uni<BingResponse> searchImages(
-            @NotNull @QueryParam("q") String query,
-            @QueryParam("count") Integer count,
-            @QueryParam("offset") Integer offset,
-            @QueryParam("setLang") String language,
-            @QueryParam("mkt") String market,
-            @QueryParam("freshness") String freshness
+        @NotNull @QueryParam("q") String query,
+        @QueryParam("count") Integer count,
+        @QueryParam("offset") Integer offset,
+        @QueryParam("setLang") String language,
+        @QueryParam("mkt") String market,
+        @QueryParam("freshness") String freshness
     );
 
     /**
@@ -113,12 +113,12 @@ public interface BingSearchClient {
     @Path("/videos/search")
     @ClientQueryParam(name = "pricing", value = "free")
     Uni<BingResponse> searchVideos(
-            @NotNull @QueryParam("q") String query,
-            @QueryParam("count") Integer count,
-            @QueryParam("offset") Integer offset,
-            @QueryParam("setLang") String language,
-            @QueryParam("mkt") String market,
-            @QueryParam("freshness") String freshness
+        @NotNull @QueryParam("q") String query,
+        @QueryParam("count") Integer count,
+        @QueryParam("offset") Integer offset,
+        @QueryParam("setLang") String language,
+        @QueryParam("mkt") String market,
+        @QueryParam("freshness") String freshness
     );
 
     @ClientExceptionMapper

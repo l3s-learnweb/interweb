@@ -15,16 +15,16 @@ jobs:
     env:
       MVN: mvn --show-version --batch-mode
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: 'maven'
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
 
-    - name: Publish to GitHub Packages Apache Maven
-      run: $MVN -pl interweb-client -am deploy
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+      - name: Publish to GitHub Packages Apache Maven
+        run: $MVN -pl interweb-client -am deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}

@@ -1,18 +1,17 @@
 package de.l3s.interweb.connector.openai;
 
-import io.quarkus.rest.client.reactive.ClientQueryParam;
-
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
+import io.quarkus.rest.client.reactive.ClientQueryParam;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import de.l3s.interweb.connector.openai.entity.CompletionResponse;
 import de.l3s.interweb.connector.openai.entity.CompletionBody;
+import de.l3s.interweb.connector.openai.entity.CompletionResponse;
 import de.l3s.interweb.core.ConnectorException;
 
 @Path("/openai/deployments")

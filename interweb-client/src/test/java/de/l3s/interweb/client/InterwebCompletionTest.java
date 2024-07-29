@@ -11,11 +11,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.l3s.interweb.core.chat.Choice;
-import de.l3s.interweb.core.chat.CompletionsQuery;
-import de.l3s.interweb.core.chat.CompletionsResults;
-import de.l3s.interweb.core.chat.Message;
-import de.l3s.interweb.core.chat.Conversation;
+import de.l3s.interweb.core.chat.*;
 
 @Disabled
 @QuarkusTest
@@ -33,8 +29,8 @@ class InterwebCompletionTest {
         CompletionsQuery query = new CompletionsQuery();
         query.setUser("user1");
         query.setGenerateTitle(true);
-        query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
-        query.addMessage("What is your name?", Message.Role.user);
+        query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
+        query.addMessage("What is your name?", Role.user);
 
         CompletionsResults response = interweb.chatCompletions(query);
         assertFalse(response.getResults().isEmpty());
@@ -70,8 +66,8 @@ class InterwebCompletionTest {
         Conversation conversation = new Conversation();
         conversation.setUser("user1");
         conversation.setGenerateTitle(true);
-        conversation.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
-        conversation.addMessage("What is your name?", Message.Role.user);
+        conversation.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
+        conversation.addMessage("What is your name?", Role.user);
 
         assertNull(conversation.getTitle());
         assertNull(conversation.getEstimatedCost());
@@ -83,7 +79,7 @@ class InterwebCompletionTest {
         assertNotNull(conversation.getEstimatedCost());
         assertEquals(3, conversation.getMessages().size());
 
-        conversation.addMessage("That's time now?", Message.Role.user);
+        conversation.addMessage("That's time now?", Role.user);
         interweb.chatComplete(conversation);
 
         assertEquals(5, conversation.getMessages().size());

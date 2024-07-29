@@ -60,16 +60,16 @@ public class SlideShareConnector implements SearchConnector {
         }
 
         return searchClient.search(
-                query.getQuery(),
-                query.getPage(),
-                query.getPerPage(fallbackPerPage),
-                SlideShareUtils.convertSort(query.getSort()),
-                query.getLanguage(),
-                SlideShareUtils.convertContentType(query.getContentTypes()),
-                null,
+            query.getQuery(),
+            query.getPage(),
+            query.getPerPage(fallbackPerPage),
+            SlideShareUtils.convertSort(query.getSort()),
+            query.getLanguage(),
+            SlideShareUtils.convertContentType(query.getContentTypes()),
+            null,
 
-                timestamp,
-                SlideShareUtils.hash(slideShareSecret.get() + timestamp)
+            timestamp,
+            SlideShareUtils.hash(slideShareSecret.get() + timestamp)
         ).map(Unchecked.function(body -> {
             try {
                 XmlMapper objectMapper = new XmlMapper();

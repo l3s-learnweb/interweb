@@ -39,10 +39,10 @@ public interface GiphySearchClient {
     @Path("/search")
     @ClientQueryParam(name = "rating", value = "g")
     Uni<SearchResponse> search(
-            @NotNull @QueryParam("q") String query,
-            @QueryParam("limit") Integer limit,
-            @QueryParam("offset") Integer offset,
-            @QueryParam("lang") String lang
+        @NotNull @QueryParam("q") String query,
+        @QueryParam("limit") Integer limit,
+        @QueryParam("offset") Integer offset,
+        @QueryParam("lang") String lang
     );
 
     @ClientExceptionMapper

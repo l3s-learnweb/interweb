@@ -62,7 +62,8 @@ class IpernityConnectorTest {
         assertEquals("http://ipernity.com/doc/2317344/50253056", queryResult.getEntity().getUrl());
         assertEquals(ContentType.image, queryResult.getEntity().getType());
         assertEquals("Am Blejsko jezero (PiP)", queryResult.getEntity().getTitle());
-        assertEquals("Blick auf den Bleder See (Blejsko jezero) mit der Insel Blejski Otok und der Marienkirche (Cerkev Marijinega vnebovzetja). Die Kirche erreicht man, nach einer Bootsfahrt, über 99 Steinstufen.", queryResult.getEntity().getDescription());
+        assertEquals("Blick auf den Bleder See (Blejsko jezero) mit der Insel Blejski Otok und der Marienkirche (Cerkev Marijinega vnebovzetja). Die Kirche erreicht man, nach einer Bootsfahrt, über 99 Steinstufen.", queryResult.getEntity()
+            .getDescription());
         assertEquals(Instant.ofEpochMilli(1594306896000L), queryResult.getEntity().getDate());
         assertEquals("Pics-UM", queryResult.getEntity().getAuthor());
         assertEquals("http://ipernity.com/home/2317344", queryResult.getEntity().getAuthorUrl());
@@ -71,7 +72,8 @@ class IpernityConnectorTest {
         assertEquals(new Thumbnail("http://cdn.ipernity.com/200/30/56/50253056.1fa7020b.240.jpg?r2", 240, 161), queryResult.getEntity().getThumbnailSmall());
         assertEquals(new Thumbnail("http://cdn.ipernity.com/200/30/56/50253056.1fa7020b.640.jpg?r2", 640, 427), queryResult.getEntity().getThumbnailMedium());
         assertEquals(new Thumbnail("http://cdn.ipernity.com/200/30/56/50253056.24df04e2.1024.jpg?r2", 1024, 683), queryResult.getEntity().getThumbnailLarge());
-        assertEquals(new Thumbnail("http://cdn.ipernity.com/200/30/56/50253056.040e95e0.2048.jpg?r2", 2048, 1366), queryResult.getEntity().getThumbnailOriginal());
+        assertEquals(new Thumbnail("http://cdn.ipernity.com/200/30/56/50253056.040e95e0.2048.jpg?r2", 2048, 1366), queryResult.getEntity()
+            .getThumbnailOriginal());
     }
 
     @Test

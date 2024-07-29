@@ -74,13 +74,13 @@ public class IpernityConnector implements SearchConnector, DescribeConnector {
     @Override
     public Uni<SearchConnectorResults> search(SearchQuery query) throws ConnectorException {
         return searchClient.search(
-                query.getQuery(),
-                convertContentTypes(query.getContentTypes()),
-                query.getPage(),
-                query.getPerPage(fallbackPerPage),
-                convertSort(query.getSort()),
-                DateUtils.toEpochSecond(query.getDateFrom()),
-                DateUtils.toEpochSecond(query.getDateTo())
+            query.getQuery(),
+            convertContentTypes(query.getContentTypes()),
+            query.getPage(),
+            query.getPerPage(fallbackPerPage),
+            convertSort(query.getSort()),
+            DateUtils.toEpochSecond(query.getDateFrom()),
+            DateUtils.toEpochSecond(query.getDateTo())
         ).map(Unchecked.function(body -> {
             try {
                 return mapper.readValue(body, SearchResponse.class);

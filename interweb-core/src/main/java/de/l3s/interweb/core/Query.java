@@ -33,7 +33,7 @@ public class Query implements Serializable {
     }
 
     @JsonIgnore
-    public void setServices(String ...services) {
+    public void setServices(String... services) {
         this.services = Set.of(services);
     }
 

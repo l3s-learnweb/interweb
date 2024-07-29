@@ -15,13 +15,10 @@ public class Conversation extends CompletionsQuery implements Serializable {
 
     @JsonProperty("title")
     private String title;
-
     @JsonProperty("used_tokens")
     private Integer usedTokens;
-
     @JsonProperty("estimated_cost")
     private Double estimatedCost;
-
     @JsonProperty("created")
     private Instant created;
 

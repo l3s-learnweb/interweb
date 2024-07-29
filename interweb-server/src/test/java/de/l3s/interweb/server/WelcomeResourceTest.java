@@ -1,7 +1,7 @@
 package de.l3s.interweb.server;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.apache.http.HttpStatus;
@@ -13,10 +13,10 @@ public class WelcomeResourceTest {
     @Test
     public void testHelloEndpoint() {
         given()
-          .when().get("/q/health/live")
-          .then()
-             .statusCode(HttpStatus.SC_OK)
-             .body(containsString("\"status\": \"UP\""));
+            .when().get("/q/health/live")
+            .then()
+               .statusCode(HttpStatus.SC_OK)
+               .body(containsString("\"status\": \"UP\""));
     }
 
 }

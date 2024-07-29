@@ -9,8 +9,8 @@ import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
 
-import de.l3s.interweb.server.features.user.Token;
 import de.l3s.interweb.server.Roles;
+import de.l3s.interweb.server.features.user.Token;
 
 @ApplicationScoped
 public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthenticationRequest> {
@@ -24,12 +24,12 @@ public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthentica
     @WithSession
     public Uni<SecurityIdentity> authenticate(ApiKeyAuthenticationRequest request, AuthenticationRequestContext authenticationRequestContext) {
         return Token.findByApiKey(request.getValue())
-                .onItem().ifNotNull()
-                .transform(token -> QuarkusSecurityIdentity.builder()
-                        .setPrincipal(token.user)
-                        .addCredential(token)
-                        .setAnonymous(false)
-                        .addRole(Roles.SERVICE)
-                        .build());
+            .onItem().ifNotNull()
+            .transform(token -> QuarkusSecurityIdentity.builder()
+                .setPrincipal(token.user)
+                .addCredential(token)
+                .setAnonymous(false)
+                .addRole(Roles.SERVICE)
+                .build());
     }
 }

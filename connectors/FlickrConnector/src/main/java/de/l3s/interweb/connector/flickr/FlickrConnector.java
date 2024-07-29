@@ -61,13 +61,13 @@ public class FlickrConnector implements SearchConnector, DescribeConnector {
     @Override
     public Uni<SearchConnectorResults> search(SearchQuery query) throws ConnectorException {
         return searchClient.search(
-                query.getQuery(),
-                FlickrUtils.getMediaType(query),
-                DateUtils.toEpochSecond(query.getDateFrom()),
-                DateUtils.toEpochSecond(query.getDateTo()),
-                FlickrUtils.convertSort(query.getSort()),
-                query.getPage(),
-                query.getPerPage(fallbackPerPage)
+            query.getQuery(),
+            FlickrUtils.getMediaType(query),
+            DateUtils.toEpochSecond(query.getDateFrom()),
+            DateUtils.toEpochSecond(query.getDateTo()),
+            FlickrUtils.convertSort(query.getSort()),
+            query.getPage(),
+            query.getPerPage(fallbackPerPage)
         ).map(response -> {
             SearchConnectorResults queryResult = new SearchConnectorResults();
             queryResult.setTotalResults(response.getPhotos().getTotal());

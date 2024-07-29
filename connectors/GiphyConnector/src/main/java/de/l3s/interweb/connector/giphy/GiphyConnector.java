@@ -43,10 +43,10 @@ public class GiphyConnector implements SearchConnector {
     @Override
     public Uni<SearchConnectorResults> search(SearchQuery query) throws ConnectorException {
         return searchClient.search(
-                query.getQuery(),
-                query.getPerPage(fallbackPerPage),
-                query.getOffset(fallbackPerPage),
-                query.getLanguage()
+            query.getQuery(),
+            query.getPerPage(fallbackPerPage),
+            query.getOffset(fallbackPerPage),
+            query.getLanguage()
         ).map(feed -> {
             SearchConnectorResults results = new SearchConnectorResults();
 

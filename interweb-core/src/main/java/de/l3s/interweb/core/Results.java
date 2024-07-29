@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "elapsed_time", "query", "results" })
+@JsonPropertyOrder({"elapsed_time", "query", "results"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Results<T extends ConnectorResults> {
     /**

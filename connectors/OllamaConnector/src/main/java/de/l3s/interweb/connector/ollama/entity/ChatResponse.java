@@ -7,10 +7,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interweb.core.chat.Choice;
-import de.l3s.interweb.core.chat.CompletionsResults;
-import de.l3s.interweb.core.chat.Message;
-import de.l3s.interweb.core.chat.Usage;
+import de.l3s.interweb.core.chat.*;
 
 @RegisterForReflection
 public class ChatResponse {
@@ -133,7 +130,7 @@ public class ChatResponse {
         }
 
         if (message != null) {
-            Choice choice = new Choice(0, doneReason, new Message(Message.Role.assistant, message.getContent()));
+            Choice choice = new Choice(0, doneReason, new Message(Role.assistant, message.getContent()));
             results.setChoices(List.of(choice));
         }
 

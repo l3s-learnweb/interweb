@@ -1,6 +1,6 @@
 package de.l3s.interweb.connector.google;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.inject.Inject;
 

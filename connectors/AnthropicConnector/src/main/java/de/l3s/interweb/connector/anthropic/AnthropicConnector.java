@@ -66,7 +66,7 @@ public class AnthropicConnector implements ChatConnector {
 
             AtomicInteger index = new AtomicInteger();
             List<Choice> choices = response.getContent().stream().map(content -> {
-                Message message = new Message(Message.Role.assistant, content.getText());
+                Message message = new Message(Role.assistant, content.getText());
                 return new Choice(index.getAndIncrement(), response.getStopReason(), message);
             }).toList();
 

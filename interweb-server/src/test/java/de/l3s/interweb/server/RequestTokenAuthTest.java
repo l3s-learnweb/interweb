@@ -21,9 +21,9 @@ import org.mockito.Mockito;
 
 import de.l3s.interweb.core.search.SearchQuery;
 import de.l3s.interweb.core.search.SearchResults;
+import de.l3s.interweb.server.features.search.SearchService;
 import de.l3s.interweb.server.features.user.Token;
 import de.l3s.interweb.server.features.user.User;
-import de.l3s.interweb.server.features.search.SearchService;
 
 @QuarkusTest
 class RequestTokenAuthTest {
@@ -99,8 +99,8 @@ class RequestTokenAuthTest {
             .then()
                 .statusCode(200)
                 .body(
-                    "elapsed_time", Matchers.greaterThan(0),
-                    "results", Matchers.notNullValue()
-                );
+                "elapsed_time", Matchers.greaterThan(0),
+                "results", Matchers.notNullValue()
+            );
     }
 }

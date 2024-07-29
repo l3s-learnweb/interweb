@@ -22,7 +22,7 @@ public class CompletionsResults extends Results<Choice> {
     private UUID chatId;
     @JsonProperty(value = "title")
     private String chatTitle;
-    private String object;
+    private String object = "chat.completion";
     private String model;
     private Usage usage;
     private UsageCost cost;

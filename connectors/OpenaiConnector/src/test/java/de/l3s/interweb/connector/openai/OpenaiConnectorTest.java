@@ -1,5 +1,7 @@
 package de.l3s.interweb.connector.openai;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.inject.Inject;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -11,9 +13,7 @@ import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.Choice;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
-import de.l3s.interweb.core.chat.Message;
-
-import static org.junit.jupiter.api.Assertions.*;
+import de.l3s.interweb.core.chat.Role;
 
 @Disabled
 @QuarkusTest
@@ -31,8 +31,8 @@ class OpenaiConnectorTest {
     @Test
     void completions() throws ConnectorException {
         CompletionsQuery query = new CompletionsQuery();
-        query.addMessage("You are Interweb Assistant, a helpful chat bot.", Message.Role.system);
-        query.addMessage("What is your name?", Message.Role.user);
+        query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
+        query.addMessage("What is your name?", Role.user);
 
         CompletionsResults results = connector.completions(query).await().indefinitely();
 

@@ -17,12 +17,6 @@ public class Message implements Serializable {
     @Serial
     private static final long serialVersionUID = 7110951353515625780L;
 
-    public enum Role {
-        system,
-        user,
-        assistant
-    }
-
     private Long id;
     @NotNull
     private Role role;

@@ -13,8 +13,8 @@ import io.quarkus.rest.client.reactive.ClientQueryParam;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import de.l3s.interweb.connector.flickr.entity.SearchResponse;
 import de.l3s.interweb.connector.flickr.entity.GetInfoResponse;
+import de.l3s.interweb.connector.flickr.entity.SearchResponse;
 import de.l3s.interweb.core.ConnectorException;
 
 /**
@@ -49,13 +49,13 @@ public interface FlickrSearchClient {
     @ClientQueryParam(name = "privacy_filter", value = "1")
     @ClientQueryParam(name = "extras", value = "description,tags,owner_name,date_upload,views,media,o_dims,url_s,url_m,url_l,url_o")
     Uni<SearchResponse> search(
-            @NotNull @QueryParam("text") String query,
-            @QueryParam("media") String media,
-            @QueryParam("min_upload_date") Integer minUploadDate,
-            @QueryParam("max_upload_date") Integer maxUploadDate,
-            @QueryParam("sort") String sort,
-            @QueryParam("page") Integer page,
-            @QueryParam("per_page") Integer perPage
+        @NotNull @QueryParam("text") String query,
+        @QueryParam("media") String media,
+        @QueryParam("min_upload_date") Integer minUploadDate,
+        @QueryParam("max_upload_date") Integer maxUploadDate,
+        @QueryParam("sort") String sort,
+        @QueryParam("page") Integer page,
+        @QueryParam("per_page") Integer perPage
     );
 
     /**
@@ -67,7 +67,7 @@ public interface FlickrSearchClient {
     @GET
     @ClientQueryParam(name = "method", value = "flickr.photos.getInfo")
     Uni<GetInfoResponse> getInfo(
-            @NotNull @QueryParam("photo_id") String id
+        @NotNull @QueryParam("photo_id") String id
     );
 
     @ClientExceptionMapper

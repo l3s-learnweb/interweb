@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.l3s.interweb.core.util.StringUtils;
 
-@JsonPropertyOrder({ "rank", "id", "type", "url", "title", "description", "author", "author_url" })
+@JsonPropertyOrder({"rank", "id", "type", "url", "title", "description", "author", "author_url"})
 @RegisterForReflection
 public class SearchItem implements Serializable {
     @Serial

@@ -16,6 +16,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.l3s.interweb.core.chat.Message;
+import de.l3s.interweb.core.chat.Role;
 
 @Entity
 @Cacheable
@@ -31,7 +32,7 @@ public class ChatMessage extends PanacheEntityBase {
     public Chat chat;
 
     @NotNull
-    public Message.Role role;
+    public Role role;
 
     @NotEmpty
     @NotNull

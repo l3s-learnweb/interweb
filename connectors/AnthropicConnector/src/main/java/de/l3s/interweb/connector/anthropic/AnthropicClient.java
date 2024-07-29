@@ -1,6 +1,9 @@
 package de.l3s.interweb.connector.anthropic;
 
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -9,8 +12,8 @@ import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import de.l3s.interweb.connector.anthropic.entity.CompletionResponse;
 import de.l3s.interweb.connector.anthropic.entity.CompletionBody;
+import de.l3s.interweb.connector.anthropic.entity.CompletionResponse;
 import de.l3s.interweb.core.ConnectorException;
 
 @Path("")

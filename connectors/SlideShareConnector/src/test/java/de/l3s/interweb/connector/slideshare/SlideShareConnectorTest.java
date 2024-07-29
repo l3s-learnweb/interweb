@@ -1,7 +1,6 @@
 package de.l3s.interweb.connector.slideshare;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.inject.Inject;
 

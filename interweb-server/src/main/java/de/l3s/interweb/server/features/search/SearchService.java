@@ -61,9 +61,9 @@ public class SearchService {
     public Uni<SearchResults> search(SearchQuery query) {
         Duration timeout = Duration.ofMillis(Objects.requireNonNullElse(query.getTimeout(), defaultTimeout));
         return Multi.createFrom()
-                .iterable(getConnectors(query.getServices()))
-                .onItem().transformToUniAndMerge(connector -> searchIn(query, connector, timeout))
-                .collect().asList().map(SearchResults::new);
+            .iterable(getConnectors(query.getServices()))
+            .onItem().transformToUniAndMerge(connector -> searchIn(query, connector, timeout))
+            .collect().asList().map(SearchResults::new);
     }
 
     private Uni<SearchConnectorResults> searchIn(SearchQuery query, SearchConnector connector, Duration timeout) {

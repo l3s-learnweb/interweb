@@ -121,14 +121,14 @@ public class YouTubeConnector implements SearchConnector, DescribeConnector {
 
             final String finalQ = q;
             return channelUni.chain(channelId -> searchClient.search(
-                    finalQ,
-                    channelId,
-                    DateUtils.toRfc3339(query.getDateFrom()),
-                    DateUtils.toRfc3339(query.getDateTo()),
-                    query.getPerPage(fallbackPerPage),
-                    query.getLanguage(),
-                    YouTubeUtils.convertSort(query.getSort()),
-                    pageToken
+                finalQ,
+                channelId,
+                DateUtils.toRfc3339(query.getDateFrom()),
+                DateUtils.toRfc3339(query.getDateTo()),
+                query.getPerPage(fallbackPerPage),
+                query.getLanguage(),
+                YouTubeUtils.convertSort(query.getSort()),
+                pageToken
             ));
         });
     }

@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import de.l3s.interweb.core.Query;
 
 @RegisterForReflection
-@JsonPropertyOrder({ "id", "query", "services", "content_types", "extras", "date_from", "date_to", "page", "per_page", "lang", "sort", "timeout" })
+@JsonPropertyOrder({"id", "query", "services", "content_types", "extras", "date_from", "date_to", "page", "per_page", "lang", "sort", "timeout"})
 @JsonIgnoreProperties(ignoreUnknown = false)
 public class SearchQuery extends Query {
     private String id;
@@ -97,7 +97,7 @@ public class SearchQuery extends Query {
     }
 
     @JsonIgnore
-    public void setContentTypes(ContentType ...contentTypes) {
+    public void setContentTypes(ContentType... contentTypes) {
         if (contentTypes == null) this.contentTypes = new HashSet<>();
         else this.contentTypes = Set.of(contentTypes);
     }
@@ -111,7 +111,7 @@ public class SearchQuery extends Query {
     }
 
     @JsonIgnore
-    public void setExtras(final SearchExtra ...extras) {
+    public void setExtras(final SearchExtra... extras) {
         if (extras == null) this.extras = new HashSet<>();
         else this.extras = Set.of(extras);
     }
@@ -179,14 +179,14 @@ public class SearchQuery extends Query {
         }
         final SearchQuery query1 = (SearchQuery) o;
         return Objects.equals(page, query1.page)
-                && Objects.equals(perPage, query1.perPage)
-                && Objects.equals(sort, query1.sort)
-                && Objects.equals(query, query1.query)
-                && Objects.equals(dateFrom, query1.dateFrom)
-                && Objects.equals(dateTo, query1.dateTo)
-                && Objects.equals(language, query1.language)
-                && Objects.equals(contentTypes, query1.contentTypes)
-                && Objects.equals(extras, query1.extras);
+            && Objects.equals(perPage, query1.perPage)
+            && Objects.equals(sort, query1.sort)
+            && Objects.equals(query, query1.query)
+            && Objects.equals(dateFrom, query1.dateFrom)
+            && Objects.equals(dateTo, query1.dateTo)
+            && Objects.equals(language, query1.language)
+            && Objects.equals(contentTypes, query1.contentTypes)
+            && Objects.equals(extras, query1.extras);
     }
 
     @Override

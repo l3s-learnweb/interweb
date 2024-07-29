@@ -151,7 +151,7 @@ public class CompletionsQuery {
         this.messages.add(message);
     }
 
-    public void addMessage(final String message, final Message.Role role) {
+    public void addMessage(final String message, final Role role) {
         addMessage(new Message(role, message));
     }
 

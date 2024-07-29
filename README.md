@@ -41,26 +41,26 @@ Interweb can be used in a wide range of applications, but was designed with the 
 Interweb currently supports the following data providers:
 
 1. **Anthropic**:
-   - Interact with Anthropic's LLMs for natural language understanding and generation.
+    - Interact with Anthropic's LLMs for natural language understanding and generation.
 2. **Bing**:
-   - Search: the web for images, videos, news, and more.
-   - Suggest: get related queries to enhance user search experience.
+    - Search: the web for images, videos, news, and more.
+    - Suggest: get related queries to enhance user search experience.
 3. **Flickr**:
-   - Search: for photos and images.
-   - Describe: a media resource by url.
+    - Search: for photos and images.
+    - Describe: a media resource by url.
 4. **Giphy**:
-   - Search: for variety of gifs in one of the largest gif libraries.
+    - Search: for variety of gifs in one of the largest gif libraries.
 5. **Google**:
-   - Suggest: access related search queries from one of the world's leading search engines.
+    - Suggest: access related search queries from one of the world's leading search engines.
 6. **Ipernity**:
-   - Search: discover photos and images within one of the largest non-commercial clubs.
-   - Describe: obtain photo information using its url.
+    - Search: discover photos and images within one of the largest non-commercial clubs.
+    - Describe: obtain photo information using its url.
 7. **Ollama**:
-   - Interact with open-source LLMs for natural language understanding and generation.
+    - Interact with open-source LLMs for natural language understanding and generation.
 8. **OpenAI**:
-   - Interact with OpenAI's ChatGPT for natural language understanding and generation.
+    - Interact with OpenAI's ChatGPT for natural language understanding and generation.
 9. **SlideShare**:
-   - Search: find presentations and documents for various topics.
+    - Search: find presentations and documents for various topics.
 10. **Vimeo**:
     - Search: locate videos created by creative content creators.
     - Describe: obtain video information using its url.

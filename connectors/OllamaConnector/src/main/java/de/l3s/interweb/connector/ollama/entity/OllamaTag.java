@@ -1,8 +1,8 @@
 package de.l3s.interweb.connector.ollama.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RegisterForReflection
 public class OllamaTag {

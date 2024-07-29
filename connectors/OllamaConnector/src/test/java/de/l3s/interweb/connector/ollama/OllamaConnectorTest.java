@@ -15,7 +15,7 @@ import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.Choice;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
-import de.l3s.interweb.core.chat.Message;
+import de.l3s.interweb.core.chat.Role;
 
 
 @Disabled
@@ -35,8 +35,8 @@ class OllamaConnectorTest {
     void completions() throws ConnectorException {
         CompletionsQuery query = new CompletionsQuery();
         query.setModel("llama3");
-        query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Message.Role.system);
-        query.addMessage("What is your name?", Message.Role.user);
+        query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Role.system);
+        query.addMessage("What is your name?", Role.user);
         query.setMaxTokens(100);
         query.setTemperature(20.0);
         query.setTopP(1.0);
@@ -56,8 +56,8 @@ class OllamaConnectorTest {
     void completionsStream() throws ConnectorException {
         CompletionsQuery query = new CompletionsQuery();
         query.setModel("llama3");
-        query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Message.Role.system);
-        query.addMessage("What is your name?", Message.Role.user);
+        query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Role.system);
+        query.addMessage("What is your name?", Role.user);
 
         long start = System.currentTimeMillis();
         List<CompletionsResults> list = connector.completionsStream(query).onItem().invoke(() -> {

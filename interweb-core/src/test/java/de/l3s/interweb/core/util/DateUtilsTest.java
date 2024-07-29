@@ -1,6 +1,6 @@
 package de.l3s.interweb.core.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
 

@@ -1,8 +1,8 @@
 package de.l3s.interweb.connector.openai.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.l3s.interweb.core.chat.Message;
 

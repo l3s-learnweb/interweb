@@ -12,7 +12,7 @@ import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.ChatConnector;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
-import de.l3s.interweb.core.chat.Message;
+import de.l3s.interweb.core.chat.Role;
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.models.ModelsConnector;
 import de.l3s.interweb.server.features.models.ModelsService;
@@ -48,8 +48,8 @@ public class ChatService {
     public Uni<CompletionsResults> generateTitle(final Chat chat) {
         CompletionsQuery query = new CompletionsQuery();
         query.setMessages(new ArrayList<>(chat.getMessages().stream().map(ChatMessage::toMessage).toList()));
-        query.addMessage("don't use any formatting; length between 80 and 120 characters;", Message.Role.system);
-        query.addMessage("Give a short name for this conversation", Message.Role.user);
+        query.addMessage("don't use any formatting; length between 80 and 120 characters;", Role.system);
+        query.addMessage("Give a short name for this conversation", Role.user);
         return completions(query);
     }
 }

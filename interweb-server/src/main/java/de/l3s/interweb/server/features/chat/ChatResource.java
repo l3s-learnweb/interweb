@@ -16,10 +16,7 @@ import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import de.l3s.interweb.core.chat.CompletionsQuery;
-import de.l3s.interweb.core.chat.CompletionsResults;
-import de.l3s.interweb.core.chat.Message;
-import de.l3s.interweb.core.chat.Conversation;
+import de.l3s.interweb.core.chat.*;
 import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.features.user.Token;
 
@@ -54,7 +51,7 @@ public class ChatResource {
         return Mutiny.fetch(chat.getMessages()).call(() -> {
             if (!chat.getMessages().isEmpty()) {
                 for (ChatMessage message : chat.getMessages()) {
-                    if (message.role == Message.Role.user) {
+                    if (message.role == Role.user) {
                         chat.title = StringUtils.shorten(message.content, 120);
                         return chat.updateTitle();
                     }

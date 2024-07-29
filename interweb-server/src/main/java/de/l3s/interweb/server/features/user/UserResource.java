@@ -34,8 +34,8 @@ public class UserResource {
     @Operation(summary = "Register a new user", description = "Use this method to register a new user")
     public Uni<User> register(@Valid UserResource.CreateUser user) {
         return User.findByName(user.email)
-                        .onItem().ifNotNull().failWith(() -> new BadRequestException("User already exists"))
-                        .chain(() -> User.add(user.email, user.password));
+            .onItem().ifNotNull().failWith(() -> new BadRequestException("User already exists"))
+            .chain(() -> User.add(user.email, user.password));
     }
 
     @GET
@@ -44,8 +44,8 @@ public class UserResource {
     @Operation(summary = "Request JWT token for the given email and password", description = "Use this method to login to the app and manage tokens")
     public Uni<String> login(@NotEmpty @QueryParam("email") String email, @NotEmpty @QueryParam("password") String password) {
         return User.findByNameAndPassword(email, password)
-                        .onItem().ifNotNull().transform(user -> Jwt.upn(user.getName()).groups(Roles.USER).sign())
-                        .onItem().ifNull().failWith(() -> new BadRequestException("No user found or password is incorrect"));
+            .onItem().ifNotNull().transform(user -> Jwt.upn(user.getName()).groups(Roles.USER).sign())
+            .onItem().ifNull().failWith(() -> new BadRequestException("No user found or password is incorrect"));
     }
 
     @GET

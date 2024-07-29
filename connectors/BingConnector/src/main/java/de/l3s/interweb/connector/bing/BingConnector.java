@@ -63,21 +63,21 @@ public class BingConnector implements SearchConnector, SuggestConnector {
         if (query.getContentTypes().size() == 1) {
             if (query.getContentTypes().contains(ContentType.image)) {
                 return searchClient.searchImages(
-                        query.getQuery(),
-                        query.getPerPage(FALLBACK_PER_PAGE_IMAGES),
-                        query.getOffset(FALLBACK_PER_PAGE_IMAGES),
-                        query.getLanguage(),
-                        BingUtils.getMarket(query.getLanguage()),
-                        BingUtils.createFreshness(null, query.getDateTo())
+                    query.getQuery(),
+                    query.getPerPage(FALLBACK_PER_PAGE_IMAGES),
+                    query.getOffset(FALLBACK_PER_PAGE_IMAGES),
+                    query.getLanguage(),
+                    BingUtils.getMarket(query.getLanguage()),
+                    BingUtils.createFreshness(null, query.getDateTo())
                 );
             } else if (query.getContentTypes().contains(ContentType.video)) {
                 return searchClient.searchVideos(
-                        query.getQuery(),
-                        query.getPerPage(FALLBACK_PER_PAGE_VIDEOS),
-                        query.getOffset(FALLBACK_PER_PAGE_VIDEOS),
-                        query.getLanguage(),
-                        BingUtils.getMarket(query.getLanguage()),
-                        BingUtils.createFreshness(null, query.getDateTo())
+                    query.getQuery(),
+                    query.getPerPage(FALLBACK_PER_PAGE_VIDEOS),
+                    query.getOffset(FALLBACK_PER_PAGE_VIDEOS),
+                    query.getLanguage(),
+                    BingUtils.getMarket(query.getLanguage()),
+                    BingUtils.createFreshness(null, query.getDateTo())
                 );
             }
         }
@@ -96,13 +96,13 @@ public class BingConnector implements SearchConnector, SuggestConnector {
         }
 
         return searchClient.search(
-                query.getQuery(),
-                query.getPerPage(FALLBACK_PER_PAGE_WEB),
-                query.getOffset(FALLBACK_PER_PAGE_WEB),
-                query.getLanguage(),
-                BingUtils.getMarket(query.getLanguage()),
-                BingUtils.createFreshness(query.getDateFrom(), query.getDateTo()),
-                answerTypes.isEmpty() ? null : answerTypes.stream().map(Enum::name).collect(Collectors.joining(","))
+            query.getQuery(),
+            query.getPerPage(FALLBACK_PER_PAGE_WEB),
+            query.getOffset(FALLBACK_PER_PAGE_WEB),
+            query.getLanguage(),
+            BingUtils.getMarket(query.getLanguage()),
+            BingUtils.createFreshness(query.getDateFrom(), query.getDateTo()),
+            answerTypes.isEmpty() ? null : answerTypes.stream().map(Enum::name).collect(Collectors.joining(","))
         );
     }
 
