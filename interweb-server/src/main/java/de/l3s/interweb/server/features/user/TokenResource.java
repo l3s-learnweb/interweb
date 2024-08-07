@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.Context;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -19,8 +20,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import de.l3s.interweb.server.Roles;
 
-@Path("/users/tokens")
-@Tag(name = "Tokens", description = "Use to create a new client with Api-Key auth.")
+@Tag(name = "API Keys", description = "Manage application access")
+@Path("/tokens")
+@Authenticated
 public class TokenResource {
 
     @Context

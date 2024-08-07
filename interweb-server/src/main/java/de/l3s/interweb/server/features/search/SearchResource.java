@@ -21,12 +21,15 @@ import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.RestQuery;
 
 import de.l3s.interweb.core.search.*;
 import de.l3s.interweb.core.util.StringUtils;
 
+@Tag(name = "Search", description = "Search internet by query")
 @Path("/search")
+@Authenticated
 public class SearchResource {
     private static final String NO_CACHE = "no-cache";
 
@@ -37,7 +40,6 @@ public class SearchResource {
     SecurityIdentity securityIdentity;
 
     @GET
-    @Authenticated
     public Uni<SearchResults> search(@Parameter(description = "The search query", example = "hello world") @NotEmpty @RestQuery("query") String query,
                                      @Parameter(description = "A content types to search for") @NotEmpty @RestQuery("content_types") ContentType[] contentTypes,
                                      @Parameter(description = "A services to search in") @RestQuery("services") String[] services,
@@ -66,7 +68,6 @@ public class SearchResource {
     }
 
     @POST
-    @Authenticated
     public Uni<SearchResults> search(@NotNull @Valid SearchQuery query, @HeaderParam("Cache-Control") String cacheControl) {
         long start = System.currentTimeMillis();
         if (NO_CACHE.equals(cacheControl)) {

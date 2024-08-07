@@ -14,13 +14,16 @@ import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import de.l3s.interweb.core.chat.*;
 import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.features.user.Token;
 
+@Tag(name = "Chat")
 @Path("/chat")
+@Authenticated
 public class ChatResource {
 
     @Inject
@@ -30,7 +33,6 @@ public class ChatResource {
     SecurityIdentity securityIdentity;
 
     @GET
-    @Authenticated
     public Uni<List<Chat>> chats(
         @QueryParam("user") String user,
         @QueryParam("sort") @DefaultValue("-created") String order,
@@ -63,7 +65,6 @@ public class ChatResource {
     }
 
     @GET
-    @Authenticated
     @Path("{uuid}")
     public Uni<Conversation> chat(@PathParam("uuid") UUID id) {
         Token token = securityIdentity.getCredential(Token.class);
@@ -81,7 +82,6 @@ public class ChatResource {
     }
 
     @POST
-    @Authenticated
     @Path("/completions")
     public Uni<CompletionsResults> completions(@Valid CompletionsQuery query) {
         Token token = securityIdentity.getCredential(Token.class);

@@ -3,7 +3,6 @@ package de.l3s.interweb.server.features.describe;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
@@ -14,6 +13,7 @@ import jakarta.ws.rs.Path;
 import io.quarkus.cache.CacheResult;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.RestQuery;
 
 import de.l3s.interweb.core.describe.DescribeConnector;
@@ -21,14 +21,15 @@ import de.l3s.interweb.core.describe.DescribeQuery;
 import de.l3s.interweb.core.describe.DescribeResults;
 import de.l3s.interweb.core.util.StringUtils;
 
+@Tag(name = "Describe", description = "Retrieve information about a resource (URL)")
 @Path("/describe")
+@Authenticated
 public class DescribeResource {
 
     @Inject
     DescribeService describeService;
 
     @GET
-    @Authenticated
     public Uni<DescribeResults> describe(@RestQuery String link,
                                          @RestQuery String id,
                                          @RestQuery String services) {
@@ -42,7 +43,6 @@ public class DescribeResource {
     }
 
     @POST
-    @Authenticated
     @CacheResult(cacheName = "describe")
     public Uni<DescribeResults> describe(@Valid DescribeQuery query) {
         describeService.validateServices(query.getServices());
@@ -56,7 +56,6 @@ public class DescribeResource {
     }
 
     @GET
-    @PermitAll
     @Path("/services")
     public Uni<List<ServiceEntity>> services() {
         List<ServiceEntity> services = new ArrayList<>();

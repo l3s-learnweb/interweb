@@ -14,9 +14,9 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
     info = @Info(
         title = "Interweb API",
         version = "4.0.0",
+        description = "Unified API for Information Retrieval.",
         contact = @Contact(
             name = "Learnweb Team",
-            url = "https://learnweb.l3s.uni-hannover.de/lw/contact.jsf",
             email = "learnweb-support@l3s.de"),
         license = @License(name = "The MIT License", url = "https://opensource.org/licenses/MIT")
     ),

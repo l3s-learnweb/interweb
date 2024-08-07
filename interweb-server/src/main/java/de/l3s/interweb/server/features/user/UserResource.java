@@ -19,10 +19,10 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import de.l3s.interweb.server.Roles;
 
+@Tag(name = "Auth & Identity", description = "User management")
 @Path("/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@Tag(name = "Identity", description = "Identity & tokens management")
 public class UserResource {
 
     @Context
