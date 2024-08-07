@@ -85,15 +85,15 @@ public class Interweb implements Serializable {
     }
 
     public List<Conversation> chatAll() throws InterwebException {
-        return sendGetRequest("/chat", Map.of(), new TypeReference<>() {});
+        return sendGetRequest("/chats", Map.of(), new TypeReference<>() {});
     }
 
     public List<Conversation> chatAll(String user) throws InterwebException {
-        return sendGetRequest("/chat", Map.of("user", user), new TypeReference<>() {});
+        return sendGetRequest("/chats", Map.of("user", user), new TypeReference<>() {});
     }
 
     public Conversation chatById(String uuid) throws InterwebException {
-        return sendGetRequest("/chat/" + uuid, null, new TypeReference<>() {});
+        return sendGetRequest("/chats/" + uuid, null, new TypeReference<>() {});
     }
 
     public void chatComplete(Conversation conversation) throws InterwebException {

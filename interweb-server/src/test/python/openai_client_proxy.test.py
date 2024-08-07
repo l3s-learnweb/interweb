@@ -1,9 +1,11 @@
 import os
+import httpx
 from openai import OpenAI
 
 client = OpenAI(
     base_url="http://localhost:8080",
     api_key=os.getenv("INTERWEB_APIKEY"),
+    http_client=httpx.Client(proxy="http://localhost:8000")
 )
 
 message_text = [{
@@ -24,6 +26,3 @@ completion = client.chat.completions.create(
 
 print('user:', message_text[0]['content'])
 print('assistant:', completion.choices[0].message.content)
-
-models = client.models.list()
-print(models)

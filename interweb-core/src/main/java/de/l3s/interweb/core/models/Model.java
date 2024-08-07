@@ -15,13 +15,31 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({"id", "object", "owned_by", "created"})
 public class Model {
+    /**
+     * The model identifier, which can be referenced in the API endpoints.
+     */
     private String id;
+    /**
+     * The object type, which is always "model".
+     */
     private String object = "model";
+    /**
+     * The organization that owns the model.
+     */
     @JsonProperty("owned_by")
     private String ownedBy;
+    /**
+     * The price of the model per 1k tokens in USD.
+     */
     private UsagePrice price;
+    /**
+     * The model provider, e.g. OpenAI, Anthropic or Ollama.
+     */
     @JsonIgnore
     private String provider;
+    /**
+     * The Unix timestamp (in seconds) when the model was created.
+     */
     private Instant created;
 
     public String getId() {

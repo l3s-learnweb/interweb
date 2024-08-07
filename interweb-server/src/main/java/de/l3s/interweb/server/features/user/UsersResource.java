@@ -23,7 +23,7 @@ import de.l3s.interweb.server.Roles;
 @Path("/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserResource {
+public class UsersResource {
 
     @Context
     SecurityIdentity securityIdentity;
@@ -32,7 +32,7 @@ public class UserResource {
     @Path("/register")
     @WithTransaction
     @Operation(summary = "Register a new user", description = "Use this method to register a new user")
-    public Uni<User> register(@Valid UserResource.CreateUser user) {
+    public Uni<User> register(@Valid CreateUser user) {
         return User.findByName(user.email)
             .onItem().ifNotNull().failWith(() -> new BadRequestException("User already exists"))
             .chain(() -> User.add(user.email, user.password));
