@@ -46,8 +46,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.quarkus.resteasy.reactive</groupId>
-            <artifactId>resteasy-reactive-common</artifactId>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-common</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
