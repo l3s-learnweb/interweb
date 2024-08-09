@@ -3,6 +3,7 @@ package de.l3s.interweb.server.components.auth;
 import java.util.Optional;
 import java.util.Set;
 
+import de.l3s.interweb.server.features.user.ApiKey;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -17,14 +18,12 @@ import io.quarkus.vertx.http.runtime.security.HttpSecurityUtils;
 import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.RoutingContext;
 
-import de.l3s.interweb.server.features.user.Token;
-
 @ApplicationScoped
 public class ApiKeyAuthMechanism implements HttpAuthenticationMechanism {
     public static final AsciiString APIKEY_HEADER = AsciiString.cached("Api-Key");
     public static final AsciiString AUTHORIZATION_HEADER = AsciiString.cached("Authorization");
     public static final int AUTHORIZATION_HEADER_PREFIX_LENGTH = JWTAuthMechanism.BEARER.length() + 1;
-    public static final int AUTHORIZATION_HEADER_LENGTH = AUTHORIZATION_HEADER_PREFIX_LENGTH + Token.TOKEN_LENGTH;
+    public static final int AUTHORIZATION_HEADER_LENGTH = AUTHORIZATION_HEADER_PREFIX_LENGTH + ApiKey.length;
 
     @Override
     public Uni<SecurityIdentity> authenticate(RoutingContext context, IdentityProviderManager identityProviderManager) {

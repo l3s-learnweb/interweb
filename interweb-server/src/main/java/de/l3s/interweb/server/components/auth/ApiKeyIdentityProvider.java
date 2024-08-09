@@ -10,7 +10,7 @@ import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
 
 import de.l3s.interweb.server.Roles;
-import de.l3s.interweb.server.features.user.Token;
+import de.l3s.interweb.server.features.user.ApiKey;
 
 @ApplicationScoped
 public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthenticationRequest> {
@@ -23,11 +23,11 @@ public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthentica
     @Override
     @WithSession
     public Uni<SecurityIdentity> authenticate(ApiKeyAuthenticationRequest request, AuthenticationRequestContext authenticationRequestContext) {
-        return Token.findByApiKey(request.getValue())
+        return ApiKey.findByApiKey(request.getValue())
             .onItem().ifNotNull()
-            .transform(token -> QuarkusSecurityIdentity.builder()
-                .setPrincipal(token.user)
-                .addCredential(token)
+            .transform(key -> QuarkusSecurityIdentity.builder()
+                .setPrincipal(key.user)
+                .addCredential(key)
                 .setAnonymous(false)
                 .addRole(Roles.SERVICE)
                 .build());

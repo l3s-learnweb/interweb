@@ -113,6 +113,15 @@
             <artifactId>quarkus-elytron-security-common</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+
         <!-- Adds /q/health endpoint which implements MicroProfile Health specification -->
         <!-- https://quarkus.io/guides/smallrye-health -->
         <dependency>
