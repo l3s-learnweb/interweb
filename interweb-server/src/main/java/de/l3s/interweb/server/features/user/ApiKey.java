@@ -1,5 +1,6 @@
 package de.l3s.interweb.server.features.user;
 
+import java.time.Instant;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -10,6 +11,7 @@ import jakarta.validation.constraints.Size;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.quarkus.security.credential.Credential;
 import io.smallrye.mutiny.Uni;
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -17,9 +19,9 @@ import de.l3s.interweb.core.util.StringUtils;
 
 @Entity
 @Cacheable
-@Table(name = "user_token")
-public class Token extends PanacheEntityBase implements Credential {
-    public static final int TOKEN_LENGTH = 64;
+@Table(name = "user_apikey")
+public class ApiKey extends PanacheEntityBase implements Credential {
+    public static final int LENGTH = 64;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,28 +43,31 @@ public class Token extends PanacheEntityBase implements Credential {
 
     @NotEmpty
     @NotNull
-    @Column(unique = true, length = TOKEN_LENGTH)
+    @Column(unique = true, length = LENGTH)
     public String apikey;
 
-    public Token() {
+    @CreationTimestamp
+    public Instant created;
+
+    public ApiKey() {
         // required for Panache
     }
 
-    public static Token generate() {
-        Token token = new Token();
-        token.apikey = StringUtils.randomAlphanumeric(TOKEN_LENGTH);
-        return token;
+    public static ApiKey generate() {
+        ApiKey apikey = new ApiKey();
+        apikey.apikey = StringUtils.randomAlphanumeric(LENGTH);
+        return apikey;
     }
 
-    public static Uni<List<Token>> findByUser(User user) {
+    public static Uni<List<ApiKey>> findByUser(User user) {
         return list("user.id", user.id);
     }
 
-    public static Uni<Token> findById(Object id, User user) {
+    public static Uni<ApiKey> findById(Object id, User user) {
         return find("id = ?1 and user.id = ?2", id, user.id).firstResult();
     }
 
-    public static Uni<Token> findByApiKey(String apikey) {
+    public static Uni<ApiKey> findByApikey(String apikey) {
         return find("apikey", apikey).firstResult();
     }
 }

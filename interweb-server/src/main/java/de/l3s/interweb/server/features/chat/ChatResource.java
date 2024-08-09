@@ -34,9 +34,9 @@ public class ChatResource {
     @POST
     @Path("/completions")
     public Uni<CompletionsResults> completions(@Valid CompletionsQuery query) {
-        Token token = securityIdentity.getCredential(Token.class);
+        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
 
-        return getOrCreateChat(query, token).flatMap(chat -> {
+        return getOrCreateChat(query, apikey).flatMap(chat -> {
             // noinspection CodeBlock2Expr
             return chatService.completions(query).call(results -> {
                 results.setChatId(chat.id);
@@ -60,13 +60,13 @@ public class ChatResource {
         });
     }
 
-    private Uni<Chat> getOrCreateChat(CompletionsQuery query, Token token) {
+    private Uni<Chat> getOrCreateChat(CompletionsQuery query, ApiKey apikey) {
         if (query.getId() != null) {
-            return Chat.findById(token, query.getId()).call(chat -> Mutiny.fetch(chat.getMessages()));
+            return Chat.findById(apikey, query.getId()).call(chat -> Mutiny.fetch(chat.getMessages()));
         }
 
         Chat chat = new Chat();
-        chat.token = token;
+        chat.apikey = apikey;
         chat.model = query.getModel();
         chat.user = query.getUser();
         return Panache.withTransaction(chat::persist);

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `chat`
     `title`          VARCHAR(512)             DEFAULT NULL,
     `used_tokens`    int(11)         NOT NULL DEFAULT 0,
     `estimated_cost` DOUBLE          NOT NULL DEFAULT 0,
-    `created`        DATETIME                 DEFAULT NULL,
+    `created`        DATETIME                 DEFAULT NOW(),
     KEY `index_chat_user` (`user`),
     CONSTRAINT `fk_chat_token` FOREIGN KEY (`token_id`) REFERENCES `user_token` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 );
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `chat_message`
     `chat_id` UUID             NOT NULL,
     `role`    TINYINT UNSIGNED NOT NULL,
     `content` TEXT             NOT NULL,
-    `created` DATETIME DEFAULT NULL,
+    `created` DATETIME DEFAULT NOW(),
     CONSTRAINT `fk_chat_message_chat` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

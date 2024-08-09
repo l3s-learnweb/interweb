@@ -21,43 +21,43 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import de.l3s.interweb.server.Roles;
 
 @Tag(name = "API Keys", description = "Manage application access")
-@Path("/tokens")
+@Path("/api_keys")
 @Authenticated
-public class TokenResource {
+public class ApiKeysResource {
 
     @Context
     SecurityIdentity securityIdentity;
 
     @GET
-    @RolesAllowed({Roles.USER})
-    @Operation(summary = "List all tokens", description = "Use this method to list all tokens")
-    public Uni<List<Token>> tokens() {
-        return Token.findByUser((User) securityIdentity.getPrincipal());
+    @RolesAllowed({Roles.USER, Roles.ADMIN})
+    @Operation(summary = "List all api keys", description = "Use this method to list all api keys")
+    public Uni<List<ApiKey>> list() {
+        return ApiKey.findByUser((User) securityIdentity.getPrincipal());
     }
 
     @POST
     @WithTransaction
-    @RolesAllowed({Roles.USER})
-    @Operation(summary = "Create a new token", description = "Use this method to create a new token")
-    public Uni<Token> newToken(@Valid CreateToken model) {
-        Token token = Token.generate();
-        token.name = model.name;
-        token.url = model.url;
-        token.description = model.description;
-        token.user = (User) securityIdentity.getPrincipal();
-        return token.persist();
+    @RolesAllowed({Roles.USER, Roles.ADMIN})
+    @Operation(summary = "Create a new api key", description = "Use this method to create a new api key")
+    public Uni<ApiKey> create(@Valid CreateToken model) {
+        ApiKey apikey = ApiKey.generate();
+        apikey.name = model.name;
+        apikey.url = model.url;
+        apikey.description = model.description;
+        apikey.user = (User) securityIdentity.getPrincipal();
+        return apikey.persist();
     }
 
     @DELETE
     @WithTransaction
-    @Operation(summary = "Delete a token", description = "Use this method to delete a token. ")
-    public Uni<Void> deleteToken(@QueryParam("id") Long tokenId, @QueryParam("token") String token) {
-        Uni<Token> item;
+    @Operation(summary = "Delete an api key", description = "Use this method to delete an api key. ")
+    public Uni<Void> delete(@QueryParam("id") Long id, @QueryParam("apikey") String apikey) {
+        Uni<ApiKey> item;
         User user = (User) securityIdentity.getPrincipal();
-        if (tokenId != null && user != null) {
-            item = Token.findById(tokenId, user);
+        if (id != null && user != null) {
+            item = ApiKey.findById(id, user);
         } else {
-            item = Token.findByApiKey(token);
+            item = ApiKey.findByApikey(apikey);
         }
 
         return item.onItem().ifNotNull().call(PanacheEntityBase::delete).replaceWithVoid();

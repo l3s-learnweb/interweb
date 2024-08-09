@@ -23,7 +23,7 @@ public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthentica
     @Override
     @WithSession
     public Uni<SecurityIdentity> authenticate(ApiKeyAuthenticationRequest request, AuthenticationRequestContext authenticationRequestContext) {
-        return ApiKey.findByApiKey(request.getValue())
+        return ApiKey.findByApikey(request.getValue())
             .onItem().ifNotNull()
             .transform(key -> QuarkusSecurityIdentity.builder()
                 .setPrincipal(key.user)

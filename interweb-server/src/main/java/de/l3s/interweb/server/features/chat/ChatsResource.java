@@ -34,9 +34,9 @@ public class ChatsResource {
         @QueryParam("page") @DefaultValue("1") Integer page,
         @QueryParam("perPage") @DefaultValue("20") Integer perPage
     ) {
-        Token token = securityIdentity.getCredential(Token.class);
+        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
 
-        return Chat.listByUser(token, user, order, page, perPage)
+        return Chat.listByUser(apikey, user, order, page, perPage)
             .call(chats -> Multi.createFrom().iterable(chats)
                 .filter(chat -> chat.title == null)
                 .map(ChatsResource::createChatTitle)
@@ -62,9 +62,9 @@ public class ChatsResource {
     @GET
     @Path("{uuid}")
     public Uni<Conversation> chat(@PathParam("uuid") UUID id) {
-        Token token = securityIdentity.getCredential(Token.class);
+        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
 
-        return Chat.findById(token, id).call(chat -> Mutiny.fetch(chat.getMessages())).map(chat -> {
+        return Chat.findById(apikey, id).call(chat -> Mutiny.fetch(chat.getMessages())).map(chat -> {
             Conversation conversation = new Conversation();
             conversation.setId(chat.id);
             conversation.setTitle(chat.title);

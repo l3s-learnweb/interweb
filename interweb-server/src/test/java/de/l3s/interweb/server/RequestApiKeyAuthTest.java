@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.l3s.interweb.server.features.user.ApiKey;
+
 import io.quarkus.panache.mock.PanacheMock;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -22,21 +24,20 @@ import org.mockito.Mockito;
 import de.l3s.interweb.core.search.SearchQuery;
 import de.l3s.interweb.core.search.SearchResults;
 import de.l3s.interweb.server.features.search.SearchService;
-import de.l3s.interweb.server.features.user.Token;
 import de.l3s.interweb.server.features.user.User;
 
 @QuarkusTest
-class RequestTokenAuthTest {
+class RequestApiKeyAuthTest {
 
     @InjectMock
     SearchService searchService;
 
     @BeforeEach
     public void setup() {
-        PanacheMock.mock(Token.class);
-        Token testToken = Mockito.mock(Token.class);
-        Mockito.when(testToken.user).thenReturn(Mockito.mock(User.class));
-        Mockito.when(Token.findByApiKey("testkey")).thenReturn(Uni.createFrom().item(testToken));
+        PanacheMock.mock(ApiKey.class);
+        ApiKey testKey = Mockito.mock(ApiKey.class);
+        Mockito.when(testKey.user).thenReturn(Mockito.mock(User.class));
+        Mockito.when(ApiKey.findByApikey("testkey")).thenReturn(Uni.createFrom().item(testKey));
 
         SearchQuery searchQuery = new SearchQuery();
         searchQuery.setQuery("hello world");

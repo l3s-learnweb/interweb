@@ -20,7 +20,7 @@ import org.hibernate.annotations.UuidGenerator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.l3s.interweb.server.PanacheUtils;
-import de.l3s.interweb.server.features.user.Token;
+import de.l3s.interweb.server.features.user.ApiKey;
 
 @Entity
 @Cacheable
@@ -36,7 +36,7 @@ public class Chat extends PanacheEntityBase {
     @NotNull
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    public Token token;
+    public ApiKey apikey;
 
     @Size(max = 32)
     public String user;
@@ -89,9 +89,9 @@ public class Chat extends PanacheEntityBase {
         return update("title = ?1, usedTokens = ?2, estimatedCost = ?3 where id = ?4", title, usedTokens, estimatedCost, id);
     }
 
-    public static Uni<List<Chat>> listByUser(Token token, String user, String order, int page, int perPage) {
-        String query = "token.id = :id AND usedTokens != 0";
-        Parameters params = Parameters.with("id", token.id);
+    public static Uni<List<Chat>> listByUser(ApiKey apikey, String user, String order, int page, int perPage) {
+        String query = "apikey.id = :id AND usedTokens != 0";
+        Parameters params = Parameters.with("id", apikey.id);
         Sort sort = PanacheUtils.createSort(order);
 
         if (user != null) {
@@ -106,7 +106,7 @@ public class Chat extends PanacheEntityBase {
         return find(query, sort, params).page(page - 1, perPage).list();
     }
 
-    public static Uni<Chat> findById(Token token, UUID id) {
-        return find("token.id = ?1 AND id = ?2", token.id, id).firstResult();
+    public static Uni<Chat> findById(ApiKey apikey, UUID id) {
+        return find("apikey.id = ?1 AND id = ?2", apikey.id, id).firstResult();
     }
 }

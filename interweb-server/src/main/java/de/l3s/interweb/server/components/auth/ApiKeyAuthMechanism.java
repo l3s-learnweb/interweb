@@ -23,7 +23,7 @@ public class ApiKeyAuthMechanism implements HttpAuthenticationMechanism {
     public static final AsciiString APIKEY_HEADER = AsciiString.cached("Api-Key");
     public static final AsciiString AUTHORIZATION_HEADER = AsciiString.cached("Authorization");
     public static final int AUTHORIZATION_HEADER_PREFIX_LENGTH = JWTAuthMechanism.BEARER.length() + 1;
-    public static final int AUTHORIZATION_HEADER_LENGTH = AUTHORIZATION_HEADER_PREFIX_LENGTH + ApiKey.length;
+    public static final int AUTHORIZATION_HEADER_LENGTH = AUTHORIZATION_HEADER_PREFIX_LENGTH + ApiKey.LENGTH;
 
     @Override
     public Uni<SecurityIdentity> authenticate(RoutingContext context, IdentityProviderManager identityProviderManager) {
