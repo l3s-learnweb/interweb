@@ -43,7 +43,6 @@ public class ApiKey extends PanacheEntityBase implements Credential {
 
     @NotEmpty
     @NotNull
-    @Column(unique = true, length = LENGTH)
     public String apikey;
 
     @CreationTimestamp

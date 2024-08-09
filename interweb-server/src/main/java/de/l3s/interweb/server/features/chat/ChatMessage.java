@@ -36,7 +36,6 @@ public class ChatMessage extends PanacheEntityBase {
 
     @NotEmpty
     @NotNull
-    @Column(columnDefinition = "TEXT")
     public String content;
 
     @CreationTimestamp

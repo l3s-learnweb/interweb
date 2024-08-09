@@ -23,7 +23,7 @@ public class PrincipalAugmentor implements SecurityIdentityAugmentor {
         }
 
         QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder(identity);
-        return User.findByName(identity.getPrincipal().getName()).map(principal -> {
+        return User.findByEmail(identity.getPrincipal().getName()).map(principal -> {
             builder.setPrincipal(principal);
             return builder.build();
         });
