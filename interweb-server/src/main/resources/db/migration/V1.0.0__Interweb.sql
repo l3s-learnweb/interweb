@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS `chat`
 
 CREATE TABLE IF NOT EXISTS `chat_message`
 (
-    `chat_id` UUID             NOT NULL,
     `id`      BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `chat_id` UUID             NOT NULL,
     `role`    TINYINT UNSIGNED NOT NULL,
     `content` TEXT             NOT NULL,
     `created` DATETIME DEFAULT NOW(),
@@ -35,10 +35,10 @@ CREATE TABLE IF NOT EXISTS `user_token`
 (
     `id`          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `user_id`     BIGINT UNSIGNED NOT NULL,
-    `apikey`      VARCHAR(64)     NOT NULL,
     `name`        VARCHAR(255)    NOT NULL,
     `url`         VARCHAR(512)  DEFAULT NULL,
     `description` VARCHAR(1024) DEFAULT NULL,
+    `apikey`      VARCHAR(64)     NOT NULL,
     UNIQUE KEY `index_user_token_apikey` (`apikey`),
     CONSTRAINT `fk_user_token_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );

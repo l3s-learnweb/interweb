@@ -1,5 +1,7 @@
 package de.l3s.interweb.server.features.user;
 
+import java.util.Optional;
+
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -56,7 +58,7 @@ public class UsersResource {
         """;
 
     @ConfigProperty(name = "interweb.admin.email")
-    String adminEmail;
+    Optional<String> adminEmail;
 
     @ConfigProperty(name = "interweb.auto-approve.pattern")
     String autoApprovePattern;
@@ -91,8 +93,8 @@ public class UsersResource {
 
     private Uni<User> findOrCreateUser(String email) {
         return User.findByEmail(email).onItem().ifNull().switchTo(() -> createUser(email).call(user -> {
-            if (!user.approved) {
-                return mailer.send(Mail.withText(adminEmail, NEW_USER_EMAIL_SUBJECT, NEW_USER_EMAIL_BODY.formatted(user.email)));
+            if (!user.approved && adminEmail.isPresent()) {
+                return mailer.send(Mail.withText(adminEmail.get(), NEW_USER_EMAIL_SUBJECT, NEW_USER_EMAIL_BODY.formatted(user.email)));
             }
 
             return Uni.createFrom().voidItem();
