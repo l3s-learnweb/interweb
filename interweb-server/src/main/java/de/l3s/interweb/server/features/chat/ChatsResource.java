@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 
-import io.quarkus.security.Authenticated;
+import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -17,11 +19,12 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import de.l3s.interweb.core.chat.Conversation;
 import de.l3s.interweb.core.chat.Role;
 import de.l3s.interweb.core.util.StringUtils;
-import de.l3s.interweb.server.features.user.Token;
+import de.l3s.interweb.server.Roles;
+import de.l3s.interweb.server.features.user.ApiKey;
 
 @Tag(name = "Chats", description = "Retrieve and manage chats")
 @Path("/chats")
-@Authenticated
+@RolesAllowed({Roles.APPLICATION})
 public class ChatsResource {
 
     @Context
@@ -74,5 +77,14 @@ public class ChatsResource {
             conversation.setMessages(new ArrayList<>(chat.getMessages().stream().map(ChatMessage::toMessage).toList()));
             return conversation;
         });
+    }
+
+    @DELETE
+    @WithTransaction
+    @Path("{uuid}")
+    public Uni<Void> delete(@PathParam("uuid") UUID id) {
+        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
+
+        return Chat.findById(apikey, id).call(PanacheEntityBase::delete).replaceWithVoid();
     }
 }

@@ -2,6 +2,7 @@ package de.l3s.interweb.server.features.chat;
 
 import java.util.List;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.POST;
@@ -9,7 +10,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
-import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -18,11 +18,12 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.chat.Message;
-import de.l3s.interweb.server.features.user.Token;
+import de.l3s.interweb.server.Roles;
+import de.l3s.interweb.server.features.user.ApiKey;
 
 @Tag(name = "Chat", description = "OpenAI compatible chat completions")
 @Path("/chat")
-@Authenticated
+@RolesAllowed({Roles.APPLICATION})
 public class ChatResource {
 
     @Inject

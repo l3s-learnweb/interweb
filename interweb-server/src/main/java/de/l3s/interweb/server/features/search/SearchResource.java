@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -17,7 +18,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 
-import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -26,10 +26,11 @@ import org.jboss.resteasy.reactive.RestQuery;
 
 import de.l3s.interweb.core.search.*;
 import de.l3s.interweb.core.util.StringUtils;
+import de.l3s.interweb.server.Roles;
 
 @Tag(name = "Search", description = "Search internet by query")
 @Path("/search")
-@Authenticated
+@RolesAllowed({Roles.APPLICATION})
 public class SearchResource {
     private static final String NO_CACHE = "no-cache";
 

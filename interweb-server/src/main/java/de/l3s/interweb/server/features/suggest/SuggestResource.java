@@ -3,6 +3,7 @@ package de.l3s.interweb.server.features.suggest;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,7 +13,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
 import io.quarkus.cache.CacheResult;
-import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.RestQuery;
@@ -21,10 +21,11 @@ import de.l3s.interweb.core.suggest.SuggestConnector;
 import de.l3s.interweb.core.suggest.SuggestQuery;
 import de.l3s.interweb.core.suggest.SuggestResults;
 import de.l3s.interweb.core.util.StringUtils;
+import de.l3s.interweb.server.Roles;
 
 @Tag(name = "Suggest", description = "Suggest completions for a query")
 @Path("/suggest")
-@Authenticated
+@RolesAllowed({Roles.APPLICATION})
 public class SuggestResource {
 
     @Inject

@@ -29,7 +29,7 @@ public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthentica
                 .setPrincipal(key.user)
                 .addCredential(key)
                 .setAnonymous(false)
-                .addRole(Roles.SERVICE)
+                .addRole(Roles.APPLICATION)
                 .build());
     }
 }

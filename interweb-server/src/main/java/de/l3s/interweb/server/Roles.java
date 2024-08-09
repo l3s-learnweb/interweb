@@ -5,5 +5,5 @@ public final class Roles {
     }
 
     public static final String USER = "User"; // Auth by username and password
-    public static final String SERVICE = "Service"; // Auth by api key
+    public static final String APPLICATION = "Application"; // Auth by api key
 }
