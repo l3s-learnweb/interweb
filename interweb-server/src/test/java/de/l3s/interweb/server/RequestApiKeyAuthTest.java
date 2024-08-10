@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.l3s.interweb.server.features.user.ApiKey;
-
 import io.quarkus.panache.mock.PanacheMock;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -24,6 +22,7 @@ import org.mockito.Mockito;
 import de.l3s.interweb.core.search.SearchQuery;
 import de.l3s.interweb.core.search.SearchResults;
 import de.l3s.interweb.server.features.search.SearchService;
+import de.l3s.interweb.server.features.user.ApiKey;
 import de.l3s.interweb.server.features.user.User;
 
 @QuarkusTest
@@ -65,8 +64,8 @@ class RequestApiKeyAuthTest {
             .when()
                 .post("/search")
             .then()
-                .statusCode(HttpStatus.SC_UNAUTHORIZED)
-                .body(Matchers.emptyString());
+                .body(Matchers.emptyString())
+                .statusCode(HttpStatus.SC_UNAUTHORIZED);
     }
 
     @Test
