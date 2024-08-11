@@ -1,5 +1,6 @@
 package de.l3s.interweb.server.features.user;
 
+import java.net.URI;
 import java.util.Optional;
 
 import jakarta.inject.Inject;
@@ -104,8 +105,8 @@ public class UsersResource {
     private Uni<Void> createAndSendToken(User user, UriInfo uriInfo) {
         return createToken(user)
             .chain(token -> {
-                log.infof("Login token %s created for user %s", token.token, user.email);
-                String tokenUrl = uriInfo.getBaseUri() + "jwt?token=" + token.token;
+                log.infof("Login token for user %s created: %s", user.email, token.token);
+                URI tokenUrl = uriInfo.getBaseUriBuilder().path("/jwt").queryParam("token", token.token).build();
                 return mailer.send(Mail.withText(user.email, LOGIN_EMAIL_SUBJECT, LOGIN_EMAIL_BODY.formatted(tokenUrl)));
             });
     }
