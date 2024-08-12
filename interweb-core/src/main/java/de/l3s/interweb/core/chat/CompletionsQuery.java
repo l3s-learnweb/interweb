@@ -18,11 +18,11 @@ public class CompletionsQuery {
 
     /**
      * ID of the model to use.
-     * Defaults to "gpt-35-turbo".
+     * Defaults to "gemma2:9b".
      */
     @NotEmpty
     @JsonProperty("model")
-    private String model = "gpt-35-turbo";
+    private String model = "gemma2:9b";
 
     /**
      * ID of the chat to continue.
