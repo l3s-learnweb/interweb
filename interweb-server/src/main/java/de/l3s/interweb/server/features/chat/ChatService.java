@@ -41,10 +41,19 @@ public class ChatService {
     }
 
     public Uni<CompletionsResults> generateTitle(final Chat chat) {
+        StringBuilder sb = new StringBuilder();
+        for (ChatMessage message : chat.getMessages()) {
+            sb.append(" - [").append(message.role).append("] ").append(message.content);
+        }
+
         CompletionsQuery query = new CompletionsQuery();
-        query.setMessages(new ArrayList<>(chat.getMessages().stream().map(ChatMessage::toMessage).toList()));
-        query.addMessage("don't use any formatting; length between 80 and 120 characters;", Role.system);
-        query.addMessage("Give a short name for this conversation", Role.user);
+        query.addMessage("""
+            ---BEGIN Conversation---
+            %s
+            ---END Conversation---
+            Summarize the conversation in 5 words or fewer, such that it could be a title of a book.
+            Don't use any formatting. You can use emojis. Only print the title, nothing else.
+            """.formatted(sb), Role.user);
         return completions(query);
     }
 }
