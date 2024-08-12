@@ -28,7 +28,7 @@ class InterwebCompletionTest {
     void chatCompletionsTest() throws InterwebException {
         CompletionsQuery query = new CompletionsQuery();
         query.setUser("user1");
-        query.setGenerateTitle(true);
+        query.setSave(true);
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
         query.addMessage("What is your name?", Role.user);
 
@@ -65,7 +65,7 @@ class InterwebCompletionTest {
     void chatCompleteTest() throws InterwebException {
         Conversation conversation = new Conversation();
         conversation.setUser("user1");
-        conversation.setGenerateTitle(true);
+        conversation.setSave(true);
         conversation.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
         conversation.addMessage("What is your name?", Role.user);
 

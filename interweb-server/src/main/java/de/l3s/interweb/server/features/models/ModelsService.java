@@ -4,6 +4,7 @@ import java.util.*;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.NotFoundException;
 
 import io.quarkus.arc.All;
 import io.quarkus.cache.CacheResult;
@@ -64,7 +65,7 @@ public class ModelsService {
     @CacheResult(cacheName = "model")
     public Uni<Model> getModel(String modelId) {
         return getModels().map(models -> models.stream()
-            .filter(model -> model.getId().equalsIgnoreCase(modelId.toLowerCase(Locale.ROOT)))
-            .findFirst().orElse(null));
+                .filter(model -> model.getId().equalsIgnoreCase(modelId.toLowerCase(Locale.ROOT)))
+                .findFirst().orElseThrow(() -> new NotFoundException("Model not found: " + modelId)));
     }
 }

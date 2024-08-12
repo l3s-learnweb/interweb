@@ -1,10 +1,7 @@
 package de.l3s.interweb.server.features.chat;
 
-import java.util.ArrayList;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.NotFoundException;
 
 import io.smallrye.mutiny.Uni;
 
@@ -24,16 +21,14 @@ public class ChatService {
     ModelsService modelsService;
 
     public Uni<CompletionsResults> completions(CompletionsQuery query) {
-        return modelsService.getModel(query.getModel()).onItem()
-            .ifNull().failWith(new NotFoundException("Model not found: " + query.getModel()))
-            .flatMap(model -> {
-                ModelsConnector connector = modelsService.getConnector(model.getProvider());
-                if (connector instanceof ChatConnector chatConnector) {
-                    return completions(query, model, chatConnector);
-                }
+        return modelsService.getModel(query.getModel()).flatMap(model -> {
+            ModelsConnector connector = modelsService.getConnector(model.getProvider());
+            if (connector instanceof ChatConnector chatConnector) {
+                return completions(query, model, chatConnector);
+            }
 
-                return Uni.createFrom().failure(new ConnectorException("Model doesn't support chat: " + query.getModel()));
-            });
+            return Uni.createFrom().failure(new ConnectorException("Model doesn't support chat: " + query.getModel()));
+        });
     }
 
     private Uni<CompletionsResults> completions(CompletionsQuery query, Model model, ChatConnector connector) {

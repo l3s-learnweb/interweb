@@ -35,29 +35,31 @@ public class ChatResource {
     @POST
     @Path("/completions")
     public Uni<CompletionsResults> completions(@Valid CompletionsQuery query) {
-        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
+        return chatService.completions(query).chain(results -> {
+            if (!query.isSave()) {
+                return Uni.createFrom().item(results);
+            }
 
-        return getOrCreateChat(query, apikey).flatMap(chat -> {
-            // noinspection CodeBlock2Expr
-            return chatService.completions(query).call(results -> {
+            ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
+            return getOrCreateChat(query, apikey).call(chat -> {
                 results.setChatId(chat.id);
-                return persistMessages(chat, query.getMessages(), results);
-            }).invoke(results -> {
+
                 chat.addCosts(results.getUsage().getTotalTokens(), results.getCost().getResponse());
                 results.getCost().setChat(chat.estimatedCost);
-            }).call(results -> {
-                if (chat.title == null && query.isGenerateTitle()) {
-                    return chatService.generateTitle(chat).invoke(titleCompletion -> {
-                        chat.title = titleCompletion.getLastMessage().getContent();
-                        results.setChatTitle(chat.title);
 
-                        chat.addCosts(titleCompletion.getUsage().getTotalTokens(), titleCompletion.getCost().getResponse());
-                        results.getCost().setChat(chat.estimatedCost);
-                    });
-                } else {
-                    return Uni.createFrom().voidItem();
+                Uni<Void> messagesUni = persistMessages(chat, query.getMessages(), results);
+
+                Uni<Void> chatUni = Uni.createFrom().voidItem();
+                if (chat.title == null) {
+                    chatUni = chatUni.call(() -> chatService.generateTitle(chat).invoke(titleCompletion -> {
+                        chat.title = titleCompletion.getLastMessage().getContent().trim();
+                        results.setChatTitle(chat.title);
+                    }));
                 }
-            }).call(chat::updateTitleAndUsage);
+                chatUni = chatUni.call(chat::updateTitleAndUsage);
+
+                return Uni.combine().all().unis(messagesUni, chatUni).discardItems();
+            }).map(ignore -> results);
         });
     }
 

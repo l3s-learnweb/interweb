@@ -94,10 +94,14 @@ public class CompletionsQuery {
     private Integer maxTokens;
 
     /**
-     * Whether the conversation should be summarized into a title. Defaults to false.
+     * Whether to incrementally stream the response using server-sent events. Defaults to false.
      */
-    @JsonProperty(value = "generate_title")
-    private boolean generateTitle;
+    private boolean stream = false;
+
+    /**
+     * Whether the conversation should be saved on Interweb. Defaults to false.
+     */
+    private boolean save = false;
 
     /**
      * How many completions to generate for each prompt. Minimum of 1 (default) and maximum of 128 allowed.
@@ -203,12 +207,20 @@ public class CompletionsQuery {
         this.maxTokens = maxTokens;
     }
 
-    public boolean isGenerateTitle() {
-        return generateTitle;
+    public boolean isStream() {
+        return stream;
     }
 
-    public void setGenerateTitle(boolean generateTitle) {
-        this.generateTitle = generateTitle;
+    public void setStream(boolean stream) {
+        this.stream = stream;
+    }
+
+    public boolean isSave() {
+        return save;
+    }
+
+    public void setSave(boolean save) {
+        this.save = save;
     }
 
     public void setN(Integer n) {
