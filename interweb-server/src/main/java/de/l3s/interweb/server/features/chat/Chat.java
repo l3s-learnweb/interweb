@@ -49,11 +49,11 @@ public class Chat extends PanacheEntityBase {
     public String title;
 
     @NotNull
-    @ColumnDefault("0")
+    @Column(name = "used_tokens")
     public Integer usedTokens = 0;
 
     @NotNull
-    @ColumnDefault("0")
+    @Column(name = "estimated_cost")
     public Double estimatedCost = 0d;
 
     @CreationTimestamp

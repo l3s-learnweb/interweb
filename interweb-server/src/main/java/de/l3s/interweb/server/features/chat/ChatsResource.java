@@ -87,4 +87,12 @@ public class ChatsResource {
 
         return Chat.findById(apikey, id).call(PanacheEntityBase::delete).replaceWithVoid();
     }
+
+    @GET
+    @Path("/stats")
+    public Uni<ChatsStats> chat() {
+        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
+
+        return ChatsStats.findByApikey(apikey);
+    }
 }

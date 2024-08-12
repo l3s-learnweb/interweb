@@ -24,7 +24,7 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
         securitySchemes = {
             @SecurityScheme(
                 securitySchemeName = "JWT",
-                description = "Use /users/login to obtain a JWT token.",
+                description = "Use /login to obtain a JWT token.",
                 type = SecuritySchemeType.HTTP,
                 scheme = "bearer",
                 bearerFormat = "JWT"
