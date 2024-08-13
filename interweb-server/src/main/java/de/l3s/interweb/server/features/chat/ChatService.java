@@ -47,6 +47,7 @@ public class ChatService {
         }
 
         CompletionsQuery query = new CompletionsQuery();
+        query.setModel("gemma2:9b");
         query.addMessage("""
             ---BEGIN Conversation---
             %s

@@ -35,10 +35,10 @@ class AnthropicConnectorTest {
     @Test
     void completions() throws ConnectorException {
         CompletionsQuery query = new CompletionsQuery();
+        query.setModel("claude-3-haiku-20240307");
         query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Role.system);
         query.addMessage("What is your name?", Role.user);
         query.setMaxTokens(100);
-        query.setModel("claude-3-haiku-20240307");
 
         CompletionsResults results = connector.completions(query).await().indefinitely();
 

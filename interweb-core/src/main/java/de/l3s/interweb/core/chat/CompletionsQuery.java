@@ -17,12 +17,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CompletionsQuery {
 
     /**
-     * ID of the model to use.
-     * Defaults to "gemma2:9b".
+     * ID of the model to use. Use `GET /models` to retrieve available models.
      */
     @NotEmpty
     @JsonProperty("model")
-    private String model = "gemma2:9b";
+    private String model;
 
     /**
      * ID of the chat to continue.

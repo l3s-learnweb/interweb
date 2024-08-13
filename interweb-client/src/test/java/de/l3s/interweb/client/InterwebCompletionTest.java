@@ -27,6 +27,7 @@ class InterwebCompletionTest {
     @Test
     void chatCompletionsTest() throws InterwebException {
         CompletionsQuery query = new CompletionsQuery();
+        query.setModel("gemma2:9b");
         query.setUser("user1");
         query.setSave(true);
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
