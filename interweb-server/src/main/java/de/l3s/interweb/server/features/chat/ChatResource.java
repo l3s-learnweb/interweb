@@ -18,6 +18,7 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.chat.Message;
+import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.Roles;
 import de.l3s.interweb.server.features.user.ApiKey;
 
@@ -36,6 +37,7 @@ public class ChatResource {
     @Path("/completions")
     public Uni<CompletionsResults> completions(@Valid CompletionsQuery query) {
         return chatService.completions(query).chain(results -> {
+            results.setChatId(null); // reset chatId if it was set
             if (!query.isSave()) {
                 return Uni.createFrom().item(results);
             }
@@ -44,17 +46,19 @@ public class ChatResource {
             return getOrCreateChat(query, apikey).call(chat -> {
                 results.setChatId(chat.id);
 
-                chat.addCosts(results.getUsage().getTotalTokens(), results.getCost().getResponse());
+                chat.addCosts(results.getUsage(), results.getCost());
                 results.getCost().setChat(chat.estimatedCost);
 
                 Uni<Void> messagesUni = persistMessages(chat, query.getMessages(), results);
 
                 Uni<Void> chatUni = Uni.createFrom().voidItem();
                 if (chat.title == null) {
-                    chatUni = chatUni.call(() -> chatService.generateTitle(chat).invoke(titleCompletion -> {
-                        chat.title = titleCompletion.getLastMessage().getContent().trim();
-                        results.setChatTitle(chat.title);
-                    }));
+                    chatUni = chatUni.call(() -> chatService.generateTitle(chat)
+                        .onFailure().recoverWithItem(() -> StringUtils.shorten(query.getMessages().getLast().getContent(), 120))
+                        .invoke(title -> {
+                            chat.title = title;
+                            results.setChatTitle(title);
+                        }));
                 }
                 chatUni = chatUni.call(chat::updateTitleAndUsage);
 

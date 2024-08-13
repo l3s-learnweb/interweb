@@ -39,27 +39,7 @@ public class ChatsResource {
     ) {
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
 
-        return Chat.listByUser(apikey, user, order, page, perPage)
-            .call(chats -> Multi.createFrom().iterable(chats)
-                .filter(chat -> chat.title == null)
-                .map(ChatsResource::createChatTitle)
-                .collect()
-                .asList());
-    }
-
-    private static Uni<List<ChatMessage>> createChatTitle(Chat chat) {
-        return Mutiny.fetch(chat.getMessages()).call(() -> {
-            if (!chat.getMessages().isEmpty()) {
-                for (ChatMessage message : chat.getMessages()) {
-                    if (message.role == Role.user) {
-                        chat.title = StringUtils.shorten(message.content, 120);
-                        return chat.updateTitle();
-                    }
-                }
-            }
-
-            return Uni.createFrom().voidItem();
-        });
+        return Chat.listByUser(apikey, user, order, page, perPage);
     }
 
     @GET

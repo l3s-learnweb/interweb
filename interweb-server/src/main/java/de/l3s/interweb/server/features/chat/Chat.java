@@ -5,6 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import de.l3s.interweb.core.chat.Usage;
+
+import de.l3s.interweb.core.chat.UsageCost;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -14,6 +20,7 @@ import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,6 +33,7 @@ import de.l3s.interweb.server.features.user.ApiKey;
 @Table(name = "chat", indexes = {
     @Index(name = "user_index", columnList = "user"),
 })
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Chat extends PanacheEntityBase {
     @Id
     @UuidGenerator
@@ -52,8 +60,11 @@ public class Chat extends PanacheEntityBase {
     public Integer usedTokens = 0;
 
     @NotNull
-    @Column(name = "estimated_cost")
+    @Column(name = "est_cost")
     public Double estimatedCost = 0d;
+
+    @UpdateTimestamp
+    public Instant updated;
 
     @CreationTimestamp
     public Instant created;
@@ -75,17 +86,17 @@ public class Chat extends PanacheEntityBase {
         return messages;
     }
 
-    public void addCosts(int tokens, double cost) {
-        this.usedTokens += tokens;
-        this.estimatedCost += cost;
-    }
-
-    public Uni<Integer> updateTitle() {
-        return update("title = ?1 where id = ?2", title, id);
+    public void addCosts(Usage usage, UsageCost cost) {
+        this.usedTokens += usage.getTotalTokens();
+        this.estimatedCost += cost.getResponse();
     }
 
     public Uni<Integer> updateTitleAndUsage() {
         return update("title = ?1, usedTokens = ?2, estimatedCost = ?3 where id = ?4", title, usedTokens, estimatedCost, id);
+    }
+
+    public static Uni<Chat> findById(ApiKey apikey, UUID id) {
+        return find("apikey.id = ?1 AND id = ?2", apikey.id, id).firstResult();
     }
 
     public static Uni<List<Chat>> listByUser(ApiKey apikey, String user, String order, int page, int perPage) {
@@ -103,9 +114,5 @@ public class Chat extends PanacheEntityBase {
         }
 
         return find(query, sort, params).page(page - 1, perPage).list();
-    }
-
-    public static Uni<Chat> findById(ApiKey apikey, UUID id) {
-        return find("apikey.id = ?1 AND id = ?2", apikey.id, id).firstResult();
     }
 }
