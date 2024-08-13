@@ -10,7 +10,7 @@ import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
 
 import de.l3s.interweb.server.Roles;
-import de.l3s.interweb.server.features.user.ApiKey;
+import de.l3s.interweb.server.features.api.ApiKey;
 
 @ApplicationScoped
 public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthenticationRequest> {

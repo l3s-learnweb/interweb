@@ -105,7 +105,7 @@ public class Interweb implements Serializable {
             conversation.setTitle(results.getChatTitle());
         }
         if (results.getCost() != null) {
-            conversation.setEstimatedCost(results.getCost().getChat());
+            conversation.setEstimatedCost(results.getCost().getChatTotal());
         }
         if (results.getUsage() != null) {
             conversation.setUsedTokens(results.getUsage().getTotalTokens());

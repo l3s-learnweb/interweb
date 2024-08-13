@@ -5,12 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import de.l3s.interweb.core.chat.Usage;
-
-import de.l3s.interweb.core.chat.UsageCost;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,15 +18,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.l3s.interweb.server.PanacheUtils;
-import de.l3s.interweb.server.features.user.ApiKey;
+import de.l3s.interweb.server.features.api.ApiKey;
 
 @Entity
 @Cacheable
-@Table(name = "chat", indexes = {
-    @Index(name = "user_index", columnList = "user"),
-})
+@Table(name = "chat")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Chat extends PanacheEntityBase {
     @Id
@@ -84,11 +77,6 @@ public class Chat extends PanacheEntityBase {
 
     public List<ChatMessage> getMessages() {
         return messages;
-    }
-
-    public void addCosts(Usage usage, UsageCost cost) {
-        this.usedTokens += usage.getTotalTokens();
-        this.estimatedCost += cost.getResponse();
     }
 
     public Uni<Integer> updateTitleAndUsage() {

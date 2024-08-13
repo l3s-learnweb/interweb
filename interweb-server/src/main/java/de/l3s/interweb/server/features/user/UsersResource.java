@@ -71,25 +71,17 @@ public class UsersResource {
     SecurityIdentity securityIdentity;
 
     @POST
-    @Path("/register")
-    @WithTransaction
-    @Operation(summary = "Register a new user", description = "Use this method to register a new user")
-    public Uni<String> register(@Valid CreateUser user, @Context UriInfo uriInfo) {
-        return login(user.email, uriInfo);
-    }
-
-    @GET
     @Path("/login")
     @Produces(MediaType.TEXT_PLAIN)
     @Operation(summary = "Request JWT token for the given email", description = "Use this method to login to the app and manage tokens")
-    public Uni<String> login(@NotEmpty @QueryParam("email") String email, @Context UriInfo uriInfo) {
-        return findOrCreateUser(email).chain(user -> {
-                if (!user.approved) {
-                    return Uni.createFrom().failure(new BadRequestException(LOGIN_APPROVAL_REQUIRED));
-                } else {
-                    return createAndSendToken(user, uriInfo);
-                }
-            }).chain(() -> Uni.createFrom().item("The login link has been sent to your email."));
+    public Uni<String> login(@Valid LoginBody body, @Context UriInfo uriInfo) {
+        return findOrCreateUser(body.email).chain(user -> {
+            if (!user.approved) {
+                return Uni.createFrom().failure(new BadRequestException(LOGIN_APPROVAL_REQUIRED));
+            } else {
+                return createAndSendToken(user, uriInfo);
+            }
+        }).chain(() -> Uni.createFrom().item("The login link has been sent to your email."));
     }
 
     private Uni<User> findOrCreateUser(String email) {
@@ -145,6 +137,6 @@ public class UsersResource {
         return (User) securityIdentity.getPrincipal();
     }
 
-    public record CreateUser(@NotNull @NotEmpty @Email @Size(max = 255) String email) {
+    public record LoginBody(@NotNull @NotEmpty @Email @Size(max = 255) String email) {
     }
 }

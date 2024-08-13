@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 import de.l3s.interweb.core.search.SearchQuery;
 import de.l3s.interweb.core.search.SearchResults;
 import de.l3s.interweb.server.features.search.SearchService;
-import de.l3s.interweb.server.features.user.ApiKey;
+import de.l3s.interweb.server.features.api.ApiKey;
 import de.l3s.interweb.server.features.user.User;
 
 @QuarkusTest

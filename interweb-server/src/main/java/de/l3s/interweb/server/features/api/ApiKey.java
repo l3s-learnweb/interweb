@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.features.user;
+package de.l3s.interweb.server.features.api;
 
 import java.time.Instant;
 import java.util.List;
@@ -16,10 +16,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.l3s.interweb.core.util.StringUtils;
+import de.l3s.interweb.server.features.user.User;
 
 @Entity
 @Cacheable
-@Table(name = "user_apikey")
+@Table(name = "api_key")
 public class ApiKey extends PanacheEntityBase implements Credential {
     public static final int LENGTH = 64;
 

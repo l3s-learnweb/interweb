@@ -12,11 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.l3s.interweb.core.Results;
-import de.l3s.interweb.core.models.UsagePrice;
 
 @RegisterForReflection
 @JsonIgnoreProperties("results")
-@JsonPropertyOrder({"id", "object", "title", "model", "choices", "usage", "cost", "elapsed_time", "system_fingerprint", "created"})
+@JsonPropertyOrder({"id", "object", "title", "model", "choices", "usage", "duration", "estimated_cost", "elapsed_time", "system_fingerprint", "created"})
 public class CompletionsResults extends Results<Choice> {
     @JsonProperty(value = "id")
     private UUID chatId;
@@ -25,7 +24,9 @@ public class CompletionsResults extends Results<Choice> {
     private String object = "chat.completion";
     private String model;
     private Usage usage;
+    @JsonProperty(value = "estimated_cost")
     private UsageCost cost;
+    private Duration duration;
     @JsonProperty(value = "system_fingerprint")
     private String systemFingerprint;
     private Instant created;
@@ -93,6 +94,18 @@ public class CompletionsResults extends Results<Choice> {
         return cost;
     }
 
+    public void setCost(UsageCost cost) {
+        this.cost = cost;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
     public String getSystemFingerprint() {
         return systemFingerprint;
     }
@@ -107,13 +120,5 @@ public class CompletionsResults extends Results<Choice> {
 
     public void setCreated(Instant created) {
         this.created = created;
-    }
-
-    public void updateCosts(UsagePrice price) {
-        double promptCost = (usage.getPromptTokens() / 1000d) * price.getInput();
-        double completionCost = (usage.getCompletionTokens() / 1000d) * price.getOutput();
-
-        cost = new UsageCost();
-        cost.setResponse(promptCost + completionCost);
     }
 }

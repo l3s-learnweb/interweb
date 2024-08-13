@@ -11,16 +11,13 @@ import jakarta.ws.rs.core.Context;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.security.identity.SecurityIdentity;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import de.l3s.interweb.core.chat.Conversation;
-import de.l3s.interweb.core.chat.Role;
-import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.Roles;
-import de.l3s.interweb.server.features.user.ApiKey;
+import de.l3s.interweb.server.features.api.ApiKey;
 
 @Tag(name = "Chats", description = "Retrieve and manage chats")
 @Path("/chats")
@@ -66,13 +63,5 @@ public class ChatsResource {
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
 
         return Chat.findById(apikey, id).call(PanacheEntityBase::delete).replaceWithVoid();
-    }
-
-    @GET
-    @Path("/stats")
-    public Uni<ChatsStats> chat() {
-        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
-
-        return ChatsStats.findByApikey(apikey);
     }
 }

@@ -3,7 +3,7 @@ package de.l3s.interweb.server.components.auth;
 import java.util.Optional;
 import java.util.Set;
 
-import de.l3s.interweb.server.features.user.ApiKey;
+import de.l3s.interweb.server.features.api.ApiKey;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import io.netty.handler.codec.http.HttpResponseStatus;

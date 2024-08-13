@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.Context;
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
+import io.vertx.core.eventbus.EventBus;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -20,12 +21,16 @@ import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.chat.Message;
 import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.Roles;
-import de.l3s.interweb.server.features.user.ApiKey;
+import de.l3s.interweb.server.features.api.ApiChatRequest;
+import de.l3s.interweb.server.features.api.ApiKey;
 
 @Tag(name = "Chat", description = "OpenAI compatible chat completions")
 @Path("/chat")
 @RolesAllowed({Roles.APPLICATION})
 public class ChatResource {
+
+    @Inject
+    EventBus bus;
 
     @Inject
     ChatService chatService;
@@ -36,18 +41,23 @@ public class ChatResource {
     @POST
     @Path("/completions")
     public Uni<CompletionsResults> completions(@Valid CompletionsQuery query) {
+        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
         return chatService.completions(query).chain(results -> {
             results.setChatId(null); // reset chatId if it was set
+            bus.send("api-request-chat", ApiChatRequest.of(results, apikey));
+
             if (!query.isSave()) {
                 return Uni.createFrom().item(results);
             }
 
-            ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
             return getOrCreateChat(query, apikey).call(chat -> {
                 results.setChatId(chat.id);
 
-                chat.addCosts(results.getUsage(), results.getCost());
-                results.getCost().setChat(chat.estimatedCost);
+                chat.usedTokens += results.getUsage().getTotalTokens();
+                if (results.getCost() != null) {
+                    chat.estimatedCost += results.getCost().getTotal();
+                    results.getCost().setChatTotal(chat.estimatedCost);
+                }
 
                 Uni<Void> messagesUni = persistMessages(chat, query.getMessages(), results);
 

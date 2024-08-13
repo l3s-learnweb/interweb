@@ -4,12 +4,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({"elapsed_time", "query", "results"})
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Results<T extends ConnectorResults> {
     /**
      * Time in ms that the request took to complete.

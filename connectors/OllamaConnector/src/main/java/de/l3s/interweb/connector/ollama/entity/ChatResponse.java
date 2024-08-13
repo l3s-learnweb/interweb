@@ -134,6 +134,15 @@ public class ChatResponse {
             results.setChoices(List.of(choice));
         }
 
+        if (totalDuration != null || loadDuration != null || promptEvalDuration != null || evalDuration != null) {
+            Duration duration = new Duration();
+            duration.setTotal(totalDuration);
+            duration.setLoad(loadDuration);
+            duration.setPromptEvaluation(promptEvalDuration);
+            duration.setCompletionGeneration(evalDuration);
+            results.setDuration(duration);
+        }
+
         if (createdAt != null) {
             results.setCreated(Instant.parse(createdAt));
         }

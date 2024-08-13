@@ -6,10 +6,7 @@ import jakarta.inject.Inject;
 import io.smallrye.mutiny.Uni;
 
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.chat.ChatConnector;
-import de.l3s.interweb.core.chat.CompletionsQuery;
-import de.l3s.interweb.core.chat.CompletionsResults;
-import de.l3s.interweb.core.chat.Role;
+import de.l3s.interweb.core.chat.*;
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.models.ModelsConnector;
 import de.l3s.interweb.server.features.models.ModelsService;
@@ -32,10 +29,14 @@ public class ChatService {
     }
 
     private Uni<CompletionsResults> completions(CompletionsQuery query, Model model, ChatConnector connector) {
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime();
         return connector.completions(query).map(results -> {
-            results.updateCosts(model.getPrice());
-            results.setElapsedTime(System.currentTimeMillis() - start);
+            if (results.getUsage() != null && model.getPrice() != null) {
+                results.setCost(UsageCost.of(results.getUsage(), model.getPrice()));
+            }
+            if (results.getDuration() == null) {
+                results.setDuration(Duration.of(System.nanoTime() - start));
+            }
             return results;
         });
     }

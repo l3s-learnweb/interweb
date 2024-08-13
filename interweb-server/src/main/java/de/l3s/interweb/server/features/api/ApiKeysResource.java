@@ -1,4 +1,4 @@
-package de.l3s.interweb.server.features.user;
+package de.l3s.interweb.server.features.api;
 
 import java.util.List;
 
@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.Context;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
@@ -19,6 +20,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import de.l3s.interweb.server.Roles;
+import de.l3s.interweb.server.features.user.User;
 
 @Tag(name = "API Keys", description = "Manage application access")
 @Path("/api_keys")
@@ -63,6 +65,19 @@ public class ApiKeysResource {
         return item.onItem().ifNotNull().call(PanacheEntityBase::delete).replaceWithVoid();
     }
 
+    @GET
+    @Path("/usage")
+    @RolesAllowed({Roles.APPLICATION})
+    public Uni<Usage> chat() {
+        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
+
+        return ChatUsage.findByApikey(apikey).map(Usage::new);
+    }
+
     public record CreateToken(@NotNull @NotEmpty @Size(max = 255) String name, @Size(max = 512) String url, @Size(max = 1024) String description) {
+    }
+
+    @RegisterForReflection
+    public record Usage(ChatUsage chat) {
     }
 }
