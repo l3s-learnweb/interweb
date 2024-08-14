@@ -47,6 +47,7 @@ public class ChatsResource {
         return Chat.findById(apikey, id).call(chat -> Mutiny.fetch(chat.getMessages())).map(chat -> {
             Conversation conversation = new Conversation();
             conversation.setId(chat.id);
+            conversation.setModel(chat.model);
             conversation.setTitle(chat.title);
             conversation.setUsedTokens(chat.usedTokens);
             conversation.setEstimatedCost(chat.estimatedCost);
