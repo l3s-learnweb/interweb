@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -25,6 +26,7 @@ public class Results<T extends ConnectorResults> {
      * The list of results from different connectors.
      */
     @JsonProperty("results")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private final List<T> results = new LinkedList<>();
 
     public Results() {
