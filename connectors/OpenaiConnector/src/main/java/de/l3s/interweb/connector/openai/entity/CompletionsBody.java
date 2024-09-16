@@ -9,12 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.ResponseFormat;
+import de.l3s.interweb.core.chat.Tool;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public final class CompletionBody {
+public final class CompletionsBody {
 
-    private List<CompletionMessage> messages;
+    private List<OpenaiMessage> messages;
 
     private Double temperature;
 
@@ -30,26 +31,25 @@ public final class CompletionBody {
     @JsonProperty("max_tokens")
     private Integer maxTokens;
 
-    /**
-     * How many completions to generate for each prompt. Minimum of 1 (default) and maximum of 128 allowed.
-     * Note: Because this parameter generates many completions, it can quickly consume your token quota.
-     */
     private Integer n;
 
-    /**
-     * If specified, our system will make the best effort to sample deterministically,
-     * such that repeated requests with the same seed and parameters should return the same result.
-     * Determinism isn't guaranteed, and you should refer to the system_fingerprint response parameter to monitor changes in the backend.
-     */
     private Integer seed;
 
     @JsonProperty("response_format")
     private ResponseFormat responseFormat;
 
+    private List<Tool> tools;
+
+    @JsonProperty("tool_choice")
+    private Object toolChoice;
+
+    @JsonProperty("parallel_tool_calls")
+    private Boolean parallelToolCalls;
+
     private String[] stop;
 
-    public CompletionBody(CompletionsQuery query) {
-        this.messages = query.getMessages().stream().map(CompletionMessage::new).toList();
+    public CompletionsBody(CompletionsQuery query) {
+        this.messages = query.getMessages().stream().map(OpenaiMessage::new).toList();
         this.temperature = query.getTemperature();
         this.topP = query.getTopP();
         this.frequencyPenalty = query.getPresencePenalty();
@@ -59,9 +59,12 @@ public final class CompletionBody {
         this.seed = query.getSeed();
         this.responseFormat = query.getResponseFormat();
         this.stop = query.getStop();
+        this.tools = query.getTools();
+        this.toolChoice = query.getToolChoice();
+        this.parallelToolCalls = query.getParallelToolCalls();
     }
 
-    public List<CompletionMessage> getMessages() {
+    public List<OpenaiMessage> getMessages() {
         return messages;
     }
 
@@ -99,5 +102,17 @@ public final class CompletionBody {
 
     public String[] getStop() {
         return stop;
+    }
+
+    public List<Tool> getTools() {
+        return tools;
+    }
+
+    public Object getToolChoice() {
+        return toolChoice;
+    }
+
+    public Boolean getParallelToolCalls() {
+        return parallelToolCalls;
     }
 }

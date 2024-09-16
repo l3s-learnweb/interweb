@@ -7,6 +7,7 @@ import java.util.UUID;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -91,6 +92,35 @@ public class CompletionsQuery {
      */
     @JsonProperty("max_tokens")
     private Integer maxTokens;
+
+    /**
+     * A list of tools the model may call. Currently, only functions are supported as a tool.
+     * Use this to provide a list of functions the model may generate JSON inputs for.
+     * <br/>
+     * A max of 128 functions are supported.
+     */
+    @Size(max = 128)
+    @JsonProperty("tools")
+    private List<Tool> tools;
+
+    /**
+     * Controls which (if any) tool is called by the model.
+     *  - none means the model will not call any tool and instead generates a message.
+     *  - auto means the model can pick between generating a message or calling one or more tools.
+     *  - required means the model must call one or more tools.
+     * Specifying a particular tool via {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
+     * <br/>
+     * none is the default when no tools are present. auto is the default if tools are present.
+     */
+    @JsonProperty("tool_choice")
+    private Object toolChoice;
+
+    /**
+     * Whether to enable parallel function calling during tool use.
+     * https://platform.openai.com/docs/guides/function-calling/parallel-function-calling
+     */
+    @JsonProperty("parallel_tool_calls")
+    private Boolean parallelToolCalls;
 
     /**
      * Whether to incrementally stream the response using server-sent events. Defaults to false.
@@ -228,6 +258,30 @@ public class CompletionsQuery {
 
     public Integer getN() {
         return n;
+    }
+
+    public void setTools(List<Tool> tools) {
+        this.tools = tools;
+    }
+
+    public List<Tool> getTools() {
+        return tools;
+    }
+
+    public void setToolChoice(Object toolChoice) {
+        this.toolChoice = toolChoice;
+    }
+
+    public Object getToolChoice() {
+        return toolChoice;
+    }
+
+    public void setParallelToolCalls(Boolean parallelToolCalls) {
+        this.parallelToolCalls = parallelToolCalls;
+    }
+
+    public Boolean getParallelToolCalls() {
+        return parallelToolCalls;
     }
 
     public void setSeed(Integer seed) {

@@ -11,7 +11,7 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
-import de.l3s.interweb.connector.openai.entity.CompletionBody;
+import de.l3s.interweb.connector.openai.entity.CompletionsBody;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.ChatConnector;
 import de.l3s.interweb.core.chat.CompletionsQuery;
@@ -56,7 +56,7 @@ public class OpenaiConnector implements ChatConnector {
 
     @Override
     public Uni<CompletionsResults> completions(CompletionsQuery query) throws ConnectorException {
-        return openai.chatCompletions(query.getModel(), new CompletionBody(query)).map(response -> {
+        return openai.chatCompletions(query.getModel(), new CompletionsBody(query)).map(response -> {
             CompletionsResults results = new CompletionsResults();
             results.setModel(query.getModel());
             results.setCreated(response.getCreated());

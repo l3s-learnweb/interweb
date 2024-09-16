@@ -11,7 +11,7 @@ import de.l3s.interweb.core.chat.Choice;
 import de.l3s.interweb.core.chat.Usage;
 
 @RegisterForReflection
-public class CompletionResponse {
+public class CompletionsResponse {
     private String id;
     private String object;
     private String model;
