@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import de.l3s.interweb.core.util.JsonUtils;
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
@@ -34,9 +37,10 @@ public class ChatMessage extends PanacheEntityBase {
     @NotNull
     public Role role;
 
-    @NotEmpty
-    @NotNull
     public String content;
+
+    @Column(name = "tool_calls")
+    public String toolCalls;
 
     @CreationTimestamp
     public Instant created;
@@ -48,6 +52,7 @@ public class ChatMessage extends PanacheEntityBase {
         this.id = message.getId();
         this.role = message.getRole();
         this.content = message.getContent();
+        this.toolCalls = JsonUtils.toJson(message.getToolCalls());
         this.created = message.getCreated();
     }
 
@@ -55,6 +60,7 @@ public class ChatMessage extends PanacheEntityBase {
         Message message = new Message(role, content);
         message.setCreated(created);
         message.setId(id);
+        message.setToolCalls(JsonUtils.fromJson(toolCalls, new TypeReference<>() {}));
         return message;
     }
 

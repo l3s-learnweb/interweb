@@ -1,9 +1,8 @@
 package de.l3s.interweb.connector.openai.entity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.CallFunction;
+import de.l3s.interweb.core.util.JsonUtils;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.io.Serial;
@@ -21,12 +20,8 @@ public class OpenaiCallFunction implements Serializable {
     }
 
     public OpenaiCallFunction(CallFunction function) {
-        try {
-            this.name = function.getName();
-            this.arguments = new ObjectMapper().writeValueAsString(function.getArguments());
-        } catch (JsonProcessingException e) {
-            throw new ConnectorException("Error while converting arguments to JSON", e);
-        }
+        this.name = function.getName();
+        this.arguments = JsonUtils.toJson(function.getArguments());
     }
 
     public void setName(String name) {
