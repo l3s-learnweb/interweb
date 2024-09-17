@@ -57,13 +57,8 @@ public class OpenaiConnector implements ChatConnector {
     @Override
     public Uni<CompletionsResults> completions(CompletionsQuery query) throws ConnectorException {
         return openai.chatCompletions(query.getModel(), new CompletionsBody(query)).map(response -> {
-            CompletionsResults results = new CompletionsResults();
+            CompletionsResults results = response.toCompletionResults();
             results.setModel(query.getModel());
-            results.setCreated(response.getCreated());
-            results.setChoices(response.getChoices());
-            results.setUsage(response.getUsage());
-            results.setObject(response.getObject());
-            results.setSystemFingerprint(response.getSystemFingerprint());
             return results;
         });
     }

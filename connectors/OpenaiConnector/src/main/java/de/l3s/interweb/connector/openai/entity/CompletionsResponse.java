@@ -7,8 +7,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interweb.core.chat.Choice;
-import de.l3s.interweb.core.chat.Usage;
+import de.l3s.interweb.core.chat.*;
 
 @RegisterForReflection
 public class CompletionsResponse {
@@ -19,7 +18,7 @@ public class CompletionsResponse {
     @JsonProperty("system_fingerprint")
     private String systemFingerprint;
     private Instant created;
-    private List<Choice> choices;
+    private List<OpenaiChoice> choices;
 
     public String getId() {
         return id;
@@ -69,11 +68,41 @@ public class CompletionsResponse {
         this.created = created;
     }
 
-    public List<Choice> getChoices() {
+    public List<OpenaiChoice> getChoices() {
         return choices;
     }
 
-    public void setChoices(List<Choice> choices) {
+    public void setChoices(List<OpenaiChoice> choices) {
         this.choices = choices;
+    }
+
+    public CompletionsResults toCompletionResults() {
+        CompletionsResults results = new CompletionsResults();
+        results.setModel(model);
+        results.setCreated(created);
+        results.setChoices(choices.stream().map(openaiChoice -> {
+            Message message = new Message(Role.assistant);
+            message.setContent(openaiChoice.getMessage().getContent());
+            message.setRefusal(openaiChoice.getMessage().getRefusal());
+            if (openaiChoice.getMessage().getToolCalls() != null) {
+                message.setToolCalls(openaiChoice.getMessage().getToolCalls().stream().map(openaiCallTool -> {
+                    CallTool callTool = new CallTool();
+                    callTool.setId(openaiCallTool.getId());
+                    callTool.setType(openaiCallTool.getType());
+                    callTool.setFunction(openaiCallTool.getFunction().toCallFunction());
+                    return callTool;
+                }).toList());
+            }
+
+            Choice choice = new Choice();
+            choice.setIndex(openaiChoice.getIndex());
+            choice.setFinishReason(openaiChoice.getFinishReason());
+            choice.setMessage(message);
+            return choice;
+        }).toList());
+        results.setUsage(usage);
+        results.setObject(object);
+        results.setSystemFingerprint(systemFingerprint);
+        return results;
     }
 }

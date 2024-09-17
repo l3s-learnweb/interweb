@@ -6,6 +6,7 @@ public final class ChatStreamBody extends ChatBody {
 
     public ChatStreamBody(CompletionsQuery query) {
         super(query);
+        this.tools = null;
     }
 
     @Override

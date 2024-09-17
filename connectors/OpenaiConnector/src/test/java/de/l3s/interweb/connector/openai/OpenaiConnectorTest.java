@@ -48,7 +48,8 @@ class OpenaiConnectorTest {
         Tool weatherTool = Tool.functionBuilder()
             .name("get_weather")
             .description("Return the weather in a city.")
-            .parameters(city -> city.name("city").type("string").description("The city name.").required())
+            .addProperty(city -> city.name("city").type("string").description("The city name.").required())
+            .addProperty(duration -> duration.name("duration").type("integer").description("Number of days to return forecast for.").required())
             .build();
 
         CompletionsQuery query = new CompletionsQuery();
@@ -56,13 +57,18 @@ class OpenaiConnectorTest {
         query.setTools(List.of(weatherTool));
         query.setToolChoice(ToolChoice.required);
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
-        query.addMessage("What is the weather in Hannover?", Role.user);
+        query.addMessage("What is the weather in Hannover next week?", Role.user);
 
         CompletionsResults results = connector.completions(query).await().indefinitely();
 
         assertEquals(1, results.getChoices().size());
         for (Choice result : results.getChoices()) {
-            assertEquals("get_weather", result.getMessage().getToolCalls().getFirst().getFunction().getName());
+            assertNotNull(result.getMessage().getToolCalls());
+            CallFunction fn = result.getMessage().getToolCalls().getFirst().getFunction();
+            assertNotNull(fn);
+            assertEquals("get_weather", fn.getName());
+            assertEquals("Hannover", fn.getArguments().get("city"));
+            assertNotNull(fn.getArguments().get("duration"));
         }
     }
 }

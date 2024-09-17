@@ -130,7 +130,11 @@ public class ChatResponse {
         }
 
         if (message != null) {
-            Choice choice = new Choice(0, doneReason, new Message(Role.assistant, message.getContent()));
+            Message commonMessage = new Message(Role.assistant);
+            commonMessage.setContent(message.getContent());
+            commonMessage.setToolCalls(message.getToolCalls());
+
+            Choice choice = new Choice(0, doneReason, commonMessage);
             results.setChoices(List.of(choice));
         }
 

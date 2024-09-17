@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.chat.Message;
-import de.l3s.interweb.core.chat.ToolCall;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,14 +19,19 @@ public final class OpenaiMessage {
     private String content;
     private String refusal;
     @JsonProperty("tool_calls")
-    private List<ToolCall> toolCalls;
+    private List<OpenaiCallTool> toolCalls;
+
+    public OpenaiMessage() {
+    }
 
     public OpenaiMessage(Message message) {
         this.role = message.getRole().name();
         this.name = message.getName();
         this.content = message.getContent();
         this.refusal = message.getRefusal();
-        this.toolCalls = message.getToolCalls();
+        if (message.getToolCalls() != null) {
+            this.toolCalls = message.getToolCalls().stream().map(OpenaiCallTool::new).toList();
+        }
     }
 
     public String getRole() {
@@ -46,7 +50,7 @@ public final class OpenaiMessage {
         return refusal;
     }
 
-    public List<ToolCall> getToolCalls() {
+    public List<OpenaiCallTool> getToolCalls() {
         return toolCalls;
     }
 }

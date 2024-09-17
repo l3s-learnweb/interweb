@@ -1,9 +1,14 @@
 package de.l3s.interweb.connector.ollama.entity;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.chat.CompletionsQuery;
 
+@RegisterForReflection
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OllamaModelOptions {
     @JsonProperty("repeat_penalty")
     private Double repeatPenalty;

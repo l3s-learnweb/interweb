@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.ResponseFormat;
+import de.l3s.interweb.core.chat.Tool;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,6 +22,7 @@ public class ChatBody {
     private Boolean stream = false;
     @JsonProperty("keep_alive")
     private String keepAlive;
+    protected List<Tool> tools;
 
     public ChatBody(CompletionsQuery query) {
         this.model = query.getModel();
@@ -30,6 +32,7 @@ public class ChatBody {
             .toList();
 
         this.options = new OllamaModelOptions(query);
+        this.tools = query.getTools();
 
         if (query.getResponseFormat() != null && query.getResponseFormat().getType() == ResponseFormat.ResponseType.json_object) {
             this.format = "json";
@@ -58,5 +61,9 @@ public class ChatBody {
 
     public String getKeepAlive() {
         return keepAlive;
+    }
+
+    public Object getTools() {
+        return tools;
     }
 }

@@ -12,10 +12,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.chat.Choice;
-import de.l3s.interweb.core.chat.CompletionsQuery;
-import de.l3s.interweb.core.chat.CompletionsResults;
-import de.l3s.interweb.core.chat.Role;
+import de.l3s.interweb.core.chat.*;
 
 
 @Disabled
@@ -34,7 +31,7 @@ class OllamaConnectorTest {
     @Test
     void completions() throws ConnectorException {
         CompletionsQuery query = new CompletionsQuery();
-        query.setModel("llama3");
+        query.setModel("llama3.1");
         query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Role.system);
         query.addMessage("What is your name?", Role.user);
         query.setMaxTokens(100);
@@ -55,7 +52,7 @@ class OllamaConnectorTest {
     @Test
     void completionsStream() throws ConnectorException {
         CompletionsQuery query = new CompletionsQuery();
-        query.setModel("llama3");
+        query.setModel("llama3.1");
         query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Role.system);
         query.addMessage("What is your name?", Role.user);
 
@@ -73,5 +70,36 @@ class OllamaConnectorTest {
             }
         }
         log.info(sb.toString());
+    }
+
+    @Test
+    void completionsWithTool() throws ConnectorException {
+        Tool weatherTool = Tool.functionBuilder()
+            .name("get_weather")
+            .description("Return the weather in a city.")
+            .properties(
+                city -> city.name("city").type("string").description("The city name.").required(),
+                duration -> duration.name("duration").type("integer").description("Number of days to return.").required()
+            )
+            .build();
+
+        CompletionsQuery query = new CompletionsQuery();
+        query.setModel("llama3.1");
+        query.setTools(List.of(weatherTool));
+        query.setToolChoice(ToolChoice.required);
+        query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
+        query.addMessage("What is the weather in Hannover?", Role.user);
+
+        CompletionsResults results = connector.completions(query).await().indefinitely();
+
+        assertEquals(1, results.getChoices().size());
+        for (Choice result : results.getChoices()) {
+            assertNotNull(result.getMessage().getToolCalls());
+            CallFunction fn = result.getMessage().getToolCalls().getFirst().getFunction();
+            assertNotNull(fn);
+            assertEquals("get_weather", fn.getName());
+            assertEquals("Hannover", fn.getArguments().get("city"));
+            assertNotNull(fn.getArguments().get("duration"));
+        }
     }
 }

@@ -17,32 +17,44 @@ public class FunctionToolBuilder {
         return this;
     }
 
-    public FunctionToolBuilder parameters(Customizer<PropertyConfigurer> ...parameterCustomizer) {
+    private void ensureParametersExists() {
         if (function.getParameters() == null) {
-            function.setParameters(new Parameters());
+            Parameters parameters = new Parameters();
+            parameters.setType("object");
+            parameters.setProperties(new HashMap<>());
+            parameters.setRequired(new ArrayList<>());
+            function.setParameters(parameters);
+        }
+    }
+
+    public FunctionToolBuilder addProperty(Customizer<PropertyConfigurer> propertyCustomizer) {
+        if (function.getParameters() == null) {
+            ensureParametersExists();
         }
 
-        HashMap<String, Property> properties = new HashMap<>();
-        ArrayList<String> required = new ArrayList<>();
+        PropertyConfigurer propertyConfigurer = new PropertyConfigurer();
+        propertyCustomizer.customize(propertyConfigurer);
+
+        function.getParameters().getProperties().put(propertyConfigurer.name, propertyConfigurer.property);
+        if (propertyConfigurer.required) {
+            function.getParameters().getRequired().add(propertyConfigurer.name);
+        }
+
+        return this;
+    }
+
+    @SafeVarargs
+    public final FunctionToolBuilder properties(Customizer<PropertyConfigurer>... parameterCustomizer) {
         for (Customizer<PropertyConfigurer> customizer : parameterCustomizer) {
-            PropertyConfigurer propertyConfigurer = new PropertyConfigurer();
-            customizer.customize(propertyConfigurer);
-
-            properties.put(propertyConfigurer.name, propertyConfigurer.property);
-            if (propertyConfigurer.required) {
-                required.add(propertyConfigurer.name);
-            }
+            addProperty(customizer);
         }
 
-        function.getParameters().setType("object");
-        function.getParameters().setProperties(properties);
-        function.getParameters().setRequired(required);
         return this;
     }
 
     public FunctionToolBuilder additionalProperties() {
         if (function.getParameters() == null) {
-            function.setParameters(new Parameters());
+            ensureParametersExists();
         }
 
         function.getParameters().setAdditionalProperties(true);
@@ -82,7 +94,7 @@ public class FunctionToolBuilder {
             return this;
         }
 
-        public PropertyConfigurer enumValues(String ...enumValues) {
+        public PropertyConfigurer enumValues(String... enumValues) {
             this.property.setEnumValues(Arrays.asList(enumValues));
             return this;
         }
