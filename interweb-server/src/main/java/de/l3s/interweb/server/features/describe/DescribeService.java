@@ -36,7 +36,7 @@ public class DescribeService {
         String val = services.iterator().next();
         DescribeConnector connector = this.services.get(val.toLowerCase(Locale.ROOT));
         if (connector == null) {
-            throw new ConnectorException("Unknown service: " + val);
+            throw new ConnectorException("Service `" + val + "` is unknown");
         }
         return connector;
     }

@@ -66,6 +66,6 @@ public class ModelsService {
     public Uni<Model> getModel(String modelId) {
         return getModels().map(models -> models.stream()
                 .filter(model -> model.getId().equalsIgnoreCase(modelId.toLowerCase(Locale.ROOT)))
-                .findFirst().orElseThrow(() -> new NotFoundException("Model not found: " + modelId)));
+                .findFirst().orElseThrow(() -> new NotFoundException("Model `" + modelId + "` not found")));
     }
 }

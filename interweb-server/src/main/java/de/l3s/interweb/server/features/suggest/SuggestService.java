@@ -39,7 +39,7 @@ public class SuggestService {
             return services.stream().map(val -> {
                 SuggestConnector connector = this.services.get(val.toLowerCase(Locale.ROOT));
                 if (connector == null) {
-                    throw new ConnectorException("Unknown service: " + val);
+                    throw new ConnectorException("Service `" + val + "` is unknown");
                 }
                 return connector;
             }).toList();
@@ -52,7 +52,7 @@ public class SuggestService {
         if (services != null && !services.isEmpty()) {
             for (String service : services) {
                 if (!this.services.containsKey(service)) {
-                    throw new ValidationException("Service unknown.");
+                    throw new ValidationException("Service unknown");
                 }
             }
         }

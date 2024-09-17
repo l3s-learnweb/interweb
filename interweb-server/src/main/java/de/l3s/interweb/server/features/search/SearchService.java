@@ -49,7 +49,7 @@ public class SearchService {
             return services.stream().map(val -> {
                 SearchConnector connector = this.providers.get(val.toLowerCase(Locale.ROOT));
                 if (connector == null) {
-                    throw new ConnectorException("Unknown service: " + val);
+                    throw new ConnectorException("Service `" + val + "` is unknown");
                 }
                 return connector;
             }).toList();

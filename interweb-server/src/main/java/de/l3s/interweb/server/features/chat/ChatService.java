@@ -24,7 +24,7 @@ public class ChatService {
                 return completions(query, model, chatConnector);
             }
 
-            return Uni.createFrom().failure(new ConnectorException("Model doesn't support chat: " + query.getModel()));
+            return Uni.createFrom().failure(new ConnectorException("Model `" + query.getModel() + "` is not a chat model"));
         });
     }
 

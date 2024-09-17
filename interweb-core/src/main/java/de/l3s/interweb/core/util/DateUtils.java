@@ -21,7 +21,7 @@ public final class DateUtils {
         try {
             return Instant.from(PARSE_FORMAT.parse(str));
         } catch (DateTimeParseException e) {
-            throw new ConnectorException("Unable to parse date: " + str, e);
+            throw new ConnectorException("Unable to parse date in a string `" + str + "`", e);
         }
     }
 
