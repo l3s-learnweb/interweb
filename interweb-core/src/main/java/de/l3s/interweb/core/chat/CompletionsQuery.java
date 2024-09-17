@@ -68,6 +68,27 @@ public class CompletionsQuery {
     private Double topP;
 
     /**
+     * Alternative to the top_p, and aims to ensure a balance of quality and variety.
+     * The parameter p represents the minimum probability for a token to be considered, relative to the probability of the most likely token.
+     * For example, with p=0.05 and the most likely token having a probability of 0.9, logits with a value less than 0.045 are filtered out. (Default: 0.0)
+     * Available via Ollama on certain models.
+     */
+    @Min(0)
+    @Max(1)
+    @JsonProperty("min_p")
+    private Double minP;
+
+    /**
+     * Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers,
+     * while a lower value (e.g. 10) will be more conservative. (Default: 40)
+     * Available via Ollama on certain models.
+     */
+    @Min(0)
+    @Max(100)
+    @JsonProperty("top_k")
+    private Integer topK;
+
+    /**
      * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far,
      * decreasing the model's likelihood to repeat the same line verbatim.
      */
@@ -210,6 +231,22 @@ public class CompletionsQuery {
 
     public void setTopP(final Double topP) {
         this.topP = topP;
+    }
+
+    public Double getMinP() {
+        return minP;
+    }
+
+    public void setMinP(Double minP) {
+        this.minP = minP;
+    }
+
+    public Integer getTopK() {
+        return topK;
+    }
+
+    public void setTopK(final Integer topK) {
+        this.topK = topK;
     }
 
     public Double getFrequencyPenalty() {

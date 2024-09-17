@@ -19,6 +19,8 @@ public class OllamaModelOptions {
     private Integer numPredict;
     @JsonProperty("top_p")
     private Double topP;
+    @JsonProperty("min_p")
+    private Double minP;
     @JsonProperty("top_k")
     private Integer topK;
 
@@ -31,6 +33,8 @@ public class OllamaModelOptions {
         this.numPredict = query.getMaxTokens();
         this.temperature = query.getTemperature();
         this.topP = query.getTopP();
+        this.minP = query.getMinP();
+        this.topK = query.getTopK();
     }
 
     public Double getRepeatPenalty() {
@@ -55,6 +59,10 @@ public class OllamaModelOptions {
 
     public Double getTopP() {
         return topP;
+    }
+
+    public Double getMinP() {
+        return minP;
     }
 
     public Integer getTopK() {
