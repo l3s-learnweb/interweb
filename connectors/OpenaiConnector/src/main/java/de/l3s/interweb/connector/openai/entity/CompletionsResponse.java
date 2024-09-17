@@ -18,7 +18,7 @@ public class CompletionsResponse {
     @JsonProperty("system_fingerprint")
     private String systemFingerprint;
     private Instant created;
-    private List<OpenaiChoice> choices;
+    private List<Choice> choices;
 
     public String getId() {
         return id;
@@ -68,11 +68,11 @@ public class CompletionsResponse {
         this.created = created;
     }
 
-    public List<OpenaiChoice> getChoices() {
+    public List<Choice> getChoices() {
         return choices;
     }
 
-    public void setChoices(List<OpenaiChoice> choices) {
+    public void setChoices(List<Choice> choices) {
         this.choices = choices;
     }
 
@@ -80,26 +80,7 @@ public class CompletionsResponse {
         CompletionsResults results = new CompletionsResults();
         results.setModel(model);
         results.setCreated(created);
-        results.setChoices(choices.stream().map(openaiChoice -> {
-            Message message = new Message(Role.assistant);
-            message.setContent(openaiChoice.getMessage().getContent());
-            message.setRefusal(openaiChoice.getMessage().getRefusal());
-            if (openaiChoice.getMessage().getToolCalls() != null) {
-                message.setToolCalls(openaiChoice.getMessage().getToolCalls().stream().map(openaiCallTool -> {
-                    CallTool callTool = new CallTool();
-                    callTool.setId(openaiCallTool.getId());
-                    callTool.setType(openaiCallTool.getType());
-                    callTool.setFunction(openaiCallTool.getFunction().toCallFunction());
-                    return callTool;
-                }).toList());
-            }
-
-            Choice choice = new Choice();
-            choice.setIndex(openaiChoice.getIndex());
-            choice.setFinishReason(openaiChoice.getFinishReason());
-            choice.setMessage(message);
-            return choice;
-        }).toList());
+        results.setChoices(choices);
         results.setUsage(usage);
         results.setObject(object);
         results.setSystemFingerprint(systemFingerprint);

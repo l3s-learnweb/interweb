@@ -1,17 +1,13 @@
 package de.l3s.interweb.connector.openai.entity;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.HashMap;
-
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.CallFunction;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 @RegisterForReflection
 public class OpenaiCallFunction implements Serializable {
@@ -47,21 +43,5 @@ public class OpenaiCallFunction implements Serializable {
 
     public String getArguments() {
         return arguments;
-    }
-
-    public CallFunction toCallFunction() {
-        try {
-            CallFunction function = new CallFunction();
-            function.setName(name);
-
-            if (arguments != null && !arguments.isBlank()) {
-                TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {};
-                function.setArguments(new ObjectMapper().readValue(arguments, typeRef));
-            }
-
-            return function;
-        } catch (JsonProcessingException e) {
-            throw new ConnectorException("Failed to parse function arguments", e);
-        }
     }
 }
