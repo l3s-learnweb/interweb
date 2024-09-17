@@ -42,7 +42,11 @@ public class OllamaConnector implements ChatConnector {
         return ollama.tags().map(tags -> tags.getModels().stream().map(tag -> {
             Model model = new Model();
             model.setId(tag.getName());
-            model.setOwnedBy("ollama");
+            model.setProvidedBy("l3s");
+            model.setFamily(tag.getDetails().getFamily());
+            model.setParameterSize(tag.getDetails().getParameterSize());
+            model.setQuantizationLevel(tag.getDetails().getQuantizationLevel());
+            model.setCreated(tag.getModifiedAt());
             return model;
         }).toList());
     }

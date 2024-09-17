@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @RegisterForReflection
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({"id", "object", "owned_by", "created"})
+@JsonPropertyOrder({"id", "object", "owned_by", "provided_by", "family", "parameter_size", "quantization_level", "created"})
 public class Model {
     /**
      * The model identifier, which can be referenced in the API endpoints.
@@ -28,6 +28,14 @@ public class Model {
      */
     @JsonProperty("owned_by")
     private String ownedBy;
+    @JsonProperty("provided_by")
+    private String providedBy;
+    @JsonProperty("family")
+    private String family;
+    @JsonProperty("parameter_size")
+    private String parameterSize;
+    @JsonProperty("quantization_level")
+    private String quantizationLevel;
     /**
      * The price of the model per 1k tokens in USD.
      */
@@ -66,6 +74,38 @@ public class Model {
         this.ownedBy = ownedBy;
     }
 
+    public String getProvidedBy() {
+        return providedBy;
+    }
+
+    public void setProvidedBy(String providedBy) {
+        this.providedBy = providedBy;
+    }
+
+    public String getFamily() {
+        return family;
+    }
+
+    public void setFamily(String family) {
+        this.family = family;
+    }
+
+    public String getParameterSize() {
+        return parameterSize;
+    }
+
+    public void setParameterSize(String parameterSize) {
+        this.parameterSize = parameterSize;
+    }
+
+    public String getQuantizationLevel() {
+        return quantizationLevel;
+    }
+
+    public void setQuantizationLevel(String quantizationLevel) {
+        this.quantizationLevel = quantizationLevel;
+    }
+
     public UsagePrice getPrice() {
         return price;
     }
@@ -94,6 +134,7 @@ public class Model {
         Model model = new Model();
         model.setId(id);
         model.setOwnedBy(ownedBy);
+        model.setProvidedBy(ownedBy);
         model.setPrice(price);
         if (created != null) {
             model.setCreated(created.atStartOfDay(ZoneId.systemDefault()).toInstant());
