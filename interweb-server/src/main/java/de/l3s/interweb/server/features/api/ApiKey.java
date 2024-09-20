@@ -64,10 +64,10 @@ public class ApiKey extends PanacheEntityBase implements Credential {
     }
 
     public static Uni<ApiKey> findById(Object id, User user) {
-        return find("id = ?1 and user.id = ?2", id, user.id).firstResult();
+        return find("id = ?1 and user.id = ?2", id, user.id).singleResult();
     }
 
     public static Uni<ApiKey> findByApikey(String apikey) {
-        return find("apikey", apikey).firstResult();
+        return find("apikey", apikey).singleResult();
     }
 }

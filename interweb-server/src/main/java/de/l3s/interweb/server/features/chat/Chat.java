@@ -84,7 +84,7 @@ public class Chat extends PanacheEntityBase {
     }
 
     public static Uni<Chat> findById(ApiKey apikey, UUID id) {
-        return find("apikey.id = ?1 AND id = ?2", apikey.id, id).firstResult();
+        return find("apikey.id = ?1 AND id = ?2", apikey.id, id).singleResult();
     }
 
     public static Uni<List<Chat>> listByUser(ApiKey apikey, String user, String order, int page, int perPage) {

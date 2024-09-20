@@ -64,6 +64,6 @@ public class UserToken extends PanacheEntityBase implements Credential {
     }
 
     public static Uni<UserToken> findByToken(Type type, String token) {
-        return find("type = ?1 and token = ?2 and created > ?3", type.name(), token, Instant.now().minus(type.duration)).firstResult();
+        return find("type = ?1 and token = ?2 and created > ?3", type.name(), token, Instant.now().minus(type.duration)).singleResult();
     }
 }

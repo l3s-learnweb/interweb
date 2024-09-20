@@ -49,7 +49,7 @@ public class User extends PanacheEntityBase implements Principal {
     }
 
     public static Uni<User> findByEmail(String name) {
-        return find("email", name).firstResult();
+        return find("email", name).singleResult();
     }
 
     @Override
