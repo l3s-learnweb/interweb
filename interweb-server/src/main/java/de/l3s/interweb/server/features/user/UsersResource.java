@@ -11,7 +11,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriInfo;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
@@ -30,8 +29,6 @@ import de.l3s.interweb.server.Roles;
 
 @Tag(name = "Auth & Identity", description = "User management")
 @Path("/")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
 public class UsersResource {
     private static final Logger log = Logger.getLogger(UsersResource.class);
 
@@ -58,6 +55,8 @@ public class UsersResource {
         Interweb Team
         """;
 
+    private static final String TOKEN_INVALID = "The token is invalid or expired";
+
     @ConfigProperty(name = "interweb.admin.email")
     Optional<String> adminEmail;
 
@@ -72,7 +71,6 @@ public class UsersResource {
 
     @POST
     @Path("/login")
-    @Produces(MediaType.TEXT_PLAIN)
     @Operation(summary = "Request JWT token for the given email", description = "Use this method to login to the app and manage tokens")
     public Uni<String> login(@Valid LoginBody body, @Context UriInfo uriInfo) {
         return findOrCreateUser(body.email).chain(user -> {
@@ -121,12 +119,11 @@ public class UsersResource {
 
     @GET
     @Path("/jwt")
-    @Produces(MediaType.TEXT_PLAIN)
     @Operation(summary = "Request JWT token for the given email and password")
     public Uni<String> jwt(@NotEmpty @QueryParam("token") String token) {
         return UserToken.findByToken(UserToken.Type.login, token)
             .onItem().ifNotNull().transform(loginToken -> Jwt.upn(loginToken.user.getName()).groups(loginToken.user.role).sign())
-            .onItem().ifNull().failWith(() -> new BadRequestException("The token is invalid or expired"));
+            .onItem().ifNull().failWith(() -> new BadRequestException(TOKEN_INVALID));
     }
 
     @GET

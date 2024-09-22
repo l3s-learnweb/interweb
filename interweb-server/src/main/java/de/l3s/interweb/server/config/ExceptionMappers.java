@@ -10,47 +10,23 @@ import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 
 public class ExceptionMappers {
     @ServerExceptionMapper
-    public RestResponse<HttpError> mapException(Exception x) {
-        return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR, HttpError.of(x));
+    public RestResponse<ErrorResponse> mapException(NotFoundException x) {
+        return RestResponse.status(Response.Status.NOT_FOUND, ErrorResponse.of(x));
     }
 
     @ServerExceptionMapper
-    public RestResponse<HttpError> mapException(NotFoundException x) {
-        return RestResponse.status(Response.Status.NOT_FOUND, HttpError.of(x));
+    public RestResponse<ErrorResponse> mapException(NoResultException x) {
+        return RestResponse.status(Response.Status.NOT_FOUND, ErrorResponse.of("The requested entity was not found."));
     }
 
     @ServerExceptionMapper
-    public RestResponse<HttpError> mapException(NoResultException x) {
-        return RestResponse.status(Response.Status.NOT_FOUND, HttpError.of("Resource not found"));
+    public RestResponse<ErrorResponse> mapException(BadRequestException x) {
+        return RestResponse.status(Response.Status.BAD_REQUEST, ErrorResponse.of(x));
     }
 
     @ServerExceptionMapper
-    public RestResponse<HttpError> mapException(BadRequestException x) {
-        return RestResponse.status(Response.Status.BAD_REQUEST, HttpError.of(x));
+    public RestResponse<ErrorResponse> mapException(Exception x) {
+        return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR, ErrorResponse.of(x));
     }
 
-    public static final class HttpError {
-        private String message;
-
-        public String getMessage() {
-            return message;
-        }
-
-        public static HttpError of(String str) {
-            HttpError error = new HttpError();
-            error.message = str;
-            return error;
-        }
-
-        public static HttpError of(Exception e) {
-            HttpError error = new HttpError();
-            error.message = e.getMessage();
-            return error;
-        }
-
-        @Override
-        public String toString() {
-            return message;
-        }
-    }
 }
