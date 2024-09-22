@@ -28,7 +28,7 @@ public class ChatsResource {
     SecurityIdentity securityIdentity;
 
     @GET
-    public Uni<List<Chat>> chats(
+    public Uni<List<Chat>> list(
         @QueryParam("user") String user,
         @QueryParam("sort") @DefaultValue("-created") String order,
         @QueryParam("page") @DefaultValue("1") Integer page,
@@ -41,7 +41,7 @@ public class ChatsResource {
 
     @GET
     @Path("{uuid}")
-    public Uni<Conversation> chat(@PathParam("uuid") UUID id) {
+    public Uni<Conversation> get(@PathParam("uuid") UUID id) {
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
 
         return Chat.findById(apikey, id).call(chat -> Mutiny.fetch(chat.getMessages())).map(chat -> {

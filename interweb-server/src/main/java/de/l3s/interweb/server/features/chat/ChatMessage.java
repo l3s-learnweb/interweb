@@ -5,10 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
-import de.l3s.interweb.core.util.JsonUtils;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -17,9 +13,11 @@ import io.smallrye.mutiny.Uni;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.l3s.interweb.core.chat.Message;
 import de.l3s.interweb.core.chat.Role;
+import de.l3s.interweb.core.util.JsonUtils;
 
 @Entity
 @Cacheable
