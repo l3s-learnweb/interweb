@@ -12,11 +12,11 @@
     </parent>
 
     <artifactId>interweb-client</artifactId>
-    <version>4.5.1</version>
+    <version>4.5.2</version>
     <packaging>jar</packaging>
 
     <name>Interweb Client</name>
-    <description>Versatile API that consolidates multiple data providers into one unified interface</description>
+    <description>Interweb is a versatile API that consolidates multiple data providers into one unified interface</description>
     <url>https://github.com/l3s-learnweb/interweb</url>
 
     <licenses>
@@ -119,13 +119,36 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <flattenMode>ossrh</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
                     <autoPublish>true</autoPublish>
-                    <waitUntil>published</waitUntil>
                 </configuration>
             </plugin>
         </plugins>
