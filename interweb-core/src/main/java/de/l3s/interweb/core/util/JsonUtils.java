@@ -17,6 +17,7 @@ public final class JsonUtils {
 
     public static <T> T fromJson(String json, Class<T> clazz) {
         try {
+            if (json == null) return null;
             return objectMapper.readValue(json, clazz);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -25,6 +26,7 @@ public final class JsonUtils {
 
     public static <T> T fromJson(String json, TypeReference<T> valueTypeRef) {
         try {
+            if (json == null) return null;
             return objectMapper.readValue(json, valueTypeRef);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
