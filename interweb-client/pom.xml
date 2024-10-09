@@ -16,10 +16,29 @@
     <packaging>jar</packaging>
 
     <name>Interweb Client</name>
+    <description>Versatile API that consolidates multiple data providers into one unified interface</description>
+    <url>https://github.com/l3s-learnweb/interweb</url>
 
-    <properties>
-        <maven.compiler.release>17</maven.compiler.release>
-    </properties>
+    <licenses>
+        <license>
+            <name>MIT license</name>
+            <url>https://github.com/l3s-learnweb/interweb/blob/main/LICENSE</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Oleh Astappiev</name>
+            <email>astappiev@l3s.de</email>
+            <organization>Research Center L3S</organization>
+            <organizationUrl>https://l3s.de</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/l3s-learnweb/interweb/tree/main</url>
+        <connection>scm:git:git@github.com:l3s-learnweb/interweb.git</connection>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -51,9 +70,31 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -75,6 +116,16 @@
                             <include>de.l3s.interweb:interweb-core</include>
                         </includes>
                     </artifactSet>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
                 </configuration>
             </plugin>
         </plugins>
