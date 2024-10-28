@@ -23,7 +23,7 @@
 
         <surefire-plugin.version>3.5.1</surefire-plugin.version>
         <enforcer-plugin.version>3.5.0</enforcer-plugin.version>
-        <dependency-plugin.version>3.8.0</dependency-plugin.version>
+        <dependency-plugin.version>3.8.1</dependency-plugin.version>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <source-plugin.version>3.3.1</source-plugin.version>
         <javadoc-plugin.version>3.10.1</javadoc-plugin.version>
@@ -31,8 +31,8 @@
         <sonatype-plugin.version>0.6.0</sonatype-plugin.version>
         <resources-plugin.version>3.3.1</resources-plugin.version>
         <shade-plugin.version>3.6.0</shade-plugin.version>
-        <jandex-plugin.version>3.2.2</jandex-plugin.version>
-        <checkstyle-plugin.version>3.5.0</checkstyle-plugin.version>
+        <jandex-plugin.version>3.2.3</jandex-plugin.version>
+        <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
         <spotbugs-plugin.version>4.8.6.4</spotbugs-plugin.version>
     </properties>
 
