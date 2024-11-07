@@ -18,6 +18,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 
+import io.quarkus.security.ForbiddenException;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -27,6 +28,7 @@ import org.jboss.resteasy.reactive.RestQuery;
 import de.l3s.interweb.core.search.*;
 import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.Roles;
+import de.l3s.interweb.server.features.user.User;
 
 @Tag(name = "Search", description = "Search internet by query")
 @Path("/search")
@@ -70,6 +72,11 @@ public class SearchResource {
 
     @POST
     public Uni<SearchResults> search(@NotNull @Valid SearchQuery query, @HeaderParam("Cache-Control") String cacheControl) {
+        final User user = (User) securityIdentity.getPrincipal();
+        if (!user.allowSearch) {
+            return Uni.createFrom().failure(new ForbiddenException("Please contact the administrator to enable search"));
+        }
+
         long start = System.currentTimeMillis();
         if (NO_CACHE.equals(cacheControl)) {
             query.setIgnoreCache(true);

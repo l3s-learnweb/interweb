@@ -39,6 +39,12 @@ public class User extends PanacheEntityBase implements Principal {
     @NotNull
     public boolean approved = false;
 
+    @NotNull
+    public boolean allowSearch = false;
+
+    @NotNull
+    public boolean allowPaidModels = false;
+
     @UpdateTimestamp
     public Instant updated;
 

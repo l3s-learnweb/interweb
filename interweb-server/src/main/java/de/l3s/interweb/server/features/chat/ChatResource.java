@@ -21,6 +21,7 @@ import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.chat.Message;
 import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.Roles;
+import de.l3s.interweb.server.features.user.User;
 import de.l3s.interweb.server.features.api.ApiChatRequest;
 import de.l3s.interweb.server.features.api.ApiKey;
 
@@ -41,8 +42,9 @@ public class ChatResource {
     @POST
     @Path("/completions")
     public Uni<CompletionsResults> completions(@Valid CompletionsQuery query) {
+        User user = (User) securityIdentity.getPrincipal();
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
-        return chatService.completions(query).chain(results -> {
+        return chatService.completions(query, user.allowPaidModels).chain(results -> {
             results.setChatId(null); // reset chatId if it was set
             bus.send("api-request-chat", ApiChatRequest.of(results, apikey));
 

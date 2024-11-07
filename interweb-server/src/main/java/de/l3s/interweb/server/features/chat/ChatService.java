@@ -17,10 +17,13 @@ public class ChatService {
     @Inject
     ModelsService modelsService;
 
-    public Uni<CompletionsResults> completions(CompletionsQuery query) {
+    public Uni<CompletionsResults> completions(CompletionsQuery query, boolean allowPaidModels) {
         return modelsService.getModel(query.getModel()).flatMap(model -> {
             ModelsConnector connector = modelsService.getConnector(model.getProvider());
             if (connector instanceof ChatConnector chatConnector) {
+                if (model.getPrice().getInput() > 0 && !allowPaidModels) {
+                    return Uni.createFrom().failure(new ConnectorException("Please contact the administrator to enable this model"));
+                }
                 return completions(query, model, chatConnector);
             }
 
@@ -56,6 +59,6 @@ public class ChatService {
             Summarize the conversation in 5 words or less, in a way that sounds like a book title.
             Don't use any formatting. You can use emojis. Only print the title, nothing else.
             """.formatted(sb), Role.user);
-        return completions(query).map(results -> results.getLastMessage().getContent().trim());
+        return completions(query, false).map(results -> results.getLastMessage().getContent().trim());
     }
 }

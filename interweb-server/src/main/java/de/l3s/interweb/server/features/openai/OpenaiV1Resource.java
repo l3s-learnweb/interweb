@@ -9,6 +9,8 @@ import de.l3s.interweb.server.features.api.ApiChatRequest;
 import de.l3s.interweb.server.features.api.ApiKey;
 import de.l3s.interweb.server.features.chat.ChatService;
 import de.l3s.interweb.server.features.models.ModelsService;
+import de.l3s.interweb.server.features.user.User;
+
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.eventbus.EventBus;
@@ -50,8 +52,9 @@ public class OpenaiV1Resource {
     @POST
     @Path("/chat/completions")
     public Uni<CompletionsResults> chatCompletions(@Valid CompletionsQuery query) {
+        User user = (User) securityIdentity.getPrincipal();
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
-        return chatService.completions(query).chain(results -> {
+        return chatService.completions(query, user.allowPaidModels).chain(results -> {
             results.setChatId(null); // reset chatId if it was set
             bus.send("api-request-chat", ApiChatRequest.of(results, apikey));
             return Uni.createFrom().item(results);
