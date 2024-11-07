@@ -83,7 +83,7 @@ public class UsersResource {
     }
 
     private Uni<User> findOrCreateUser(String email) {
-        return User.findByEmail(email).onItem().ifNull().switchTo(() -> createUser(email).call(user -> {
+        return User.findByEmail(email).onFailure().recoverWithUni(() -> createUser(email).call(user -> {
             if (!user.approved && adminEmail.isPresent()) {
                 return mailer.send(Mail.withText(adminEmail.get(), NEW_USER_EMAIL_SUBJECT, NEW_USER_EMAIL_BODY.formatted(user.email)));
             }
