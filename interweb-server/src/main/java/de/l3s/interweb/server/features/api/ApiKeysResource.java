@@ -12,7 +12,6 @@ import jakarta.ws.rs.core.Context;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
@@ -68,16 +67,12 @@ public class ApiKeysResource {
     @GET
     @Path("/usage")
     @RolesAllowed({Roles.APPLICATION})
-    public Uni<Usage> chat() {
+    public Uni<UsageSummary> chat() {
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
 
-        return ChatUsage.findByApikey(apikey).map(Usage::new);
+        return ChatUsage.findByApikey(apikey).map(UsageSummary::new);
     }
 
     public record CreateToken(@NotNull @NotEmpty @Size(max = 255) String name, @Size(max = 512) String url, @Size(max = 1024) String description) {
-    }
-
-    @RegisterForReflection
-    public record Usage(ChatUsage chat) {
     }
 }
