@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UsagePrice {
+    public static final UsagePrice FREE = new UsagePrice(0, 0);
+
     private double input;
     private double output;
 

@@ -11,6 +11,7 @@ import io.smallrye.mutiny.Uni;
 
 import de.l3s.interweb.server.Roles;
 import de.l3s.interweb.server.features.api.ApiKey;
+import de.l3s.interweb.server.features.user.User;
 
 @ApplicationScoped
 public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthenticationRequest> {
@@ -30,6 +31,18 @@ public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthentica
                 .addCredential(key)
                 .setAnonymous(false)
                 .addRole(Roles.APPLICATION)
+                .addPermissionChecker(permission -> {
+                    try {
+                        if (!permission.implies(permission)) { // normally, this will be `true`, if not, we should skip checking
+                            return Uni.createFrom().item(true);
+                        }
+
+                        final User.Permission req = User.Permission.valueOf(permission.getName());
+                        return Uni.createFrom().item(key.user.permissions.contains(req));
+                    } catch (IllegalArgumentException e) {
+                        return null;
+                    }
+                })
                 .build());
     }
 }

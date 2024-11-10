@@ -114,6 +114,10 @@ public class Model {
         this.price = price;
     }
 
+    public boolean isFree() {
+        return UsagePrice.FREE.equals(price);
+    }
+
     public String getProvider() {
         return provider;
     }

@@ -1,5 +1,21 @@
 package de.l3s.interweb.server.features.openai;
 
+import java.util.List;
+
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.Context;
+
+import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.mutiny.Uni;
+import io.vertx.core.eventbus.EventBus;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import de.l3s.interweb.core.ObjectWrapper;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
@@ -9,22 +25,6 @@ import de.l3s.interweb.server.features.api.ApiChatRequest;
 import de.l3s.interweb.server.features.api.ApiKey;
 import de.l3s.interweb.server.features.chat.ChatService;
 import de.l3s.interweb.server.features.models.ModelsService;
-import de.l3s.interweb.server.features.user.User;
-
-import io.quarkus.security.identity.SecurityIdentity;
-import io.smallrye.mutiny.Uni;
-import io.vertx.core.eventbus.EventBus;
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.core.Context;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
-import java.util.List;
 
 @Tag(name = "OpenAI Compatible API v1")
 @Path("/v1")
@@ -52,9 +52,8 @@ public class OpenaiV1Resource {
     @POST
     @Path("/chat/completions")
     public Uni<CompletionsResults> chatCompletions(@Valid CompletionsQuery query) {
-        User user = (User) securityIdentity.getPrincipal();
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
-        return chatService.completions(query, user.allowPaidModels).chain(results -> {
+        return chatService.completions(query).chain(results -> {
             results.setChatId(null); // reset chatId if it was set
             bus.send("api-request-chat", ApiChatRequest.of(results, apikey));
             return Uni.createFrom().item(results);

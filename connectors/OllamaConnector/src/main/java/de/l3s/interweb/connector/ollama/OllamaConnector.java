@@ -19,6 +19,7 @@ import de.l3s.interweb.core.chat.ChatConnector;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.models.Model;
+import de.l3s.interweb.core.models.UsagePrice;
 
 @Dependent
 public class OllamaConnector implements ChatConnector {
@@ -43,6 +44,7 @@ public class OllamaConnector implements ChatConnector {
             Model model = new Model();
             model.setId(tag.getName());
             model.setProvidedBy("l3s");
+            model.setPrice(UsagePrice.FREE);
             model.setFamily(tag.getDetails().getFamily());
             model.setParameterSize(tag.getDetails().getParameterSize());
             model.setQuantizationLevel(tag.getDetails().getQuantizationLevel());

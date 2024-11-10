@@ -2,6 +2,7 @@ package de.l3s.interweb.server.features.user;
 
 import java.security.Principal;
 import java.time.Instant;
+import java.util.Set;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -22,6 +23,12 @@ import de.l3s.interweb.server.Roles;
 @Cacheable
 @Table(name = "user")
 public class User extends PanacheEntityBase implements Principal {
+
+    public enum Permission {
+        search,
+        paid_models,
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(readOnly = true)
@@ -39,11 +46,11 @@ public class User extends PanacheEntityBase implements Principal {
     @NotNull
     public boolean approved = false;
 
-    @NotNull
-    public boolean allowSearch = false;
-
-    @NotNull
-    public boolean allowPaidModels = false;
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_permission", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "permission", nullable = false)
+    public Set<Permission> permissions;
 
     @UpdateTimestamp
     public Instant updated;

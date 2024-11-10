@@ -3,9 +3,7 @@ package de.l3s.interweb.server;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import io.quarkus.panache.mock.PanacheMock;
 import io.quarkus.test.InjectMock;
@@ -21,8 +19,8 @@ import org.mockito.Mockito;
 
 import de.l3s.interweb.core.search.SearchQuery;
 import de.l3s.interweb.core.search.SearchResults;
-import de.l3s.interweb.server.features.search.SearchService;
 import de.l3s.interweb.server.features.api.ApiKey;
+import de.l3s.interweb.server.features.search.SearchService;
 import de.l3s.interweb.server.features.user.User;
 
 @QuarkusTest
@@ -33,9 +31,12 @@ class RequestApiKeyAuthTest {
 
     @BeforeEach
     public void setup() {
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.permissions).thenReturn(Set.of(User.Permission.search));
+
         PanacheMock.mock(ApiKey.class);
         ApiKey testKey = Mockito.mock(ApiKey.class);
-        Mockito.when(testKey.user).thenReturn(Mockito.mock(User.class));
+        Mockito.when(testKey.user).thenReturn(user);
         Mockito.when(ApiKey.findByApikey("testkey")).thenReturn(Uni.createFrom().item(testKey));
 
         SearchQuery searchQuery = new SearchQuery();

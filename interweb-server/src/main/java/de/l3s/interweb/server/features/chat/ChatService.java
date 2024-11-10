@@ -3,12 +3,14 @@ package de.l3s.interweb.server.features.chat;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import io.quarkus.security.PermissionsAllowed;
 import io.smallrye.mutiny.Uni;
 
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.*;
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.models.ModelsConnector;
+import de.l3s.interweb.server.components.auth.ModelPermission;
 import de.l3s.interweb.server.features.models.ModelsService;
 
 @ApplicationScoped
@@ -17,18 +19,18 @@ public class ChatService {
     @Inject
     ModelsService modelsService;
 
-    public Uni<CompletionsResults> completions(CompletionsQuery query, boolean allowPaidModels) {
-        return modelsService.getModel(query.getModel()).flatMap(model -> {
-            ModelsConnector connector = modelsService.getConnector(model.getProvider());
-            if (connector instanceof ChatConnector chatConnector) {
-                if (model.getPrice().getInput() > 0 && !allowPaidModels) {
-                    return Uni.createFrom().failure(new ConnectorException("Please contact the administrator to enable this model"));
-                }
-                return completions(query, model, chatConnector);
-            }
+    public Uni<CompletionsResults> completions(CompletionsQuery query) {
+        return modelsService.getModel(query.getModel()).chain(model -> completions(query, model));
+    }
 
-            return Uni.createFrom().failure(new ConnectorException("Model `" + query.getModel() + "` is not a chat model"));
-        });
+    @PermissionsAllowed(value = "paid_models", permission = ModelPermission.class)
+    public Uni<CompletionsResults> completions(CompletionsQuery query, Model model) {
+        ModelsConnector connector = modelsService.getConnector(model.getProvider());
+        if (connector instanceof ChatConnector chatConnector) {
+            return completions(query, model, chatConnector);
+        }
+
+        return Uni.createFrom().failure(new ConnectorException("Model `" + query.getModel() + "` is not a chat model"));
     }
 
     private Uni<CompletionsResults> completions(CompletionsQuery query, Model model, ChatConnector connector) {
@@ -59,6 +61,6 @@ public class ChatService {
             Summarize the conversation in 5 words or less, in a way that sounds like a book title.
             Don't use any formatting. You can use emojis. Only print the title, nothing else.
             """.formatted(sb), Role.user);
-        return completions(query, false).map(results -> results.getLastMessage().getContent().trim());
+        return completions(query).map(results -> results.getLastMessage().getContent().trim());
     }
 }
