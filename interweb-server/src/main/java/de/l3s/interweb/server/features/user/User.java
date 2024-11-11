@@ -52,6 +52,11 @@ public class User extends PanacheEntityBase implements Principal {
     @Column(name = "permission", nullable = false)
     public Set<Permission> permissions;
 
+    @NotNull
+    @Schema(readOnly = true)
+    @Column(name = "monthly_budget")
+    public Double monthlyBudget = 100d;
+
     @UpdateTimestamp
     public Instant updated;
 

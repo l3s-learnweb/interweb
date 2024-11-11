@@ -11,14 +11,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.search.ContentType;
 import de.l3s.interweb.server.features.user.User;
 
 @Entity
 @Cacheable
-@Table(name = "api_request_chat")
+@Table(name = "api_request_search")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiChatRequest extends PanacheEntityBase {
+public class ApiRequestSearch extends PanacheEntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
@@ -32,15 +32,14 @@ public class ApiChatRequest extends PanacheEntityBase {
     public ApiKey apikey;
 
     @NotNull
-    public String model;
+    public String engine;
 
     @NotNull
-    @Column(name = "input_tokens")
-    public Integer inputTokens = 0;
+    @Column(name = "content_type")
+    public String contentType;
 
     @NotNull
-    @Column(name = "output_tokens")
-    public Integer outputTokens = 0;
+    public String query;
 
     @NotNull
     @Column(name = "est_cost")
@@ -49,18 +48,14 @@ public class ApiChatRequest extends PanacheEntityBase {
     @CreationTimestamp
     public Instant created;
 
-    public static ApiChatRequest of(CompletionsResults results, ApiKey apikey) {
-        ApiChatRequest request = new ApiChatRequest();
+    public static ApiRequestSearch of(String engine, ContentType contentType, String query, Double estimatedCost, ApiKey apikey) {
+        ApiRequestSearch request = new ApiRequestSearch();
         request.user = apikey.user;
         request.apikey = apikey;
-        request.model = results.getModel();
-        if (results.getUsage() != null) {
-            request.inputTokens = results.getUsage().getPromptTokens();
-            request.outputTokens = results.getUsage().getCompletionTokens();
-        }
-        if (results.getCost() != null) {
-            request.estimatedCost = results.getCost().getTotal();
-        }
+        request.engine = engine;
+        request.contentType = contentType.name();
+        request.query = query;
+        request.estimatedCost = estimatedCost;
         return request;
     }
 }

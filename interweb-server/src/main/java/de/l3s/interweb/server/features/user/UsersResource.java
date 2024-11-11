@@ -26,7 +26,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 
 import de.l3s.interweb.server.Roles;
-import de.l3s.interweb.server.features.api.ChatUsage;
 import de.l3s.interweb.server.features.api.UsageSummary;
 
 @Tag(name = "Auth & Identity", description = "User management")
@@ -142,7 +141,7 @@ public class UsersResource {
     @Operation(summary = "Return the usage of the current user")
     public Uni<UsageSummary> chat() {
         User user = (User) securityIdentity.getPrincipal();
-        return ChatUsage.findByUser(user).map(UsageSummary::new);
+        return UsageSummary.findByUser(user);
     }
 
     public record LoginBody(@NotNull @NotEmpty @Email @Size(max = 255) String email) {

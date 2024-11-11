@@ -2,29 +2,53 @@ package de.l3s.interweb.server.features.chat;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.ForbiddenException;
 
-import io.quarkus.security.PermissionsAllowed;
 import io.smallrye.mutiny.Uni;
+import io.vertx.core.eventbus.EventBus;
 
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.*;
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.models.ModelsConnector;
-import de.l3s.interweb.server.components.auth.ModelPermission;
+import de.l3s.interweb.server.features.api.ApiKey;
+import de.l3s.interweb.server.features.api.ApiRequestChat;
+import de.l3s.interweb.server.features.api.UsageService;
 import de.l3s.interweb.server.features.models.ModelsService;
+import de.l3s.interweb.server.features.user.User;
 
 @ApplicationScoped
 public class ChatService {
 
     @Inject
+    EventBus bus;
+
+    @Inject
+    UsageService usageService;
+
+    @Inject
     ModelsService modelsService;
 
-    public Uni<CompletionsResults> completions(CompletionsQuery query) {
+    public Uni<CompletionsResults> completions(CompletionsQuery query, ApiKey apikey) {
+        return modelsService.getModel(query.getModel()).chain(model -> {
+            if (model.isFree()) {
+                return completions(query, model);
+            } else if (apikey.user.permissions.contains(User.Permission.paid_models)) {
+                return usageService.allocate(apikey.user)
+                    .chain(exceeded -> completions(query, model));
+            } else {
+                return Uni.createFrom().failure(new ForbiddenException("Please contact support to get access to this model"));
+            }
+        }).invoke(results -> {
+            bus.send("api-request-chat", ApiRequestChat.of(results, apikey));
+        });
+    }
+
+    private Uni<CompletionsResults> completions(CompletionsQuery query) {
         return modelsService.getModel(query.getModel()).chain(model -> completions(query, model));
     }
 
-    @PermissionsAllowed(value = "paid_models", permission = ModelPermission.class)
-    public Uni<CompletionsResults> completions(CompletionsQuery query, Model model) {
+    private Uni<CompletionsResults> completions(CompletionsQuery query, Model model) {
         ModelsConnector connector = modelsService.getConnector(model.getProvider());
         if (connector instanceof ChatConnector chatConnector) {
             return completions(query, model, chatConnector);

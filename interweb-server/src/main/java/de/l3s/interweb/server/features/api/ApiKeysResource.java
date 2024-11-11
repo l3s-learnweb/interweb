@@ -69,8 +69,7 @@ public class ApiKeysResource {
     @RolesAllowed({Roles.APPLICATION})
     public Uni<UsageSummary> chat() {
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
-
-        return ChatUsage.findByApikey(apikey).map(UsageSummary::new);
+        return UsageSummary.findByApikey(apikey);
     }
 
     public record CreateToken(@NotNull @NotEmpty @Size(max = 255) String name, @Size(max = 512) String url, @Size(max = 1024) String description) {
