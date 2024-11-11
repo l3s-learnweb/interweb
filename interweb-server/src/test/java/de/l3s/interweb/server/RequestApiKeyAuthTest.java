@@ -42,7 +42,7 @@ class RequestApiKeyAuthTest {
         SearchQuery searchQuery = new SearchQuery();
         searchQuery.setQuery("hello world");
         searchQuery.setContentTypes(de.l3s.interweb.core.search.ContentType.image);
-        Mockito.when(searchService.search(searchQuery)).thenReturn(Uni.createFrom().item(new SearchResults()));
+        Mockito.when(searchService.search(searchQuery, testKey)).thenReturn(Uni.createFrom().item(new SearchResults()));
     }
 
     @Test

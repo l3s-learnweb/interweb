@@ -144,6 +144,7 @@ public class BingConnector implements SearchConnector, SuggestConnector {
             processVideos(response.getVideos(), rank, results);
         }
 
+        results.setEstimatedCost(0.0234d); // $23.4015 EUR pro 1.000 Anrufe
         return results;
     }
 

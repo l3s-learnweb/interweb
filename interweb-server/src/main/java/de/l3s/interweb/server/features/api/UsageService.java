@@ -58,13 +58,13 @@ public class UsageService {
     @WithSession
     @ConsumeEvent("api-request-chat")
     public Uni<Void> consumeChatRequest(ApiRequestChat request) {
-        return request.persist().eventually(() -> deduct(request.user, request.estimatedCost)).replaceWithVoid();
+        return request.persistAndFlush().eventually(() -> deduct(request.user, request.estimatedCost)).replaceWithVoid();
     }
 
     @WithSession
     @ConsumeEvent("api-request-search")
     public Uni<Void> consumeSearchRequest(ApiRequestSearch request) {
-        return request.persist().eventually(() -> deduct(request.user, request.estimatedCost)).replaceWithVoid();
+        return request.persistAndFlush().eventually(() -> deduct(request.user, request.estimatedCost)).replaceWithVoid();
     }
 
     private static class UsageValue {

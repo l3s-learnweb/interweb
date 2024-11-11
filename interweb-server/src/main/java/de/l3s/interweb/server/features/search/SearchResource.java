@@ -28,6 +28,7 @@ import org.jboss.resteasy.reactive.RestQuery;
 import de.l3s.interweb.core.search.*;
 import de.l3s.interweb.core.util.StringUtils;
 import de.l3s.interweb.server.Roles;
+import de.l3s.interweb.server.features.api.ApiKey;
 
 @Tag(name = "Search", description = "Search internet by query")
 @Path("/search")
@@ -72,13 +73,15 @@ public class SearchResource {
     @POST
     @PermissionsAllowed("search")
     public Uni<SearchResults> search(@NotNull @Valid SearchQuery query, @HeaderParam("Cache-Control") String cacheControl) {
+        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
+
         long start = System.currentTimeMillis();
         if (NO_CACHE.equals(cacheControl)) {
             query.setIgnoreCache(true);
         }
 
         query.setId(UUID.randomUUID().toString());
-        return searchService.search(query).map(results -> {
+        return searchService.search(query, apikey).map(results -> {
             results.setQuery(query);
             results.setElapsedTime(System.currentTimeMillis() - start);
             return results;

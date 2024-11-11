@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.ConnectorResults;
@@ -14,6 +15,8 @@ public class SearchConnectorResults extends ConnectorResults {
 
     @JsonProperty("total_results")
     private long totalResults = 0;
+    @JsonIgnore
+    private double estimatedCost = 0;
     private final List<SearchItem> items;
 
     public SearchConnectorResults() {
@@ -26,6 +29,14 @@ public class SearchConnectorResults extends ConnectorResults {
 
     public void addResultItem(SearchItem resultItem) {
         items.add(resultItem);
+    }
+
+    public double getEstimatedCost() {
+        return estimatedCost;
+    }
+
+    public void setEstimatedCost(double estimatedCost) {
+        this.estimatedCost = estimatedCost;
     }
 
     public long getTotalResults() {

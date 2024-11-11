@@ -11,7 +11,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import de.l3s.interweb.core.search.ContentType;
 import de.l3s.interweb.server.features.user.User;
 
 @Entity
@@ -48,12 +47,12 @@ public class ApiRequestSearch extends PanacheEntityBase {
     @CreationTimestamp
     public Instant created;
 
-    public static ApiRequestSearch of(String engine, ContentType contentType, String query, Double estimatedCost, ApiKey apikey) {
+    public static ApiRequestSearch of(String engine, String contentType, String query, Double estimatedCost, ApiKey apikey) {
         ApiRequestSearch request = new ApiRequestSearch();
         request.user = apikey.user;
         request.apikey = apikey;
         request.engine = engine;
-        request.contentType = contentType.name();
+        request.contentType = contentType;
         request.query = query;
         request.estimatedCost = estimatedCost;
         return request;
