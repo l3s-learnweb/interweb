@@ -18,7 +18,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 
-import io.quarkus.security.PermissionsAllowed;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -71,7 +70,6 @@ public class SearchResource {
     }
 
     @POST
-    @PermissionsAllowed("search")
     public Uni<SearchResults> search(@NotNull @Valid SearchQuery query, @HeaderParam("Cache-Control") String cacheControl) {
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
 

@@ -32,7 +32,6 @@ class RequestApiKeyAuthTest {
     @BeforeEach
     public void setup() {
         User user = Mockito.mock(User.class);
-        Mockito.when(user.permissions).thenReturn(Set.of(User.Permission.search));
 
         PanacheMock.mock(ApiKey.class);
         ApiKey testKey = Mockito.mock(ApiKey.class);

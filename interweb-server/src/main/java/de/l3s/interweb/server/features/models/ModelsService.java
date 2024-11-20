@@ -29,7 +29,7 @@ public class ModelsService {
             if (connector.validate()) {
                 providers.put(connector.getId(), connector);
             } else {
-                log.error("Connector skipped due to failed validation: " + connector.getClass().getName());
+                log.warn("Connector skipped due to failed validation: " + connector.getClass().getName());
             }
         });
 

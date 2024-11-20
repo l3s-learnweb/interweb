@@ -2,7 +2,6 @@ package de.l3s.interweb.server.features.chat;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.ForbiddenException;
 
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.eventbus.EventBus;
@@ -15,7 +14,6 @@ import de.l3s.interweb.server.features.api.ApiKey;
 import de.l3s.interweb.server.features.api.ApiRequestChat;
 import de.l3s.interweb.server.features.api.UsageService;
 import de.l3s.interweb.server.features.models.ModelsService;
-import de.l3s.interweb.server.features.user.User;
 
 @ApplicationScoped
 public class ChatService {
@@ -33,11 +31,8 @@ public class ChatService {
         return modelsService.getModel(query.getModel()).chain(model -> {
             if (model.isFree()) {
                 return completions(query, model);
-            } else if (apikey.user.permissions.contains(User.Permission.paid_models)) {
-                return usageService.allocate(apikey.user)
-                    .chain(exceeded -> completions(query, model));
             } else {
-                return Uni.createFrom().failure(new ForbiddenException("Please contact support to get access to this model"));
+                return usageService.allocate(apikey.user).chain(exceeded -> completions(query, model));
             }
         }).invoke(results -> {
             bus.send("api-request-chat", ApiRequestChat.of(results, apikey));

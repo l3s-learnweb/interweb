@@ -37,7 +37,7 @@ public class ExceptionMappers {
 
     @ServerExceptionMapper
     public RestResponse<ErrorResponse> mapException(LimitExceededException x) {
-        return RestResponse.status(Response.Status.PAYMENT_REQUIRED, ErrorResponse.of("Monthly allowance exceeded. Please contact support."));
+        return RestResponse.status(Response.Status.PAYMENT_REQUIRED, ErrorResponse.of("Monthly number of paid requests exceeded. Please contact L3S support."));
     }
 
     @ServerExceptionMapper
