@@ -42,7 +42,7 @@ public class Chat extends PanacheEntityBase {
     public String user;
 
     @NotNull
-    @Size(max = 32)
+    @Size(max = 64)
     public String model;
 
     @Size(max = 512)
