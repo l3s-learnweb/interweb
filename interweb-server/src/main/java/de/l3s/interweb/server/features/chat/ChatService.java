@@ -61,7 +61,7 @@ public class ChatService {
         long start = System.nanoTime();
         return connector.completions(query).map(results -> {
             if (results.getUsage() != null && model.getPrice() != null) {
-                results.setCost(UsageCost.of(results.getUsage(), model.getPrice()));
+                results.setCost(model.getPrice().calc(results.getUsage()));
             }
             if (results.getDuration() == null) {
                 results.setDuration(Duration.of(System.nanoTime() - start));

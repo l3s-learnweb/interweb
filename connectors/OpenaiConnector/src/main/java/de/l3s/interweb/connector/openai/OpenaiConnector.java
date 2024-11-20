@@ -28,12 +28,13 @@ public class OpenaiConnector implements ChatConnector {
      * https://azure.microsoft.com/de-de/pricing/details/cognitive-services/openai-service/
      */
     private static final List<Model> models = List.of(
-        Model.of("gpt-35-turbo", "openai", new UsagePrice(0.002, 0.002), LocalDate.of(2023, 3, 1)),
-        Model.of("gpt-35-turbo-16k", "openai", new UsagePrice(0.003, 0.004), LocalDate.of(2023, 6, 13)),
-        Model.of("gpt-35-turbo-1106", "openai", new UsagePrice(0.001, 0.002), LocalDate.of(2023, 11, 6)),
-        Model.of("gpt-4", "openai", new UsagePrice(0.03, 0.06), LocalDate.of(2023, 6, 13)),
-        Model.of("gpt-4-turbo", "openai", new UsagePrice(0.01, 0.03), LocalDate.of(2024, 1, 25)),
-        Model.of("gpt-4o", "openai", new UsagePrice(0.005, 0.015), LocalDate.of(2024, 5, 13))
+        Model.of("gpt-35-turbo", "openai", new UsagePrice(1.5, 2), LocalDate.of(2023, 3, 1)),
+        Model.of("gpt-35-turbo-16k", "openai", new UsagePrice(3, 4), LocalDate.of(2023, 6, 13)),
+        Model.of("gpt-35-turbo-1106", "openai", new UsagePrice(1, 2), LocalDate.of(2023, 11, 6)),
+        Model.of("gpt-4", "openai", new UsagePrice(30, 60), LocalDate.of(2023, 6, 13)),
+        Model.of("gpt-4-turbo", "openai", new UsagePrice(10, 30), LocalDate.of(2024, 1, 25)),
+        Model.of("gpt-4o", "openai", new UsagePrice(2.5, 10), LocalDate.of(2024, 8, 6)),
+        Model.of("gpt-4o-mini", "openai", new UsagePrice(0.15, 0.60), LocalDate.of(2024, 7, 18))
     );
 
     @RestClient

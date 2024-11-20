@@ -4,8 +4,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interweb.core.models.UsagePrice;
-
 @RegisterForReflection
 public class UsageCost {
     private double prompt;
@@ -44,13 +42,5 @@ public class UsageCost {
 
     public void setChatTotal(double chatTotal) {
         this.chatTotal = chatTotal;
-    }
-
-    public static UsageCost of(Usage usage, UsagePrice price) {
-        UsageCost cost = new UsageCost();
-        cost.prompt = (usage.getPromptTokens() / 1000d) * price.getInput();
-        cost.completion = (usage.getCompletionTokens() / 1000d) * price.getOutput();
-        cost.total = cost.prompt + cost.completion;
-        return cost;
     }
 }

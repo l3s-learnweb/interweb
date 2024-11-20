@@ -53,7 +53,7 @@ class OpenaiConnectorTest {
             .build();
 
         CompletionsQuery query = new CompletionsQuery();
-        query.setModel("gpt-4");
+        query.setModel("gpt-4o-mini");
         query.setTools(List.of(weatherTool));
         query.setToolChoice(ToolChoice.required);
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
