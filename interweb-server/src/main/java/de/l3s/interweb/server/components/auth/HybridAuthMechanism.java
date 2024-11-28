@@ -49,11 +49,13 @@ public class HybridAuthMechanism implements HttpAuthenticationMechanism {
     }
 
     private HttpAuthenticationMechanism selectBetweenJwtAndOidc(RoutingContext context) {
+        String path = context.normalizedPath(); // there are some paths for which we prefer JWT over API-Key
         String apikeyHeader = context.request().headers().get(ApiKeyAuthMechanism.APIKEY_HEADER);
-        if (apikeyHeader != null) {
+        String authHeader = context.request().headers().get(ApiKeyAuthMechanism.AUTHORIZATION_HEADER);
+
+        if (apikeyHeader != null && (authHeader == null || !path.equals("/api_keys"))) {
             return apiKeyMechanism;
         }
-        String authHeader = context.request().headers().get(ApiKeyAuthMechanism.AUTHORIZATION_HEADER);
         if (authHeader != null && authHeader.length() == ApiKeyAuthMechanism.AUTHORIZATION_HEADER_LENGTH) {
             return apiKeyMechanism;
         }
