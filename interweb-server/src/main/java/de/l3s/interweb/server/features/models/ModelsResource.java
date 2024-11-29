@@ -24,13 +24,13 @@ public class ModelsResource {
     ModelsService modelsService;
 
     @GET
-    public Uni<ObjectWrapper<List<Model>>> models() {
+    public Uni<ObjectWrapper<List<Model>>> list() {
         return modelsService.getModels().map(models -> new ObjectWrapper<>("list", models));
     }
 
     @GET
     @Path("{model}")
-    public Uni<Model> chat(@PathParam("model") String model) {
+    public Uni<Model> get(@PathParam("model") String model) {
         return modelsService.getModel(model);
     }
 }

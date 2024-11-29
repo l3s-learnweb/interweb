@@ -18,11 +18,14 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import de.l3s.interweb.core.ObjectWrapper;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
+import de.l3s.interweb.core.embeddings.EmbeddingsResults;
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.server.Roles;
 import de.l3s.interweb.server.features.api.ApiKey;
 import de.l3s.interweb.server.features.chat.ChatService;
-import de.l3s.interweb.server.features.models.ModelsService;
+import de.l3s.interweb.server.features.chat.EmbeddingService;
+import de.l3s.interweb.server.features.models.ModelsResource;
 
 @Tag(name = "OpenAI Compatible API v1")
 @Path("/v1")
@@ -36,7 +39,10 @@ public class OpenaiV1Resource {
     SecurityIdentity securityIdentity;
 
     @Inject
-    ModelsService modelsService;
+    ModelsResource modelsResource;
+
+    @Inject
+    EmbeddingService embeddingService;
 
     @POST
     @Path("/completions")
@@ -58,18 +64,19 @@ public class OpenaiV1Resource {
     @GET
     @Path("/models")
     public Uni<ObjectWrapper<List<Model>>> models() {
-        return modelsService.getModels().map(models -> new ObjectWrapper<>("list", models));
+        return modelsResource.list();
     }
 
     @GET
     @Path("/models/{model}")
-    public Uni<Model> chat(@PathParam("model") String model) {
-        return modelsService.getModel(model);
+    public Uni<Model> getModel(@PathParam("model") String model) {
+        return modelsResource.get(model);
     }
 
     @POST
     @Path("/embeddings")
-    public Uni<CompletionsResults> embeddings() {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public Uni<EmbeddingsResults> embeddings(@Valid EmbeddingsQuery query) {
+        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
+        return embeddingService.embeddings(query, apikey);
     }
 }

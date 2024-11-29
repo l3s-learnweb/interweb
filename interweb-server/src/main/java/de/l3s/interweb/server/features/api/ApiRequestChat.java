@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.embeddings.EmbeddingsResults;
 import de.l3s.interweb.server.features.user.User;
 
 @Entity
@@ -50,6 +51,21 @@ public class ApiRequestChat extends PanacheEntityBase {
     public Instant created;
 
     public static ApiRequestChat of(CompletionsResults results, ApiKey apikey) {
+        ApiRequestChat request = new ApiRequestChat();
+        request.user = apikey.user;
+        request.apikey = apikey;
+        request.model = results.getModel();
+        if (results.getUsage() != null) {
+            request.inputTokens = results.getUsage().getPromptTokens();
+            request.outputTokens = results.getUsage().getCompletionTokens();
+        }
+        if (results.getCost() != null) {
+            request.estimatedCost = results.getCost().getTotal();
+        }
+        return request;
+    }
+
+    public static ApiRequestChat of(EmbeddingsResults results, ApiKey apikey) {
         ApiRequestChat request = new ApiRequestChat();
         request.user = apikey.user;
         request.apikey = apikey;

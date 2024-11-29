@@ -3,7 +3,7 @@ import httpx
 from openai import OpenAI
 
 client = OpenAI(
-    base_url=os.getenv("INTERWEB_HOST", "https://interweb.l3s.uni-hannover.de"),
+    base_url=os.getenv("INTERWEB_HOST", "https://interweb.l3s.uni-hannover.de/v1"),
     api_key=os.getenv("INTERWEB_APIKEY"),
     http_client=httpx.Client(proxy="http://localhost:8000")
 )

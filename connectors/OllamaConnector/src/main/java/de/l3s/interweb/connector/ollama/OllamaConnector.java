@@ -11,18 +11,19 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
-import de.l3s.interweb.connector.ollama.entity.ChatBody;
-import de.l3s.interweb.connector.ollama.entity.ChatResponse;
-import de.l3s.interweb.connector.ollama.entity.ChatStreamBody;
+import de.l3s.interweb.connector.ollama.entity.*;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.ChatConnector;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.embeddings.EmbeddingConnector;
+import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
+import de.l3s.interweb.core.embeddings.EmbeddingsResults;
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.models.UsagePrice;
 
 @Dependent
-public class OllamaConnector implements ChatConnector {
+public class OllamaConnector implements ChatConnector, EmbeddingConnector {
     private static final Logger log = Logger.getLogger(OllamaConnector.class);
 
     @RestClient
@@ -63,6 +64,12 @@ public class OllamaConnector implements ChatConnector {
     public Multi<CompletionsResults> completionsStream(CompletionsQuery query) throws ConnectorException {
         final ChatStreamBody body = new ChatStreamBody(query);
         return ollama.chatStream(body).map(ChatResponse::toCompletionResults);
+    }
+
+    @Override
+    public Uni<EmbeddingsResults> embeddings(EmbeddingsQuery query) throws ConnectorException {
+        final EmbedBody body = new EmbedBody(query);
+        return ollama.embed(body).map(EmbedResponse::toCompletionResults);
     }
 
     @Override

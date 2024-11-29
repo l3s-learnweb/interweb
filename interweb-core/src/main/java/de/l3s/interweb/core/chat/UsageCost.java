@@ -2,12 +2,14 @@ package de.l3s.interweb.core.chat;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RegisterForReflection
 public class UsageCost {
     private double prompt;
     private double completion;
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private double total;
     @JsonProperty("chat_total")
     private double chatTotal;
