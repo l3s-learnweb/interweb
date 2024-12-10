@@ -57,7 +57,21 @@ public class OpenaiV1Resource {
 
         return chatService.completions(query, apikey).chain(results -> {
             results.setChatId(null); // reset chatId if it was set
+            return populateMoreChoices(apikey, query, results);
+        });
+    }
+
+    public Uni<CompletionsResults> populateMoreChoices(ApiKey apikey, CompletionsQuery query, CompletionsResults results) {
+        if (query.getN() == null || query.getN() <= 1 || results.getChoices().size() >= query.getN()) {
             return Uni.createFrom().item(results);
+        }
+
+        return chatService.completions(query, apikey).chain(newResults -> {
+            results.getChoices().addAll(newResults.getChoices());
+            results.getCost().add(newResults.getCost());
+            results.getUsage().add(newResults.getUsage());
+            results.getDuration().add(newResults.getDuration());
+            return populateMoreChoices(apikey, query, results);
         });
     }
 

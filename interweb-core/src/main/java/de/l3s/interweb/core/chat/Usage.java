@@ -45,4 +45,10 @@ public class Usage {
     public void setTotalTokens(int totalTokens) {
         this.totalTokens = totalTokens;
     }
+
+    public void add(Usage other) {
+        this.promptTokens += other.promptTokens;
+        this.completionTokens += other.completionTokens;
+        this.totalTokens += other.totalTokens;
+    }
 }

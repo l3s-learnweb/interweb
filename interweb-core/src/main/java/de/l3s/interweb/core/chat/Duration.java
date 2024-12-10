@@ -60,6 +60,21 @@ public class Duration {
         this.completionGeneration = completionGeneration;
     }
 
+    public void add(Duration other) {
+        if (total != null && other.total != null) {
+            total += other.total;
+        }
+        if (load != null && other.load != null) {
+            load += other.load;
+        }
+        if (promptEvaluation != null && other.promptEvaluation != null) {
+            promptEvaluation += other.promptEvaluation;
+        }
+        if (completionGeneration != null && other.completionGeneration != null) {
+            completionGeneration += other.completionGeneration;
+        }
+    }
+
     public static Duration of(long ns) {
         Duration duration = new Duration();
         duration.setTotal(ns);

@@ -45,4 +45,11 @@ public class UsageCost {
     public void setChatTotal(double chatTotal) {
         this.chatTotal = chatTotal;
     }
+
+    public void add(UsageCost other) {
+        this.prompt += other.prompt;
+        this.completion += other.completion;
+        this.total += other.total;
+        this.chatTotal += other.chatTotal;
+    }
 }
