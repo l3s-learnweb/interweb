@@ -8,7 +8,7 @@ RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:go-offline
 RUN ./mvnw package -DskipTests -Dnative
 
 ## Stage 2 : create the docker final image
-FROM quay.io/quarkus/quarkus-micro-image:2.0 AS final
+FROM quay.io/quarkus/quarkus-micro-image:3.0 AS final
 WORKDIR /work/
 COPY --from=build /code/interweb-server/target/*-runner /work/application
 
