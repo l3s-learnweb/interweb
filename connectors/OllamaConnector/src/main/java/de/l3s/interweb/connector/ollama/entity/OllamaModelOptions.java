@@ -10,6 +10,8 @@ import de.l3s.interweb.core.chat.CompletionsQuery;
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OllamaModelOptions {
+    @JsonProperty("num_ctx")
+    private Integer numCtx;
     @JsonProperty("repeat_penalty")
     private Double repeatPenalty;
     private Double temperature;
@@ -31,10 +33,15 @@ public class OllamaModelOptions {
         }
         this.repeatPenalty = query.getFrequencyPenalty();
         this.numPredict = query.getMaxTokens();
+        this.numCtx = query.getNumCtx();
         this.temperature = query.getTemperature();
         this.topP = query.getTopP();
         this.minP = query.getMinP();
         this.topK = query.getTopK();
+    }
+
+    public Integer getNumCtx() {
+        return numCtx;
     }
 
     public Double getRepeatPenalty() {

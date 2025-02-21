@@ -115,6 +115,12 @@ public class CompletionsQuery {
     private Integer maxTokens;
 
     /**
+     * Sets the size of the context window used to generate the next token. Defaults to 2048.
+     */
+    @JsonProperty("num_ctx")
+    private Integer numCtx;
+
+    /**
      * A list of tools the model may call. Currently, only functions are supported as a tool.
      * Use this to provide a list of functions the model may generate JSON inputs for.
      * <br/>
@@ -271,6 +277,14 @@ public class CompletionsQuery {
 
     public void setMaxTokens(final Integer maxTokens) {
         this.maxTokens = maxTokens;
+    }
+
+    public Integer getNumCtx() {
+        return numCtx;
+    }
+
+    public void setNumCtx(Integer numCtx) {
+        this.numCtx = numCtx;
     }
 
     public boolean isStream() {
