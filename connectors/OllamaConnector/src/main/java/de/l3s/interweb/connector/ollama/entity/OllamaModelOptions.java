@@ -33,7 +33,11 @@ public class OllamaModelOptions {
         }
         this.repeatPenalty = query.getFrequencyPenalty();
         this.numPredict = query.getMaxTokens();
-        this.numCtx = query.getNumCtx();
+        if (this.numCtx == null && query.getMaxTokens() != null && query.getMaxTokens() >= 2048) {
+            this.numCtx = query.getMaxTokens();
+        } else {
+            this.numCtx = query.getNumCtx();
+        }
         this.temperature = query.getTemperature();
         this.topP = query.getTopP();
         this.minP = query.getMinP();

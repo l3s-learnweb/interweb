@@ -108,6 +108,7 @@ public class CompletionsQuery {
 
     /**
      * The maximum number of tokens to generate in the chat completion. Defaults to 800.
+     * Using Ollama, if the value is set to more than 2048, it will be used in place of `num_ctx`.
      * <br/>
      * The total length of input tokens and generated tokens is limited by the model's context length.
      */
