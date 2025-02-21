@@ -19,6 +19,7 @@ message_text = [{
 completion = client.chat.completions.create(
     model="llama3.1:8b", # gpt-35-turbo
     messages=message_text,
+    num_ctx=4096,
     temperature=0.7,
     max_tokens=800,
     top_p=0.95,
