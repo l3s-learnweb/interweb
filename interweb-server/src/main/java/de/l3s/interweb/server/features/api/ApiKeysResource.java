@@ -66,10 +66,16 @@ public class ApiKeysResource {
 
     @GET
     @Path("/usage")
-    @RolesAllowed({Roles.APPLICATION})
-    public Uni<UsageSummary> chat() {
-        ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
-        return UsageSummary.findByApikey(apikey);
+    @RolesAllowed({Roles.USER, Roles.APPLICATION})
+    public Uni<UsageSummary> chat(@QueryParam("id") Long id) {
+        Uni<ApiKey> apikey;
+        if (id != null) {
+            apikey = ApiKey.findById(id);
+        } else {
+            apikey = Uni.createFrom().item(securityIdentity.getCredential(ApiKey.class));
+        }
+
+        return apikey.chain(UsageSummary::findByApikey);
     }
 
     public record CreateToken(@NotNull @NotEmpty @Size(max = 255) String name, @Size(max = 512) String url, @Size(max = 1024) String description) {

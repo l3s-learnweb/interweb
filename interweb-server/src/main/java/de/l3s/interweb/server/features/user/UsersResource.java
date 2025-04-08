@@ -50,6 +50,9 @@ public class UsersResource {
         To login to Interweb, please click the following link:
         %s
 
+        If the above doesn't work, use the following link to retrieve your token:
+        %s
+
         This link is valid for 6 hours.
 
         Best regards,
@@ -80,7 +83,7 @@ public class UsersResource {
             } else {
                 return createAndSendToken(user, uriInfo);
             }
-        }).chain(() -> Uni.createFrom().item("The login link has been sent to your email."));
+        }).chain(() -> Uni.createFrom().item("The login link sent to your email."));
     }
 
     private Uni<User> findOrCreateUser(String email) {
@@ -97,8 +100,9 @@ public class UsersResource {
         return createToken(user)
             .chain(token -> {
                 log.infof("Login token for user %s created: %s", user.email, token.token);
+                URI loginUrl = uriInfo.getBaseUriBuilder().queryParam("token", token.token).build();
                 URI tokenUrl = uriInfo.getBaseUriBuilder().path("/jwt").queryParam("token", token.token).build();
-                return mailer.send(Mail.withText(user.email, LOGIN_EMAIL_SUBJECT, LOGIN_EMAIL_BODY.formatted(tokenUrl)));
+                return mailer.send(Mail.withText(user.email, LOGIN_EMAIL_SUBJECT, LOGIN_EMAIL_BODY.formatted(loginUrl, tokenUrl)));
             });
     }
 
