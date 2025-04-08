@@ -1,47 +1,91 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
+<script setup></script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+    <div id="app">
+        <nav v-if="isAuthenticated" class="nav-menu">
+            <router-link to="/dashboard">Dashboard</router-link>
+            <router-link to="/api-keys">API Keys</router-link>
+            <router-link to="/api-keys/create">Create API Key</router-link>
+            <a @click="logout" class="logout-link">Logout</a>
+        </nav>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+        <main>
+            <router-view/>
+        </main>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script>
+import AuthService from './services/AuthService'
+import router from './router' // Make sure this import exists
+
+export default {
+    name: 'App',
+    data() {
+        return {
+            isAuthenticated: false
+        }
+    },
+    created() {
+        this.checkAuth()
+    },
+    watch: {
+        $route() {
+            this.checkAuth()
+        }
+    },
+    methods: {
+        checkAuth() {
+            this.isAuthenticated = AuthService.isAuthenticated()
+            // Redirect to login if not authenticated and not already on login page
+            if (!this.isAuthenticated && this.$route.path !== '/login') {
+                this.$router.push('/login')
+            }
+        },
+        logout() {
+            AuthService.logout()
+            this.$router.push('/login')
+        }
+    }
+}
+</script>
+
+<style>
+#app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.nav-menu {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+.nav-menu a {
+    margin-left: 15px;
+    color: #2c3e50;
+    text-decoration: none;
+    cursor: pointer;
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+.nav-menu a.router-link-active {
+    color: hsla(160, 100%, 37%, 1);
+    font-weight: bold;
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.logout-link {
+    color: #666;
+}
+
+main {
+    padding: 20px 0;
 }
 </style>
