@@ -30,7 +30,7 @@ class OpenaiConnectorTest {
     @Test
     void completions() throws ConnectorException {
         CompletionsQuery query = new CompletionsQuery();
-        query.setModel("gpt-35-turbo");
+        query.setModel("gpt-4o-mini");
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
         query.addMessage("What is your name?", Role.user);
 

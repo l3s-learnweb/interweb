@@ -14,7 +14,7 @@ message_text = [{
 }]
 
 completion = client.chat.completions.create(
-    model="gpt-35-turbo",
+    model="gpt-4o-mini",
     messages=message_text,
     temperature=0.7,
     max_tokens=800,

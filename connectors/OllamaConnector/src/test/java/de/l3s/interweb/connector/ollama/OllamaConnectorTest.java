@@ -31,7 +31,7 @@ class OllamaConnectorTest {
     @Test
     void completions() throws ConnectorException {
         CompletionsQuery query = new CompletionsQuery();
-        query.setModel("llama3.1");
+        query.setModel("llama3.1:8b");
         query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Role.system);
         query.addMessage("What is your name?", Role.user);
         query.setMaxTokens(100);
@@ -52,7 +52,7 @@ class OllamaConnectorTest {
     @Test
     void completionsStream() throws ConnectorException {
         CompletionsQuery query = new CompletionsQuery();
-        query.setModel("llama3.1");
+        query.setModel("llama3.1:8b");
         query.addMessage("You are Interweb Assistant, a helpful chat bot. Your name is not Claude it is Interweb Assistant.", Role.system);
         query.addMessage("What is your name?", Role.user);
 
@@ -84,7 +84,7 @@ class OllamaConnectorTest {
             .build();
 
         CompletionsQuery query = new CompletionsQuery();
-        query.setModel("llama3.1");
+        query.setModel("llama3.1:8b");
         query.setTools(List.of(weatherTool));
         query.setToolChoice(ToolChoice.required);
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
