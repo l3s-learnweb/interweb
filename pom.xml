@@ -21,10 +21,10 @@
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.17.8</quarkus.platform.version>
 
-        <surefire-plugin.version>3.5.2</surefire-plugin.version>
+        <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <enforcer-plugin.version>3.5.0</enforcer-plugin.version>
         <dependency-plugin.version>3.8.1</dependency-plugin.version>
-        <compiler-plugin.version>3.13.0</compiler-plugin.version>
+        <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <source-plugin.version>3.3.1</source-plugin.version>
         <javadoc-plugin.version>3.11.2</javadoc-plugin.version>
         <gpg-plugin.version>3.2.7</gpg-plugin.version>
@@ -33,7 +33,7 @@
         <shade-plugin.version>3.6.0</shade-plugin.version>
         <jandex-plugin.version>3.2.7</jandex-plugin.version>
         <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
-        <spotbugs-plugin.version>4.9.1.0</spotbugs-plugin.version>
+        <spotbugs-plugin.version>4.9.3.0</spotbugs-plugin.version>
     </properties>
 
     <modules>
