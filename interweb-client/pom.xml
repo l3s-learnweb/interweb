@@ -12,10 +12,10 @@
     </parent>
 
     <artifactId>interweb-client</artifactId>
-    <version>4.5.2</version>
+    <version>4.5.3</version>
     <packaging>jar</packaging>
 
-    <name>Interweb Client</name>
+    <name>interweb-client</name>
     <description>Interweb is a versatile API that consolidates multiple data providers into one unified interface</description>
     <url>https://github.com/l3s-learnweb/interweb</url>
 
@@ -44,6 +44,15 @@
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>interweb-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
         <dependency>
@@ -116,6 +125,15 @@
                             <include>de.l3s.interweb:interweb-core</include>
                         </includes>
                     </artifactSet>
+                    <filters>
+                        <filter>
+                            <artifact>de.l3s.interweb:interweb-core</artifact>
+                            <excludes>
+                                <exclude>**.properties</exclude>
+                                <exclude>META-INF/**</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
             </plugin>
             <plugin>
