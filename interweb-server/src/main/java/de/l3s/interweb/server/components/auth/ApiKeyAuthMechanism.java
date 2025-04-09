@@ -3,7 +3,6 @@ package de.l3s.interweb.server.components.auth;
 import java.util.Optional;
 import java.util.Set;
 
-import de.l3s.interweb.server.features.api.ApiKey;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -14,9 +13,12 @@ import io.quarkus.security.identity.request.AuthenticationRequest;
 import io.quarkus.smallrye.jwt.runtime.auth.JWTAuthMechanism;
 import io.quarkus.vertx.http.runtime.security.ChallengeData;
 import io.quarkus.vertx.http.runtime.security.HttpAuthenticationMechanism;
+import io.quarkus.vertx.http.runtime.security.HttpCredentialTransport;
 import io.quarkus.vertx.http.runtime.security.HttpSecurityUtils;
 import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.RoutingContext;
+
+import de.l3s.interweb.server.features.api.ApiKey;
 
 @ApplicationScoped
 public class ApiKeyAuthMechanism implements HttpAuthenticationMechanism {
@@ -50,6 +52,16 @@ public class ApiKeyAuthMechanism implements HttpAuthenticationMechanism {
 
         ChallengeData result = new ChallengeData(HttpResponseStatus.UNAUTHORIZED.code(), APIKEY_HEADER, "");
         return Uni.createFrom().item(result);
+    }
+
+    @Override
+    public Uni<HttpCredentialTransport> getCredentialTransport(RoutingContext context) {
+        String apikeyHeader = context.request().headers().get(ApiKeyAuthMechanism.APIKEY_HEADER);
+        if (apikeyHeader != null) {
+            return Uni.createFrom().item(new HttpCredentialTransport(HttpCredentialTransport.Type.AUTHORIZATION, APIKEY_HEADER.toString()));
+        } else {
+            return Uni.createFrom().item(new HttpCredentialTransport(HttpCredentialTransport.Type.AUTHORIZATION, AUTHORIZATION_HEADER.toString()));
+        }
     }
 
     @Override
