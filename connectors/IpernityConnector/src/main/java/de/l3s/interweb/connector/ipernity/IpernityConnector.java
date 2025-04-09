@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.l3s.interweb.connector.ipernity.entity.*;
 import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.NoResultException;
 import de.l3s.interweb.core.describe.DescribeConnector;
 import de.l3s.interweb.core.describe.DescribeQuery;
 import de.l3s.interweb.core.describe.DescribeResults;
@@ -64,7 +65,7 @@ public class IpernityConnector implements SearchConnector, DescribeConnector {
             }
         })).map(Unchecked.function(response -> {
             if (response.doc() == null) {
-                throw new ConnectorException("No results");
+                throw new NoResultException("No results");
             }
 
             return new DescribeResults(createSearchItem(response.doc(), null));

@@ -13,6 +13,7 @@ import de.l3s.interweb.connector.flickr.entity.InfoPhoto;
 import de.l3s.interweb.connector.flickr.entity.PhotoItem;
 import de.l3s.interweb.connector.flickr.entity.Tag;
 import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.NoResultException;
 import de.l3s.interweb.core.describe.DescribeConnector;
 import de.l3s.interweb.core.describe.DescribeQuery;
 import de.l3s.interweb.core.describe.DescribeResults;
@@ -51,7 +52,7 @@ public class FlickrConnector implements SearchConnector, DescribeConnector {
     public Uni<DescribeResults> describe(DescribeQuery query) throws ConnectorException {
         return searchClient.getInfo(query.getId()).map(Unchecked.function(response -> {
             if (response.getPhoto() == null) {
-                throw new ConnectorException("No results");
+                throw new NoResultException("No results");
             }
 
             return new DescribeResults(createResultItem(response.getPhoto()));

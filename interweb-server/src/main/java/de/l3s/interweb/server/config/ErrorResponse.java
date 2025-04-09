@@ -21,7 +21,7 @@ public final class ErrorResponse {
         return error;
     }
 
-    public static ErrorResponse of(Exception e) {
+    public static ErrorResponse of(Throwable e) {
         return of(e.getMessage());
     }
 }

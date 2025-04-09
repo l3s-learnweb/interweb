@@ -42,6 +42,6 @@ public interface OllamaClient {
 
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {
-        return new ConnectorException("Remote service responded with HTTP " + response.getStatus(), response.readEntity(String.class));
+        return new ConnectorException("Ollama responded with HTTP " + response.getStatus(), response.readEntity(String.class));
     }
 }

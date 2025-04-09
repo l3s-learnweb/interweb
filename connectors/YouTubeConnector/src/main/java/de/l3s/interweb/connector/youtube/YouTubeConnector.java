@@ -18,6 +18,7 @@ import org.jboss.logging.Logger;
 import de.l3s.interweb.connector.youtube.entity.ListItem;
 import de.l3s.interweb.connector.youtube.entity.ListResponse;
 import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.NoResultException;
 import de.l3s.interweb.core.describe.DescribeConnector;
 import de.l3s.interweb.core.describe.DescribeQuery;
 import de.l3s.interweb.core.describe.DescribeResults;
@@ -64,7 +65,7 @@ public class YouTubeConnector implements SearchConnector, DescribeConnector {
     public Uni<DescribeResults> describe(DescribeQuery query) throws ConnectorException {
         return searchClient.videos(String.join(",", "snippet", "statistics", "contentDetails"), query.getId()).map(Unchecked.function(response -> {
             if (response.items().isEmpty()) {
-                throw new ConnectorException("No results");
+                throw new NoResultException("No results");
             }
 
             SearchItem item = new SearchItem();
@@ -94,7 +95,7 @@ public class YouTubeConnector implements SearchConnector, DescribeConnector {
                 if (tokensMap.containsKey(query.getPage())) {
                     return tokensMap.get(query.getPage());
                 } else if (tokensMap.containsKey(-1)) {
-                    throw new ConnectorException("No more results");
+                    throw new NoResultException("No more results");
                 } else {
                     throw new ConnectorException("YouTube does not support search by specific page numbers without requesting previous page.");
                 }

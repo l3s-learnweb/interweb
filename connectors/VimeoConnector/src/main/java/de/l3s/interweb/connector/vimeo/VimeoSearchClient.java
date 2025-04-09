@@ -13,6 +13,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import de.l3s.interweb.connector.vimeo.entity.Datum;
 import de.l3s.interweb.connector.vimeo.entity.VimeoResponse;
 import de.l3s.interweb.core.ConnectorException;
+import de.l3s.interweb.core.NoResultException;
 
 @Produces("application/vnd.vimeo.*+json; version=3.2")
 @RegisterRestClient(configKey = "vimeo")
@@ -59,7 +60,7 @@ public interface VimeoSearchClient {
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {
         if (response.getStatus() == 404) {
-            return new ConnectorException("No results");
+            return new NoResultException("No results");
         }
 
         return new ConnectorException("Remote service responded with HTTP " + response.getStatus(), response.readEntity(String.class));

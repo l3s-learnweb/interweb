@@ -74,7 +74,9 @@ public class EmbedResponse {
         }
 
         Usage usage = new Usage();
-        usage.setPromptTokens(promptEvalCount);
+        if (promptEvalCount != null) {
+            usage.setTotalTokens(promptEvalCount);
+        }
         results.setUsage(usage);
         return results;
     }

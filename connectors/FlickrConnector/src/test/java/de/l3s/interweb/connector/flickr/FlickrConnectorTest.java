@@ -46,6 +46,17 @@ class FlickrConnectorTest {
     }
 
     @Test
+    void searchEmpty() throws ConnectorException {
+        SearchQuery query = new SearchQuery();
+        query.setQuery("dasdasdasdasdasdasdasda");
+        query.setContentTypes(ContentType.video);
+
+        SearchConnectorResults queryResult = connector.search(query).await().indefinitely();
+        assertEquals(0, queryResult.getItems().size());
+        assertEquals(0, queryResult.getTotalResults());
+    }
+
+    @Test
     void findIds() {
         assertEquals("kbVEPF", connector.findId("https://flic.kr/p/kbVEPF"));
         assertEquals("26315753363", connector.findId("https://www.flickr.com/photos/marcelasl/26315753363/"));
