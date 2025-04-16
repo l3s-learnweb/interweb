@@ -28,7 +28,7 @@ import org.jboss.logging.Logger;
 import de.l3s.interweb.server.Roles;
 import de.l3s.interweb.server.features.api.UsageSummary;
 
-@Tag(name = "Auth & Identity", description = "User management")
+@Tag(name = "Auth & Identity", description = "User management (These endpoints does not work with Api-Key authentication)")
 @Path("/")
 public class UsersResource {
     private static final Logger log = Logger.getLogger(UsersResource.class);

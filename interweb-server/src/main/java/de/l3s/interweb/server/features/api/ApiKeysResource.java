@@ -21,7 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import de.l3s.interweb.server.Roles;
 import de.l3s.interweb.server.features.user.User;
 
-@Tag(name = "API Keys", description = "Manage application access")
+@Tag(name = "API Keys", description = "Manage application access (These endpoints does not work with Api-Key authentication)")
 @Path("/api_keys")
 @Authenticated
 public class ApiKeysResource {
@@ -67,15 +67,15 @@ public class ApiKeysResource {
     @GET
     @Path("/usage")
     @RolesAllowed({Roles.USER, Roles.APPLICATION})
-    public Uni<UsageSummary> chat(@QueryParam("id") Long id) {
-        Uni<ApiKey> apikey;
+    public Uni<UsageSummary> usage(@QueryParam("id") Long id) {
+        Uni<ApiKey> item;
         if (id != null) {
-            apikey = ApiKey.findById(id);
+            item = ApiKey.findById(id);
         } else {
-            apikey = Uni.createFrom().item(securityIdentity.getCredential(ApiKey.class));
+            item = Uni.createFrom().item(securityIdentity.getCredential(ApiKey.class));
         }
 
-        return apikey.chain(UsageSummary::findByApikey);
+        return item.flatMap(UsageSummary::findByApikey);
     }
 
     public record CreateToken(@NotNull @NotEmpty @Size(max = 255) String name, @Size(max = 512) String url, @Size(max = 1024) String description) {
