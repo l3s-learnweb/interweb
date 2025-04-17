@@ -6,7 +6,7 @@ os.environ["OPENAI_API_BASE"] = os.getenv("INTERWEB_HOST", "https://interweb.l3s
 os.environ["OPENAI_API_KEY"] = os.getenv("INTERWEB_APIKEY")
 
 response = completion(
-    model = "openai/llama3.1:8b", # openai/gpt-4o-mini
+    model = "openai/llama3.1:8b", # openai/gpt-4.1-mini
     messages = [{ "content": "Hello, how are you?","role": "user"}]
 )
 

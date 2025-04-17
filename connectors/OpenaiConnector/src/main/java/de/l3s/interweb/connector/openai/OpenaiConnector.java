@@ -24,15 +24,21 @@ public class OpenaiConnector implements ChatConnector {
     private static final Logger log = Logger.getLogger(OpenaiConnector.class);
 
     /**
-     * UK South, US-Dollar prices (as EUR price is automatically converted from USD it's floating a bit)
+     * Schweden Central, US-Dollar prices (as EUR price is automatically converted from USD it's floating a bit)
      * https://azure.microsoft.com/de-de/pricing/details/cognitive-services/openai-service/
+     * alternative source https://platform.openai.com/docs/pricing (usually matches)
      */
     private static final List<Model> models = List.of(
         Model.of("gpt-35-turbo", "openai", new UsagePrice(0.5, 1.5), LocalDate.of(2024, 1, 25)),
-        Model.of("gpt-4o", "openai", new UsagePrice(2.5, 10), LocalDate.of(2024, 11,20)),
         Model.of("gpt-4o-mini", "openai", new UsagePrice(0.15, 0.60), LocalDate.of(2024, 7, 18)),
+        Model.of("gpt-4o", "openai", new UsagePrice(2.5, 10), LocalDate.of(2024, 11,20)),
+        Model.of("o1-mini", "openai", new UsagePrice(1.1, 4.4), LocalDate.of(2024, 9, 12)),
         Model.of("o1", "openai", new UsagePrice(15, 60), LocalDate.of(2024, 12, 17)),
-        Model.of("o3-mini", "openai", new UsagePrice(1.1, 4.4), LocalDate.of(2025, 1, 31))
+        Model.of("o3-mini", "openai", new UsagePrice(1.1, 4.4), LocalDate.of(2025, 1, 31)),
+        Model.of("gpt-4.1", "openai", new UsagePrice(2, 8), LocalDate.of(2025, 4, 14)),
+        Model.of("gpt-4.1-mini", "openai", new UsagePrice(0.4, 1.6), LocalDate.of(2025, 4, 14)),
+        Model.of("gpt-4.1-nano", "openai", new UsagePrice(0.1, 0.4), LocalDate.of(2025, 4, 14)),
+        Model.of("o4-mini", "openai", new UsagePrice(1.1, 4.4), LocalDate.of(2025, 4, 16))
     );
 
     @RestClient

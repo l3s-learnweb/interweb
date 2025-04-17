@@ -17,7 +17,7 @@ message_text = [{
 }]
 
 completion = client.chat.completions.create(
-    model="llama3.1:8b", # gpt-4o-mini
+    model="llama3.1:8b", # gpt-4.1-mini
     messages=message_text,
     temperature=0.7,
     max_tokens=4098, # if more than 2048, it will increase `num_ctx` of the model

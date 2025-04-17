@@ -7,7 +7,7 @@ os.environ["OPENAI_API_BASE"] = os.getenv("INTERWEB_HOST", "https://interweb.l3s
 os.environ["OPENAI_API_KEY"] = os.getenv("INTERWEB_APIKEY")
 
 # Create a completion
-llm = OpenAILike(model="llama3.1:8b", is_chat_model=True) # gpt-4o-mini
+llm = OpenAILike(model="llama3.1:8b", is_chat_model=True) # gpt-4.1-mini
 
 resp = llm.chat([
     ChatMessage(role=MessageRole.SYSTEM, content="Always answer the question, even if the context isn't helpful."),
