@@ -3,7 +3,6 @@ package de.l3s.interweb.server.config;
 import javax.naming.LimitExceededException;
 
 import jakarta.persistence.NoResultException;
-import jakarta.validation.ValidationException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
@@ -53,11 +52,6 @@ public class ExceptionMappers {
     @ServerExceptionMapper
     public RestResponse<ErrorResponse> mapException(NotSupportedException x) {
         return RestResponse.status(Response.Status.UNSUPPORTED_MEDIA_TYPE, ErrorResponse.of(x));
-    }
-
-    @ServerExceptionMapper
-    public RestResponse<ErrorResponse> mapException(ValidationException x) {
-        return RestResponse.status(Response.Status.BAD_REQUEST, ErrorResponse.of(x));
     }
 
     @ServerExceptionMapper
