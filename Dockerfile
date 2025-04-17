@@ -36,7 +36,7 @@ COPY --chown=quarkus:quarkus connectors/YouTubeConnector/pom.xml /code/connector
 RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:go-offline
 
 COPY --chown=quarkus:quarkus . /code
-RUN ./mvnw package -DskipTests -Dnative
+RUN ./mvnw package -DskipTests -pl -interweb-client -Dnative
 
 ## Stage 2 : create the docker final image
 FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0 AS final
