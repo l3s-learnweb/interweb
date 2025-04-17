@@ -1,5 +1,5 @@
 services:
-  apiserver:
+  interweb:
     build: .
     image: ghcr.io/l3s-learnweb/interweb:latest
     restart: always
