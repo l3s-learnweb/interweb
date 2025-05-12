@@ -19,7 +19,7 @@ import de.l3s.interweb.core.ConnectorException;
 @Produces(MediaType.APPLICATION_JSON)
 @RegisterRestClient(configKey = "openai")
 @ClientHeaderParam(name = "api-key", value = "${connector.openai.apikey}")
-@ClientQueryParam(name = "api-version", value = "2024-06-01")
+@ClientQueryParam(name = "api-version", value = "2025-03-01-preview")
 public interface OpenaiClient {
 
     /**
