@@ -19,7 +19,7 @@
 
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.17.8</quarkus.platform.version>
+        <quarkus.platform.version>3.22.3</quarkus.platform.version>
 
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <enforcer-plugin.version>3.5.0</enforcer-plugin.version>
@@ -31,7 +31,7 @@
         <sonatype-plugin.version>0.7.0</sonatype-plugin.version>
         <resources-plugin.version>3.3.1</resources-plugin.version>
         <shade-plugin.version>3.6.0</shade-plugin.version>
-        <jandex-plugin.version>3.2.7</jandex-plugin.version>
+        <jandex-plugin.version>3.3.1</jandex-plugin.version>
         <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
         <spotbugs-plugin.version>4.9.3.0</spotbugs-plugin.version>
     </properties>
@@ -72,7 +72,7 @@
             <dependency>
                 <groupId>io.quarkiverse.loggingsentry</groupId>
                 <artifactId>quarkus-logging-sentry</artifactId>
-                <version>2.0.7</version>
+                <version>2.1.4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
