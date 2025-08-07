@@ -10,30 +10,25 @@ client = OpenAI(
 models = client.models.list()
 print(models)
 
-# Create a completion
-message_text = [{
-    "role": "system",
-    "content": "You are an AI assistant that helps people find information."
-}]
-
+# chat completion
 completion = client.chat.completions.create(
-    model="llama3.1:8b", # gpt-4.1-mini
-    messages=message_text,
-    temperature=0.7,
-    max_tokens=4098, # if more than 2048, it will increase `num_ctx` of the model
-    top_p=0.95,
-    frequency_penalty=0,
-    presence_penalty=0,
-    stop=None
+    model="llama3.1:8b", # make sure the model is available, see the list below
+    messages=[
+      {
+        "role": "system",
+        "content": "You are an AI assistant that helps people find information."
+      },
+      {
+        "role": "user",
+        "content": "Hello, who are you?"
+      },
+    ],
 )
-
-print('user:', message_text[0]['content'])
 print('assistant:', completion.choices[0].message.content)
 
 # Get embeddings
 embed = client.embeddings.create(
-    model="snowflake-arctic-embed:33m",
+    model="bge-m3:latest",
     input="The food was delicious and the waiter..."
 )
-
 print(embed)
