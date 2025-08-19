@@ -3,7 +3,7 @@ FROM quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21 AS build
 
 USER root
 
-# the pakcage contains node 16, when required at least 18
+# the pakcage contains node 16, when required 20.19+
 #RUN microdnf update -y \
 #    && microdnf install -y nodejs \
 #    && microdnf clean all
