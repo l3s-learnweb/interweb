@@ -29,6 +29,7 @@ COPY --chown=quarkus:quarkus connectors/GoogleConnector/pom.xml /code/connectors
 COPY --chown=quarkus:quarkus connectors/IpernityConnector/pom.xml /code/connectors/IpernityConnector/
 COPY --chown=quarkus:quarkus connectors/OllamaConnector/pom.xml /code/connectors/OllamaConnector/
 COPY --chown=quarkus:quarkus connectors/OpenaiConnector/pom.xml /code/connectors/OpenaiConnector/
+COPY --chown=quarkus:quarkus connectors/SerperConnector/pom.xml /code/connectors/SerperConnector/
 COPY --chown=quarkus:quarkus connectors/SlideShareConnector/pom.xml /code/connectors/SlideShareConnector/
 COPY --chown=quarkus:quarkus connectors/VimeoConnector/pom.xml /code/connectors/VimeoConnector/
 COPY --chown=quarkus:quarkus connectors/YouTubeConnector/pom.xml /code/connectors/YouTubeConnector/
