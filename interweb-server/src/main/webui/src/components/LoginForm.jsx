@@ -29,7 +29,7 @@ export default function LoginForm({onLogin, toast}) {
                     toast.current.show({
                         severity: 'error',
                         summary: 'Error',
-                        detail: err.response?.data?.message || 'Invalid or expired login token'
+                        detail: err.response?.data || 'Invalid or expired login token'
                     });
                 })
                 .finally(() => {
@@ -57,8 +57,8 @@ export default function LoginForm({onLogin, toast}) {
         } catch (err) {
             toast.current.show({
                 severity: 'error',
-                summary: 'Error',
-                detail: err.response?.data?.message || 'Failed to login'
+                summary: 'An Error Occurred',
+                detail: err.response?.data || 'Failed to login'
             });
         } finally {
             setLoading(false);
