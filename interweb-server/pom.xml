@@ -26,11 +26,6 @@
         </dependency>
         <dependency>
             <groupId>de.l3s.interweb</groupId>
-            <artifactId>connector-bing</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-flickr</artifactId>
             <version>4.0.0-SNAPSHOT</version>
         </dependency>
@@ -57,6 +52,11 @@
         <dependency>
             <groupId>de.l3s.interweb</groupId>
             <artifactId>connector-openai</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.l3s.interweb</groupId>
+            <artifactId>connector-serper</artifactId>
             <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
