@@ -42,15 +42,13 @@ Interweb currently supports the following data providers:
 
 1. **Anthropic**:
     - Interact with Anthropic's LLMs for natural language understanding and generation.
-2. **Bing**:
-    - Search: the web for images, videos, news, and more.
-    - Suggest: get related queries to enhance user search experience.
-3. **Flickr**:
+2. **Flickr**:
     - Search: for photos and images.
     - Describe: a media resource by url.
-4. **Giphy**:
+3. **Giphy**:
     - Search: for variety of gifs in one of the largest gif libraries.
-5. **Google**:
+4. **Google**:
+    - Search: the web for images, videos, news, and more.
     - Suggest: access related search queries from one of the world's leading search engines.
 6. **Ipernity**:
     - Search: discover photos and images within one of the largest non-commercial clubs.

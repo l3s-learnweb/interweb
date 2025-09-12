@@ -22,7 +22,6 @@ COPY --chown=quarkus:quarkus interweb-core/pom.xml /code/interweb-core/
 COPY --chown=quarkus:quarkus interweb-server/pom.xml /code/interweb-server/
 COPY --chown=quarkus:quarkus interweb-client/pom.xml /code/interweb-client/
 COPY --chown=quarkus:quarkus connectors/AnthropicConnector/pom.xml /code/connectors/AnthropicConnector/
-COPY --chown=quarkus:quarkus connectors/BingConnector/pom.xml /code/connectors/BingConnector/
 COPY --chown=quarkus:quarkus connectors/FlickrConnector/pom.xml /code/connectors/FlickrConnector/
 COPY --chown=quarkus:quarkus connectors/GiphyConnector/pom.xml /code/connectors/GiphyConnector/
 COPY --chown=quarkus:quarkus connectors/GoogleConnector/pom.xml /code/connectors/GoogleConnector/
