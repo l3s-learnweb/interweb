@@ -9,6 +9,8 @@ public class OrganicResult {
     private String snippet;
     private String date;
     private int position;
+    private double rating;
+    private int ratingCount;
     private List<Sitelink> sitelinks;
     private Map<String, String> attributes;
 
@@ -50,6 +52,22 @@ public class OrganicResult {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public int getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(int ratingCount) {
+        this.ratingCount = ratingCount;
     }
 
     public List<Sitelink> getSitelinks() {

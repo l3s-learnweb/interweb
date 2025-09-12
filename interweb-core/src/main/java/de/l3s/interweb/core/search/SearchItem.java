@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.l3s.interweb.core.util.StringUtils;
+import de.l3s.interweb.core.util.ToStringBuilder;
 
 @JsonPropertyOrder({"rank", "id", "type", "url", "title", "description", "author", "author_url"})
 @RegisterForReflection
@@ -284,5 +285,31 @@ public class SearchItem implements Serializable {
         } else if (thumbnail.getHeight() > THUMBNAIL_LARGE_MAX_HEIGHT && (thumbnailOriginal == null || thumbnailOriginal.getHeight() < thumbnail.getHeight())) {
             thumbnailOriginal = thumbnail;
         }
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, false)
+            .append("id", id)
+            .append("rank", rank)
+            .append("type", type)
+            .append("title", title)
+            .append("description", description)
+            .append("url", url)
+            .append("date", date)
+            .append("duration", duration)
+            .append("width", width)
+            .append("height", height)
+            .append("tags", tags)
+            .append("author", author)
+            .append("authorUrl", authorUrl)
+            .append("viewsCount", viewsCount)
+            .append("commentsCount", commentsCount)
+            .append("embedUrl", embedUrl)
+            .append("thumbnailSmall", thumbnailSmall)
+            .append("thumbnailMedium", thumbnailMedium)
+            .append("thumbnailLarge", thumbnailLarge)
+            .append("thumbnailOriginal", thumbnailOriginal)
+            .build();
     }
 }

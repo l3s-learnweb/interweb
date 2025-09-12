@@ -24,7 +24,7 @@ import de.l3s.interweb.core.suggest.SuggestQuery;
 @Dependent
 public class GoogleConnector implements SuggestConnector, SearchConnector {
 
-    private static final double PRICE_PER_1K_CREDITS = 1;
+    private static final double SERPER_PRICE_PER_1K_CREDITS = 1;
 
     @Override
     public String getName() {
@@ -97,14 +97,24 @@ public class GoogleConnector implements SuggestConnector, SearchConnector {
     private SearchRequest buildSearchRequest(SearchQuery query) {
         SearchRequest request = new SearchRequest();
         request.setQuery(query.getQuery());
+        request.setDateRange(SerperUtils.mapDateRange(query.getDateFrom(), query.getDateTo()));
+
         if (query.getLanguage() != null) {
             request.setLanguage(query.getLanguage());
+        }
+        if (query.getCountry() != null) {
+            request.setCountry(query.getCountry());
         }
         if (query.getPage() > 0) {
             request.setPage(query.getPage());
         }
+
         if (query.getPerPage() > 0) {
-            request.setResults(query.getPerPage());
+            if (query.getPerPage() > 10) {
+                request.setPerPage(100); // serper charges 2 credits for anything above 10 results, so we set it to max 100
+            } else {
+                request.setPerPage(query.getPerPage());
+            }
         }
         return request;
     }
@@ -116,7 +126,7 @@ public class GoogleConnector implements SuggestConnector, SearchConnector {
 
         SearchConnectorResults results = new SearchConnectorResults();
         int page = Optional.ofNullable(response.getSearchParameters().getPage()).orElse(1);
-        int perPage = Optional.ofNullable(response.getSearchParameters().getResults()).orElse(10);
+        int perPage = Optional.ofNullable(response.getSearchParameters().getPerPage()).orElse(10);
         int rank = (page - 1) * perPage;
 
         // Process organic search results
@@ -127,11 +137,12 @@ public class GoogleConnector implements SuggestConnector, SearchConnector {
                 item.setTitle(organic.getTitle());
                 item.setDescription(organic.getSnippet());
                 item.setUrl(organic.getLink());
+                item.setDate(SerperUtils.parseDate(organic.getDate(), response.getSearchParameters().getLanguage()));
                 results.addResultItem(item);
             }
         }
 
-        results.setEstimatedCost(PRICE_PER_1K_CREDITS / 1000 * response.getCredits());
+        results.setEstimatedCost(SERPER_PRICE_PER_1K_CREDITS / 1000 * response.getCredits());
         return results;
     }
 }

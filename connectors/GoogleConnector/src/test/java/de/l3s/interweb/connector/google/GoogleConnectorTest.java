@@ -36,7 +36,7 @@ class GoogleConnectorTest {
         SuggestConnectorResults results = connector.suggest(query).await().indefinitely();
 
         assertEquals(10, results.size());
-        log.infov("Results for '{0}':", query.getQuery());
+        log.infov("Results for \"{0}\":", query.getQuery());
         for (String result : results.getItems()) {
             log.infov("  {0}", result);
         }
@@ -46,20 +46,20 @@ class GoogleConnectorTest {
     void search() {
         SearchQuery query = new SearchQuery();
         query.setQuery("hello world");
-        query.setPerPage(20);
+        query.setPerPage(10);
         query.setContentTypes(ContentType.webpage);
-        query.setDateFrom(LocalDate.of(2009, 1, 1));
-        query.setDateTo(LocalDate.of(2010, 6, 1));
+        query.setDateFrom(LocalDate.now().minusDays(3));
 
         SearchConnectorResults queryResult = connector.search(query).await().indefinitely();
 
         int rank = 0;
         for (SearchItem res : queryResult.getItems()) {
+            assertEquals(ContentType.webpage, res.getType());
             assertEquals(++rank, res.getRank());
             log.info(res.toString());
         }
 
-        assertEquals(20, queryResult.getItems().size());
+        assertEquals(10, queryResult.getItems().size());
     }
 
     @Test
@@ -80,7 +80,6 @@ class GoogleConnectorTest {
         }
 
         assertEquals(30, queryResult.getItems().size());
-        assertTrue(queryResult.getTotalResults() > 100);
     }
 
     @Test
@@ -100,11 +99,10 @@ class GoogleConnectorTest {
         }
 
         assertEquals(30, queryResult.getItems().size());
-        assertTrue(queryResult.getTotalResults() > 100);
     }
 
     @Test
-    void bingSearchError() {
+    void searchError() {
         SearchQuery query = new SearchQuery();
         query.setPage(999999999);
 

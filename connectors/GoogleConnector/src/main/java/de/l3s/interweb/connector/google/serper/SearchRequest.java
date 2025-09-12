@@ -4,12 +4,13 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SearchRequest {
     public enum DateRange {
-        AnyTime(""),
+        AnyTime(null),
         PastHour("qdr:h"),
         Past24Hours("qdr:d"),
         PastWeek("qdr:w"),
@@ -22,8 +23,8 @@ public class SearchRequest {
             this.value = value;
         }
 
-        @Override
-        public String toString() {
+        @JsonValue
+        public String getValue() {
             return value;
         }
     }
@@ -42,7 +43,7 @@ public class SearchRequest {
     @JsonProperty("autocorrect")
     private Boolean autocorrect;
     @JsonProperty("num")
-    private Integer results;
+    private Integer perPage;
     @JsonProperty("page")
     private Integer page;
 
@@ -87,6 +88,10 @@ public class SearchRequest {
     }
 
     public DateRange getDateRange() {
+        if (dateRange == null || dateRange == DateRange.AnyTime) {
+            return null;
+        }
+
         return dateRange;
     }
 
@@ -102,12 +107,12 @@ public class SearchRequest {
         this.autocorrect = autocorrect;
     }
 
-    public Integer getResults() {
-        return results;
+    public Integer getPerPage() {
+        return perPage;
     }
 
-    public void setResults(Integer results) {
-        this.results = results;
+    public void setPerPage(Integer perPage) {
+        this.perPage = perPage;
     }
 
     public Integer getPage() {

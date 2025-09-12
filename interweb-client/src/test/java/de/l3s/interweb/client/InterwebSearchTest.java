@@ -27,6 +27,7 @@ class InterwebSearchTest {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
         query.setLanguage("en");
+        query.setCountry("de");
         query.setContentTypes(ContentType.video);
         query.setServices("Vimeo", "YouTube");
         query.setPerPage(32);

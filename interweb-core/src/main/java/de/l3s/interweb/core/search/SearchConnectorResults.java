@@ -14,9 +14,9 @@ import de.l3s.interweb.core.ConnectorResults;
 public class SearchConnectorResults extends ConnectorResults {
 
     @JsonProperty("total_results")
-    private long totalResults = 0;
+    private Long totalResults;
     @JsonIgnore
-    private double estimatedCost = 0;
+    private Double estimatedCost;
     private final List<SearchItem> items;
 
     public SearchConnectorResults() {
@@ -31,7 +31,7 @@ public class SearchConnectorResults extends ConnectorResults {
         items.add(resultItem);
     }
 
-    public double getEstimatedCost() {
+    public Double getEstimatedCost() {
         return estimatedCost;
     }
 
@@ -39,7 +39,7 @@ public class SearchConnectorResults extends ConnectorResults {
         this.estimatedCost = estimatedCost;
     }
 
-    public long getTotalResults() {
+    public Long getTotalResults() {
         return totalResults;
     }
 
@@ -48,6 +48,9 @@ public class SearchConnectorResults extends ConnectorResults {
     }
 
     public void addTotalResults(long totalResultCount) {
+        if (this.totalResults == null) {
+            this.totalResults = 0L;
+        }
         this.totalResults += totalResultCount;
     }
 }

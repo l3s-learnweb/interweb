@@ -105,6 +105,7 @@ public class SearchService {
             query.getQuery(),
             query.getContentTypes(),
             query.getLanguage(),
+            query.getCountry(),
             query.getPage(),
             query.getPerPage(),
             query.getExtras(),

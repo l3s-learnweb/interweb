@@ -30,7 +30,9 @@ public class SearchQuery extends Query {
     private LocalDate dateTo;
     @Size(min = 2, max = 2)
     @JsonProperty("lang")
-    private String language = "en";
+    private String language;
+    @JsonProperty("country")
+    private String country;
 
     @NotEmpty
     @JsonProperty("content_types")
@@ -86,6 +88,14 @@ public class SearchQuery extends Query {
 
     public void setLanguage(final String language) {
         this.language = language;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public Set<ContentType> getContentTypes() {
@@ -185,16 +195,17 @@ public class SearchQuery extends Query {
             && Objects.equals(dateFrom, query1.dateFrom)
             && Objects.equals(dateTo, query1.dateTo)
             && Objects.equals(language, query1.language)
+            && Objects.equals(country, query1.country)
             && Objects.equals(contentTypes, query1.contentTypes)
             && Objects.equals(extras, query1.extras);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(query, dateFrom, dateTo, language, contentTypes, extras, page, perPage, sort, getServices());
+        return Objects.hash(query, dateFrom, dateTo, language, country, contentTypes, extras, page, perPage, sort, getServices());
     }
 
     public int hashCodeWithoutPage() {
-        return Objects.hash(query, dateFrom, dateTo, language, contentTypes, extras, perPage, sort, getServices());
+        return Objects.hash(query, dateFrom, dateTo, language, country, contentTypes, extras, perPage, sort, getServices());
     }
 }

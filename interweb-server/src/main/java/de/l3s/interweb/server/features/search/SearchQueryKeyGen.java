@@ -16,6 +16,7 @@ public class SearchQueryKeyGen implements CacheKeyGenerator {
                 query.getQuery(),
                 query.getContentTypes(),
                 query.getLanguage(),
+                query.getCountry(),
                 query.getOffset(),
                 query.getExtras(),
                 query.getSort(),
