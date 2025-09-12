@@ -1,10 +1,4 @@
-package de.l3s.interweb.connector.serper;
-
-import de.l3s.interweb.connector.serper.entity.AutocompleteResponse;
-
-import de.l3s.interweb.connector.serper.entity.SearchRequest;
-
-import de.l3s.interweb.connector.serper.entity.SearchResponse;
+package de.l3s.interweb.connector.google;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -12,6 +6,10 @@ import jakarta.ws.rs.core.MediaType;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+
+import de.l3s.interweb.connector.google.serper.AutocompleteResponse;
+import de.l3s.interweb.connector.google.serper.SearchRequest;
+import de.l3s.interweb.connector.google.serper.SearchResponse;
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)

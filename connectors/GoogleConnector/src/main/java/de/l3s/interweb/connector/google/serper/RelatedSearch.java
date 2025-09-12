@@ -1,4 +1,4 @@
-package de.l3s.interweb.connector.serper.entity;
+package de.l3s.interweb.connector.google.serper;
 
 public class RelatedSearch {
     private String query;
