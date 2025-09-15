@@ -30,7 +30,7 @@ class OpenaiConnectorTest {
     @Test
     void completions() throws ConnectorException {
         CompletionsQuery query = new CompletionsQuery();
-        query.setModel("gpt-4.1-mini");
+        query.setModel("gpt-5-mini");
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
         query.addMessage("What is your name?", Role.user);
 
@@ -53,7 +53,7 @@ class OpenaiConnectorTest {
             .build();
 
         CompletionsQuery query = new CompletionsQuery();
-        query.setModel("gpt-4.1-mini");
+        query.setModel("gpt-5-mini");
         query.setTools(List.of(weatherTool));
         query.setToolChoice(ToolChoice.required);
         query.addMessage("You are Interweb Assistant, a helpful chat bot.", Role.system);
