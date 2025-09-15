@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import de.l3s.interweb.core.search.*;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -18,10 +20,6 @@ import io.vertx.core.eventbus.EventBus;
 import org.jboss.logging.Logger;
 
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.search.SearchConnector;
-import de.l3s.interweb.core.search.SearchConnectorResults;
-import de.l3s.interweb.core.search.SearchQuery;
-import de.l3s.interweb.core.search.SearchResults;
 import de.l3s.interweb.server.features.api.ApiKey;
 import de.l3s.interweb.server.features.api.ApiRequestSearch;
 import de.l3s.interweb.server.features.api.UsageService;
@@ -54,24 +52,45 @@ public class SearchService {
         return this.providers.values();
     }
 
-    private Collection<SearchConnector> getConnectors(Set<String> services) {
+    private Collection<SearchConnector> getConnectors(Set<String> services, Set<ContentType> contentTypes) {
+        Collection<SearchConnector> result;
         if (services != null && !services.isEmpty()) {
-            return services.stream().map(val -> {
+            result = services.stream().map(val -> {
                 SearchConnector connector = this.providers.get(val.toLowerCase(Locale.ROOT));
                 if (connector == null) {
                     throw new ConnectorException("Service `" + val + "` is unknown");
                 }
                 return connector;
             }).toList();
+        } else {
+            result = this.providers.values();
         }
 
-        return this.providers.values();
+        return filterConnectorsByContentType(result, contentTypes);
+    }
+
+    private Collection<SearchConnector> filterConnectorsByContentType(Collection<SearchConnector> connectors, Set<ContentType> contentTypes) {
+        if (contentTypes == null || contentTypes.isEmpty()) {
+            return connectors;
+        }
+
+        List<SearchConnector> filtered = new ArrayList<>();
+        for (SearchConnector connector : connectors) {
+            for (ContentType type : connector.getSearchTypes()) {
+                if (contentTypes.contains(type)) {
+                    filtered.add(connector);
+                    break;
+                }
+            }
+        }
+
+        return filtered;
     }
 
     public Uni<SearchResults> search(SearchQuery query, ApiKey apikey) {
         Duration timeout = Duration.ofMillis(Objects.requireNonNullElse(query.getTimeout(), defaultTimeout));
         return Multi.createFrom()
-            .iterable(getConnectors(query.getServices()))
+            .iterable(getConnectors(query.getServices(), query.getContentTypes()))
             .onItem().transformToUniAndMerge(connector -> searchIn(query, connector, timeout, apikey))
             .collect().asList().map(SearchResults::new);
     }
