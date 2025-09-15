@@ -6,9 +6,12 @@ import java.util.List;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import de.l3s.interweb.core.ConnectorResults;
 
 @RegisterForReflection
+@JsonPropertyOrder({"service", "service_url", "elapsed_time", "items"})
 public class SuggestConnectorResults extends ConnectorResults {
     private final List<String> items = new LinkedList<>();
 

@@ -5,17 +5,18 @@ import java.util.List;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.l3s.interweb.core.ConnectorResults;
 
 @RegisterForReflection
+@JsonPropertyOrder({"service", "service_url", "elapsed_time", "items"})
 public class SearchConnectorResults extends ConnectorResults {
 
     @JsonProperty("total_results")
     private Long totalResults;
-    @JsonIgnore
+    @JsonProperty("estimated_cost")
     private Double estimatedCost;
     private final List<SearchItem> items;
 
