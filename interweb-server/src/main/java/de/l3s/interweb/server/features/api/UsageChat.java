@@ -2,6 +2,7 @@ package de.l3s.interweb.server.features.api;
 
 import java.time.Instant;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.smallrye.mutiny.Uni;
 
@@ -67,6 +68,7 @@ public class UsageChat {
         this.totalRequests = totalRequests;
     }
 
+    @WithSession
     public static Uni<UsageChat> findByApikey(ApiKey apikey) {
         return ApiRequestChat.find("""
                 select sum(inputTokens) as inputTokens, sum(outputTokens) as outputTokens, sum(estimatedCost) as estimatedCost, count(*) as totalRequests
@@ -77,6 +79,7 @@ public class UsageChat {
             .singleResult();
     }
 
+    @WithSession
     public static Uni<UsageChat> findByApikey(ApiKey apikey, Instant start, Instant end) {
         return ApiRequestChat.find("""
                 select sum(inputTokens) as inputTokens, sum(outputTokens) as outputTokens, sum(estimatedCost) as estimatedCost, count(*) as totalRequests
@@ -87,6 +90,7 @@ public class UsageChat {
             .singleResult();
     }
 
+    @WithSession
     public static Uni<UsageChat> findByUser(User user) {
         return ApiRequestChat.find("""
                 select sum(inputTokens) as inputTokens, sum(outputTokens) as outputTokens, sum(estimatedCost) as estimatedCost, count(*) as totalRequests
@@ -97,6 +101,7 @@ public class UsageChat {
             .singleResult();
     }
 
+    @WithSession
     public static Uni<UsageChat> findByUser(User user, Instant start, Instant end) {
         return ApiRequestChat.find("""
                 select sum(inputTokens) as inputTokens, sum(outputTokens) as outputTokens, sum(estimatedCost) as estimatedCost, count(*) as totalRequests

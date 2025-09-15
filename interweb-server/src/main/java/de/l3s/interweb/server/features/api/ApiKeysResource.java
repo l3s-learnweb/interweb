@@ -2,8 +2,6 @@ package de.l3s.interweb.server.features.api;
 
 import java.util.List;
 
-import io.quarkus.hibernate.reactive.panache.common.WithSession;
-
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -13,6 +11,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import io.quarkus.hibernate.reactive.panache.common.WithSessionOnDemand;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -68,12 +67,13 @@ public class ApiKeysResource {
 
     @GET
     @Path("/usage")
-    @WithSession
+    @WithSessionOnDemand
     @RolesAllowed({Roles.USER, Roles.ADMIN, Roles.APPLICATION})
     public Uni<UsageSummary> usage(@QueryParam("id") Long id) {
         Uni<ApiKey> item;
+        User user = (User) securityIdentity.getPrincipal();
         if (id != null) {
-            item = ApiKey.findById(id);
+            item = ApiKey.findById(id, user);
         } else {
             item = Uni.createFrom().item(securityIdentity.getCredential(ApiKey.class));
         }

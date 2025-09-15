@@ -3,7 +3,6 @@ package de.l3s.interweb.server.features.api;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.smallrye.mutiny.Uni;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,11 +16,11 @@ public class UsageSummary {
     private UsageSearch search;
 
     @JsonProperty("monthly_budget")
-    private Double monthlyBudget;
+    private double monthlyBudget;
     @JsonProperty("monthly_budget_used")
-    private Double monthlyBudgetUsed;
+    private double monthlyBudgetUsed;
     @JsonProperty("monthly_budget_remaining")
-    private Double monthlyBudgetRemaining;
+    private double monthlyBudgetRemaining;
 
     @JsonProperty("total_used")
     private Double totalUsed;
@@ -34,15 +33,15 @@ public class UsageSummary {
         return search;
     }
 
-    public Double getMonthlyBudget() {
+    public double getMonthlyBudget() {
         return monthlyBudget;
     }
 
-    public Double getMonthlyBudgetUsed() {
+    public double getMonthlyBudgetUsed() {
         return monthlyBudgetUsed;
     }
 
-    public Double getMonthlyBudgetRemaining() {
+    public double getMonthlyBudgetRemaining() {
         return monthlyBudgetRemaining;
     }
 
@@ -50,7 +49,6 @@ public class UsageSummary {
         return totalUsed;
     }
 
-    @WithSession
     private static Uni<UsageSummary> combine(User user, Uni<UsageChat> monthlyChatUsage, Uni<UsageSearch> monthlySearchUsage, Uni<UsageChat> totalChatUsage, Uni<UsageSearch> totalSearchUsage) {
         return monthlyChatUsage.flatMap(monthlyChat ->
             monthlySearchUsage.flatMap(monthlySearch ->
@@ -65,13 +63,12 @@ public class UsageSummary {
         summary.search = totalSearch;
         summary.totalUsed = totalChat.getEstimatedCost() + totalSearch.getEstimatedCost();
 
-        summary.monthlyBudget = user.monthlyBudget;
+        summary.monthlyBudget = user == null || user.monthlyBudget == null ? 0 : user.monthlyBudget;
         summary.monthlyBudgetUsed = monthlyChat.getEstimatedCost() + monthlySearch.getEstimatedCost();
         summary.monthlyBudgetRemaining = summary.monthlyBudget - summary.monthlyBudgetUsed;
         return summary;
     }
 
-    @WithSession
     public static Uni<UsageSummary> findByApikey(ApiKey apikey) {
         Instant today = Instant.now().plus(1, ChronoUnit.DAYS); // to make sure include all requests from today
         Instant monthsAgo = today.minus(31, ChronoUnit.DAYS);
@@ -83,7 +80,6 @@ public class UsageSummary {
         return combine(apikey.user, monthlyChatUsage, monthlySearchUsage, totalChatUsage, totalSearchUsage);
     }
 
-    @WithSession
     public static Uni<UsageSummary> findByUser(User user) {
         Instant today = Instant.now().plus(1, ChronoUnit.DAYS); // to make sure include all requests from today
         Instant monthsAgo = today.minus(31, ChronoUnit.DAYS);
