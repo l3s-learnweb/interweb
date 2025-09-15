@@ -29,7 +29,7 @@ public class ApiKey extends PanacheEntityBase implements Credential {
     public Long id;
 
     @JsonIgnore
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     public User user;
 
     @NotEmpty

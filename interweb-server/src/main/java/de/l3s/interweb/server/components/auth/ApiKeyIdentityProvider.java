@@ -12,6 +12,8 @@ import io.smallrye.mutiny.Uni;
 import de.l3s.interweb.server.Roles;
 import de.l3s.interweb.server.features.api.ApiKey;
 
+import org.hibernate.reactive.mutiny.Mutiny;
+
 @ApplicationScoped
 public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthenticationRequest> {
 
@@ -25,9 +27,10 @@ public class ApiKeyIdentityProvider implements IdentityProvider<ApiKeyAuthentica
     public Uni<SecurityIdentity> authenticate(ApiKeyAuthenticationRequest request, AuthenticationRequestContext context) {
         return ApiKey.findByApikey(request.getValue())
             .onItem().ifNotNull()
-            .transform(key -> QuarkusSecurityIdentity.builder()
-                .setPrincipal(key.user)
-                .addCredential(key)
+            .call(apikey -> Mutiny.fetch(apikey.user))
+            .onItem().transform(apikey -> QuarkusSecurityIdentity.builder()
+                .setPrincipal(apikey.user)
+                .addCredential(apikey)
                 .setAnonymous(false)
                 .addRole(Roles.APPLICATION)
                 .build());

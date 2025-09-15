@@ -2,6 +2,8 @@ package de.l3s.interweb.server.features.api;
 
 import java.util.List;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
+
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -66,6 +68,7 @@ public class ApiKeysResource {
 
     @GET
     @Path("/usage")
+    @WithSession
     @RolesAllowed({Roles.USER, Roles.ADMIN, Roles.APPLICATION})
     public Uni<UsageSummary> usage(@QueryParam("id") Long id) {
         Uni<ApiKey> item;

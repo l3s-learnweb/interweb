@@ -2,6 +2,7 @@ package de.l3s.interweb.server.features.api;
 
 import java.time.Instant;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.smallrye.mutiny.Uni;
 
@@ -43,6 +44,7 @@ public class UsageSearch {
         this.totalRequests = totalRequests;
     }
 
+    @WithSession
     public static Uni<UsageSearch> findByApikey(ApiKey apikey) {
         return ApiRequestSearch.find("""
                 select sum(estimatedCost) as estimatedCost, count(*) as totalRequests
@@ -53,6 +55,7 @@ public class UsageSearch {
             .singleResult();
     }
 
+    @WithSession
     public static Uni<UsageSearch> findByApikey(ApiKey apikey, Instant start, Instant end) {
         return ApiRequestSearch.find("""
                 select sum(estimatedCost) as estimatedCost, count(*) as totalRequests
@@ -63,6 +66,7 @@ public class UsageSearch {
             .singleResult();
     }
 
+    @WithSession
     public static Uni<UsageSearch> findByUser(User user) {
         return ApiRequestSearch.find("""
                 select sum(estimatedCost) as estimatedCost, count(*) as totalRequests
@@ -73,6 +77,7 @@ public class UsageSearch {
             .singleResult();
     }
 
+    @WithSession
     public static Uni<UsageSearch> findByUser(User user, Instant start, Instant end) {
         return ApiRequestSearch.find("""
                 select sum(estimatedCost) as estimatedCost, count(*) as totalRequests

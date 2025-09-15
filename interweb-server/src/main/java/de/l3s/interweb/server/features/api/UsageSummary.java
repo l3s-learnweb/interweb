@@ -50,6 +50,7 @@ public class UsageSummary {
         return totalUsed;
     }
 
+    @WithSession
     private static Uni<UsageSummary> combine(User user, Uni<UsageChat> monthlyChatUsage, Uni<UsageSearch> monthlySearchUsage, Uni<UsageChat> totalChatUsage, Uni<UsageSearch> totalSearchUsage) {
         return monthlyChatUsage.flatMap(monthlyChat ->
             monthlySearchUsage.flatMap(monthlySearch ->
