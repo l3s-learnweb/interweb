@@ -1,5 +1,9 @@
 package de.l3s.interweb.connector.google.serper;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
 public class ImageResult {
     private String title;
     private String imageUrl;

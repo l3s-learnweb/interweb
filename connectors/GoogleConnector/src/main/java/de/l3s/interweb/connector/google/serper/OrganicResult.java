@@ -1,8 +1,12 @@
 package de.l3s.interweb.connector.google.serper;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import java.util.List;
 import java.util.Map;
 
+@JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
 public class OrganicResult {
     private String title;
     private String link;

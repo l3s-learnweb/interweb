@@ -1,5 +1,10 @@
 package de.l3s.interweb.connector.google.serper;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -8,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
 public class SearchRequest {
     public enum DateRange {
         AnyTime(null),
@@ -30,21 +37,19 @@ public class SearchRequest {
     }
 
     private String type;
+    private String engine;
     @JsonProperty("q")
     private String query;
     @JsonProperty("gl")
     private String country;
-    @JsonProperty("location")
     private String location;
     @JsonProperty("hl")
     private String language;
     @JsonProperty("tbs")
     private DateRange dateRange;
-    @JsonProperty("autocorrect")
     private Boolean autocorrect;
     @JsonProperty("num")
     private Integer perPage;
-    @JsonProperty("page")
     private Integer page;
 
     public String getType() {
@@ -53,6 +58,14 @@ public class SearchRequest {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getEngine() {
+        return engine;
+    }
+
+    public void setEngine(String engine) {
+        this.engine = engine;
     }
 
     public String getQuery() {

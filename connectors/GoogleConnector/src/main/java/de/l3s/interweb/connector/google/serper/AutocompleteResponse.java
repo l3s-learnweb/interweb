@@ -2,16 +2,13 @@ package de.l3s.interweb.connector.google.serper;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+@JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
 public class AutocompleteResponse {
-
-    @JsonProperty("searchParameters")
     private SearchRequest searchParameters;
-
-    @JsonProperty("suggestions")
     private List<Suggestion> suggestions;
-
-    @JsonProperty("credits")
     private Integer credits;
 
     public SearchRequest getSearchParameters() {

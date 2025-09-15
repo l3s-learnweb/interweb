@@ -46,6 +46,7 @@ class GoogleConnectorTest {
     void search() {
         SearchQuery query = new SearchQuery();
         query.setQuery("hello world");
+        query.setPage(1);
         query.setPerPage(10);
         query.setContentTypes(ContentType.webpage);
         query.setDateFrom(LocalDate.now().minusDays(3));
