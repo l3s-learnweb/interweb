@@ -6,6 +6,9 @@ public class SearchResponse {
     private SearchRequest searchParameters;
     private KnowledgeGraph knowledgeGraph;
     private List<OrganicResult> organic;
+    private List<VideoResult> videos;
+    private List<ImageResult> images;
+    private List<NewsResult> news;
     private List<PeopleAlsoAsk> peopleAlsoAsk;
     private List<RelatedSearch> relatedSearches;
     private Integer credits;
@@ -32,6 +35,30 @@ public class SearchResponse {
 
     public void setOrganic(List<OrganicResult> organic) {
         this.organic = organic;
+    }
+
+    public List<VideoResult> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(List<VideoResult> videos) {
+        this.videos = videos;
+    }
+
+    public List<ImageResult> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ImageResult> images) {
+        this.images = images;
+    }
+
+    public List<NewsResult> getNews() {
+        return news;
+    }
+
+    public void setNews(List<NewsResult> news) {
+        this.news = news;
     }
 
     public List<PeopleAlsoAsk> getPeopleAlsoAsk() {

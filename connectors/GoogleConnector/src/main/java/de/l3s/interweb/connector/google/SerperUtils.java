@@ -43,6 +43,21 @@ public final class SerperUtils {
         return null;
     }
 
+    public static Long parseDuration(String s) {
+        try {
+            if (s == null || s.isBlank()) return null;
+
+            String[] parts = s.split(":");
+            long seconds = 0;
+            for (String part : parts) {
+                seconds = seconds * 60 + Integer.parseInt(part);
+            }
+            return seconds;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     private static String normalizeEnglish(String s) {
         // Normalize non-standard abbreviation for September and remove commas/extra spaces
         s = s.replaceAll("(?i)\\bsept\\b", "Sep");

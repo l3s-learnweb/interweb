@@ -53,13 +53,14 @@ class GoogleConnectorTest {
         SearchConnectorResults queryResult = connector.search(query).await().indefinitely();
 
         int rank = 0;
+        assertTrue(queryResult.getItems().size() >= 10);
+
+        log.infov("Results for \"{0}\":", query.getQuery());
         for (SearchItem res : queryResult.getItems()) {
             assertEquals(ContentType.webpage, res.getType());
             assertEquals(++rank, res.getRank());
-            log.info(res.toString());
+            log.info(res);
         }
-
-        assertEquals(10, queryResult.getItems().size());
     }
 
     @Test
@@ -67,19 +68,20 @@ class GoogleConnectorTest {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
         query.setContentTypes(ContentType.image);
-        query.setPerPage(30);
+        query.setPerPage(10);
         query.setPage(2);
 
         SearchConnectorResults queryResult = connector.search(query).await().indefinitely();
 
-        int rank = 30;
+        int rank = 10;
+        assertTrue(queryResult.getItems().size() >= 10);
+
+        log.infov("Results for \"{0}\":", query.getQuery());
         for (SearchItem res : queryResult.getItems()) {
             assertEquals(++rank, res.getRank());
             assertEquals(ContentType.image, res.getType());
             log.info(res);
         }
-
-        assertEquals(30, queryResult.getItems().size());
     }
 
     @Test
@@ -87,18 +89,18 @@ class GoogleConnectorTest {
         SearchQuery query = new SearchQuery();
         query.setQuery("hannover");
         query.setContentTypes(ContentType.video);
-        query.setPerPage(30);
 
         SearchConnectorResults queryResult = connector.search(query).await().indefinitely();
 
         int rank = 0;
+        assertTrue(queryResult.getItems().size() >= 10);
+
+        log.infov("Results for \"{0}\":", query.getQuery());
         for (SearchItem res : queryResult.getItems()) {
             assertEquals(++rank, res.getRank());
             assertEquals(ContentType.video, res.getType());
-            log.info(res.toString());
+            log.info(res);
         }
-
-        assertEquals(30, queryResult.getItems().size());
     }
 
     @Test

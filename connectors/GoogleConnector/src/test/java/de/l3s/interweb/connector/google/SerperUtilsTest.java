@@ -70,5 +70,13 @@ class SerperUtilsTest {
         long diff = Math.abs(Duration.between(actual, expected).getSeconds());
         assertTrue(diff <= (long) 180, () -> "Expected within "+ (long) 180 +"s, diff=\""+diff+"\". actual="+actual+", expected="+expected);
     }
+
+    @Test
+    void parseDuration() {
+        assertNull(SerperUtils.parseDuration(null));
+        assertNull(SerperUtils.parseDuration("hello"));
+        assertEquals(460L, SerperUtils.parseDuration("7:40"));
+        assertEquals(4060L, SerperUtils.parseDuration("1:7:40"));
+    }
 }
 
