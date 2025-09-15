@@ -77,6 +77,16 @@ public class UsageChat {
             .singleResult();
     }
 
+    public static Uni<UsageChat> findByApikey(ApiKey apikey, Instant start, Instant end) {
+        return ApiRequestChat.find("""
+                select sum(inputTokens) as inputTokens, sum(outputTokens) as outputTokens, sum(estimatedCost) as estimatedCost, count(*) as totalRequests
+                from ApiRequestChat
+                where apikey.id = ?1 and created >= ?2 and created <= ?3
+                """, apikey.id, start, end)
+            .project(UsageChat.class)
+            .singleResult();
+    }
+
     public static Uni<UsageChat> findByUser(User user) {
         return ApiRequestChat.find("""
                 select sum(inputTokens) as inputTokens, sum(outputTokens) as outputTokens, sum(estimatedCost) as estimatedCost, count(*) as totalRequests

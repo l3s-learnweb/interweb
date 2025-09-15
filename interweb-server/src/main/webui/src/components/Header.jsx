@@ -32,17 +32,23 @@ const Header = ({onLogout}) => {
 
     return (
         <div className="flex justify-content-between align-items-center p-3">
-            <div className="flex align-items-center">
+            <div className="flex gap-4 align-items-center">
                 {userInfo && (
-                    <>
-                        <i className="pi pi-user mr-2" style={{fontSize: '1.5rem'}}></i>
+                    <span title="User Identity" class="flex align-items-center gap-2">
+                        <i className="pi pi-user" style={{fontSize: '1.5rem'}}></i>
                         <span>{userInfo.email}</span>
-                    </>
+                    </span>
                 )}
                 {userUsage && (
                     <>
-                        <i className="pi pi-dollar ml-4 mr-2" style={{fontSize: '1.5rem'}}></i>
-                        <span>{parseFloat(userUsage.monthly_budget_used).toFixed(2)} / {parseFloat(userUsage.monthly_budget).toFixed(2)}</span>
+                        <span title="Monthly Usage" class="flex align-items-center gap-2">
+                            <i className="pi pi-calendar" style={{fontSize: '1.5rem'}}></i>
+                            <span>{parseFloat(userUsage.monthly_budget_used).toFixed(2)} / {parseFloat(userUsage.monthly_budget).toFixed(2)}</span>
+                        </span>
+                        <span title="All Time Usage" class="flex align-items-center gap-2">
+                            <i className="pi pi-dollar" style={{fontSize: '1.5rem'}}></i>
+                            <span>{parseFloat(userUsage.total_used).toFixed(2)}</span>
+                        </span>
                     </>
                 )}
             </div>

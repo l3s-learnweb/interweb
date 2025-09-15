@@ -1,8 +1,6 @@
 package de.l3s.interweb.server.features.api;
 
 import javax.naming.LimitExceededException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -25,10 +23,7 @@ public class UsageService {
 
     private Uni<UsageValue> findValue(User user) {
         return cache.as(CaffeineCache.class).getAsync(user.id, k -> {
-            Instant today = Instant.now().plus(1, ChronoUnit.DAYS); // to make sure include all requests from today
-            Instant monthsAgo = today.minus(31, ChronoUnit.DAYS);
-
-            return UsageSummary.findByUser(user, monthsAgo, today).map(summary -> {
+            return UsageSummary.findByUser(user).map(summary -> {
                 UsageValue value = new UsageValue();
                 value.remaining = summary.getMonthlyBudgetRemaining();
                 return value;
@@ -41,7 +36,7 @@ public class UsageService {
      */
     public Uni<Void> allocate(User user) {
         return findValue(user).chain(usageValue -> {
-            if (usageValue.remaining < 0) {
+            if (usageValue.remaining <= 0) {
                 return Uni.createFrom().failure(new LimitExceededException());
             }
             return Uni.createFrom().voidItem();

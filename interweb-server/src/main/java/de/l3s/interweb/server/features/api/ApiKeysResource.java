@@ -66,7 +66,7 @@ public class ApiKeysResource {
 
     @GET
     @Path("/usage")
-    @RolesAllowed({Roles.USER, Roles.APPLICATION})
+    @RolesAllowed({Roles.USER, Roles.ADMIN, Roles.APPLICATION})
     public Uni<UsageSummary> usage(@QueryParam("id") Long id) {
         Uni<ApiKey> item;
         if (id != null) {

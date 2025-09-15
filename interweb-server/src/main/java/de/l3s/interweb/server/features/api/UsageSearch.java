@@ -53,6 +53,16 @@ public class UsageSearch {
             .singleResult();
     }
 
+    public static Uni<UsageSearch> findByApikey(ApiKey apikey, Instant start, Instant end) {
+        return ApiRequestSearch.find("""
+                select sum(estimatedCost) as estimatedCost, count(*) as totalRequests
+                from ApiRequestSearch
+                where apikey.id = ?1 and created >= ?2 and created <= ?3
+                """, apikey.id, start, end)
+            .project(UsageSearch.class)
+            .singleResult();
+    }
+
     public static Uni<UsageSearch> findByUser(User user) {
         return ApiRequestSearch.find("""
                 select sum(estimatedCost) as estimatedCost, count(*) as totalRequests

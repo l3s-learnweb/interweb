@@ -65,6 +65,11 @@ export default function LoginForm({onLogin, toast}) {
         }
     };
 
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        handleLogin();
+    };
+
     return (
         <Card>
             <div className="text-center mb-5">
@@ -72,7 +77,7 @@ export default function LoginForm({onLogin, toast}) {
                 <div className="text-900 text-3xl font-medium mb-3">Interweb Api Keys</div>
             </div>
 
-            <div>
+            <form onSubmit={handleFormSubmit}>
                 <div className="flex flex-column gap-2 mb-4">
                     <label htmlFor="email">Email</label>
                     <InputText id="email" type="email" placeholder="Email address" aria-describedby="email-help" autoComplete="email" required="true"
@@ -81,9 +86,8 @@ export default function LoginForm({onLogin, toast}) {
                 </div>
 
                 <Button label="Send Login Link" icon="pi pi-send" className="w-full"
-                        loading={loading} onClick={handleLogin}/>
-            </div>
+                        loading={loading} type="submit"/>
+            </form>
         </Card>
     );
 }
-

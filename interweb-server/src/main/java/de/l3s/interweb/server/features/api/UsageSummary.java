@@ -1,6 +1,7 @@
 package de.l3s.interweb.server.features.api;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.smallrye.mutiny.Uni;
@@ -14,12 +15,16 @@ import de.l3s.interweb.server.features.user.User;
 public class UsageSummary {
     private UsageChat chat;
     private UsageSearch search;
+
     @JsonProperty("monthly_budget")
     private Double monthlyBudget;
     @JsonProperty("monthly_budget_used")
     private Double monthlyBudgetUsed;
     @JsonProperty("monthly_budget_remaining")
     private Double monthlyBudgetRemaining;
+
+    @JsonProperty("total_used")
+    private Double totalUsed;
 
     public UsageChat getChat() {
         return chat;
@@ -41,36 +46,51 @@ public class UsageSummary {
         return monthlyBudgetRemaining;
     }
 
-    private static Uni<UsageSummary> combine(User user, Uni<UsageChat> usageChat, Uni<UsageSearch> usageSearch) {
-        return usageChat.chain(chat -> usageSearch.map(search -> {
-            UsageSummary summary = new UsageSummary();
-            summary.chat = chat;
-            summary.search = search;
-            summary.monthlyBudget = user.monthlyBudget;
-            summary.monthlyBudgetUsed = summary.chat.getEstimatedCost() + summary.search.getEstimatedCost();
-            summary.monthlyBudgetRemaining = summary.monthlyBudget - summary.monthlyBudgetUsed;
-            return summary;
-        }));
+    public Double getTotalUsed() {
+        return totalUsed;
+    }
+
+    private static Uni<UsageSummary> combine(User user, Uni<UsageChat> monthlyChatUsage, Uni<UsageSearch> monthlySearchUsage, Uni<UsageChat> totalChatUsage, Uni<UsageSearch> totalSearchUsage) {
+        return monthlyChatUsage.flatMap(monthlyChat ->
+            monthlySearchUsage.flatMap(monthlySearch ->
+                totalChatUsage.flatMap(totalChat ->
+                    totalSearchUsage.map(totalSearch ->
+                        combine(user, monthlyChat, monthlySearch, totalChat, totalSearch)))));
+    }
+
+    private static UsageSummary combine(User user, UsageChat monthlyChat, UsageSearch monthlySearch, UsageChat totalChat, UsageSearch totalSearch) {
+        UsageSummary summary = new UsageSummary();
+        summary.chat = totalChat;
+        summary.search = totalSearch;
+        summary.totalUsed = totalChat.getEstimatedCost() + totalSearch.getEstimatedCost();
+
+        summary.monthlyBudget = user.monthlyBudget;
+        summary.monthlyBudgetUsed = monthlyChat.getEstimatedCost() + monthlySearch.getEstimatedCost();
+        summary.monthlyBudgetRemaining = summary.monthlyBudget - summary.monthlyBudgetUsed;
+        return summary;
     }
 
     @WithSession
     public static Uni<UsageSummary> findByApikey(ApiKey apikey) {
-        final Uni<UsageChat> usageChat = UsageChat.findByApikey(apikey);
-        final Uni<UsageSearch> usageSearch = UsageSearch.findByApikey(apikey);
-        return combine(apikey.user, usageChat, usageSearch);
+        Instant today = Instant.now().plus(1, ChronoUnit.DAYS); // to make sure include all requests from today
+        Instant monthsAgo = today.minus(31, ChronoUnit.DAYS);
+
+        final Uni<UsageChat> monthlyChatUsage = UsageChat.findByApikey(apikey, monthsAgo, today);
+        final Uni<UsageSearch> monthlySearchUsage = UsageSearch.findByApikey(apikey, monthsAgo, today);
+        final Uni<UsageChat> totalChatUsage = UsageChat.findByApikey(apikey);
+        final Uni<UsageSearch> totalSearchUsage = UsageSearch.findByApikey(apikey);
+        return combine(apikey.user, monthlyChatUsage, monthlySearchUsage, totalChatUsage, totalSearchUsage);
     }
 
     @WithSession
     public static Uni<UsageSummary> findByUser(User user) {
-        final Uni<UsageChat> usageChat = UsageChat.findByUser(user);
-        final Uni<UsageSearch> usageSearch = UsageSearch.findByUser(user);
-        return combine(user, usageChat, usageSearch);
-    }
+        Instant today = Instant.now().plus(1, ChronoUnit.DAYS); // to make sure include all requests from today
+        Instant monthsAgo = today.minus(31, ChronoUnit.DAYS);
 
-    @WithSession
-    public static Uni<UsageSummary> findByUser(User user, Instant start, Instant end) {
-        final Uni<UsageChat> usageChat = UsageChat.findByUser(user, start, end);
-        final Uni<UsageSearch> usageSearch = UsageSearch.findByUser(user, start, end);
-        return combine(user, usageChat, usageSearch);
+        final Uni<UsageChat> monthlyChatUsage = UsageChat.findByUser(user, monthsAgo, today);
+        final Uni<UsageSearch> monthlySearchUsage = UsageSearch.findByUser(user, monthsAgo, today);
+        final Uni<UsageChat> totalChatUsage = UsageChat.findByUser(user);
+        final Uni<UsageSearch> totalSearchUsage = UsageSearch.findByUser(user);
+        return combine(user, monthlyChatUsage, monthlySearchUsage, totalChatUsage, totalSearchUsage);
     }
 }

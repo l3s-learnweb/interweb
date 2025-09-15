@@ -233,7 +233,7 @@ export default function ApiKeysTable({toast}) {
                         </div>
                         <div className="col-12 md:col-6 line-height-1">
                             <h3 className="mb-3">Monthly Budget</h3>
-                            <p><strong>Total Budget:</strong> ${currentUsage.monthly_budget.toFixed(2)}</p>
+                            <p><strong>Budget:</strong> ${currentUsage.monthly_budget.toFixed(2)}</p>
                             <p><strong>Used:</strong> ${currentUsage.monthly_budget_used.toFixed(2)}</p>
                             <p><strong>Remaining:</strong> ${currentUsage.monthly_budget_remaining.toFixed(2)}</p>
                         </div>
