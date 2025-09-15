@@ -1,5 +1,10 @@
 package de.l3s.interweb.connector.openai;
 
+import java.io.StringReader;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -32,6 +37,35 @@ public interface OpenaiClient {
 
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {
-        return new ConnectorException("Remote service responded with HTTP " + response.getStatus(), response.readEntity(String.class));
+        String responseBody = response.readEntity(String.class);
+        return parseErrorMessage(responseBody, response.getStatus());
+    }
+
+    private static ConnectorException parseErrorMessage(String responseBody, int statusCode) {
+        try {
+            if (responseBody != null && !responseBody.trim().isEmpty()) {
+                JsonReader jsonReader = Json.createReader(new StringReader(responseBody));
+                JsonObject jsonObject = jsonReader.readObject();
+
+                if (jsonObject.containsKey("error")) {
+                    JsonObject errorObj = jsonObject.getJsonObject("error");
+                    if (errorObj.containsKey("message")) {
+                        return new ConnectorException(errorObj.getString("message"));
+                    }
+                    if (errorObj.containsKey("code")) {
+                        String code = errorObj.getString("code");
+                        return new ConnectorException("OpenAI API Error " + code + " (HTTP " + statusCode + ")", responseBody);
+                    }
+                }
+
+                if (jsonObject.containsKey("message")) {
+                    return new ConnectorException(jsonObject.getString("message"));
+                }
+            }
+        } catch (Exception e) {
+            // If JSON parsing fails, fall back to generic message
+        }
+
+        return new ConnectorException("OpenAI API responded with HTTP " + statusCode, responseBody);
     }
 }
