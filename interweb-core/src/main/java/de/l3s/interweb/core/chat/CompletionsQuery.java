@@ -107,6 +107,13 @@ public class CompletionsQuery {
     private Double presencePenalty;
 
     /**
+     * An upper bound for the number of tokens that can be generated for a completion,
+     * including visible output tokens and reasoning tokens.
+     */
+    @JsonProperty("max_completion_tokens")
+    private Integer maxCompletionTokens;
+
+    /**
      * The maximum number of tokens to generate in the chat completion. Defaults to 800.
      * Using Ollama, if the value is set to more than 2048, it will be used in place of `num_ctx`.
      * <br/>
@@ -270,6 +277,14 @@ public class CompletionsQuery {
 
     public void setPresencePenalty(final Double presencePenalty) {
         this.presencePenalty = presencePenalty;
+    }
+
+    public Integer getMaxCompletionTokens() {
+        return maxCompletionTokens;
+    }
+
+    public void setMaxCompletionTokens(Integer maxCompletionTokens) {
+        this.maxCompletionTokens = maxCompletionTokens;
     }
 
     public Integer getMaxTokens() {

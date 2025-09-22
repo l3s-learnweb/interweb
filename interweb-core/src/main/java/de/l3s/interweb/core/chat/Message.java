@@ -24,7 +24,6 @@ public class Message implements Serializable {
      */
     @NotNull
     private Role role;
-    private String name;
     /**
      * The contents of the message.
      */
@@ -38,6 +37,10 @@ public class Message implements Serializable {
      */
     @JsonProperty("tool_calls")
     private List<CallTool> toolCalls;
+    /**
+     * Annotations for the message, such as URL citations.
+     */
+    private List<Annotation> annotations;
     private Instant created;
 
     public Message() {
@@ -69,14 +72,6 @@ public class Message implements Serializable {
         this.role = role;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getContent() {
         return content;
     }
@@ -99,6 +94,14 @@ public class Message implements Serializable {
 
     public void setToolCalls(List<CallTool> toolCalls) {
         this.toolCalls = toolCalls;
+    }
+
+    public List<Annotation> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(List<Annotation> annotations) {
+        this.annotations = annotations;
     }
 
     public Instant getCreated() {

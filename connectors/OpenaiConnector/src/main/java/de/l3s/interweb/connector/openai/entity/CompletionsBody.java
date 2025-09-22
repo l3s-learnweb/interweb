@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.ResponseFormat;
 import de.l3s.interweb.core.chat.Tool;
+import de.l3s.interweb.core.util.Objects;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -28,12 +29,10 @@ public final class CompletionsBody {
     @JsonProperty("presence_penalty")
     private Double presencePenalty;
 
-    @JsonProperty("max_tokens")
-    private Integer maxTokens;
+    @JsonProperty("max_completion_tokens")
+    private Integer maxCompletionTokens;
 
     private Integer n;
-
-    private Integer seed;
 
     @JsonProperty("response_format")
     private ResponseFormat responseFormat;
@@ -54,9 +53,8 @@ public final class CompletionsBody {
         this.topP = query.getTopP();
         this.frequencyPenalty = query.getPresencePenalty();
         this.presencePenalty = query.getPresencePenalty();
-        this.maxTokens = query.getMaxTokens();
+        this.maxCompletionTokens = Objects.firstNonNull(query.getMaxCompletionTokens(), query.getMaxTokens());
         this.n = query.getN();
-        this.seed = query.getSeed();
         this.responseFormat = query.getResponseFormat();
         this.stop = query.getStop();
         this.tools = query.getTools();
@@ -84,16 +82,12 @@ public final class CompletionsBody {
         return presencePenalty;
     }
 
-    public Integer getMaxTokens() {
-        return maxTokens;
+    public Integer getMaxCompletionTokens() {
+        return maxCompletionTokens;
     }
 
     public Integer getN() {
         return n;
-    }
-
-    public Integer getSeed() {
-        return seed;
     }
 
     public ResponseFormat getResponseFormat() {

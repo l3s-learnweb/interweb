@@ -27,8 +27,6 @@ public class CompletionsResults extends Results<Choice> {
     @JsonProperty(value = "estimated_cost")
     private UsageCost cost;
     private Duration duration;
-    @JsonProperty(value = "system_fingerprint")
-    private String systemFingerprint;
     private Instant created;
 
     public UUID getChatId() {
@@ -104,14 +102,6 @@ public class CompletionsResults extends Results<Choice> {
 
     public void setDuration(Duration duration) {
         this.duration = duration;
-    }
-
-    public String getSystemFingerprint() {
-        return systemFingerprint;
-    }
-
-    public void setSystemFingerprint(String systemFingerprint) {
-        this.systemFingerprint = systemFingerprint;
     }
 
     public Instant getCreated() {

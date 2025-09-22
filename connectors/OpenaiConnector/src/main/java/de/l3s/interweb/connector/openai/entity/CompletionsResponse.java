@@ -5,9 +5,9 @@ import java.util.List;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import de.l3s.interweb.core.chat.*;
+import de.l3s.interweb.core.chat.Choice;
+import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.chat.Usage;
 
 @RegisterForReflection
 public class CompletionsResponse {
@@ -15,8 +15,6 @@ public class CompletionsResponse {
     private String object;
     private String model;
     private Usage usage;
-    @JsonProperty("system_fingerprint")
-    private String systemFingerprint;
     private Instant created;
     private List<Choice> choices;
 
@@ -52,14 +50,6 @@ public class CompletionsResponse {
         this.usage = usage;
     }
 
-    public String getSystemFingerprint() {
-        return systemFingerprint;
-    }
-
-    public void setSystemFingerprint(String systemFingerprint) {
-        this.systemFingerprint = systemFingerprint;
-    }
-
     public Instant getCreated() {
         return created;
     }
@@ -83,7 +73,6 @@ public class CompletionsResponse {
         results.setChoices(choices);
         results.setUsage(usage);
         results.setObject(object);
-        results.setSystemFingerprint(systemFingerprint);
         return results;
     }
 }
