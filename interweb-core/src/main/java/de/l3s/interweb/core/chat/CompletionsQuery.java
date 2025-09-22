@@ -148,7 +148,7 @@ public class CompletionsQuery {
      * none is the default when no tools are present. auto is the default if tools are present.
      */
     @JsonProperty("tool_choice")
-    private Object toolChoice;
+    private ToolChoice toolChoice;
 
     /**
      * Whether to enable parallel function calling during tool use.
@@ -181,8 +181,18 @@ public class CompletionsQuery {
     private Integer seed;
 
     /**
+     * Constrains effort on reasoning for reasoning models. Currently supported values are minimal, low, medium, and high.
+     * Reducing reasoning effort can result in faster responses and fewer tokens used on reasoning in a response.
+     * <br/>
+     * Defaults to medium.
+     */
+    @JsonProperty("reasoning_effort")
+    private ReasoningEffort reasoningEffort;
+
+    /**
      * An object specifying the format that the model must output. Used to enable JSON mode.
      */
+    @JsonProperty("response_format")
     private ResponseFormat responseFormat;
 
     /**
@@ -335,11 +345,11 @@ public class CompletionsQuery {
         return tools;
     }
 
-    public void setToolChoice(Object toolChoice) {
+    public void setToolChoice(ToolChoice toolChoice) {
         this.toolChoice = toolChoice;
     }
 
-    public Object getToolChoice() {
+    public ToolChoice getToolChoice() {
         return toolChoice;
     }
 
@@ -357,6 +367,14 @@ public class CompletionsQuery {
 
     public Integer getSeed() {
         return seed;
+    }
+
+    public ReasoningEffort getReasoningEffort() {
+        return reasoningEffort;
+    }
+
+    public void setReasoningEffort(ReasoningEffort reasoningEffort) {
+        this.reasoningEffort = reasoningEffort;
     }
 
     public void setResponseFormat(ResponseFormat responseFormat) {
