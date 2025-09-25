@@ -225,20 +225,14 @@ export default function ApiKeysTable({toast}) {
                 {currentUsage && (
                     <div className="grid">
                         <div className="col-12 md:col-6 line-height-1">
-                            <h3 className="mb-3">Chat Usage</h3>
+                            <h3 className="mb-3">Chat Usage (All Time)</h3>
                             <p><strong>Total Requests:</strong> {currentUsage.chat.total_requests}</p>
                             <p><strong>Input Tokens:</strong> {currentUsage.chat.input_tokens}</p>
                             <p><strong>Output Tokens:</strong> {currentUsage.chat.output_tokens}</p>
                             <p><strong>Estimated Cost:</strong> ${currentUsage.chat.estimated_cost.toFixed(4)}</p>
                         </div>
                         <div className="col-12 md:col-6 line-height-1">
-                            <h3 className="mb-3">Monthly Budget</h3>
-                            <p><strong>Budget:</strong> ${currentUsage.monthly_budget.toFixed(2)}</p>
-                            <p><strong>Used:</strong> ${currentUsage.monthly_budget_used.toFixed(2)}</p>
-                            <p><strong>Remaining:</strong> ${currentUsage.monthly_budget_remaining.toFixed(2)}</p>
-                        </div>
-                        <div className="col-12 md:col-6 line-height-1">
-                            <h3 className="mb-3">Search Usage</h3>
+                            <h3 className="mb-3">Search Usage (All Time)</h3>
                             <p><strong>Total Requests:</strong> {currentUsage.search.total_requests}</p>
                             <p><strong>Estimated Cost:</strong> ${currentUsage.search.estimated_cost.toFixed(4)}</p>
                         </div>
