@@ -1,5 +1,5 @@
 ## Stage 1 : build with maven builder image with native capabilities
-FROM quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21 AS build
+FROM quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-25 AS build
 
 USER root
 
@@ -9,7 +9,7 @@ USER root
 #    && microdnf clean all
 
 # Install Node.js and npm for Quinoa
-RUN curl -fsSL https://rpm.nodesource.com/setup_22.x | bash - && \
+RUN curl -fsSL https://rpm.nodesource.com/setup_24.x | bash - && \
     microdnf install -y nodejs && microdnf clean all
 
 USER quarkus
