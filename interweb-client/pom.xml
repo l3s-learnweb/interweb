@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>interweb-client</artifactId>
-    <version>4.5.3</version>
+    <version>4.5.4</version>
     <packaging>jar</packaging>
 
     <name>interweb-client</name>
@@ -46,6 +46,10 @@
             <artifactId>interweb-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
