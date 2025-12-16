@@ -13,7 +13,7 @@ import de.l3s.interweb.core.chat.*;
 public class ChatResponse {
 
     private String model;
-    private OllamaMessage message;
+    private Message message;
     @JsonProperty("total_duration")
     private Long totalDuration;
     @JsonProperty("load_duration")
@@ -26,6 +26,8 @@ public class ChatResponse {
     private Integer evalCount;
     @JsonProperty("eval_duration")
     private Long evalDuration;
+    @JsonProperty("logprobs")
+    private List<Logprob> logprobs;
     private Boolean done;
     @JsonProperty("done_reason")
     private String doneReason;
@@ -40,11 +42,11 @@ public class ChatResponse {
         this.model = model;
     }
 
-    public OllamaMessage getMessage() {
+    public Message getMessage() {
         return message;
     }
 
-    public void setMessage(OllamaMessage message) {
+    public void setMessage(Message message) {
         this.message = message;
     }
 
@@ -96,6 +98,14 @@ public class ChatResponse {
         this.evalDuration = evalDuration;
     }
 
+    public List<Logprob> getLogprobs() {
+        return logprobs;
+    }
+
+    public void setLogprobs(List<Logprob> logprobs) {
+        this.logprobs = logprobs;
+    }
+
     public Boolean getDone() {
         return done;
     }
@@ -130,11 +140,12 @@ public class ChatResponse {
         }
 
         if (message != null) {
-            Message commonMessage = new Message(Role.assistant);
-            commonMessage.setContent(message.getContent());
-            commonMessage.setToolCalls(message.getToolCalls());
-
-            Choice choice = new Choice(0, doneReason, commonMessage);
+            Choice choice = new Choice(0, doneReason, message.toMessage());
+            if (this.getLogprobs() != null) {
+                Logprobs logprobs = new Logprobs();
+                logprobs.setContent(this.getLogprobs());
+                choice.setLogprobs(logprobs);
+            }
             results.setChoices(List.of(choice));
         }
 

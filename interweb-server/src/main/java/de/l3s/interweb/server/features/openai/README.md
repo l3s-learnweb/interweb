@@ -2,6 +2,16 @@
 
 Interweb provides compatibility with parts of the [OpenAI API](https://platform.openai.com/docs/api-reference) to help connect existing applications.
 
+This we try to keep up to date with the Ollama API specifications.
+
+E.g. following these references:
+- https://platform.openai.com/docs/api-reference/responses
+- https://platform.openai.com/docs/api-reference/chat/create
+- https://platform.openai.com/docs/api-reference/embeddings
+
+# OpenAPI Specification
+
+https://raw.githubusercontent.com/openai/openai-openapi/refs/heads/manual_spec/openapi.yaml
 
 ## Endpoints
 
@@ -187,7 +197,7 @@ const listCompletion = await openai.models.list()
 
 const model = await openai.models.retrieve("llama3.1:8b")
 
-const embedding = await openai.embeddings.create({
+const responses = await openai.embeddings.create({
   model: "all-minilm",
   input: ["why is the sky blue?", "why is the grass green?"],
 })

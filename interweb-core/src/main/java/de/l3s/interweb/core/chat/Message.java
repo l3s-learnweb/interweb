@@ -25,6 +25,11 @@ public class Message implements Serializable {
     @NotNull
     private Role role;
     /**
+     * An optional name for the participant.
+     * Provides the model information to differentiate between participants of the same role.
+     */
+    private String name;
+    /**
      * The contents of the message.
      */
     private String content;
@@ -41,6 +46,10 @@ public class Message implements Serializable {
      * Annotations for the message, such as URL citations.
      */
     private List<Annotation> annotations;
+    /**
+     * If the audio output modality is requested, this object contains data about the audio response from the model.
+     */
+    private Audio audio;
     private Instant created;
 
     public Message() {
@@ -70,6 +79,14 @@ public class Message implements Serializable {
 
     public void setRole(final Role role) {
         this.role = role;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public String getContent() {
@@ -102,6 +119,14 @@ public class Message implements Serializable {
 
     public void setAnnotations(List<Annotation> annotations) {
         this.annotations = annotations;
+    }
+
+    public Audio getAudio() {
+        return audio;
+    }
+
+    public void setAudio(Audio audio) {
+        this.audio = audio;
     }
 
     public Instant getCreated() {

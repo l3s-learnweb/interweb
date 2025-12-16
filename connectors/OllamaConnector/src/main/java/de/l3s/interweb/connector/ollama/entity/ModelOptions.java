@@ -6,10 +6,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.chat.CompletionsQuery;
+import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class OllamaModelOptions {
+public class ModelOptions {
     @JsonProperty("num_ctx")
     private Integer numCtx;
     @JsonProperty("num_predict")
@@ -48,24 +49,6 @@ public class OllamaModelOptions {
     private Double typicalP;
     @JsonProperty("top_k")
     private Integer topK;
-
-    public OllamaModelOptions(CompletionsQuery query) {
-        this.seed = query.getSeed();
-        if (query.getStop() != null && query.getStop().length > 0) {
-            this.stop = query.getStop();
-        }
-        this.presencePenalty = query.getPresencePenalty();
-        this.frequencyPenalty = query.getFrequencyPenalty();
-        if (this.numCtx == null && query.getMaxTokens() != null && query.getMaxTokens() >= 2048) {
-            this.numCtx = query.getMaxTokens();
-        } else {
-            this.numCtx = query.getNumCtx();
-        }
-        this.temperature = query.getTemperature();
-        this.topP = query.getTopP();
-        this.minP = query.getMinP();
-        this.topK = query.getTopK();
-    }
 
     public Integer getNumCtx() {
         return numCtx;
@@ -125,5 +108,29 @@ public class OllamaModelOptions {
 
     public Integer getTopK() {
         return topK;
+    }
+
+    public static ModelOptions of(CompletionsQuery query) {
+        ModelOptions options = new ModelOptions();
+        options.seed = query.getSeed();
+        if (query.getStop() != null && query.getStop().length > 0) {
+            options.stop = query.getStop();
+        }
+        options.presencePenalty = query.getPresencePenalty();
+        options.frequencyPenalty = query.getFrequencyPenalty();
+        if (options.numCtx == null && query.getMaxTokens() != null && query.getMaxTokens() >= 2048) {
+            options.numCtx = query.getMaxTokens();
+        } else {
+            options.numCtx = query.getNumCtx();
+        }
+        options.temperature = query.getTemperature();
+        options.topP = query.getTopP();
+        options.minP = query.getMinP();
+        options.topK = query.getTopK();
+        return options;
+    }
+
+    public static ModelOptions of(EmbeddingsQuery query) {
+        return new ModelOptions();
     }
 }

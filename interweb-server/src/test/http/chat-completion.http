@@ -1,0 +1,12 @@
+### make simple search
+POST {{host}}/chat/completions
+Authorization: Bearer {{api-key}}
+Content-Type: application/json
+
+{
+    "query": "example search",
+    "page": 1,
+    "pageSize": 10,
+    "content_types": ["webpage"]
+}
+

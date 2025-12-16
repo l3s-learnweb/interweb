@@ -1,0 +1,3 @@
+### GET request to example server
+GET {{host}}/models
+Authorization: Bearer {{api-key}}
