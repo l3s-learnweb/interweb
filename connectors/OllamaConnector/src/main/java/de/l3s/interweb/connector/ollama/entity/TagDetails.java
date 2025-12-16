@@ -1,13 +1,13 @@
 package de.l3s.interweb.connector.ollama.entity;
 
+import java.util.List;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
 @RegisterForReflection
-public class OllamaTagDetails {
+public class TagDetails {
     private String format;
     private String family;
     private List<String> families;

@@ -20,10 +20,12 @@ import de.l3s.interweb.core.embeddings.EmbeddingConnector;
 import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
 import de.l3s.interweb.core.embeddings.EmbeddingsResults;
 import de.l3s.interweb.core.models.Model;
-import de.l3s.interweb.core.models.UsagePrice;
+import de.l3s.interweb.core.responses.ResponsesConnector;
+import de.l3s.interweb.core.responses.ResponsesQuery;
+import de.l3s.interweb.core.responses.ResponsesResults;
 
 @Dependent
-public class OllamaConnector implements ChatConnector, EmbeddingConnector {
+public class OllamaConnector implements ChatConnector, EmbeddingConnector, ResponsesConnector {
     private static final Logger log = Logger.getLogger(OllamaConnector.class);
 
     @RestClient
@@ -41,35 +43,37 @@ public class OllamaConnector implements ChatConnector, EmbeddingConnector {
 
     @Override
     public Uni<List<Model>> getModels() {
-        return ollama.tags().map(tags -> tags.getModels().stream().map(tag -> {
-            Model model = new Model();
-            model.setId(tag.getName());
-            model.setProvidedBy("l3s");
-            model.setPrice(UsagePrice.FREE);
-            model.setFamily(tag.getDetails().getFamily());
-            model.setParameterSize(tag.getDetails().getParameterSize());
-            model.setQuantizationLevel(tag.getDetails().getQuantizationLevel());
-            model.setCreated(tag.getModifiedAt());
-            return model;
-        }).toList());
+        return ollama.tags().map(tags -> tags.getModels().stream().map(Tag::toModel).toList());
     }
 
     @Override
     public Uni<CompletionsResults> completions(CompletionsQuery query) throws ConnectorException {
-        final ChatBody body = new ChatBody(query);
+        final ChatBody body = ChatBody.of(query);
         return ollama.chat(body).map(ChatResponse::toCompletionResults);
     }
 
     @Override
     public Multi<CompletionsResults> completionsStream(CompletionsQuery query) throws ConnectorException {
-        final ChatStreamBody body = new ChatStreamBody(query);
+        final ChatStreamBody body = (ChatStreamBody) ChatBody.of(query);
         return ollama.chatStream(body).map(ChatResponse::toCompletionResults);
     }
 
     @Override
     public Uni<EmbeddingsResults> embeddings(EmbeddingsQuery query) throws ConnectorException {
-        final EmbedBody body = new EmbedBody(query);
+        final EmbedBody body = EmbedBody.of(query);
         return ollama.embed(body).map(EmbedResponse::toCompletionResults);
+    }
+
+    @Override
+    public Uni<ResponsesResults> responses(ResponsesQuery query) throws ConnectorException {
+        final GenerateBody body = GenerateBody.of(query);
+        return ollama.generate(body).map(GenerateResponse::toResponsesResults);
+    }
+
+    @Override
+    public Multi<ResponsesResults> responsesStream(ResponsesQuery query) throws ConnectorException {
+        final GenerateStreamBody body = (GenerateStreamBody) GenerateBody.of(query);
+        return ollama.generateStream(body).map(GenerateResponse::toResponsesResults);
     }
 
     @Override

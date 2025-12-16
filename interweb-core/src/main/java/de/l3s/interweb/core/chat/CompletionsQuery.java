@@ -2,6 +2,7 @@ package de.l3s.interweb.core.chat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import jakarta.validation.constraints.Max;
@@ -201,6 +202,60 @@ public class CompletionsQuery {
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private String[] stop;
 
+    /**
+     * Parameters for audio output. Required when audio output is requested with modalities: ["audio"].
+     */
+    @JsonProperty("audio")
+    private AudioOptions audio;
+
+    /**
+     * Modify the likelihood of specified tokens appearing in the completion.
+     */
+    @JsonProperty("logit_bias")
+    private Map<String, Integer> logitBias;
+
+    /**
+     * Whether to return log probabilities of the output tokens or not.
+     */
+    @JsonProperty("logprobs")
+    private Boolean logprobs;
+
+    /**
+     * Configuration for a Predicted Output.
+     */
+    @JsonProperty("prediction")
+    private PredictionOptions prediction;
+
+    /**
+     * Whether or not to store the output of this chat completion request for use in our model distillation or evals products.
+     */
+    @JsonProperty("store")
+    private Boolean store = false;
+
+    /**
+     * Options for streaming response. Only set this when you set stream: true.
+     */
+    @JsonProperty("stream_options")
+    private StreamOptions streamOptions;
+
+    /**
+     * An integer between 0 and 20 specifying the number of most likely tokens to return at each token position.
+     */
+    @JsonProperty("top_logprobs")
+    private Integer topLogprobs;
+
+    /**
+     * Set of 16 key-value pairs that can be attached to an object.
+     */
+    @JsonProperty("metadata")
+    private Map<String, String> metadata;
+
+    /**
+     * Output types that you would like the model to generate.
+     */
+    @JsonProperty("modalities")
+    private List<String> modalities;
+
     public String getModel() {
         return model;
     }
@@ -391,5 +446,77 @@ public class CompletionsQuery {
 
     public String[] getStop() {
         return stop;
+    }
+
+    public AudioOptions getAudio() {
+        return audio;
+    }
+
+    public void setAudio(AudioOptions audio) {
+        this.audio = audio;
+    }
+
+    public Map<String, Integer> getLogitBias() {
+        return logitBias;
+    }
+
+    public void setLogitBias(Map<String, Integer> logitBias) {
+        this.logitBias = logitBias;
+    }
+
+    public Boolean getLogprobs() {
+        return logprobs;
+    }
+
+    public void setLogprobs(Boolean logprobs) {
+        this.logprobs = logprobs;
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
+
+    public List<String> getModalities() {
+        return modalities;
+    }
+
+    public void setModalities(List<String> modalities) {
+        this.modalities = modalities;
+    }
+
+    public PredictionOptions getPrediction() {
+        return prediction;
+    }
+
+    public void setPrediction(PredictionOptions prediction) {
+        this.prediction = prediction;
+    }
+
+    public Boolean getStore() {
+        return store;
+    }
+
+    public void setStore(Boolean store) {
+        this.store = store;
+    }
+
+    public StreamOptions getStreamOptions() {
+        return streamOptions;
+    }
+
+    public void setStreamOptions(StreamOptions streamOptions) {
+        this.streamOptions = streamOptions;
+    }
+
+    public Integer getTopLogprobs() {
+        return topLogprobs;
+    }
+
+    public void setTopLogprobs(Integer topLogprobs) {
+        this.topLogprobs = topLogprobs;
     }
 }

@@ -1,18 +1,21 @@
 package de.l3s.interweb.connector.ollama.entity;
 
+import java.time.Instant;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.Instant;
+import de.l3s.interweb.core.models.Model;
+import de.l3s.interweb.core.models.UsagePrice;
 
 @RegisterForReflection
-public class OllamaTag {
+public class Tag {
     private String name;
     private String model;
     private long size;
     private String digest;
-    private OllamaTagDetails details;
+    private TagDetails details;
     @JsonProperty("modified_at")
     private Instant modifiedAt;
 
@@ -48,11 +51,11 @@ public class OllamaTag {
         this.digest = digest;
     }
 
-    public OllamaTagDetails getDetails() {
+    public TagDetails getDetails() {
         return details;
     }
 
-    public void setDetails(OllamaTagDetails details) {
+    public void setDetails(TagDetails details) {
         this.details = details;
     }
 
@@ -62,5 +65,17 @@ public class OllamaTag {
 
     public void setModifiedAt(Instant modifiedAt) {
         this.modifiedAt = modifiedAt;
+    }
+
+    public Model toModel() {
+        Model model = new Model();
+        model.setId(this.getName());
+        model.setProvidedBy("l3s");
+        model.setPrice(UsagePrice.FREE);
+        model.setFamily(this.getDetails().getFamily());
+        model.setParameterSize(this.getDetails().getParameterSize());
+        model.setQuantizationLevel(this.getDetails().getQuantizationLevel());
+        model.setCreated(this.getModifiedAt());
+        return model;
     }
 }

@@ -16,34 +16,24 @@ import de.l3s.interweb.core.chat.Tool;
 public class ChatBody {
 
     private String model;
-    private List<OllamaMessage> messages;
+    private List<Message> messages;
     private String format;
-    private OllamaModelOptions options;
+    private ModelOptions options;
     private Boolean stream = false;
     @JsonProperty("keep_alive")
     private String keepAlive;
     protected List<Tool> tools;
 
-    public ChatBody(CompletionsQuery query) {
-        this.model = query.getModel();
-
-        this.messages = query.getMessages().stream()
-            .map(OllamaMessage::new)
-            .toList();
-
-        this.options = new OllamaModelOptions(query);
-        this.tools = query.getTools();
-
-        if (query.getResponseFormat() != null && query.getResponseFormat().getType() == ResponseFormat.ResponseType.json_object) {
-            this.format = "json";
-        }
-    }
+    private Object think;
+    private Boolean logprobs;
+    @JsonProperty("top_logprobs")
+    private Integer topLogprobs;
 
     public String getModel() {
         return model;
     }
 
-    public List<OllamaMessage> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
 
@@ -51,7 +41,7 @@ public class ChatBody {
         return format;
     }
 
-    public OllamaModelOptions getOptions() {
+    public ModelOptions getOptions() {
         return options;
     }
 
@@ -63,7 +53,50 @@ public class ChatBody {
         return keepAlive;
     }
 
-    public Object getTools() {
+    public List<Tool> getTools() {
         return tools;
+    }
+
+    public Object getThink() {
+        return think;
+    }
+
+    public void setThink(Object think) {
+        this.think = think;
+    }
+
+    public Boolean getLogprobs() {
+        return logprobs;
+    }
+
+    public void setLogprobs(Boolean logprobs) {
+        this.logprobs = logprobs;
+    }
+
+    public Integer getTopLogprobs() {
+        return topLogprobs;
+    }
+
+    public void setTopLogprobs(Integer topLogprobs) {
+        this.topLogprobs = topLogprobs;
+    }
+
+    public static ChatBody of(CompletionsQuery query) {
+        ChatBody body = query.isStream() ? new ChatStreamBody() : new ChatBody();
+        body.model = query.getModel();
+        body.logprobs = query.getLogprobs();
+        body.topLogprobs = query.getTopLogprobs();
+
+        body.messages = query.getMessages().stream()
+            .map(Message::of)
+            .toList();
+
+        body.options = ModelOptions.of(query);
+        body.tools = query.getTools();
+
+        if (query.getResponseFormat() != null && query.getResponseFormat().getType() == ResponseFormat.ResponseType.json_object) {
+            body.format = "json";
+        }
+        return body;
     }
 }

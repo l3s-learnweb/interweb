@@ -13,16 +13,24 @@ import org.jboss.resteasy.reactive.common.util.RestMediaType;
 import de.l3s.interweb.connector.ollama.entity.*;
 import de.l3s.interweb.core.ConnectorException;
 
+/**
+ * Ollama Completion API
+ * https://github.com/ollama/ollama/blob/main/docs/api.md
+ *
+ * https://docs.ollama.com/api/generate
+ * https://docs.ollama.com/api/chat
+ * https://docs.ollama.com/api/embed
+ * https://docs.ollama.com/api/tags
+ *
+ * OpenAPI Specification
+ * https://raw.githubusercontent.com/davidmigloz/langchain_dart/refs/heads/main/packages/ollama_dart/oas/ollama-curated.yaml
+ */
 @Path("")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @RegisterRestClient(configKey = "ollama")
 public interface OllamaClient {
 
-    /**
-     * Ollama Completion API
-     * https://github.com/ollama/ollama/blob/main/docs/api.md
-     */
     @POST
     @Path("/api/chat")
     Uni<ChatResponse> chat(ChatBody body);
@@ -31,6 +39,15 @@ public interface OllamaClient {
     @Path("/api/chat")
     @Produces(RestMediaType.APPLICATION_NDJSON)
     Multi<ChatResponse> chatStream(ChatStreamBody body);
+
+    @POST
+    @Path("/api/generate")
+    Uni<GenerateResponse> generate(GenerateBody body);
+
+    @POST
+    @Path("/api/generate")
+    @Produces(RestMediaType.APPLICATION_NDJSON)
+    Multi<GenerateResponse> generateStream(GenerateStreamBody body);
 
     @POST
     @Path("/api/embed")
