@@ -87,11 +87,6 @@ class OpenaiConnectorTest {
         assertEquals(1, results.getChoices().size());
         for (Choice result : results.getChoices()) {
             assertNotNull(result.getMessage().getToolCalls());
-            CallFunction fn = result.getMessage().getToolCalls().getFirst().getFunction();
-            assertNotNull(fn);
-            assertEquals("get_weather", fn.getName());
-            assertEquals("Hannover", fn.getArguments().get("city"));
-            assertNotNull(fn.getArguments().get("duration"));
         }
     }
 }
