@@ -1,6 +1,6 @@
 package de.l3s.interweb.server.features.openai;
 
-import java.util.List;
+import de.l3s.interweb.core.models.ModelsResults;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -15,7 +15,6 @@ import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import de.l3s.interweb.core.ObjectWrapper;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
@@ -56,7 +55,6 @@ public class OpenaiV1Resource {
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
 
         return chatService.completions(query, apikey).chain(results -> {
-            results.setChatId(null); // reset chatId if it was set
             return populateMoreChoices(apikey, query, results);
         });
     }
@@ -77,7 +75,7 @@ public class OpenaiV1Resource {
 
     @GET
     @Path("/models")
-    public Uni<ObjectWrapper<List<Model>>> models() {
+    public Uni<ModelsResults> models() {
         return modelsResource.list();
     }
 

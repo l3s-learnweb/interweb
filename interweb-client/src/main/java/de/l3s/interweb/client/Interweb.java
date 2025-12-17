@@ -17,13 +17,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import de.l3s.interweb.core.ObjectWrapper;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.chat.Conversation;
 import de.l3s.interweb.core.describe.DescribeQuery;
 import de.l3s.interweb.core.describe.DescribeResults;
-import de.l3s.interweb.core.models.Model;
+import de.l3s.interweb.core.models.ModelsResults;
 import de.l3s.interweb.core.search.SearchQuery;
 import de.l3s.interweb.core.search.SearchResults;
 import de.l3s.interweb.core.suggest.SuggestQuery;
@@ -76,7 +75,7 @@ public class Interweb implements Serializable {
         return sendPostRequest("/describe", params, DescribeResults.class);
     }
 
-    public ObjectWrapper<List<Model>> models() throws InterwebException {
+    public ModelsResults models() throws InterwebException {
         return sendGetRequest("/models", Map.of(), new TypeReference<>() {});
     }
 

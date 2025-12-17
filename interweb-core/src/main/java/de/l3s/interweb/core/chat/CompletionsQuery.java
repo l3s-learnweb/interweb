@@ -13,9 +13,11 @@ import jakarta.validation.constraints.Size;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RegisterForReflection
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CompletionsQuery {
 
     /**
@@ -28,7 +30,7 @@ public class CompletionsQuery {
     /**
      * ID of the chat to continue.
      */
-    @JsonProperty("id")
+    @JsonProperty(value = "id", access = JsonProperty.Access.WRITE_ONLY)
     private UUID id;
 
     /**
@@ -76,7 +78,7 @@ public class CompletionsQuery {
      */
     @Min(0)
     @Max(1)
-    @JsonProperty("min_p")
+    @JsonProperty(value = "min_p", access = JsonProperty.Access.WRITE_ONLY)
     private Double minP;
 
     /**
@@ -86,7 +88,7 @@ public class CompletionsQuery {
      */
     @Min(0)
     @Max(100)
-    @JsonProperty("top_k")
+    @JsonProperty(value = "top_k", access = JsonProperty.Access.WRITE_ONLY)
     private Integer topK;
 
     /**
@@ -126,7 +128,7 @@ public class CompletionsQuery {
     /**
      * Sets the size of the context window used to generate the next token. Defaults to 2048.
      */
-    @JsonProperty("num_ctx")
+    @JsonProperty(value = "num_ctx", access = JsonProperty.Access.WRITE_ONLY)
     private Integer numCtx;
 
     /**
@@ -161,12 +163,13 @@ public class CompletionsQuery {
     /**
      * Whether to incrementally stream the response using server-sent events. Defaults to false.
      */
-    private boolean stream = false;
+    private Boolean stream;
 
     /**
      * Whether the conversation should be saved on Interweb. Defaults to false.
      */
-    private boolean save = false;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Boolean save;
 
     /**
      * How many completions to generate for each prompt. Minimum of 1 (default) and maximum of 128 allowed.
@@ -224,7 +227,7 @@ public class CompletionsQuery {
      * Configuration for a Predicted Output.
      */
     @JsonProperty("prediction")
-    private PredictionOptions prediction;
+    private Prediction prediction;
 
     /**
      * Whether or not to store the output of this chat completion request for use in our model distillation or evals products.
@@ -368,19 +371,19 @@ public class CompletionsQuery {
         this.numCtx = numCtx;
     }
 
-    public boolean isStream() {
+    public Boolean isStream() {
         return stream;
     }
 
-    public void setStream(boolean stream) {
+    public void setStream(Boolean stream) {
         this.stream = stream;
     }
 
-    public boolean isSave() {
+    public Boolean isSave() {
         return save;
     }
 
-    public void setSave(boolean save) {
+    public void setSave(Boolean save) {
         this.save = save;
     }
 
@@ -488,11 +491,11 @@ public class CompletionsQuery {
         this.modalities = modalities;
     }
 
-    public PredictionOptions getPrediction() {
+    public Prediction getPrediction() {
         return prediction;
     }
 
-    public void setPrediction(PredictionOptions prediction) {
+    public void setPrediction(Prediction prediction) {
         this.prediction = prediction;
     }
 

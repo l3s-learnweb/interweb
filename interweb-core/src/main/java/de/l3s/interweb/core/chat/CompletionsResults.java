@@ -17,7 +17,7 @@ import de.l3s.interweb.core.Results;
 @JsonIgnoreProperties("results")
 @JsonPropertyOrder({"id", "object", "title", "model", "choices", "usage", "duration", "estimated_cost", "elapsed_time", "system_fingerprint", "created"})
 public class CompletionsResults extends Results<Choice> {
-    @JsonProperty(value = "id")
+    @JsonProperty(value = "id", access = JsonProperty.Access.READ_ONLY)
     private UUID chatId;
     @JsonProperty(value = "title")
     private String chatTitle;

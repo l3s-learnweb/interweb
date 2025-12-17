@@ -1,5 +1,8 @@
 package de.l3s.interweb.connector.ollama;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -12,6 +15,8 @@ import org.jboss.resteasy.reactive.common.util.RestMediaType;
 
 import de.l3s.interweb.connector.ollama.entity.*;
 import de.l3s.interweb.core.ConnectorException;
+
+import java.io.StringReader;
 
 /**
  * Ollama Completion API
@@ -37,7 +42,7 @@ public interface OllamaClient {
     @POST
     @Path("/api/chat")
     @Produces(RestMediaType.APPLICATION_NDJSON)
-    Multi<ChatResponse> chatStream(ChatStreamBody body);
+    Multi<ChatResponse> chatStream(ChatBody body);
 
     @POST
     @Path("/api/embed")
@@ -49,6 +54,24 @@ public interface OllamaClient {
 
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {
-        return new ConnectorException("Ollama responded with HTTP " + response.getStatus(), response.readEntity(String.class));
+        String responseBody = response.readEntity(String.class);
+        return parseErrorMessage(responseBody, response.getStatus());
+    }
+
+    private static ConnectorException parseErrorMessage(String responseBody, int statusCode) {
+        try {
+            if (responseBody != null && !responseBody.trim().isEmpty()) {
+                JsonReader jsonReader = Json.createReader(new StringReader(responseBody));
+                JsonObject jsonObject = jsonReader.readObject();
+
+                if (jsonObject.containsKey("error")) {
+                    return new ConnectorException(jsonObject.getString("error"));
+                }
+            }
+        } catch (Exception e) {
+            // If JSON parsing fails, fall back to generic message
+        }
+
+        return new ConnectorException("Ollama responded with HTTP " + statusCode, responseBody);
     }
 }

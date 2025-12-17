@@ -58,6 +58,10 @@ public class EmbeddingsQuery {
         return input;
     }
 
+    public void setInput(String input) {
+        this.input = List.of(input);
+    }
+
     public void setInput(List<String> input) {
         this.input = input;
     }

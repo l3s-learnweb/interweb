@@ -5,7 +5,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RegisterForReflection
-public class PredictionOptions {
+public class Prediction {
 
     /**
      * The type of the predicted output. In order to pass the content, set this to "content".
@@ -15,14 +15,15 @@ public class PredictionOptions {
 
     /**
      * The content that the model should use for prediction.
+     * We keep it as object, we don't want to care about its internal structure here.
      */
     @JsonProperty("content")
     private Object content;
 
-    public PredictionOptions() {
+    public Prediction() {
     }
 
-    public PredictionOptions(String type, Object content) {
+    public Prediction(String type, Object content) {
         this.type = type;
         this.content = content;
     }

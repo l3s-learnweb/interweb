@@ -9,6 +9,7 @@ public final class JsonUtils {
 
     public static String toJson(Object object) {
         try {
+            if (object == null) return null;
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

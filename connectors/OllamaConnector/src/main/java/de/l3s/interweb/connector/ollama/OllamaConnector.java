@@ -1,7 +1,8 @@
 package de.l3s.interweb.connector.ollama;
 
-import java.util.List;
 import java.util.Optional;
+
+import de.l3s.interweb.core.models.ModelsResults;
 
 import jakarta.enterprise.context.Dependent;
 
@@ -19,7 +20,6 @@ import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.embeddings.EmbeddingConnector;
 import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
 import de.l3s.interweb.core.embeddings.EmbeddingsResults;
-import de.l3s.interweb.core.models.Model;
 
 @Dependent
 public class OllamaConnector implements ChatConnector, EmbeddingConnector {
@@ -39,8 +39,10 @@ public class OllamaConnector implements ChatConnector, EmbeddingConnector {
     }
 
     @Override
-    public Uni<List<Model>> getModels() {
-        return ollama.tags().map(tags -> tags.getModels().stream().map(Tag::toModel).toList());
+    public Uni<ModelsResults> models() {
+        return ollama.tags()
+            .map(response -> response.getModels().stream().map(Tag::toModel).toList())
+            .map(ModelsResults::new);
     }
 
     @Override
@@ -51,7 +53,8 @@ public class OllamaConnector implements ChatConnector, EmbeddingConnector {
 
     @Override
     public Multi<CompletionsResults> completionsStream(CompletionsQuery query) throws ConnectorException {
-        final ChatStreamBody body = (ChatStreamBody) ChatBody.of(query);
+        query.setStream(true);
+        final ChatBody body = ChatBody.of(query);
         return ollama.chatStream(body).map(ChatResponse::toCompletionResults);
     }
 

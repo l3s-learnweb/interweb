@@ -4,18 +4,22 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.NotEmpty;
+
 @RegisterForReflection
 public class AudioOptions {
 
     /**
      * The voice the model uses to respond. Supported voices are alloy, ash, ballad, coral, echo, sage, shimmer, and verse.
      */
+    @NotEmpty
     @JsonProperty("voice")
     private String voice;
 
     /**
      * Specifies the output audio format. Must be one of wav, mp3, flac, opus, or pcm16.
      */
+    @NotEmpty
     @JsonProperty("format")
     private String format;
 

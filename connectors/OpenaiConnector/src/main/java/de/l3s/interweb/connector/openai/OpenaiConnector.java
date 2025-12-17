@@ -4,6 +4,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import de.l3s.interweb.core.embeddings.EmbeddingConnector;
+
+import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
+import de.l3s.interweb.core.embeddings.EmbeddingsResults;
+
+import de.l3s.interweb.core.models.ModelsResults;
+
+import io.smallrye.mutiny.Multi;
+
 import jakarta.enterprise.context.Dependent;
 
 import io.smallrye.mutiny.Uni;
@@ -11,7 +20,6 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
-import de.l3s.interweb.connector.openai.entity.CompletionsBody;
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.ChatConnector;
 import de.l3s.interweb.core.chat.CompletionsQuery;
@@ -20,7 +28,7 @@ import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.models.UsagePrice;
 
 @Dependent
-public class OpenaiConnector implements ChatConnector {
+public class OpenaiConnector implements ChatConnector, EmbeddingConnector {
     private static final Logger log = Logger.getLogger(OpenaiConnector.class);
 
     /**
@@ -29,18 +37,22 @@ public class OpenaiConnector implements ChatConnector {
      * alternative source https://platform.openai.com/docs/pricing (usually matches)
      */
     private static final List<Model> models = List.of(
-        Model.of("gpt-35-turbo", "openai", new UsagePrice(0.5, 1.5), LocalDate.of(2024, 1, 25)),
+        // embeddings
+        Model.of("text-embedding-3-small", "openai", new UsagePrice(0.02, 0), LocalDate.of(2024, 1, 25)),
+        Model.of("text-embedding-3-large", "openai", new UsagePrice(0.13, 0), LocalDate.of(2024, 1, 25)),
+        // text
+        Model.of("gpt-4o-mini", "openai", new UsagePrice(0.15, 0.60), LocalDate.of(2024, 7, 18)),
         Model.of("gpt-4o-mini", "openai", new UsagePrice(0.15, 0.60), LocalDate.of(2024, 7, 18)),
         Model.of("gpt-4o", "openai", new UsagePrice(2.5, 10), LocalDate.of(2024, 11,20)),
         Model.of("o1", "openai", new UsagePrice(15, 60), LocalDate.of(2024, 12, 17)),
-        Model.of("o3-mini", "openai", new UsagePrice(1.1, 4.4), LocalDate.of(2025, 1, 31)),
         Model.of("gpt-4.1", "openai", new UsagePrice(2, 8), LocalDate.of(2025, 4, 14)),
         Model.of("gpt-4.1-mini", "openai", new UsagePrice(0.4, 1.6), LocalDate.of(2025, 4, 14)),
         Model.of("gpt-4.1-nano", "openai", new UsagePrice(0.1, 0.4), LocalDate.of(2025, 4, 14)),
         Model.of("o4-mini", "openai", new UsagePrice(1.1, 4.4), LocalDate.of(2025, 4, 16)),
-        Model.of("gpt-5", "openai", new UsagePrice(1.25, 10), LocalDate.of(2025, 8, 7)),
         Model.of("gpt-5-mini", "openai", new UsagePrice(0.25, 2), LocalDate.of(2025, 8, 7)),
-        Model.of("gpt-5-nano", "openai", new UsagePrice(0.05, 0.4), LocalDate.of(2025, 8, 7))
+        Model.of("gpt-5-nano", "openai", new UsagePrice(0.05, 0.4), LocalDate.of(2025, 8, 7)),
+        Model.of("gpt-5", "openai", new UsagePrice(1.25, 10), LocalDate.of(2025, 10, 3)),
+        Model.of("gpt-5.1", "openai", new UsagePrice(1.25, 10), LocalDate.of(2025, 11, 13))
     );
 
     @RestClient
@@ -57,17 +69,24 @@ public class OpenaiConnector implements ChatConnector {
     }
 
     @Override
-    public Uni<List<Model>> getModels() {
-        return Uni.createFrom().item(models);
+    public Uni<ModelsResults> models() {
+        return Uni.createFrom().item(new ModelsResults(models));
+    }
+
+    @Override
+    public Uni<EmbeddingsResults> embeddings(EmbeddingsQuery query) throws ConnectorException {
+        return openai.embeddings(query);
     }
 
     @Override
     public Uni<CompletionsResults> completions(CompletionsQuery query) throws ConnectorException {
-        return openai.chatCompletions(query.getModel(), new CompletionsBody(query)).map(response -> {
-            CompletionsResults results = response.toCompletionResults();
-            results.setModel(query.getModel());
-            return results;
-        });
+        return openai.chatCompletions(query);
+    }
+
+    @Override
+    public Multi<CompletionsResults> completionsStream(CompletionsQuery query) throws ConnectorException {
+        query.setStream(true);
+        return openai.chatCompletionsStream(query);
     }
 
     @Override

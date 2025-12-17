@@ -7,8 +7,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.l3s.interweb.core.chat.CallTool;
-
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class Message {
@@ -16,8 +14,11 @@ public final class Message {
     private String content;
     private String thinking;
     private List<String> images;
+    /**
+     * We keep it as object, we don't want to care about its internal structure here.
+     */
     @JsonProperty("tool_calls")
-    private List<CallTool> toolCalls;
+    private Object toolCalls;
 
     public Role getRole() {
         return role;
@@ -51,11 +52,11 @@ public final class Message {
         this.images = images;
     }
 
-    public List<CallTool> getToolCalls() {
+    public Object getToolCalls() {
         return toolCalls;
     }
 
-    public void setToolCalls(List<CallTool> toolCalls) {
+    public void setToolCalls(Object toolCalls) {
         this.toolCalls = toolCalls;
     }
 

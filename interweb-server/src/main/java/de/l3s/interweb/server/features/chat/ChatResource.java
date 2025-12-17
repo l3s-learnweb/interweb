@@ -38,8 +38,6 @@ public class ChatResource {
     public Uni<CompletionsResults> completions(@Valid CompletionsQuery query) {
         ApiKey apikey = securityIdentity.getCredential(ApiKey.class);
         return chatService.completions(query, apikey).chain(results -> {
-            results.setChatId(null); // reset chatId if it was set
-
             if (!query.isSave()) {
                 return Uni.createFrom().item(results);
             }

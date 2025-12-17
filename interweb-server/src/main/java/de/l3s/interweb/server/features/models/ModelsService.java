@@ -14,6 +14,7 @@ import org.jboss.logging.Logger;
 
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.core.models.ModelsConnector;
+import de.l3s.interweb.core.models.ModelsResults;
 
 @ApplicationScoped
 public class ModelsService {
@@ -48,15 +49,16 @@ public class ModelsService {
      * Get all models from all providers, could be time expensive as each connector calls to their own source of data and waits for the response.
      */
     @CacheResult(cacheName = "models") // this is a short-term cache, to avoid spamming the providers
-    public Uni<List<Model>> getModels() {
+    public Uni<ModelsResults> getModels() {
         return Multi.createFrom().iterable(providers.values())
-            .onItem().transformToUniAndMerge(connector -> connector.getModels()
+            .onItem().transformToUniAndMerge(connector -> connector.models()
+                .map(ModelsResults::getData)
                 .invoke(models -> models.forEach(model -> {
                     model.setId(model.getId().toLowerCase(Locale.ROOT));
                     model.setProvider(connector.getId());
                 })))
             .collect()
-            .in(ArrayList::new, List::addAll);
+            .in(ModelsResults::new, ModelsResults::addModel);
     }
 
     /**
@@ -64,7 +66,7 @@ public class ModelsService {
      */
     @CacheResult(cacheName = "model")
     public Uni<Model> getModel(String modelId) {
-        return getModels().map(models -> models.stream()
+        return getModels().map(models -> models.getData().stream()
                 .filter(model -> model.getId().equalsIgnoreCase(modelId.toLowerCase(Locale.ROOT)))
                 .findFirst().orElseThrow(() -> new NotFoundException("Model `%s` not found. Use `/models` to get a list of available models.".formatted(modelId))));
     }

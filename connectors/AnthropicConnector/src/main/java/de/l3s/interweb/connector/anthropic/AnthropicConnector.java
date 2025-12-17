@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import de.l3s.interweb.core.models.ModelsResults;
+
 import jakarta.enterprise.context.Dependent;
 
 import io.smallrye.mutiny.Uni;
@@ -52,8 +54,8 @@ public class AnthropicConnector implements ChatConnector {
     }
 
     @Override
-    public Uni<List<Model>> getModels() {
-        return Uni.createFrom().item(models);
+    public Uni<ModelsResults> models() {
+        return Uni.createFrom().item(new ModelsResults(models));
     }
 
     @Override

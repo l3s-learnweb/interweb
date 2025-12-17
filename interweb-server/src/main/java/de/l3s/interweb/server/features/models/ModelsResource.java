@@ -1,6 +1,6 @@
 package de.l3s.interweb.server.features.models;
 
-import java.util.List;
+import de.l3s.interweb.core.models.ModelsResults;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -11,7 +11,6 @@ import jakarta.ws.rs.PathParam;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import de.l3s.interweb.core.ObjectWrapper;
 import de.l3s.interweb.core.models.Model;
 import de.l3s.interweb.server.Roles;
 
@@ -24,8 +23,8 @@ public class ModelsResource {
     ModelsService modelsService;
 
     @GET
-    public Uni<ObjectWrapper<List<Model>>> list() {
-        return modelsService.getModels().map(models -> new ObjectWrapper<>("list", models));
+    public Uni<ModelsResults> list() {
+        return modelsService.getModels();
     }
 
     @GET
