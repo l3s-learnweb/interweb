@@ -83,7 +83,7 @@ public class ChatBody {
 
     public static ChatBody of(CompletionsQuery query) {
         ChatBody body = new ChatBody();
-        body.stream = query.isStream();
+        body.stream = query.isStream() != null && query.isStream();
         body.model = query.getModel();
         body.logprobs = query.getLogprobs();
         body.topLogprobs = query.getTopLogprobs();
