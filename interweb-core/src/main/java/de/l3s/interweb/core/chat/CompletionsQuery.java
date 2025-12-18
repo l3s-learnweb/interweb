@@ -169,7 +169,7 @@ public class CompletionsQuery {
      * Whether the conversation should be saved on Interweb. Defaults to false.
      */
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Boolean save;
+    private boolean save = false;
 
     /**
      * How many completions to generate for each prompt. Minimum of 1 (default) and maximum of 128 allowed.
@@ -379,11 +379,11 @@ public class CompletionsQuery {
         this.stream = stream;
     }
 
-    public Boolean isSave() {
+    public boolean isSave() {
         return save;
     }
 
-    public void setSave(Boolean save) {
+    public void setSave(boolean save) {
         this.save = save;
     }
 
