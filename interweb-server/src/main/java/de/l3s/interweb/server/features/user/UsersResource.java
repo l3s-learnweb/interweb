@@ -162,6 +162,7 @@ public class UsersResource {
         return UserToken.findByToken(UserToken.Type.approval, token)
             .onItem().ifNotNull().transformToUni(approvalToken -> {
                 approvalToken.user.approved = true;
+                log.infof("User approved: %s", approvalToken.user.email);
                 return approvalToken.user.persist()
                     .chain(approvalToken::delete)
                     .map(v -> "User " + approvalToken.user.email + " has been approved!");
