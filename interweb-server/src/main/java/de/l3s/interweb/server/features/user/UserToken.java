@@ -22,7 +22,8 @@ import de.l3s.interweb.core.util.StringUtils;
 public class UserToken extends PanacheEntityBase implements Credential {
 
     public enum Type {
-        login(Duration.ofHours(6), 32);
+        login(Duration.ofHours(6), 32),
+        approval(Duration.ofDays(7), 32);
 
         private final Duration duration;
         private final int size;

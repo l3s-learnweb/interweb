@@ -38,6 +38,9 @@ public class UsersResource {
         There is a new user awaiting approval:
         %s
 
+        To approve this user, please click the following link:
+        %s
+
         Best regards,
         Interweb Team
         """;
@@ -77,7 +80,7 @@ public class UsersResource {
     @Path("/login")
     @Operation(summary = "Request JWT token for the given email", description = "Use this method to login to the app and manage tokens")
     public Uni<String> login(@Valid LoginBody body, @Context UriInfo uriInfo) {
-        return findOrCreateUser(body.email).chain(user -> {
+        return findOrCreateUser(body.email, uriInfo).chain(user -> {
             if (!user.approved) {
                 return Uni.createFrom().failure(new BadRequestException(LOGIN_APPROVAL_REQUIRED));
             } else {
@@ -86,10 +89,13 @@ public class UsersResource {
         }).chain(() -> Uni.createFrom().item("The login link sent to your email."));
     }
 
-    private Uni<User> findOrCreateUser(String email) {
+    private Uni<User> findOrCreateUser(String email, UriInfo uriInfo) {
         return User.findByEmail(email).onFailure().recoverWithUni(() -> createUser(email).call(user -> {
             if (!user.approved && adminEmail.isPresent()) {
-                return mailer.send(Mail.withText(adminEmail.get(), NEW_USER_EMAIL_SUBJECT, NEW_USER_EMAIL_BODY.formatted(user.email)));
+                return createToken(user, UserToken.Type.approval).chain(token -> {
+                    URI approvalUrl = uriInfo.getBaseUriBuilder().path("/users/approve").queryParam("token", token.token).build();
+                    return mailer.send(Mail.withText(adminEmail.get(), NEW_USER_EMAIL_SUBJECT, NEW_USER_EMAIL_BODY.formatted(user.email, approvalUrl)));
+                });
             }
 
             return Uni.createFrom().voidItem();
@@ -97,7 +103,7 @@ public class UsersResource {
     }
 
     private Uni<Void> createAndSendToken(User user, UriInfo uriInfo) {
-        return createToken(user)
+        return createToken(user, UserToken.Type.login)
             .chain(token -> {
                 log.infof("Login token for user %s created: %s", user.email, token.token);
                 URI loginUrl = uriInfo.getBaseUriBuilder().queryParam("token", token.token).build();
@@ -116,8 +122,8 @@ public class UsersResource {
     }
 
     @WithTransaction
-    protected Uni<UserToken> createToken(User user) {
-        UserToken token = UserToken.generate(UserToken.Type.login);
+    protected Uni<UserToken> createToken(User user, UserToken.Type type) {
+        UserToken token = UserToken.generate(type);
         token.user = user;
         return token.persist();
     }
@@ -146,6 +152,21 @@ public class UsersResource {
     public Uni<UsageSummary> chat() {
         User user = (User) securityIdentity.getPrincipal();
         return UsageSummary.findByUser(user);
+    }
+
+    @GET
+    @Path("/users/approve")
+    @WithTransaction
+    @Operation(summary = "Approve a user using approval token", description = "This endpoint allows approving a pending user via a token sent by email")
+    public Uni<String> approveUserByToken(@NotEmpty @QueryParam("token") String token) {
+        return UserToken.findByToken(UserToken.Type.approval, token)
+            .onItem().ifNotNull().transformToUni(approvalToken -> {
+                approvalToken.user.approved = true;
+                return approvalToken.user.persist()
+                    .chain(approvalToken::delete)
+                    .map(v -> "User " + approvalToken.user.email + " has been approved!");
+            })
+            .onItem().ifNull().failWith(() -> new BadRequestException("The approval token is invalid or expired"));
     }
 
     public record LoginBody(@NotNull @NotEmpty @Email @Size(max = 255) String email) {
