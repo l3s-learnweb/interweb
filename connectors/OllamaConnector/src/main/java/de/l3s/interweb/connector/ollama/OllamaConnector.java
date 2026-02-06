@@ -1,8 +1,8 @@
 package de.l3s.interweb.connector.ollama;
 
+import java.util.Map;
 import java.util.Optional;
-
-import de.l3s.interweb.core.models.ModelsResults;
+import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.enterprise.context.Dependent;
 
@@ -20,6 +20,8 @@ import de.l3s.interweb.core.chat.CompletionsResults;
 import de.l3s.interweb.core.embeddings.EmbeddingConnector;
 import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
 import de.l3s.interweb.core.embeddings.EmbeddingsResults;
+import de.l3s.interweb.core.models.ModelPullStatus;
+import de.l3s.interweb.core.models.ModelsResults;
 
 @Dependent
 public class OllamaConnector implements ChatConnector, EmbeddingConnector {
@@ -27,6 +29,8 @@ public class OllamaConnector implements ChatConnector, EmbeddingConnector {
 
     @RestClient
     OllamaClient ollama;
+
+    private final Map<String, ModelPullStatus> pullStatuses = new ConcurrentHashMap<>();
 
     @Override
     public String getName() {
@@ -72,5 +76,45 @@ public class OllamaConnector implements ChatConnector, EmbeddingConnector {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Pull a model from Ollama.
+     * If the model is already being pulled, returns the current status.
+     */
+    @Override
+    public Uni<ModelPullStatus> pullModel(String modelName) {
+        String lowerModelName = modelName.toLowerCase();
+
+        ModelPullStatus existing = pullStatuses.get(lowerModelName);
+        if (existing != null) {
+            return Uni.createFrom().item(existing);
+        }
+
+        ModelPullStatus initialStatus = new ModelPullStatus("initiating");
+        pullStatuses.put(lowerModelName, initialStatus);
+
+        PullBody body = new PullBody(modelName);
+
+        ollama.pullStream(body)
+            .onItem().invoke(response -> {
+                pullStatuses.put(lowerModelName, response.toModelPullStatus());
+            })
+            .collect().last()
+            .onItem().invoke(lastResponse -> {
+                log.info("Successfully pulled model: " + modelName);
+                pullStatuses.put(lowerModelName, lastResponse.toModelPullStatus());
+            })
+            .onFailure().invoke(error -> {
+                log.error("Failed to pull model: " + modelName, error);
+                ModelPullStatus errorStatus = new ModelPullStatus("failed: " + error.getMessage());
+                pullStatuses.put(lowerModelName, errorStatus);
+            })
+            .subscribe().with(
+                item -> log.debug("Pull completed for model: " + modelName),
+                failure -> log.debug("Pull failed for model: " + modelName)
+            );
+
+        return Uni.createFrom().item(initialStatus);
     }
 }

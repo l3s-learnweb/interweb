@@ -5,8 +5,11 @@ import java.util.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.ServiceUnavailableException;
 
 import io.quarkus.arc.All;
+import io.quarkus.cache.Cache;
+import io.quarkus.cache.CacheName;
 import io.quarkus.cache.CacheResult;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -19,6 +22,10 @@ import de.l3s.interweb.core.models.ModelsResults;
 @ApplicationScoped
 public class ModelsService {
     private static final Logger log = Logger.getLogger(ModelsService.class);
+
+    @Inject
+    @CacheName("model")
+    Cache modelCache;
 
     private final Map<String, ModelsConnector> providers;
 
@@ -63,11 +70,65 @@ public class ModelsService {
 
     /**
      * The method implements a cache for the models. If the model is not in the cache, it will be fetched from the providers.
+     * For Ollama, if the model is not available locally, it will attempt to pull it from the Ollama catalog.
      */
-    @CacheResult(cacheName = "model")
     public Uni<Model> getModel(String modelId) {
-        return getModels().map(models -> models.getData().stream()
+        return modelCache.getAsync(modelId.toLowerCase(Locale.ROOT), key -> getModels().chain(models -> {
+            // Try to find the model in the available models
+            Optional<Model> foundModel = models.getData().stream()
                 .filter(model -> model.getId().equalsIgnoreCase(modelId.toLowerCase(Locale.ROOT)))
-                .findFirst().orElseThrow(() -> new NotFoundException("Model `%s` not found. Use `/models` to get a list of available models.".formatted(modelId))));
+                .findFirst();
+
+            if (foundModel.isPresent()) {
+                return Uni.createFrom().item(foundModel.get());
+            }
+
+            // Model not found - check if we should try to pull it from Ollama
+            return tryPullModel(modelId);
+        }));
+    }
+
+    /**
+     * Attempts to pull a model from the provider if supported.
+     */
+    public Uni<Model> tryPullModel(String modelId) {
+        ModelsConnector connector = providers.get("ollama");
+        if (connector == null) {
+            throw new NotFoundException("Model `%s` not found. Use `/models` to get a list of available models.".formatted(modelId));
+        }
+
+        // Try to pull the model using the connector's pullModel method
+        log.info("Model `%s` not found locally. Checking if pull is supported...".formatted(modelId));
+        return connector.pullModel(modelId)
+            .onItem().<Model>transformToUni(status -> {
+                String statusMsg = status.getStatus();
+
+                // Check if pull is not supported
+                if ("unsupported".equals(statusMsg)) {
+                    throw new NotFoundException("Model `%s` not found. Use `/models` to get a list of available models.".formatted(modelId));
+                }
+
+                // Check if pull failed
+                if (statusMsg != null && statusMsg.startsWith("failed")) {
+                    throw new NotFoundException("Model `%s` not found locally or in catalog. Error: %s".formatted(modelId, statusMsg));
+                }
+
+                // Pull in progress or just started
+                int progress = status.getProgressPercent();
+                throw new ServiceUnavailableException(
+                    "Model `%s` is being pulled. Progress: %d%% - Status: %s. Please try again in a moment.".formatted(
+                        modelId, progress, statusMsg != null ? statusMsg : "initiating"
+                    )
+                );
+            })
+            .onFailure().recoverWithUni(failure -> {
+                if (failure instanceof ServiceUnavailableException || failure instanceof NotFoundException) {
+                    return Uni.createFrom().failure(failure);
+                }
+                log.error("Failed to pull model: " + modelId, failure);
+                return Uni.createFrom().failure(new NotFoundException(
+                    "Model `%s` not found.".formatted(modelId)
+                ));
+            });
     }
 }

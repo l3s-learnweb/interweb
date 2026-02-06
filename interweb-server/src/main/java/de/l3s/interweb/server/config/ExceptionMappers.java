@@ -60,6 +60,11 @@ public class ExceptionMappers {
     }
 
     @ServerExceptionMapper
+    public RestResponse<ErrorResponse> mapException(ServiceUnavailableException x) {
+        return RestResponse.status(Response.Status.SERVICE_UNAVAILABLE, ErrorResponse.of(x));
+    }
+
+    @ServerExceptionMapper
     public RestResponse<ErrorResponse> mapException(Exception x) {
         log.error("Unexpected error", x);
         return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR, ErrorResponse.of(x));

@@ -52,6 +52,11 @@ public interface OllamaClient {
     @Path("/api/tags")
     Uni<TagsResponse> tags();
 
+    @POST
+    @Path("/api/pull")
+    @Produces(RestMediaType.APPLICATION_NDJSON)
+    Multi<PullResponse> pullStream(PullBody body);
+
     @ClientExceptionMapper
     static RuntimeException toException(Response response) {
         String responseBody = response.readEntity(String.class);
