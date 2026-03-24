@@ -80,6 +80,9 @@ public class ChatService {
             Summarize the conversation in 5 words or less, in a way that sounds like a book title.
             Don't use any formatting. You can use emojis. Only print the title, nothing else.
             """.formatted(sb), Role.user);
-        return completions(query).map(results -> results.getLastMessage().getContent().trim());
+        return completions(query).map(results -> {
+            Object content = results.getLastMessage().getContent();
+            return content instanceof String ? ((String) content).trim() : String.valueOf(content).trim();
+        });
     }
 }

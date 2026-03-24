@@ -56,7 +56,11 @@ public class ChatResource {
                 Uni<Void> chatUni = Uni.createFrom().voidItem();
                 if (chat.title == null) {
                     chatUni = chatUni.call(() -> chatService.generateTitle(chat)
-                        .onFailure().recoverWithItem(() -> StringUtils.shorten(query.getMessages().getLast().getContent(), 120))
+                        .onFailure().recoverWithItem(() -> {
+                            Object lastContentObj = query.getMessages().getLast().getContent();
+                            String lastContent = lastContentObj instanceof String ? (String) lastContentObj : "Chat";
+                            return StringUtils.shorten(lastContent, 120);
+                        })
                         .invoke(title -> {
                             chat.title = title;
                             results.setChatTitle(title);

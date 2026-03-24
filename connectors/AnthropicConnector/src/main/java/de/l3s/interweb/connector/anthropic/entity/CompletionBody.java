@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.l3s.interweb.core.chat.CompletionsQuery;
-import de.l3s.interweb.core.chat.Message;
 import de.l3s.interweb.core.chat.Role;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -39,7 +38,7 @@ public final class CompletionBody {
         this.system = query.getMessages().stream()
             .filter(m -> m.getRole() == Role.system)
             .findFirst()
-            .map(Message::getContent)
+            .map(CompletionMessage::extractSystemMessage)
             .orElse(null);
 
         this.temperature = query.getTemperature();

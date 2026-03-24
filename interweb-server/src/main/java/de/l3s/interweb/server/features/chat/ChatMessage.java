@@ -49,13 +49,28 @@ public class ChatMessage extends PanacheEntityBase {
     public ChatMessage(final Message message) {
         this.id = message.getId();
         this.role = message.getRole();
-        this.content = message.getContent();
+        if (message.getContent() instanceof String s) {
+            this.content = s;
+        } else if (message.getContent() != null) {
+            this.content = JsonUtils.toJson(message.getContent());
+        } else {
+            this.content = null;
+        }
         this.toolCalls = JsonUtils.toJson(message.getToolCalls());
         this.created = message.getCreated();
     }
 
     public Message toMessage() {
-        Message message = new Message(role, content);
+        Object parsedContent = content;
+        if (content != null && !content.isEmpty() && (content.charAt(0) == '[' || content.charAt(0) == '{')) {
+            try {
+                parsedContent = JsonUtils.fromJson(content, Object.class);
+            } catch (RuntimeException e) {
+                // Keep as string if JSON parsing fails (e.g., malformed JSON)
+                parsedContent = content;
+            }
+        }
+        Message message = new Message(role, parsedContent);
         message.setCreated(created);
         message.setId(id);
         message.setToolCalls(JsonUtils.fromJson(toolCalls, new TypeReference<>() {}));

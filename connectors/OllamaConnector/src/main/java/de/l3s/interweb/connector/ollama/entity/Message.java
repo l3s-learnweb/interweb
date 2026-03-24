@@ -1,11 +1,15 @@
 package de.l3s.interweb.connector.ollama.entity;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.l3s.interweb.core.chat.MessagePart;
 
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -63,8 +67,53 @@ public final class Message {
     public static Message of(de.l3s.interweb.core.chat.Message message) {
         Message result = new Message();
         result.setRole(Role.of(message.getRole()));
-        result.setContent(message.getContent());
         result.setToolCalls(message.getToolCalls());
+
+        if (message.getContent() instanceof String s) {
+            result.setContent(s);
+        } else if (message.getContent() instanceof List<?> list) {
+            StringBuilder textContent = new StringBuilder();
+            List<String> images = new ArrayList<>();
+            for (Object obj : list) {
+                String type = null;
+                String text = null;
+                String url = null;
+
+                if (obj instanceof MessagePart part) {
+                    type = part.getType();
+                    text = part.getText();
+                    if (part.getImageUrl() != null) {
+                        url = part.getImageUrl().getUrl();
+                    }
+                } else if (obj instanceof Map<?, ?> map) {
+                    Object typeObj = map.get("type");
+                    Object textObj = map.get("text");
+                    type = typeObj instanceof String ? (String) typeObj : null;
+                    text = textObj instanceof String ? (String) textObj : null;
+                    Object urlObj = map.get("image_url");
+                    if (urlObj instanceof Map<?, ?> urlMap) {
+                        Object urlValue = urlMap.get("url");
+                        url = urlValue instanceof String ? (String) urlValue : null;
+                    }
+                }
+
+                if (MessagePart.TYPE_TEXT.equals(type) && text != null) {
+                    textContent.append(text);
+                } else if (MessagePart.TYPE_IMAGE_URL.equals(type) && url != null && url.startsWith(MessagePart.MIME_DATA_IMAGE)) {
+                    int commaIndex = url.indexOf(',');
+                    if (commaIndex != -1) {
+                        images.add(url.substring(commaIndex + 1));
+                    }
+                }
+            }
+            if (!textContent.isEmpty()) {
+                result.setContent(textContent.toString());
+            }
+            if (!images.isEmpty()) {
+                result.setImages(images);
+            }
+        }
+
         return result;
     }
 
