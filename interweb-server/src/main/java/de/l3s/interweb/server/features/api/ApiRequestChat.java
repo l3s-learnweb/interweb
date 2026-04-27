@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.chat.Duration;
 import de.l3s.interweb.core.embeddings.EmbeddingsResults;
 import de.l3s.interweb.server.features.user.User;
 
@@ -47,6 +48,21 @@ public class ApiRequestChat extends PanacheEntityBase {
     @Column(name = "est_cost")
     public Double estimatedCost = 0d;
 
+    @Column(name = "elapsed_time")
+    public Long elapsedTime;
+
+    @Column(name = "total_time")
+    public Long totalTime;
+
+    @Column(name = "load_time")
+    public Long loadTime;
+
+    @Column(name = "prompt_eval_time")
+    public Long promptEvalTime;
+
+    @Column(name = "completion_gen_time")
+    public Long completionGenTime;
+
     @CreationTimestamp
     public Instant created;
 
@@ -61,6 +77,14 @@ public class ApiRequestChat extends PanacheEntityBase {
         }
         if (results.getCost() != null) {
             request.estimatedCost = results.getCost().getTotal();
+        }
+        Duration duration = results.getDuration();
+        request.elapsedTime = results.getElapsedTime();
+        if (duration != null) {
+            request.totalTime = duration.getTotal();
+            request.loadTime = duration.getLoad();
+            request.promptEvalTime = duration.getPromptEvaluation();
+            request.completionGenTime = duration.getCompletionGeneration();
         }
         return request;
     }
@@ -77,6 +101,7 @@ public class ApiRequestChat extends PanacheEntityBase {
         if (results.getCost() != null) {
             request.estimatedCost = results.getCost().getTotal();
         }
+        request.elapsedTime = results.getElapsedTime();
         return request;
     }
 }
