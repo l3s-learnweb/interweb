@@ -15,7 +15,7 @@ import de.l3s.interweb.core.Results;
 
 @RegisterForReflection
 @JsonIgnoreProperties("results")
-@JsonPropertyOrder({"id", "object", "title", "model", "choices", "usage", "duration", "elapsed_time", "system_fingerprint", "created"})
+@JsonPropertyOrder({"id", "object", "title", "model", "choices", "usage", "elapsed_time", "system_fingerprint", "created"})
 public class CompletionsResults extends Results<Choice> {
     @JsonProperty(value = "id", access = JsonProperty.Access.READ_ONLY)
     private UUID chatId;
@@ -24,7 +24,6 @@ public class CompletionsResults extends Results<Choice> {
     private String object = "chat.completion";
     private String model;
     private Usage usage;
-    private Duration duration;
     private Instant created;
 
     public UUID getChatId() {
@@ -84,14 +83,6 @@ public class CompletionsResults extends Results<Choice> {
 
     public void setUsage(Usage usage) {
         this.usage = usage;
-    }
-
-    public Duration getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Duration duration) {
-        this.duration = duration;
     }
 
     public Instant getCreated() {

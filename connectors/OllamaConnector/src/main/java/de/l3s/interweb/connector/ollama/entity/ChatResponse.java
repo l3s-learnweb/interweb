@@ -150,12 +150,24 @@ public class ChatResponse {
         }
 
         if (totalDuration != null || loadDuration != null || promptEvalDuration != null || evalDuration != null) {
-            Duration duration = new Duration();
-            duration.setTotal(totalDuration);
-            duration.setLoad(loadDuration);
-            duration.setPromptEvaluation(promptEvalDuration);
-            duration.setCompletionGeneration(evalDuration);
-            results.setDuration(duration);
+            Usage usage = results.getUsage();
+            if (usage == null) {
+                usage = new Usage();
+                results.setUsage(usage);
+            }
+
+            if (totalDuration != null) {
+                usage.setTotalTime(totalDuration);
+            }
+            if (loadDuration != null) {
+                usage.setLoadTime(loadDuration);
+            }
+            if (promptEvalDuration != null) {
+                usage.setPromptTime(promptEvalDuration);
+            }
+            if (evalDuration != null) {
+                usage.setCompletionTime(evalDuration);
+            }
         }
 
         if (createdAt != null) {

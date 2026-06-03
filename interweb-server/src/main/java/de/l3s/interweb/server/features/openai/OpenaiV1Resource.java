@@ -66,8 +66,13 @@ public class OpenaiV1Resource {
 
         return chatService.completions(query, apikey).chain(newResults -> {
             results.getChoices().addAll(newResults.getChoices());
-            results.getUsage().add(newResults.getUsage());
-            results.getDuration().add(newResults.getDuration());
+            if (newResults.getUsage() != null) {
+                if (results.getUsage() == null) {
+                    results.setUsage(newResults.getUsage());
+                } else {
+                    results.getUsage().add(newResults.getUsage());
+                }
+            }
             return populateMoreChoices(apikey, query, results);
         });
     }

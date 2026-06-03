@@ -28,11 +28,12 @@ public class ChatService {
     ModelsService modelsService;
 
     public Uni<CompletionsResults> completions(CompletionsQuery query, ApiKey apikey) {
+        long queueStart = System.nanoTime();
         return modelsService.getModel(query.getModel()).chain(model -> {
             if (model.isFree()) {
-                return completions(query, model);
+                return completions(query, model, queueStart);
             } else {
-                return usageService.allocate(apikey.user).chain(exceeded -> completions(query, model));
+                return usageService.allocate(apikey.user).chain(exceeded -> completions(query, model, queueStart));
             }
         }).invoke(results -> {
             bus.send("api-request-chat", ApiRequestChat.of(results, apikey));
@@ -40,26 +41,32 @@ public class ChatService {
     }
 
     private Uni<CompletionsResults> completions(CompletionsQuery query) {
-        return modelsService.getModel(query.getModel()).chain(model -> completions(query, model));
+        return modelsService.getModel(query.getModel()).chain(model -> completions(query, model, System.nanoTime()));
     }
 
-    private Uni<CompletionsResults> completions(CompletionsQuery query, Model model) {
+    private Uni<CompletionsResults> completions(CompletionsQuery query, Model model, long queueStart) {
         ModelsConnector connector = modelsService.getConnector(model.getProvider());
         if (connector instanceof ChatConnector chatConnector) {
-            return completions(query, model, chatConnector);
+            return completions(query, model, chatConnector, queueStart);
         }
 
         return Uni.createFrom().failure(new ConnectorException("Model `" + query.getModel() + "` is not a chat model"));
     }
 
-    private Uni<CompletionsResults> completions(CompletionsQuery query, Model model, ChatConnector connector) {
+    private Uni<CompletionsResults> completions(CompletionsQuery query, Model model, ChatConnector connector, long queueStart) {
         long start = System.nanoTime();
         return connector.completions(query).map(results -> {
-            if (results.getUsage() != null && model.getPrice() != null) {
+            if (results.getUsage() == null) {
+                results.setUsage(new Usage());
+            }
+            if (model.getPrice() != null) {
                 results.getUsage().updateCost(model.getPrice());
             }
-            if (results.getDuration() == null) {
-                results.setDuration(Duration.of(System.nanoTime() - start));
+            if (results.getUsage().getQueueTime() == 0) {
+                results.getUsage().setQueueTime(start - queueStart);
+            }
+            if (results.getUsage().getTotalTime() == 0) {
+                results.getUsage().setTotalTime(System.nanoTime() - start);
             }
             return results;
         });

@@ -7,7 +7,6 @@ import io.smallrye.mutiny.Uni;
 import io.vertx.core.eventbus.EventBus;
 
 import de.l3s.interweb.core.ConnectorException;
-import de.l3s.interweb.core.chat.Duration;
 import de.l3s.interweb.core.embeddings.EmbeddingConnector;
 import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
 import de.l3s.interweb.core.embeddings.EmbeddingsResults;
@@ -57,7 +56,7 @@ public class EmbeddingService {
             if (results.getUsage() != null && model.getPrice() != null) {
                 results.getUsage().updateCost(model.getPrice());
             }
-            results.setElapsedTime(Duration.of(System.nanoTime() - start).getTotal());
+            results.setElapsedTime(System.nanoTime() - start);
             return results;
         });
     }

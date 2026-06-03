@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.l3s.interweb.core.chat.CompletionsResults;
-import de.l3s.interweb.core.chat.Duration;
 import de.l3s.interweb.core.embeddings.EmbeddingsResults;
 import de.l3s.interweb.server.features.user.User;
 
@@ -75,15 +74,13 @@ public class ApiRequestChat extends PanacheEntityBase {
             request.inputTokens = results.getUsage().getPromptTokens();
             request.outputTokens = results.getUsage().getCompletionTokens();
             request.estimatedCost = results.getUsage().getEstimatedCost();
+
+            request.totalTime = results.getUsage().getTotalTime();
+            request.loadTime = results.getUsage().getLoadTime();
+            request.promptEvalTime = results.getUsage().getPromptTime();
+            request.completionGenTime = results.getUsage().getCompletionTime();
         }
-        Duration duration = results.getDuration();
         request.elapsedTime = results.getElapsedTime();
-        if (duration != null) {
-            request.totalTime = duration.getTotal();
-            request.loadTime = duration.getLoad();
-            request.promptEvalTime = duration.getPromptEvaluation();
-            request.completionGenTime = duration.getCompletionGeneration();
-        }
         return request;
     }
 
