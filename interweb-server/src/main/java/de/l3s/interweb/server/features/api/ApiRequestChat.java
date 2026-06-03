@@ -74,9 +74,7 @@ public class ApiRequestChat extends PanacheEntityBase {
         if (results.getUsage() != null) {
             request.inputTokens = results.getUsage().getPromptTokens();
             request.outputTokens = results.getUsage().getCompletionTokens();
-        }
-        if (results.getCost() != null) {
-            request.estimatedCost = results.getCost().getTotal();
+            request.estimatedCost = results.getUsage().getEstimatedCost();
         }
         Duration duration = results.getDuration();
         request.elapsedTime = results.getElapsedTime();
@@ -97,9 +95,7 @@ public class ApiRequestChat extends PanacheEntityBase {
         if (results.getUsage() != null) {
             request.inputTokens = results.getUsage().getPromptTokens();
             request.outputTokens = results.getUsage().getCompletionTokens();
-        }
-        if (results.getCost() != null) {
-            request.estimatedCost = results.getCost().getTotal();
+            request.estimatedCost = results.getUsage().getEstimatedCost();
         }
         request.elapsedTime = results.getElapsedTime();
         return request;

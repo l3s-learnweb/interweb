@@ -15,7 +15,7 @@ import de.l3s.interweb.core.Results;
 
 @RegisterForReflection
 @JsonIgnoreProperties("results")
-@JsonPropertyOrder({"id", "object", "title", "model", "choices", "usage", "duration", "estimated_cost", "elapsed_time", "system_fingerprint", "created"})
+@JsonPropertyOrder({"id", "object", "title", "model", "choices", "usage", "duration", "elapsed_time", "system_fingerprint", "created"})
 public class CompletionsResults extends Results<Choice> {
     @JsonProperty(value = "id", access = JsonProperty.Access.READ_ONLY)
     private UUID chatId;
@@ -24,8 +24,6 @@ public class CompletionsResults extends Results<Choice> {
     private String object = "chat.completion";
     private String model;
     private Usage usage;
-    @JsonProperty(value = "estimated_cost")
-    private UsageCost cost;
     private Duration duration;
     private Instant created;
 
@@ -86,14 +84,6 @@ public class CompletionsResults extends Results<Choice> {
 
     public void setUsage(Usage usage) {
         this.usage = usage;
-    }
-
-    public UsageCost getCost() {
-        return cost;
-    }
-
-    public void setCost(UsageCost cost) {
-        this.cost = cost;
     }
 
     public Duration getDuration() {

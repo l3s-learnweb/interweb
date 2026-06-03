@@ -103,11 +103,14 @@ public class Interweb implements Serializable {
         if (conversation.getTitle() == null && results.getChatTitle() != null) {
             conversation.setTitle(results.getChatTitle());
         }
-        if (results.getCost() != null) {
-            conversation.setEstimatedCost(results.getCost().getChatTotal());
-        }
         if (results.getUsage() != null) {
             conversation.setUsedTokens(results.getUsage().getTotalTokens());
+
+            double cost = results.getUsage().getEstimatedCost();
+            if (results.getUsage().getCostDetails() != null && results.getUsage().getCostDetails().getChatTotalCost() > 0) {
+                cost = results.getUsage().getCostDetails().getChatTotalCost();
+            }
+            conversation.setEstimatedCost(cost);
         }
         if (conversation.getCreated() == null && results.getCreated() != null) {
             conversation.setCreated(results.getCreated());

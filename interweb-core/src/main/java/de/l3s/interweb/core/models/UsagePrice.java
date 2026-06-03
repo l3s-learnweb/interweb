@@ -4,9 +4,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import de.l3s.interweb.core.chat.Usage;
-import de.l3s.interweb.core.chat.UsageCost;
-
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UsagePrice {
@@ -27,13 +24,5 @@ public class UsagePrice {
 
     public double getOutput() {
         return output;
-    }
-
-    public UsageCost calc(Usage usage) {
-        UsageCost cost = new UsageCost();
-        cost.setPrompt(usage.getPromptTokens() * (input / TOKENS_PER_PRICE));
-        cost.setCompletion(usage.getCompletionTokens() * (output / TOKENS_PER_PRICE));
-        cost.setTotal(cost.getPrompt() + cost.getCompletion());
-        return cost;
     }
 }

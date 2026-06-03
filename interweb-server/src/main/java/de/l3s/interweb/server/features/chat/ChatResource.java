@@ -46,9 +46,9 @@ public class ChatResource {
                 results.setChatId(chat.id);
 
                 chat.usedTokens += results.getUsage().getTotalTokens();
-                if (results.getCost() != null) {
-                    chat.estimatedCost += results.getCost().getTotal();
-                    results.getCost().setChatTotal(chat.estimatedCost);
+                if (results.getUsage().getEstimatedCost() > 0) {
+                    chat.estimatedCost += results.getUsage().getEstimatedCost();
+                    results.getUsage().getCostDetails().setChatTotalCost(chat.estimatedCost);
                 }
 
                 Uni<Void> messagesUni = persistMessages(chat, query.getMessages(), results);

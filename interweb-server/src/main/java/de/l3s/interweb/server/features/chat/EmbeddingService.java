@@ -55,7 +55,7 @@ public class EmbeddingService {
         long start = System.nanoTime();
         return connector.embeddings(query).map(results -> {
             if (results.getUsage() != null && model.getPrice() != null) {
-                results.setCost(model.getPrice().calc(results.getUsage()));
+                results.getUsage().updateCost(model.getPrice());
             }
             results.setElapsedTime(Duration.of(System.nanoTime() - start).getTotal());
             return results;

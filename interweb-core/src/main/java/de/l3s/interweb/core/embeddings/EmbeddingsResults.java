@@ -9,17 +9,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.l3s.interweb.core.chat.Usage;
-import de.l3s.interweb.core.chat.UsageCost;
 
 @RegisterForReflection
-@JsonPropertyOrder({"object", "model", "data", "usage", "estimated_cost", "elapsed_time"})
+@JsonPropertyOrder({"object", "model", "data", "usage", "elapsed_time"})
 public class EmbeddingsResults {
     private final String object = "list";
     private String model;
     private Usage usage;
     private List<Embedding> data;
-    @JsonProperty(value = "estimated_cost")
-    private UsageCost cost;
     @JsonProperty("elapsed_time")
     private Long elapsedTime;
 
@@ -57,14 +54,6 @@ public class EmbeddingsResults {
 
     public void setUsage(Usage usage) {
         this.usage = usage;
-    }
-
-    public UsageCost getCost() {
-        return cost;
-    }
-
-    public void setCost(UsageCost cost) {
-        this.cost = cost;
     }
 
     public Long getElapsedTime() {

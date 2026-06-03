@@ -66,7 +66,6 @@ public class OpenaiV1Resource {
 
         return chatService.completions(query, apikey).chain(newResults -> {
             results.getChoices().addAll(newResults.getChoices());
-            results.getCost().add(newResults.getCost());
             results.getUsage().add(newResults.getUsage());
             results.getDuration().add(newResults.getDuration());
             return populateMoreChoices(apikey, query, results);
