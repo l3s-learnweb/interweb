@@ -4,17 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import de.l3s.interweb.core.embeddings.EmbeddingConnector;
-
-import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
-import de.l3s.interweb.core.embeddings.EmbeddingsResults;
-
-import de.l3s.interweb.core.models.ModelsResults;
-
-import io.smallrye.mutiny.Multi;
-
 import jakarta.enterprise.context.Dependent;
 
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -24,7 +16,11 @@ import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.ChatConnector;
 import de.l3s.interweb.core.chat.CompletionsQuery;
 import de.l3s.interweb.core.chat.CompletionsResults;
+import de.l3s.interweb.core.embeddings.EmbeddingConnector;
+import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
+import de.l3s.interweb.core.embeddings.EmbeddingsResults;
 import de.l3s.interweb.core.models.Model;
+import de.l3s.interweb.core.models.ModelsResults;
 import de.l3s.interweb.core.models.UsagePrice;
 
 @Dependent
@@ -42,17 +38,17 @@ public class OpenaiConnector implements ChatConnector, EmbeddingConnector {
         Model.of("text-embedding-3-large", "openai", new UsagePrice(0.13, 0), LocalDate.of(2024, 1, 25)),
         // text
         Model.of("gpt-4o-mini", "openai", new UsagePrice(0.15, 0.60), LocalDate.of(2024, 7, 18)),
-        Model.of("gpt-4o-mini", "openai", new UsagePrice(0.15, 0.60), LocalDate.of(2024, 7, 18)),
         Model.of("gpt-4o", "openai", new UsagePrice(2.5, 10), LocalDate.of(2024, 11,20)),
-        Model.of("o1", "openai", new UsagePrice(15, 60), LocalDate.of(2024, 12, 17)),
         Model.of("gpt-4.1", "openai", new UsagePrice(2, 8), LocalDate.of(2025, 4, 14)),
         Model.of("gpt-4.1-mini", "openai", new UsagePrice(0.4, 1.6), LocalDate.of(2025, 4, 14)),
         Model.of("gpt-4.1-nano", "openai", new UsagePrice(0.1, 0.4), LocalDate.of(2025, 4, 14)),
         Model.of("o4-mini", "openai", new UsagePrice(1.1, 4.4), LocalDate.of(2025, 4, 16)),
-        Model.of("gpt-5-mini", "openai", new UsagePrice(0.25, 2), LocalDate.of(2025, 8, 7)),
         Model.of("gpt-5-nano", "openai", new UsagePrice(0.05, 0.4), LocalDate.of(2025, 8, 7)),
+        Model.of("gpt-5-mini", "openai", new UsagePrice(0.25, 2), LocalDate.of(2025, 8, 7)),
         Model.of("gpt-5", "openai", new UsagePrice(1.25, 10), LocalDate.of(2025, 10, 3)),
-        Model.of("gpt-5.1", "openai", new UsagePrice(1.25, 10), LocalDate.of(2025, 11, 13))
+        Model.of("gpt-5.4-nano", "openai", new UsagePrice(0.2, 1.25), LocalDate.of(2026, 3, 17)),
+        Model.of("gpt-5.4-mini", "openai", new UsagePrice(0.75, 4.5), LocalDate.of(2026, 3, 17)),
+        Model.of("gpt-5.4", "openai", new UsagePrice(2.5, 15), LocalDate.of(2026, 3, 5))
     );
 
     @RestClient

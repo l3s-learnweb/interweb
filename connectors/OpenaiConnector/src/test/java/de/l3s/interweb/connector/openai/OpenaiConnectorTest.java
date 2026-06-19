@@ -4,11 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import de.l3s.interweb.core.embeddings.Embedding;
-import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
-
-import de.l3s.interweb.core.embeddings.EmbeddingsResults;
-
 import jakarta.inject.Inject;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -18,6 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import de.l3s.interweb.core.ConnectorException;
 import de.l3s.interweb.core.chat.*;
+import de.l3s.interweb.core.embeddings.Embedding;
+import de.l3s.interweb.core.embeddings.EmbeddingsQuery;
+import de.l3s.interweb.core.embeddings.EmbeddingsResults;
 
 @Disabled
 @QuarkusTest
