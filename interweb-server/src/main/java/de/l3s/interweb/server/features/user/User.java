@@ -35,9 +35,11 @@ public class User extends PanacheEntityBase implements Principal {
 
     @NotNull
     @Schema(readOnly = true)
+    @Column(columnDefinition = "enum('User', 'Admin')")
     public String role = Roles.USER;
 
     @NotNull
+    @Column(columnDefinition = "tinyint(1)")
     public boolean approved = false;
 
     @NotNull

@@ -35,9 +35,10 @@ public class ChatMessage extends PanacheEntityBase {
     @NotNull
     public Role role;
 
+    @Column(columnDefinition = "text")
     public String content;
 
-    @Column(name = "tool_calls")
+    @Column(name = "tool_calls", columnDefinition = "text")
     public String toolCalls;
 
     @CreationTimestamp

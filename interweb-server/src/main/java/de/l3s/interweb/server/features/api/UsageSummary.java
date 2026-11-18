@@ -3,6 +3,7 @@ package de.l3s.interweb.server.features.api;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+import io.quarkus.hibernate.reactive.panache.Panache;
 import io.smallrye.mutiny.Uni;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -69,25 +70,32 @@ public class UsageSummary {
         return summary;
     }
 
+    /**
+     * All queries run inside a single session, otherwise the first finished query closes the session for the remaining ones.
+     */
     public static Uni<UsageSummary> findByApikey(ApiKey apikey) {
-        Instant today = Instant.now().plus(1, ChronoUnit.DAYS); // to make sure include all requests from today
-        Instant monthsAgo = today.minus(31, ChronoUnit.DAYS);
+        return Panache.withSession(() -> {
+            Instant today = Instant.now().plus(1, ChronoUnit.DAYS); // to make sure include all requests from today
+            Instant monthsAgo = today.minus(31, ChronoUnit.DAYS);
 
-        final Uni<UsageChat> monthlyChatUsage = UsageChat.findByApikey(apikey, monthsAgo, today);
-        final Uni<UsageSearch> monthlySearchUsage = UsageSearch.findByApikey(apikey, monthsAgo, today);
-        final Uni<UsageChat> totalChatUsage = UsageChat.findByApikey(apikey);
-        final Uni<UsageSearch> totalSearchUsage = UsageSearch.findByApikey(apikey);
-        return combine(apikey.user, monthlyChatUsage, monthlySearchUsage, totalChatUsage, totalSearchUsage);
+            final Uni<UsageChat> monthlyChatUsage = UsageChat.findByApikey(apikey, monthsAgo, today);
+            final Uni<UsageSearch> monthlySearchUsage = UsageSearch.findByApikey(apikey, monthsAgo, today);
+            final Uni<UsageChat> totalChatUsage = UsageChat.findByApikey(apikey);
+            final Uni<UsageSearch> totalSearchUsage = UsageSearch.findByApikey(apikey);
+            return combine(apikey.user, monthlyChatUsage, monthlySearchUsage, totalChatUsage, totalSearchUsage);
+        });
     }
 
     public static Uni<UsageSummary> findByUser(User user) {
-        Instant today = Instant.now().plus(1, ChronoUnit.DAYS); // to make sure include all requests from today
-        Instant monthsAgo = today.minus(31, ChronoUnit.DAYS);
+        return Panache.withSession(() -> {
+            Instant today = Instant.now().plus(1, ChronoUnit.DAYS); // to make sure include all requests from today
+            Instant monthsAgo = today.minus(31, ChronoUnit.DAYS);
 
-        final Uni<UsageChat> monthlyChatUsage = UsageChat.findByUser(user, monthsAgo, today);
-        final Uni<UsageSearch> monthlySearchUsage = UsageSearch.findByUser(user, monthsAgo, today);
-        final Uni<UsageChat> totalChatUsage = UsageChat.findByUser(user);
-        final Uni<UsageSearch> totalSearchUsage = UsageSearch.findByUser(user);
-        return combine(user, monthlyChatUsage, monthlySearchUsage, totalChatUsage, totalSearchUsage);
+            final Uni<UsageChat> monthlyChatUsage = UsageChat.findByUser(user, monthsAgo, today);
+            final Uni<UsageSearch> monthlySearchUsage = UsageSearch.findByUser(user, monthsAgo, today);
+            final Uni<UsageChat> totalChatUsage = UsageChat.findByUser(user);
+            final Uni<UsageSearch> totalSearchUsage = UsageSearch.findByUser(user);
+            return combine(user, monthlyChatUsage, monthlySearchUsage, totalChatUsage, totalSearchUsage);
+        });
     }
 }
