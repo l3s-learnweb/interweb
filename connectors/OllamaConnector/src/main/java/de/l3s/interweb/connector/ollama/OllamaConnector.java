@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Instance;
 
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -27,8 +28,11 @@ import de.l3s.interweb.core.models.ModelsResults;
 public class OllamaConnector implements ChatConnector, EmbeddingConnector {
     private static final Logger log = Logger.getLogger(OllamaConnector.class);
 
+    /**
+     * Resolved lazily, so the connector can be created (and skipped by validate) when no URL is configured.
+     */
     @RestClient
-    OllamaClient ollama;
+    Instance<OllamaClient> ollamaInstance;
 
     private final Map<String, ModelPullStatus> pullStatuses = new ConcurrentHashMap<>();
 
@@ -44,7 +48,7 @@ public class OllamaConnector implements ChatConnector, EmbeddingConnector {
 
     @Override
     public Uni<ModelsResults> models() {
-        return ollama.tags()
+        return ollama().tags()
             .map(response -> response.getModels().stream().map(Tag::toModel).toList())
             .map(ModelsResults::new);
     }
@@ -52,30 +56,34 @@ public class OllamaConnector implements ChatConnector, EmbeddingConnector {
     @Override
     public Uni<CompletionsResults> completions(CompletionsQuery query) throws ConnectorException {
         final ChatBody body = ChatBody.of(query);
-        return ollama.chat(body).map(ChatResponse::toCompletionResults);
+        return ollama().chat(body).map(ChatResponse::toCompletionResults);
     }
 
     @Override
     public Multi<CompletionsResults> completionsStream(CompletionsQuery query) throws ConnectorException {
         query.setStream(true);
         final ChatBody body = ChatBody.of(query);
-        return ollama.chatStream(body).map(ChatResponse::toCompletionResults);
+        return ollama().chatStream(body).map(ChatResponse::toCompletionResults);
     }
 
     @Override
     public Uni<EmbeddingsResults> embeddings(EmbeddingsQuery query) throws ConnectorException {
         final EmbedBody body = EmbedBody.of(query);
-        return ollama.embed(body).map(EmbedResponse::toCompletionResults);
+        return ollama().embed(body).map(EmbedResponse::toCompletionResults);
     }
 
     @Override
     public boolean validate() {
-        Optional<String> apikey = ConfigProvider.getConfig().getOptionalValue("connector.ollama.url", String.class);
-        if (apikey.isEmpty()) {
+        Optional<String> url = ConfigProvider.getConfig().getOptionalValue("connector.ollama.url", String.class);
+        if (url.isEmpty() || url.get().isBlank()) {
             log.warn("URL is empty, please provide a valid URL in the configuration.");
             return false;
         }
         return true;
+    }
+
+    private OllamaClient ollama() {
+        return ollamaInstance.get();
     }
 
     /**
@@ -96,7 +104,7 @@ public class OllamaConnector implements ChatConnector, EmbeddingConnector {
 
         PullBody body = new PullBody(modelName);
 
-        ollama.pullStream(body)
+        ollama().pullStream(body)
             .onItem().invoke(response -> {
                 pullStatuses.put(lowerModelName, response.toModelPullStatus());
             })
